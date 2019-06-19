@@ -6,9 +6,14 @@
 
   <name xml:lang="en">gimp-macos-build</name>
   <shortdesc xml:lang="en">GIMP's macOS build scripts</shortdesc>
-  <description>Scripts for automatic macOS/OSX builds of the GNU Image Manipulation Program</description>
+  <description xml:lang="en">Scripts for automatic macOS/OSX builds of the GNU Image Manipulation Program</description>
+
   <homepage rdf:resource="http://www.gimp.org/" />
+  <download-page rdf:resource="https:///www.gimp.org/downloads/" />
+  <bug-database rdf:resource="https://gitlab.gnome.org/Infrastructure/gimp-macos-build/issues" />
+
   <category rdf:resource="http://api.gnome.org/doap-extensions#infrastructure" />
+  <programming-language>Shell</programming-language>
 
   <maintainer>
     <foaf:Person>
@@ -20,7 +25,6 @@
   <maintainer>
     <foaf:Person>
       <foaf:name>Oleksii Samorukov</foaf:name>
-      <gnome:userid>samm-git</gnome:userid>
     </foaf:Person>
   </maintainer>
 
