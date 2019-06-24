@@ -18,7 +18,7 @@ ulimit -n 7000
 # export DYLD_PRINT_DOFS=1
 # export DYLD_PRINT_RPATHS=1
 
-BASEDIR=$(cd `dirname $0` && pwd)
+BASEDIR=$(cd "`dirname "$0"`" && pwd)
 
 cd "$BASEDIR"
 
