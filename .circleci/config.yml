@@ -15,7 +15,7 @@ jobs:
         - run:
             name: Setup jhbuild
             command: | 
-              curl  https://gitlab.gnome.org/samm-git/gtk-osx/raw/fork-test/gtk-osx-build-setup.sh | sh
+              curl  https://gitlab.gnome.org/samm-git/gtk-osx/raw/fork-test/gtk-osx-setup.sh | sh
               echo 'export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"' > ~/.profile
               echo 'export ARCHFLAGS="-arch x86_64"' >> ~/.profile
               cat ~/.profile
