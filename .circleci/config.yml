@@ -16,7 +16,7 @@ jobs:
             name: Setup jhbuild
             command: | 
               cd $HOME
-              curl  https://gitlab.gnome.org/samm-git/gtk-osx/raw/fork-test/gtk-osx-setup.sh | sh
+              # curl  https://gitlab.gnome.org/samm-git/gtk-osx/raw/fork-test/gtk-osx-setup.sh | sh -x
               curl  https://gitlab.gnome.org/samm-git/gtk-osx/raw/fork-test/gtk-osx-setup.sh | sh -x
               $HOME/.new_local/bin/jhbuild bootstrap-gtk-osx
               echo 'export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' > ~/.profile
