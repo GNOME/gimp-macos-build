@@ -3,7 +3,7 @@ jobs:
   build-gimp-2-10:
     macos:
         xcode: "10.0.0"
-      
+
     steps:
         - checkout
         - run:
@@ -12,40 +12,48 @@ jobs:
         - run:
             name: Setup rust
             command: curl https://sh.rustup.rs -sSf | sh -s -- -y
+        - restore_cache:
+            keys:
+              - jhbuild-v1
         - run:
             name: Setup jhbuild
-            command: | 
+            command: |
               cd $HOME
+              mkdir -p ~/.config && mv ~/project/jhbuildrc-gtk-osx-gimp ~/.config/jhbuildrc-custom
               curl  https://gitlab.gnome.org/samm-git/gtk-osx/raw/fork-test/gtk-osx-setup.sh > gtk-osx-setup.sh
               chmod +x gtk-osx-setup.sh
               PIPENV_YES=1 ./gtk-osx-setup.sh
-              $HOME/.new_local/bin/jhbuild bootstrap-gtk-osx
+              $HOME/.new_local/bin/jhbuild bootstrap-gtk-osx-gimp
               echo 'export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' > ~/.profile
               echo 'export ARCHFLAGS="-arch x86_64"' >> ~/.profile
               cat ~/.profile
+        - save_cache:
+            paths:
+              - ~/.new_local
+            key: jhbuild-v1
         - run:
             name: Setup gtk-mac-bundler
-            command: | 
+            command: |
               cd ~/Source
               git clone https://github.com/samm-git/gtk-mac-bundler -b fix-otool
               cd gtk-mac-bundler
               make install
         # we need to make it automatically depended on the corresponding modules
         - restore_cache:
-            keys: 
+            keys:
               - gimp-2.10.12-v1
               - webkit-v11
               - gimp-deps-v11
               - bootstrap-v13
         - run:
             name: Setup 10.9 SDK
-            command: | 
+            command: |
               cd /Library/Developer/CommandLineTools/SDKs
-              sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/MacOSX10.11.sdk/MacOSX10.9.sdk.tar.xz' | sudo tar -xzf - 
+              sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/MacOSX10.11.sdk/MacOSX10.9.sdk.tar.xz' | sudo tar -xzf -
               echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.9.sdk' >> ~/.profile
         - run:
             name: Bootstrap
-            command: source ~/.profile && jhbuild bootstrap && jhbuild build python python-six meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-core
+            command: source ~/.profile && jhbuild build python meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-core
         - run:
             name: Cleanup
             command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
@@ -83,7 +91,7 @@ jobs:
         - run:
             name: Build GIMP
             # XXX make check is not working reliably under circle ci, so not running it
-            command: | 
+            command: |
               source ~/.profile
               jhbuild build gimp
         - run:
@@ -125,4 +133,3 @@ workflows:
   build-different-versions:
     jobs:
       - build-gimp-2-10
- 
