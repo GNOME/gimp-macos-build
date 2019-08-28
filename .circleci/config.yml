@@ -56,7 +56,7 @@ jobs:
         - run:
             name: Bootstrap
             # build python2 and re-install libxml2 to use it
-            command: source ~/.profile && jhbuild build python && jhbuild build -f libxml2 && PYTHON=$HOME/gtk/inst/bin/python build meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-core
+            command: source ~/.profile && jhbuild build python && jhbuild build -f libxml2 && jhbuild build meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-core
         - run:
             name: Cleanup
             command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
