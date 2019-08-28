@@ -18,9 +18,10 @@ jobs:
               cd /Library/Developer/CommandLineTools/SDKs
               sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/MacOSX10.11.sdk/MacOSX10.9.sdk.tar.xz' | sudo tar -xzf -
               echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.9.sdk' > ~/.profile
+              echo 'export MACOSX_DEPLOYMENT_TARGET=10.9' >> ~/.profile
         - restore_cache:
             keys:
-              - jhbuild-v3
+              - jhbuild-v4
         - run:
             name: Setup jhbuild
             command: |
@@ -39,7 +40,7 @@ jobs:
               - ~/.new_local
               - ~/gtk
               - ~/.config
-            key: jhbuild-v3
+            key: jhbuild-v4
         - run:
             name: Setup gtk-mac-bundler
             command: |
