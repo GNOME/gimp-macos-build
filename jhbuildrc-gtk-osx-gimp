@@ -154,6 +154,9 @@ environ_prepend('OBJCFLAGS', "-O3")
 #
 # os.environ["CC"] = "/usr/bin/gcc-4.0"
 
+# Fix Python detection
+module_extra_env['itstool'] = { "PYTHON": os.path.expanduser("~/gtk/inst/bin/python") }
+
 
 # And more...
 
