@@ -155,7 +155,7 @@ environ_prepend('OBJCFLAGS', "-O3")
 # os.environ["CC"] = "/usr/bin/gcc-4.0"
 
 # use our modulset
-moduleset = 'https://gitlab.gnome.org/samm-git/gtk-osx/raw/fork-test/modulesets/gtk-osx.modules'
+moduleset = 'https://gitlab.gnome.org/samm-git/gtk-osx/raw/fork-test/modulesets-stable/gtk-osx.modules'
 
 # Fix Python detection
 module_extra_env['itstool'] = { "PYTHON": os.path.expanduser("~/gtk/inst/bin/python") }
