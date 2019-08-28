@@ -12,9 +12,15 @@ jobs:
         - run:
             name: Setup rust
             command: curl https://sh.rustup.rs -sSf | sh -s -- -y
+        - run:
+            name: Setup 10.9 SDK
+            command: |
+              cd /Library/Developer/CommandLineTools/SDKs
+              sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/MacOSX10.11.sdk/MacOSX10.9.sdk.tar.xz' | sudo tar -xzf -
+              echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.9.sdk' > ~/.profile
         - restore_cache:
             keys:
-              - jhbuild-v2
+              - jhbuild-v3
         - run:
             name: Setup jhbuild
             command: |
@@ -22,9 +28,10 @@ jobs:
               mkdir -p ~/.config && mv ~/project/jhbuildrc-gtk-osx-gimp ~/.config/jhbuildrc-custom
               curl  https://gitlab.gnome.org/samm-git/gtk-osx/raw/fork-test/gtk-osx-setup.sh > gtk-osx-setup.sh
               chmod +x gtk-osx-setup.sh
+              source ~/.profile
               PIPENV_YES=1 ./gtk-osx-setup.sh
               $HOME/.new_local/bin/jhbuild bootstrap-gtk-osx-gimp
-              echo 'export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' > ~/.profile
+              echo 'export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' >> ~/.profile
               echo 'export ARCHFLAGS="-arch x86_64"' >> ~/.profile
               cat ~/.profile
         - save_cache:
@@ -32,7 +39,7 @@ jobs:
               - ~/.new_local
               - ~/gtk
               - ~/.config
-            key: jhbuild-v2
+            key: jhbuild-v3
         - run:
             name: Setup gtk-mac-bundler
             command: |
@@ -47,12 +54,6 @@ jobs:
               - webkit-v11
               - gimp-deps-v11
               - bootstrap-v13
-        - run:
-            name: Setup 10.9 SDK
-            command: |
-              cd /Library/Developer/CommandLineTools/SDKs
-              sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/MacOSX10.11.sdk/MacOSX10.9.sdk.tar.xz' | sudo tar -xzf -
-              echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.9.sdk' >> ~/.profile
         - run:
             name: Bootstrap
             # build python2 and re-install libxml2 to use it
