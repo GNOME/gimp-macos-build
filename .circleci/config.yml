@@ -54,7 +54,7 @@ jobs:
               - gimp-2.10.12-v1
               - webkit-v11
               - gimp-deps-v1
-              - bootstrap-v1
+              - bootstrap-v12
         - run:
             name: Bootstrap
             # build python2 and re-install libxml2 to use it
@@ -65,7 +65,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: bootstrap-v1
+            key: bootstrap-v12
         - run:
             name: Build all GIMP dependencies
             command: source ~/.profile && jhbuild build $(jhbuild info gimp|grep '^Requires:'|sed 's|^Requires:||'|tr -d ',')
