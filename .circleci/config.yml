@@ -21,7 +21,7 @@ jobs:
               echo 'export MACOSX_DEPLOYMENT_TARGET=10.9' >> ~/.profile
         - restore_cache:
             keys:
-              - jhbuild-v4
+              - jhbuild-v5
         - run:
             name: Setup jhbuild
             command: |
@@ -29,18 +29,18 @@ jobs:
               mkdir -p ~/.config && mv ~/project/jhbuildrc-gtk-osx-gimp ~/.config/jhbuildrc-custom
               curl  https://gitlab.gnome.org/samm-git/gtk-osx/raw/fork-test/gtk-osx-setup.sh > gtk-osx-setup.sh
               chmod +x gtk-osx-setup.sh
+              echo 'export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' >> ~/.profile
+              echo 'export ARCHFLAGS="-arch x86_64"' >> ~/.profile
               source ~/.profile
               PIPENV_YES=1 ./gtk-osx-setup.sh
               $HOME/.new_local/bin/jhbuild bootstrap-gtk-osx-gimp
-              echo 'export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' >> ~/.profile
-              echo 'export ARCHFLAGS="-arch x86_64"' >> ~/.profile
               cat ~/.profile
         - save_cache:
             paths:
               - ~/.new_local
               - ~/gtk
               - ~/.config
-            key: jhbuild-v4
+            key: jhbuild-v5
         - run:
             name: Setup gtk-mac-bundler
             command: |
