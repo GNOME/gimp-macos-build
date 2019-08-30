@@ -18,6 +18,8 @@ echo "$GIMP_VERSION"
 
 cat info-2.10.plist.tmpl | sed "s|%VERSION%|${GIMP_VERSION}|g" > info-2.10.plist
 
+echo "Copying charset.alias"
+cp "${HOME}/gtk/source/gettext-0.19.8/gettext-tools/libgettextpo/charset.alias" "${HOME}/gtk/inst/lib/"
 echo "Creating bundle"
 gtk-mac-bundler gimp-2.10.bundle
 
