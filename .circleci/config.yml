@@ -13,6 +13,14 @@ jobs:
             name: Setup rust
             command: curl https://sh.rustup.rs -sSf | sh -s -- -y
         - run:
+            name: Setup gfortran (openblas requirement)
+            command: |
+              cd ~/
+              curl -L 'https://github.com/fxcoudert/gfortran-for-macOS/releases/download/8.2/gfortran-8.2-Mojave.dmg' > gfortran-8.2-Mojave.dmg
+              hdiutil mount gfortran-8.2-Mojave.dmg
+              sudo installer -pkg /Volumes/gfortran-8.2-Mojave/gfortran-8.2-Mojave/gfortran.pkg -target /
+              hdiutil unmount /Volumes/gfortran-8.2-Mojave
+        - run:
             name: Setup 10.9 SDK
             command: |
               cd /Library/Developer/CommandLineTools/SDKs
