@@ -8,6 +8,8 @@ To build GIMP/MacOS we are using [fork](https://gitlab.gnome.org/samm-git/gtk-os
 of the [gtk-osx](https://gitlab.gnome.org/GNOME/gtk-osx) project. Fork adds modules related to GIMP
 and some gimp-specific patches to GTK. Currently build is done using CircleCI.
 
+Because CircleCI is not supporting gitlab [yet] there is a [GitHub mirror](https://github.com/GNOME/gimp-macos-build) of this repository.
+
 ### Steps in the [CircleCI config.yml](https://github.com/GNOME/gimp-macos-build/blob/master/.circleci/config.yml) are:
 
 - Install gfortran and rust as they are required for the GIMP dependencies.
