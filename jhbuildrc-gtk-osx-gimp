@@ -164,7 +164,7 @@ module_extra_env['itstool'] = { "PYTHON": os.path.expanduser("~/gtk/inst/bin/pyt
 # And more...
 
 class _cmd_bootstrap_gtk_osx_gimp(jhbuild.commands.base.cmd_build):
-    doc = N_('Build buildsystem tools not provided by MacOS.')
+    doc = 'Build buildsystem tools not provided by MacOS.'
 
     name = 'bootstrap-gtk-osx-gimp'
 
