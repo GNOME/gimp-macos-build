@@ -20,12 +20,12 @@ jobs:
               hdiutil mount gfortran-8.2-Mojave.dmg
               sudo installer -pkg /Volumes/gfortran-8.2-Mojave/gfortran-8.2-Mojave/gfortran.pkg -target /
               hdiutil unmount /Volumes/gfortran-8.2-Mojave
-        - run:
-            name: Setup Python3
-            command: |
-              cd ~/
-              curl -L 'https://www.python.org/ftp/python/3.6.8/python-3.6.8-macosx10.9.pkg' > python-3.6.8-macosx10.9.pkg
-              sudo installer -pkg python-3.6.8-macosx10.9.pkg -target /
+#        - run:
+#            name: Setup Python3
+#            command: |
+#              cd ~/
+#              curl -L 'https://www.python.org/ftp/python/3.6.8/python-3.6.8-macosx10.9.pkg' > python-3.6.8-macosx10.9.pkg
+#              sudo installer -pkg python-3.6.8-macosx10.9.pkg -target /
         - run:
             name: Setup 10.9 SDK
             command: |
@@ -35,7 +35,7 @@ jobs:
               echo 'export MACOSX_DEPLOYMENT_TARGET=10.9' >> ~/.profile
         - restore_cache:
             keys:
-              - jhbuild-v6
+              - jhbuild-v7
         - run:
             name: Setup jhbuild
             command: |
@@ -54,7 +54,7 @@ jobs:
               - ~/.new_local
               - ~/gtk
               - ~/.config
-            key: jhbuild-v6
+            key: jhbuild-v7
         - run:
             name: Setup gtk-mac-bundler
             command: |
