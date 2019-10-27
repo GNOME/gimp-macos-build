@@ -68,7 +68,7 @@ jobs:
               - gimp-2.10.12-v3
               - webkit-v12
               - gimp-deps-v1
-              - bootstrap-v12
+              - bootstrap-v13
         - run:
             name: Bootstrap
             command: source ~/.profile &&  jhbuild build -f libxml2 && jhbuild build meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-core
@@ -78,7 +78,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: bootstrap-v12
+            key: bootstrap-v13
         - run:
             name: Build all GIMP dependencies
             command: source ~/.profile && jhbuild build $(jhbuild info gimp|grep '^Requires:'|sed 's|^Requires:||'|tr -d ',')
