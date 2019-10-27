@@ -10,7 +10,13 @@ and some gimp-specific patches to GTK. Currently build is done using CircleCI.
 
 Because CircleCI is not supporting gitlab [yet] there is a [GitHub mirror](https://github.com/GNOME/gimp-macos-build) of this repository.
 
-### Steps in the [CircleCI config.yml](https://github.com/GNOME/gimp-macos-build/blob/master/.circleci/config.yml) are:
+## Before you starting
+
+I found that GTK and GIMP builds on OSX are very fragile. If you have any other build system (brew, macports) installed - try to remove it first or at least isolate from jhbuild env as much as you can.
+
+I was able to get working builds in the VirtualBox VM, it works stable enough for me.
+
+## Steps in the [CircleCI config.yml](https://github.com/GNOME/gimp-macos-build/blob/master/.circleci/config.yml) are:
 
 - Install gfortran and rust as they are required for the GIMP dependencies.
 - Setup OSX 10.9 SDK. This is needed to ensure that GIMP is able to run on MacOS 10.9+. See [this article](https://smallhacks.wordpress.com/2018/11/11/how-to-support-old-osx-version-with-a-recent-xcode/) for the details.
@@ -32,6 +38,7 @@ Because CircleCI is not supporting gitlab [yet] there is a [GitHub mirror](https
 
 ## Branches
 
-- master: latest GIMP release
-- gimp-2-10: gimp-2-10 build
-- debug: same as master, but with full debug symbols
+- `master`: latest GIMP release
+- `gimp-2-10`: gimp-2-10 build
+- `debug`: same as master, but with full debug symbols
+- `hardened-runtime`: singed and notarized package with a hardened runtime enabled
