@@ -31,9 +31,9 @@
          script will be used.
     -->
     <!-- <launcher-script>${project}/launcher.sh</launcher-script > -->
-   <launcher-script>
+   <!-- <launcher-script>
       ${project}/launcher-2.10.sh
-    </launcher-script>
+    </launcher-script> -->
     <!-- Not implemented: Optional runtime, could be python or mono
          for example.
     -->
@@ -73,7 +73,7 @@
 </binary>
   <!-- We have to pull in the python modules, which are mixed python
        and loadable modules.  -->
- 
+
   <binary recurse="True">
     ${prefix}/lib/python2.7/*.so
   </binary>
