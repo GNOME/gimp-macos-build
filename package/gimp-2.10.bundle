@@ -165,9 +165,6 @@
   <data dest="${bundle}/Contents/Resources">${project}/gimp.icns</data>
   <data dest="${bundle}/Contents/Resources">${project}/xcf.icns</data>
 
-  <!-- fix gimp python execution -->
-  <data dest="${bundle}Contents/Resources/lib/gimp/2.0/interpreters/pygimp.interp">${project}/pygimp.interp</data>
-
   <!-- Icon theme, both tango and hicolor are required? -->
   <icon-theme icons="auto">
     Tango
