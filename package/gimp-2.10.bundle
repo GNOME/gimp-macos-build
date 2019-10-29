@@ -107,9 +107,9 @@
   <!-- Copy in GTK+ modules -->
   <binary>${prefix}/lib/${gtkdir}/modules/*.so</binary>
   <!-- Copy in babl modules -->
-  <binary>${prefix}/lib/babl-0.1/*.so</binary>
+  <binary>${prefix}/lib/babl-0.1/*.dylib</binary>
   <!-- Copy in gegl modules -->
-  <binary>${prefix}/lib/gegl-0.4/*.so</binary>
+  <binary>${prefix}/lib/gegl-0.4/*.dylib</binary>
   <!-- Copy in GTK+ themeing engines -->
   <binary>${prefix}/lib/${gtkdir}/${pkg:${gtk}:gtk_binary_version}/engines/*.so</binary>
   <!-- Copy in GTK+ printer backends -->
