@@ -94,7 +94,7 @@ popd
 echo "copy xdg-email wrapper to the package"
 cp xdg-email ${PACKAGE_DIR}/GIMP-2.10.app/Contents/MacOS
 
-echo "copy pygimp.interp wrapper to the package"
+echo "copy pygimp.interp to the package"
 mkdir -p ${PACKAGE_DIR}/GIMP-2.10.app/Contents/Resources/lib/gimp/2.0/interpreters
 cp pygimp.interp ${PACKAGE_DIR}/GIMP-2.10.app/Contents/Resources/lib/gimp/2.0/interpreters
 
@@ -125,6 +125,25 @@ fi
 mkdir -p /tmp/artifacts/
 rm -f /tmp/tmp.dmg
 rm -f "gimp-${GIMP_VERSION}-x86_64.dmg"
+
+cd create-dmg
+
+./create-dmg \
+--volname "GIMP 2.10 Install" \
+--volicon "/Applications/GIMP-2.10.app/Contents/Resources/gimp.icns" \
+--background "../gimp-dmg.png" \
+--window-pos 1 1 \
+--icon "GIMP-2.10.app" 190 360 \
+--window-size 640 480 \
+--icon-size 110 \
+--icon "Applications" 110 110 \
+--hide-extension "Applications" \
+--app-drop-link 450 360 \
+--format UDBZ \
+"/tmp/artifacts/${DMGNAME}" \
+"$PACKAGE_DIR/"
+cd ..
+
 hdiutil create /tmp/tmp.dmg -ov -volname "GIMP 2.10 Install" -fs HFS+ -srcfolder "$PACKAGE_DIR/"
 hdiutil convert /tmp/tmp.dmg -format UDBZ -o "/tmp/artifacts/${DMGNAME}"
 

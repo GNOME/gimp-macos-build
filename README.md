@@ -33,7 +33,7 @@ I was able to get working builds in the VirtualBox VM, it works stable enough fo
   - fixing pixmap and imm cache files to remove absolute pathnames
   - compiles all py files to pyc to avoid writes to the Application folders
   - Signing all binaries
-  - Creating DMG package and signing it
+  - Creating DMG package using [create-dmg](https://github.com/andreyvit/create-dmg) tool and signing it
 - Uploading DMG to the CircleCI build artifacts
 
 ## Branches
