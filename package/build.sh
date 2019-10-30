@@ -130,7 +130,7 @@ cd create-dmg
 
 ./create-dmg \
 --volname "GIMP 2.10 Install" \
---volicon "/Applications/GIMP-2.10.app/Contents/Resources/gimp.icns" \
+--volicon "$PACKAGE_DIR/Contents/Resources/gimp.icns" \
 --background "../gimp-dmg.png" \
 --window-pos 1 1 \
 --icon "GIMP-2.10.app" 190 360 \
