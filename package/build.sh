@@ -142,6 +142,7 @@ cd create-dmg
 --format UDBZ \
 "/tmp/artifacts/${DMGNAME}" \
 "$PACKAGE_DIR/"
+rm -f /tmp/artifacts/rw.*.dmg
 cd ..
 
 hdiutil create /tmp/tmp.dmg -ov -volname "GIMP 2.10 Install" -fs HFS+ -srcfolder "$PACKAGE_DIR/"
