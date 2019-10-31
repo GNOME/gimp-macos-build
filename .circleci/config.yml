@@ -8,7 +8,7 @@ jobs:
         - checkout
         - run:
             name: Cleanup /usr/local
-            command: sudo rm -rf /usr/local/*
+            command: sudo rm -rf /usr/local/* && exit 1
         - run:
             name: Setup rust
             command: curl https://sh.rustup.rs -sSf | sh -s -- -y
