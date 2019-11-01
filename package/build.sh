@@ -155,8 +155,8 @@ then
   /usr/bin/codesign  -s "${codesign_subject}" "/tmp/artifacts/${DMGNAME}"
 fi
 
-echo "Notarizing app"
-xcrun altool --notarize-app --file "/tmp/artifacts/${DMGNAME}" \
-  -u "${notarization_login}" --primary-bundle-id -p "${notarization_password}"
+#echo "Notarizing app"
+#xcrun e --notarize-app --file "/tmp/artifacts/${DMGNAME}" \
+#  -u "${notarization_login}" --primary-bundle-id -p "${notarization_password}"
 
 echo "Done"
