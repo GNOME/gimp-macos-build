@@ -65,9 +65,9 @@ jobs:
         # we need to make it automatically depended on the corresponding modules
         - restore_cache:
             keys:
-              - gimp-2.10.14-v6
-              - webkit-v13
-              - gimp-deps-v2
+              - gimp-2.10.14-v7
+              - webkit-v14
+              - gimp-deps-v3
               - bootstrap-v14
         - run:
             name: Bootstrap
@@ -91,7 +91,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-deps-v2
+            key: gimp-deps-v3
         - run:
             name: Build WebKit v1
             no_output_timeout: 1h
@@ -102,7 +102,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: webkit-v13
+            key: webkit-v14
 #        - run:
 #            name: rebuild gtk (temporary)
 #            command: source ~/.profile && rm -rf ~/gtk/source/gtk+-2.24.32 && jhbuild buildone --force gtk+
@@ -121,7 +121,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-2.10.14-v6
+            key: gimp-2.10.14-v7
         - run:
             name: Importing signing certificate
             command: |
