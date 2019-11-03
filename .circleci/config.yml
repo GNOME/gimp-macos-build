@@ -81,7 +81,7 @@ jobs:
             key: bootstrap-v14
         - run:
             name: Build all GIMP dependencies
-            command: source ~/.profile && jhbuild build $(jhbuild info gimp|grep '^Requires:'|sed 's|^Requires:||'|tr -d ',')
+            command: source ~/.profile && jhbuild build suitesparse $(jhbuild info gimp|grep '^Requires:'|sed 's|^Requires:||'|tr -d ',')
         - run:
             name: Build all WebKit dependencies
             command: source ~/.profile && jhbuild build $(jhbuild info webkit|grep '^Requires:'|sed 's|^Requires:||'|tr -d ',')
