@@ -54,7 +54,7 @@ jobs:
               git clone https://github.com/samm-git/gtk-mac-bundler -b fix-otool
               cd gtk-mac-bundler
               make install
-        # we need to make it automatically depended on the corresponding modules
+        # we can try to make it automatically depended on the corresponding modules
         - restore_cache:
             keys:
               - gimp-2.10.14-v8
@@ -72,8 +72,8 @@ jobs:
               - ~/gtk
             key: bootstrap-v14
         - run:
-            name: Build all GIMP dependencies
-            command: source ~/.profile && jhbuild build suitesparse $(jhbuild info gimp|grep '^Requires:'|sed 's|^Requires:||'|tr -d ',')
+            name: Build GIMP dependencies (without gegl/babl)
+            command: source ~/.profile && jhbuild build suitesparse $(jhbuild info gimp|grep '^Requires:'|sed -e 's|^Requires:||' -e 's|gegl||'|tr -d ',')
         - run:
             name: Build all WebKit dependencies
             command: source ~/.profile && jhbuild build $(jhbuild info webkit|grep '^Requires:'|sed 's|^Requires:||'|tr -d ',')
@@ -95,12 +95,13 @@ jobs:
             paths:
               - ~/gtk
             key: webkit-v15
-#        - run:
-#            name: rebuild gtk (temporary)
-#            command: source ~/.profile && rm -rf ~/gtk/source/gtk+-2.24.32 && jhbuild buildone --force gtk+
+        - run:
+            name: Build and test babl/gegl
+            command: source ~/.profile && jhbuild build --check babl gegl
         - run:
             name: Build GIMP
-            # XXX make check is not working reliably under circle ci, so not running it
+            # XXX make check is not working reliably under circle ci, so we are
+            # not running it
             command: |
               source ~/.profile
               jhbuild build gimp
