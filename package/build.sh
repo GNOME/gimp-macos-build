@@ -129,19 +129,19 @@ rm -f "gimp-${GIMP_VERSION}-x86_64.dmg"
 cd create-dmg
 
 ./create-dmg \
---volname "GIMP 2.10 Install" \
---background "../gimp-dmg.png" \
---window-pos 1 1 \
---icon "GIMP-2.10.app" 190 360 \
---window-size 640 480 \
---icon-size 110 \
---icon "Applications" 110 110 \
---hide-extension "Applications" \
---app-drop-link 450 360 \
---format UDBZ \
---hdiutil-verbose \
-"/tmp/artifacts/${DMGNAME}" \
-"$PACKAGE_DIR/"
+  --volname "GIMP 2.10 Install" \
+  --background "../gimp-dmg.png" \
+  --window-pos 1 1 \
+  --icon "GIMP-2.10.app" 190 360 \
+  --window-size 640 480 \
+  --icon-size 110 \
+  --icon "Applications" 110 110 \
+  --hide-extension "Applications" \
+  --app-drop-link 450 360 \
+  --format UDBZ \
+  --hdiutil-verbose \
+  "/tmp/artifacts/${DMGNAME}" \
+  "$PACKAGE_DIR/"
 rm -f /tmp/artifacts/rw.*.dmg
 cd ..
 
@@ -150,9 +150,5 @@ then
   echo "Signing DMG"
   /usr/bin/codesign  -s "${codesign_subject}" "/tmp/artifacts/${DMGNAME}"
 fi
-
-#echo "Notarizing app"
-#xcrun e --notarize-app --file "/tmp/artifacts/${DMGNAME}" \
-#  -u "${notarization_login}" --primary-bundle-id -p "${notarization_password}"
 
 echo "Done"
