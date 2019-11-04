@@ -145,9 +145,6 @@ cd create-dmg
 rm -f /tmp/artifacts/rw.*.dmg
 cd ..
 
-hdiutil create /tmp/tmp.dmg -ov -volname "GIMP 2.10 Install" -fs HFS+ -srcfolder "$PACKAGE_DIR/"
-hdiutil convert /tmp/tmp.dmg -format UDBZ -o "/tmp/artifacts/${DMGNAME}"
-
 if [ -n "${codesign_subject}" ]
 then
   echo "Signing DMG"
