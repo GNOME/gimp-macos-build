@@ -36,6 +36,14 @@ I was able to get working builds in the VirtualBox VM, it works stable enough fo
   - Creating DMG package using [create-dmg](https://github.com/andreyvit/create-dmg) tool and signing it
 - Uploading DMG to the CircleCI build artifacts
 
+## Known bugs and limitations (merge requests are welcome!)
+
+- [XPM import/export will not work](https://gitlab.gnome.org/Infrastructure/gimp-macos-build/issues/6) due to missing libxpm.
+- No scanning support. Scanner support needs to be re-implemented using ImageCaptureCore
+framework. Probably could be a small Python plugin as [there is a module](https://pypi.org/project/pyobjc-framework-ImageCaptureCore/) for it.
+- Some of the system modifiers are not working correctly, e.g. `Command+H`, `Command+~`, etc.
+- Loading of the remote HTTP objects is not supported due to Glib limitations on macOS
+
 ## Branches
 
 - `master`: latest GIMP release

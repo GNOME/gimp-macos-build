@@ -134,6 +134,11 @@ jobs:
               source ~/.profile
               cd ${HOME}/project/package
               jhbuild run ./build.sh
+        - run:
+            name:  Notarizing DMG package
+            command: |
+              cd ${HOME}/project/package
+              xcrun e --notarize-app --file "/tmp/artifacts/${DMGNAME}" -u "${notarization_login}" --primary-bundle-id -p "${notarization_password}"
         - store_artifacts:
             path: /tmp/artifacts
             destination: builds
