@@ -4,9 +4,10 @@ This repository contains files related to GIMP/OSX build using CircleCI.
 
 ## Build process description
 
-To build GIMP/MacOS we are using [fork](https://gitlab.gnome.org/samm-git/gtk-osx/tree/fork-test)
-of the [gtk-osx](https://gitlab.gnome.org/GNOME/gtk-osx) project. Fork adds modules related to GIMP
-and some gimp-specific patches to GTK. Currently build is done using CircleCI.
+To build GIMP/MacOS we are using [fork](https://gitlab.gnome.org/samm-git/gtk-osx/tree/gimp)
+of the [gtk-osx](https://gitlab.gnome.org/GNOME/gtk-osx) project (`gimp` branch). 
+Fork adds modules related to GIMP and some gimp-specific patches to GTK.
+Currently build is done using CircleCI.
 
 Because CircleCI is not supporting gitlab [yet] there is a [GitHub mirror](https://github.com/GNOME/gimp-macos-build) of this repository.
 

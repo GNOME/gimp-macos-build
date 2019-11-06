@@ -33,7 +33,7 @@ jobs:
             command: |
               cd $HOME
               mkdir -p ~/.config && mv ~/project/jhbuildrc-gtk-osx-gimp ~/.config/jhbuildrc-custom
-              curl  https://gitlab.gnome.org/samm-git/gtk-osx/raw/fork-test/gtk-osx-setup.sh > gtk-osx-setup.sh
+              curl  https://gitlab.gnome.org/samm-git/gtk-osx/raw/gimp/gtk-osx-setup.sh > gtk-osx-setup.sh
               chmod +x gtk-osx-setup.sh
               echo 'export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' >> ~/.profile
               echo 'export ARCHFLAGS="-arch x86_64"' >> ~/.profile
