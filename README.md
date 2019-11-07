@@ -42,6 +42,7 @@ I was able to get working builds in the VirtualBox VM, it works stable enough fo
 
  - [Gtk-OSX](https://gitlab.gnome.org/GNOME/gtk-osx/) project to simplify building MacOS application bundles for Gtk+-based applications
  - [gimp-plugins-collection](https://github.com/aferrero2707/gimp-plugins-collection) -  	GMIC, LiquidRescale, NUFraw, PhFGimp and ResynthesizerPlugin GIMP plugin builds, including macOS version
+ - CircleCI [gimp-macos-build project](https://circleci.com/gh/GNOME/gimp-macos-build)
 
 ## Known bugs and limitations (merge requests are welcome!)
 
