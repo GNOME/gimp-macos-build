@@ -35,6 +35,7 @@ I was able to get working builds in the VirtualBox VM, it works stable enough fo
   - compiles all `.py` files to `.pyc` to avoid writes to the Application folder
   - Signing all binaries
   - Creating a DMG package using [create-dmg](https://github.com/andreyvit/create-dmg) tool and signing it and signing it
+- Notarizing package using Apple `altool` utility
 - Uploading a DMG to the CircleCI build artifacts
 
 ## Other related links
