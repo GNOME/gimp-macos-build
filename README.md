@@ -20,7 +20,7 @@ I was able to get working builds in the VirtualBox VM, it works stable enough fo
 ## Steps in the [CircleCI config.yml](https://github.com/GNOME/gimp-macos-build/blob/master/.circleci/config.yml) are:
 
 - Installs Python 3 and Rust as they are required for the GIMP dependencies.
-- Setup macOS 10.9 SDK. This is needed to ensure that GIMP can run on macOS 10.9+. See [this article](https://smallhacks.wordpress.com/2018/11/11/how-to-support-old-osx-version-with-a-recent-xcode/) for the details.
+- Setting up macOS 10.9 SDK. This is needed to ensure that GIMP can run on macOS 10.9+. See [this article](https://smallhacks.wordpress.com/2018/11/11/how-to-support-old-osx-version-with-a-recent-xcode/) for the details.
 - Setting up JHBuild with a custom `~/.config/jhbuildrc-custom` file (see https://github.com/GNOME/gimp-macos-build/blob/master/jhbuildrc-gtk-osx-gimp). As part of the setup, it is running `bootstrap-gtk-osx-gimp` JHBuild command to compile required modules to run JHBuild. JHBuild is using Python3 venv to run.
 - Install [fork of the gtk-mac-bundler](https://github.com/samm-git/gtk-mac-bundler/tree/fix-otool) - the tool which helps to create macOS application bundles for the GTK apps. The only difference with official one is [this PR](https://github.com/jralls/gtk-mac-bundler/pull/10)
 - Installing all gtk-osx, gimp and WebKit dependencies using JHBuild
@@ -34,7 +34,7 @@ I was able to get working builds in the VirtualBox VM, it works stable enough fo
   - fixing `pixmap` and `imm` cache files to remove absolute pathnames
   - compiles all `.py` files to `.pyc` to avoid writes to the Application folder
   - Signing all binaries
-  - Creating a DMG package using [create-dmg](https://github.com/andreyvit/create-dmg) tool and signing it and signing it
+  - Creating a DMG package using [create-dmg](https://github.com/andreyvit/create-dmg) tool and signing it
 - Notarizing package using Apple `altool` utility
 - Uploading a DMG to the CircleCI build artifacts
 
