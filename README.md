@@ -46,11 +46,11 @@ I was able to get working builds in the VirtualBox VM, it works stable enough fo
 
 ## Known bugs and limitations (merge requests are welcome!)
 
-- [XPM import/export will not work](https://gitlab.gnome.org/Infrastructure/gimp-macos-build/issues/6) due to missing libxpm.
+- [XPM import/export will not work](https://gitlab.gnome.org/Infrastructure/gimp-macos-build/issues/6) due to missing libXpm/macOS.
 - No scanning support. Scanner support needs to be re-implemented using ImageCaptureCore
-framework. Probably could be a small Python plugin as [there is a module](https://pypi.org/project/pyobjc-framework-ImageCaptureCore/) for it.
+framework. Probably could be a small Python plugin as [there is a module](https://pypi.org/project/pyobjc-framework-ImageCaptureCore/) for it. As a workaround you can use your scanner utility or any other third-party tool.
 - Some of the system modifiers are not working correctly, e.g. `Command+H`, `Command+~`, etc.
-- Loading of the remote HTTP objects is not supported due to Glib limitations on macOS
+- Loading of the remote HTTP objects is not supported due to [Glib limitations on macOS](https://gitlab.gnome.org/GNOME/glib/issues/1579)
 
 ## Branches
 
