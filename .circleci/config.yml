@@ -75,6 +75,9 @@ jobs:
             name: Build GIMP dependencies (without gegl/babl)
             command: source ~/.profile && jhbuild build suitesparse $(jhbuild info gimp|grep '^Requires:'|sed -e 's|^Requires:||' -e 's|gegl||'|tr -d ',')
         - run:
+            name: Temporary: rebuild x265 and libheif
+            command: source ~/.profile && jhbuild buildone --force x265 && jhbuild buildone --force libheif 
+        - run:
             name: Build all WebKit dependencies
             command: source ~/.profile && jhbuild build $(jhbuild info webkit|grep '^Requires:'|sed 's|^Requires:||'|tr -d ',')
         - run:
