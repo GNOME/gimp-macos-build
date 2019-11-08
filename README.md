@@ -17,12 +17,12 @@ I found that GTK and GIMP build process on macOS are very fragile. If you have a
 
 I was able to get working builds in the VirtualBox VM, it works stable enough for me.
 
-## Steps in the [CircleCI config.yml](https://github.com/GNOME/gimp-macos-build/blob/master/.circleci/config.yml) are:
+## Steps in the CircleCI [config.yml](https://gitlab.gnome.org/Infrastructure/gimp-macos-build/blob/master/.circleci/config.yml) are:
 
 - Installs Python 3 and Rust as they are required for the GIMP dependencies.
 - Setting up macOS 10.9 SDK. This is needed to ensure that GIMP can run on macOS 10.9+. See [this article](https://smallhacks.wordpress.com/2018/11/11/how-to-support-old-osx-version-with-a-recent-xcode/) for the details.
 - Setting up JHBuild with a custom `~/.config/jhbuildrc-custom` file (see https://github.com/GNOME/gimp-macos-build/blob/master/jhbuildrc-gtk-osx-gimp). As part of the setup, it is running `bootstrap-gtk-osx-gimp` JHBuild command to compile required modules to run JHBuild. JHBuild is using Python3 venv to run.
-- Install [fork of the gtk-mac-bundler](https://github.com/samm-git/gtk-mac-bundler/tree/fix-otool) - the tool which helps to create macOS application bundles for the GTK apps. The only difference with official one is [this PR](https://github.com/jralls/gtk-mac-bundler/pull/10)
+- Installs [fork of the gtk-mac-bundler](https://github.com/samm-git/gtk-mac-bundler/tree/fix-otool) - the tool which helps to create macOS application bundles for the GTK apps. The only difference with official one is [this PR](https://github.com/jralls/gtk-mac-bundler/pull/10)
 - Installing all gtk-osx, gimp and WebKit dependencies using JHBuild
 - Building WebKit v1. This step could be avoided as it takes a lot of time, this is a soft dependency.
 - Building GIMP and gimp-help (from git).
