@@ -29,7 +29,7 @@ jobs:
             keys:
               - jhbuild-v8
         - run:
-            name: Setup jhbuild
+            name: Setup JHBuild
             command: |
               cd $HOME
               mkdir -p ~/.config && mv ~/project/jhbuildrc-gtk-osx-gimp ~/.config/jhbuildrc-custom
@@ -57,10 +57,10 @@ jobs:
         # we can try to make it automatically depended on the corresponding modules
         - restore_cache:
             keys:
-              - gimp-2.10.14-v11
-              - webkit-v17
-              - gimp-deps-v6
-              - bootstrap-v16
+              - gimp-2.10.14-v12
+              - webkit-v18
+              - gimp-deps-v7
+              - bootstrap-v17
         - run:
             name: Bootstrap
             command: source ~/.profile && jhbuild build meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-core
@@ -70,7 +70,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: bootstrap-v16
+            key: bootstrap-v17
         - run:
             name: Build GIMP dependencies (without gegl/babl)
             command: source ~/.profile && jhbuild build suitesparse $(jhbuild info gimp|grep '^Requires:'|sed -e 's|^Requires:||' -e 's|gegl||'|tr -d ',')
@@ -83,7 +83,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-deps-v6
+            key: gimp-deps-v7
         - run:
             name: Build WebKit v1
             no_output_timeout: 1h
@@ -94,14 +94,14 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: webkit-v17
+            key: webkit-v18
         - run:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
         - run:
             name: Build GIMP
-            # XXX make check is not working reliably under circle ci, so we are
-            # not running it
+            # XXX `make check` is not working reliably under circle ci, so we are
+            # not using --check flag
             command: |
               source ~/.profile
               jhbuild build gimp
@@ -114,7 +114,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-2.10.14-v11
+            key: gimp-2.10.14-v12
         - run:
             name: Importing signing certificate
             command: |
