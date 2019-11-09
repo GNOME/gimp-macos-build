@@ -2,7 +2,7 @@
 
 ### not released yet
 
-- Dependency updates: openjpeg, gexiv2, python2, lcms2, libtiff
+- Dependency updates: openjpeg, gexiv2, python2, lcms2, libtiff, ghostscript, poppler, glib
 - Enable matting levin engine support using macOS `Accelerate` framework and SuiteSparse
 - LibHEIF updated to 1.6 to fix crash on save
 - Performance improvements in LibHEIF save due to enabled ASM in x265
