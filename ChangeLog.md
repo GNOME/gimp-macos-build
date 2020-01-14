@@ -2,6 +2,7 @@
 
 ### not released yet
 
+- Glib - fixed error which was crashing gimp in the file open dialog (MR accepted by upstream)
 - Fix Print Preview dialog on the recent macOS versions (GTK issue)
 - Fix `Cmd+H` system hotkey in the GIMP window and startup warning
 - Dependency updates: openjpeg, gexiv2, python2, lcms2, libtiff, ghostscript, poppler, glib, libheif, pango
