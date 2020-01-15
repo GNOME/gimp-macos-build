@@ -2,6 +2,7 @@
 
 ### not released yet
 
+- Fix GIMP print dialog location
 - Glib - fixed error which was crashing gimp in the file open dialog (MR accepted by upstream)
 - Fix Print Preview dialog on the recent macOS versions (GTK issue)
 - Fix `Cmd+H` system hotkey in the GIMP window and startup warning
