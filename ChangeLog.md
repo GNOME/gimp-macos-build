@@ -1,6 +1,6 @@
 ## macOS specific changes
 
-### gimp-2.10.16-x86_64.dmg
+### gimp-2.10.18-x86_64.dmg
 
 - Fix GIMP print dialog location
 - Glib - fixed error which was crashing gimp in the file open dialog (MR accepted by upstream)
