@@ -24,7 +24,7 @@
               href="https://github.com/harfbuzz/harfbuzz/releases/download/"/>
   <repository type="tarball" name="itstool" href="http://files.itstool.org/"/>
   <repository type="tarball" name="icu"
-              href="http://github.com/unicode-org/icu/releases/download"/>
+              href="https://github.com/unicode-org/icu/releases/download/"/>
   <repository type="tarball" name="ragel"
               href="http://www.colm.net/files/ragel/"/>
 
