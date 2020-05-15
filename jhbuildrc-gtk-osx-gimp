@@ -181,7 +181,7 @@ class _cmd_bootstrap_gtk_osx_gimp(jhbuild.commands.base.cmd_build):
                                           moduleset + '.modules'))):
             config.moduleset = moduleset
         else:
-            config.moduleset = 'https://gitlab.gnome.org/Infrastructure/gimp-macos-build/-/raw/wip-Benitoite-tests/modulesets-stable/bootstrap.modules'
+            config.moduleset = 'https://gitlab.gnome.org/Infrastructure/gimp-macos-build/-/raw/wip/Benitoite/tests/modulesets-stable/bootstrap.modules'
 
         args = ['meta-bootstrap']
 
