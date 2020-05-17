@@ -88,7 +88,7 @@
     </branch>
   </autotools>
   <meson id="gegl" mesonargs="-Dvapigen=disabled">
-    <branch repo="ftp.gtk.org" version="0.4.22" hash="sha256:1888ec41dfd19fe28273795c2209efc1a542be742691561816683990dc642c61" module="gegl/0.4/gegl-0.4.22.tar.xz">
+    <branch repo="download.gimp.org" version="0.4.22" hash="sha256:1888ec41dfd19fe28273795c2209efc1a542be742691561816683990dc642c61" module="gegl/0.4/gegl-0.4.22.tar.xz">
     </branch>
     <after>
       <dep package="suitesparse"/>
