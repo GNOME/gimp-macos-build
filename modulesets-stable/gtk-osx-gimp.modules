@@ -6,6 +6,7 @@
   <repository type="tarball" name="gimp" href="https://download.gimp.org/pub/"/>
   <repository type="git" name="git.gnome.org" href="https://gitlab.gnome.org/GNOME"/>
   <repository type="tarball" name="ftp.gtk.org" href="https://ftp.gtk.org/pub/"/>
+  <repository type="tarball" name="download.gimp.org" href="https://download.gimp.org/pub/"/>
   <repository type="tarball" name="poppler.freedesktop.org" href="https://poppler.freedesktop.org/"/>
   <repository type="tarball" name="bitbucket-tarball" href="https://bitbucket.org/"/>
   <repository type="tarball" name="github-tarball" href="https://github.com/"/>
@@ -111,7 +112,7 @@
     <branch module="json-glib/1.2/json-glib-1.2.8.tar.xz" version="1.2.8" hash="sha256:fd55a9037d39e7a10f0db64309f5f0265fa32ec962bf85066087b83a2807f40a"/>
   </autotools>
   <meson id="babl">
-    <branch repo="ftp.gtk.org" version="0.1.74" module="babl/0.1/babl-0.1.74.tar.xz" hash="sha256:9a710b6950da37ada94cd9e2046cbce26de12473da32a7b79b7d1432fc66ce0e">
+    <branch repo="download.gimp.org" version="0.1.74" module="babl/0.1/babl-0.1.74.tar.xz" hash="sha256:9a710b6950da37ada94cd9e2046cbce26de12473da32a7b79b7d1432fc66ce0e">
     </branch>
     <dependencies>
       <dep package="lcms"/>
