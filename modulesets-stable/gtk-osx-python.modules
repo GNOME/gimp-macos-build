@@ -119,7 +119,7 @@
   </distutils>
 
   <distutils id="pycairo" autogen-sh="configure" python-command="python3">
-    <branch module="/pygobject/pycairo/releases/download/v1.18.1/pycairo-1.19.1.tar.gz" repo="github-tarball"
+    <branch module="/pygobject/pycairo/releases/download/v1.19.1/pycairo-1.19.1.tar.gz" repo="github-tarball"
             version="1.19.1"
 	    hash="sha256:2c143183280feb67f5beb4e543fd49990c28e7df427301ede04fc550d3562e84"/>
     <dependencies>
