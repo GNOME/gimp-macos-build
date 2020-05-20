@@ -151,6 +151,7 @@
       <dep package="meta-gtk-osx-core"/>
     </dependencies>
     <after>
+      <dep package="python3"/>
       <dep package="python"/>
     </after>
   </autotools>
