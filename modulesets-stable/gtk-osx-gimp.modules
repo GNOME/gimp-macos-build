@@ -191,7 +191,7 @@
     </branch>
   </autotools>
   <cmake id="libmng" cmakeargs="-DMNG_INSTALL_LIB_DIR=$JHBUILD_PREFIX/lib -DCMAKE_BUILD_WITH_INSTALL_NAME_DIR=true -DCMAKE_MACOSX_RPATH=true . -DCMAKE_INSTALL_NAME_DIR=$JHBUILD_PREFIX/lib" hash="sha256:4a462fdd48d4bc82c1d7a21106c8a18b62f8cc0042454323058e6da0dbb57dd3">
-    <branch module="project/libmng/libmng-devel/2.0.3/libmng-2.0.3.tar.xz" version="2.0.3" repo="sourceforge"/>
+    <branch module="libmng/libmng-devel/2.0.3/libmng-2.0.3.tar.xz" version="2.0.3" repo="sourceforge"/>
     <dependencies>
       <dep package="libjpeg"/>
       <dep package="lcms"/>
