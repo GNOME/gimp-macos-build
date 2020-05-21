@@ -10,7 +10,7 @@
   <repository type="tarball" name="poppler.freedesktop.org" href="https://poppler.freedesktop.org/"/>
   <repository type="tarball" name="bitbucket-tarball" href="https://bitbucket.org/"/>
   <repository type="tarball" name="github-tarball" href="https://github.com/"/>
-  <repository type="tarball" name="sourceforge" href="http://downloads.sourceforge.net/sourceforge/"/>
+  <repository type="tarball" name="sourceforge" href="https://downloads.sourceforge.net/project/"/>
   <repository type="tarball" name="savannah" href="http://download.savannah.nongnu.org/releases/"/>
   <repository type="tarball" name="www.exiv2.org" href="http://www.exiv2.org/builds/"/>
   <repository type="tarball" name="nasm" href="https://www.nasm.us/pub/nasm/releasebuilds/"/>
@@ -161,7 +161,7 @@
     </dependencies>
   </autotools>
   <autotools id="aalib" autogen-sh="configure" autogenargs="--without-x --with-curses-driver=no">
-    <branch module="aa-project/aalib-1.4rc5.tar.gz" version="1.4.0" hash="sha256:fbddda9230cf6ee2a4f5706b4b11e2190ae45f5eda1f0409dc4f99b35e0a70ee" repo="sourceforge" checkoutdir="aalib-1.4.0">
+    <branch module="aa-project/aa-lib/1.4rc5/aalib-1.4rc5.tar.gz" version="1.4.0" hash="sha256:fbddda9230cf6ee2a4f5706b4b11e2190ae45f5eda1f0409dc4f99b35e0a70ee" repo="sourceforge" checkoutdir="aalib-1.4.0">
       <!--
       # Fix malloc/stdlib issue on macOS
       # Fix underquoted definition of AM_PATH_AALIB in aalib.m4
