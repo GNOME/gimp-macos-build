@@ -121,7 +121,6 @@ then
     ${PACKAGE_DIR}/GIMP-2.10.app
 fi
 
-
 echo "Building DMG"
 if [ -z "${CIRCLECI}" ]
 then
