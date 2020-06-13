@@ -1,4 +1,5 @@
 ## macOS specific changes
+### gimp-2.10.20-x86_64.dmg
 
 ### gimp-2.10.18-x86_64.dmg
 
