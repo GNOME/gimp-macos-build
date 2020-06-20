@@ -27,7 +27,7 @@ jobs:
               echo 'export MACOSX_DEPLOYMENT_TARGET=10.9' >> ~/.profile
         - restore_cache:
             keys:
-              - jhbuild-v8
+              - jhbuild-v9
         - run:
             name: Setup JHBuild
             command: |
@@ -46,7 +46,7 @@ jobs:
               - ~/.new_local
               - ~/gtk
               - ~/.config
-            key: jhbuild-v8
+            key: jhbuild-v9
         - run:
             name: Setup gtk-mac-bundler
             command: |
@@ -58,9 +58,9 @@ jobs:
         - restore_cache:
             keys:
               - gimp-2.10.20-v1
-              - webkit-v19
-              - gimp-deps-v8
-              - bootstrap-v18
+              - webkit-v20
+              - gimp-deps-v9
+              - bootstrap-v19
         - run:
             name: Bootstrap
             command: source ~/.profile && jhbuild build meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-core
@@ -70,7 +70,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: bootstrap-v18
+            key: bootstrap-v19
         - run:
             name: Build GIMP dependencies (without gegl/babl)
             command: source ~/.profile && jhbuild build suitesparse $(jhbuild info gimp|grep '^Requires:'|sed -e 's|^Requires:||' -e 's|gegl||'|tr -d ',')
@@ -83,7 +83,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-deps-v8
+            key: gimp-deps-v9
         - run:
             name: Build WebKit v1
             no_output_timeout: 1h
@@ -94,7 +94,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: webkit-v19
+            key: webkit-v20
         - run:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
