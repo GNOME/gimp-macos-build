@@ -9,7 +9,10 @@ of the [gtk-osx](https://gitlab.gnome.org/GNOME/gtk-osx) project (`gimp` branch)
 Fork adds modules related to GIMP and some gimp-specific patches to GTK.
 Currently build is done using CircleCI.
 
-Because CircleCI is not supporting gitlab [yet] there is a [GitHub mirror](https://github.com/GNOME/gimp-macos-build) of this repository.
+Because CircleCI is not supporting gitlab [yet] there is a [GitHub
+mirror](https://github.com/GNOME/gimp-macos-build) of this repository.
+To get access to the Circle-CI build administration, packagers need to
+ask admin access to this Github repository.
 
 ## Before you starting
 
