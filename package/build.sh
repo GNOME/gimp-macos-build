@@ -119,7 +119,7 @@ if [ -z "${CIRCLECI}" ]
 then
   DMGNAME="gimp-${GIMP_VERSION}-x86_64.dmg"
 else
-  DMGNAME="gimp-${GIMP_VERSION}-x86_64-b${CIRCLE_BUILD_NUM}-${CIRCLE_BRANCH}.dmg"
+  DMGNAME="gimp-${GIMP_VERSION}-x86_64-b${CIRCLE_BUILD_NUM}-${CIRCLE_BRANCH////-}.dmg"
 fi
 
 mkdir -p /tmp/artifacts/
