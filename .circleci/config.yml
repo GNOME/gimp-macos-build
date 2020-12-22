@@ -144,7 +144,9 @@ jobs:
         - run:
             name:  Notarizing DMG package
             command: |
-              xcrun altool --notarize-app --file /tmp/artifacts/gimp-*.dmg -u "${notarization_login}" --primary-bundle-id org.gimp.gimp-2.10 -p "${notarization_password}"
+              source ~/.profile
+              cd ${HOME}/project/package
+              jhbuild run ./notarize.sh
         - store_artifacts:
             path: /tmp/artifacts
             destination: builds
