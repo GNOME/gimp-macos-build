@@ -57,5 +57,5 @@ if [[ "$NOT_STATUS" == "in progress" ]]; then
   exit 1
 fi
 
-xcrun stapler staple ${DMG_FILE}
+xcrun stapler staple -v ${DMG_FILE}
 
