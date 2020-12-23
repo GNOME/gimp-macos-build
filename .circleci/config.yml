@@ -2,7 +2,7 @@ version: 2
 jobs:
   build-gimp-2-10:
     macos:
-        xcode: "10.0.0"
+        xcode: "10.1.0"
 
     steps:
         - checkout
@@ -144,7 +144,9 @@ jobs:
         - run:
             name:  Notarizing DMG package
             command: |
-              xcrun altool --notarize-app --file /tmp/artifacts/gimp-*.dmg -u "${notarization_login}" --primary-bundle-id org.gimp.gimp-2.10 -p "${notarization_password}"
+              source ~/.profile
+              cd ${HOME}/project/package
+              jhbuild run ./notarize.sh
         - store_artifacts:
             path: /tmp/artifacts
             destination: builds
