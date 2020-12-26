@@ -167,8 +167,12 @@ module_extra_env['meson'] = { "LC_ALL": "en_US.UTF-8" }
 # absolute here, otherwise anything calling gtkdoc-rebase (i.e. the later gtk+ install) will err with  "bad interpreter"
 module_extra_env['gtk-doc'] = { 'PYTHON': '/Library/Frameworks/Python.framework/Versions/3.6/bin/python3.6' }
 
-# DJM - c files built from defs are not including all necessary headers - ignore that
-module_extra_env['pygtk'] = { 'CFLAGS' : '-Wno-error=implicit-function-declaration' }
+# DJM - with a python3 build environment, we need to ensure these modules build using python2
+module_extra_env['pygobject'] = { 'PYTHON' : 'python' }
+module_extra_env['pygtk'] = { 'PYTHON' : 'python', 'CFLAGS' : '-Wno-error=implicit-function-declaration' }
+module_extra_env['gtk-mac-integration-python'] = { 'PYTHON' : 'python' }
+module_extra_env['babl'] = { 'PYTHON' : 'python' }
+module_extra_env['gimp'] = { 'PYTHON' : 'python' }
 
 class _cmd_bootstrap_gtk_osx_gimp(jhbuild.commands.base.cmd_build):
     doc = 'Build buildsystem tools not provided by MacOS.'
