@@ -173,6 +173,7 @@ module_extra_env['pygtk'] = { 'PYTHON' : 'python', 'CFLAGS' : '-Wno-error=implic
 module_extra_env['gtk-mac-integration-python'] = { 'PYTHON' : 'python' }
 module_extra_env['babl'] = { 'PYTHON' : 'python' }
 module_extra_env['gimp'] = { 'PYTHON' : 'python' }
+module_extra_env['glib'] = { 'PYTHON' : 'python' }
 
 class _cmd_bootstrap_gtk_osx_gimp(jhbuild.commands.base.cmd_build):
     doc = 'Build buildsystem tools not provided by MacOS.'
