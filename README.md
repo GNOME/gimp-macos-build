@@ -61,5 +61,3 @@ framework. Probably could be a small Python plugin as [there is a module](https:
 - `gimp-2-10`: gimp-2-10 build
 - `debug`: same as the `master`, but with full debug symbols
 - `hardened-runtime`: singed and notarized package with a hardened runtime enabled
-
-[po..|...q]

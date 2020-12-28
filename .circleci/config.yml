@@ -18,6 +18,8 @@ jobs:
               cd ~/
               curl -L 'https://www.python.org/ftp/python/3.6.8/python-3.6.8-macosx10.9.pkg' > python-3.6.8-macosx10.9.pkg
               sudo installer -pkg python-3.6.8-macosx10.9.pkg -target /
+              echo 'Installing CA Certs'
+              sudo ~/project/python3-install-certs.sh
         - run:
             name: Setup 10.11 SDK
             command: |
