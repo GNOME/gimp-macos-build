@@ -22,9 +22,9 @@ jobs:
             name: Setup 10.9 SDK
             command: |
               cd /Library/Developer/CommandLineTools/SDKs
-              sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/MacOSX10.11.sdk/MacOSX10.9.sdk.tar.xz' | sudo tar -xzf -
-              echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.9.sdk' > ~/.profile
-              echo 'export MACOSX_DEPLOYMENT_TARGET=10.9' >> ~/.profile
+              sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/MacOSX10.11.sdk/MacOSX10.11.sdk.tar.xz' | sudo tar -xzf -
+              echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.11.sdk' > ~/.profile
+              echo 'export MACOSX_DEPLOYMENT_TARGET=10.11' >> ~/.profile
         - restore_cache:
             keys:
               - jhbuild-v10
