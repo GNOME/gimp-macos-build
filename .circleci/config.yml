@@ -19,15 +19,15 @@ jobs:
               curl -L 'https://www.python.org/ftp/python/3.6.8/python-3.6.8-macosx10.9.pkg' > python-3.6.8-macosx10.9.pkg
               sudo installer -pkg python-3.6.8-macosx10.9.pkg -target /
         - run:
-            name: Setup 10.9 SDK
+            name: Setup 10.12 SDK
             command: |
               cd /Library/Developer/CommandLineTools/SDKs
-              sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/MacOSX10.11.sdk/MacOSX10.9.sdk.tar.xz' | sudo tar -xzf -
-              echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.9.sdk' > ~/.profile
-              echo 'export MACOSX_DEPLOYMENT_TARGET=10.9' >> ~/.profile
+              sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.12.sdk.tar.xz' | sudo tar -xzf -
+              echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.12.sdk' > ~/.profile
+              echo 'export MACOSX_DEPLOYMENT_TARGET=10.12' >> ~/.profile
         - restore_cache:
             keys:
-              - jhbuild-v10
+              - jhbuild-v11
         - run:
             name: Setup JHBuild
             command: |
@@ -46,7 +46,7 @@ jobs:
               - ~/.new_local
               - ~/gtk
               - ~/.config
-            key: jhbuild-v10
+            key: jhbuild-v11
         - run:
             name: Setup gtk-mac-bundler
             command: |
@@ -57,10 +57,10 @@ jobs:
         # we can try to make it automatically depended on the corresponding modules
         - restore_cache:
             keys:
-              - gimp-2.10.22-v1
-              - webkit-v21
-              - gimp-deps-v10
-              - bootstrap-v20
+              - gimp-2.10.22-v2
+              - webkit-v22
+              - gimp-deps-v11
+              - bootstrap-v21
         - run:
             name: Bootstrap
             command: source ~/.profile && jhbuild build icu55 meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-core
@@ -70,7 +70,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: bootstrap-v20
+            key: bootstrap-v21
         - run:
             name: Build GIMP dependencies (without gegl/babl)
             command: |
@@ -89,7 +89,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-deps-v10
+            key: gimp-deps-v11
         - run:
             name: Build WebKit v1
             no_output_timeout: 1h
@@ -100,7 +100,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: webkit-v21
+            key: webkit-v22
         - run:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
@@ -120,7 +120,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-2.10.22-v1
+            key: gimp-2.10.22-v2
         - run:
             name: Importing signing certificate
             command: |
