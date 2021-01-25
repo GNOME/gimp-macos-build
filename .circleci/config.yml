@@ -27,7 +27,7 @@ jobs:
               echo 'export MACOSX_DEPLOYMENT_TARGET=10.12' >> ~/.profile
         - restore_cache:
             keys:
-              - jhbuild-v11
+              - jhbuild-v12
         - run:
             name: Setup JHBuild
             command: |
@@ -46,7 +46,7 @@ jobs:
               - ~/.new_local
               - ~/gtk
               - ~/.config
-            key: jhbuild-v11
+            key: jhbuild-v12
         - run:
             name: Setup gtk-mac-bundler
             command: |
@@ -57,10 +57,10 @@ jobs:
         # we can try to make it automatically depended on the corresponding modules
         - restore_cache:
             keys:
-              - gimp-2.10.22-v3
-              - webkit-v22
-              - gimp-deps-v11
-              - bootstrap-v22
+              - gimp-2.10.22-v3a
+              - webkit-v23
+              - gimp-deps-v12
+              - bootstrap-v23
         - run:
             name: Bootstrap
             command: source ~/.profile && jhbuild build icu55 meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-core
@@ -70,7 +70,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: bootstrap-v22
+            key: bootstrap-v23
         - run:
             name: Build GIMP dependencies (without gegl/babl)
             command: |
@@ -89,7 +89,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-deps-v11
+            key: gimp-deps-v12
         - run:
             name: Build WebKit v1
             no_output_timeout: 1h
@@ -100,7 +100,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: webkit-v22
+            key: webkit-v23
         - run:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
@@ -120,7 +120,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-2.10.22-v3
+            key: gimp-2.10.22-v3a
         - run:
             name: Importing signing certificate
             command: |
