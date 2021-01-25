@@ -57,10 +57,10 @@ jobs:
         # we can try to make it automatically depended on the corresponding modules
         - restore_cache:
             keys:
-              - gimp-2.10.22-v2
+              - gimp-2.10.22-v3
               - webkit-v22
               - gimp-deps-v11
-              - bootstrap-v21
+              - bootstrap-v22
         - run:
             name: Bootstrap
             command: source ~/.profile && jhbuild build icu55 meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-core
@@ -70,7 +70,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: bootstrap-v21
+            key: bootstrap-v22
         - run:
             name: Build GIMP dependencies (without gegl/babl)
             command: |
@@ -120,7 +120,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-2.10.22-v2
+            key: gimp-2.10.22-v3
         - run:
             name: Importing signing certificate
             command: |
