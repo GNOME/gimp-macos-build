@@ -162,7 +162,7 @@ module_extra_env['libxml2'] = { "ac_cv_path_PYTHON": "python3.6" }
 
 # force python 3.8 for gimp-help because libxml2 is built with Python
 # 3.8 support.
-module_extra_env['gimp-help-git'] = { "PYTHON": "python3.8" }
+#module_extra_env['gimp-help-git'] = { "PYTHON": "python3.8" }
 
 # meson needs UTF-8 charset for build python scripts to work correctly
 module_extra_env['meson'] = { "LC_ALL": "en_US.UTF-8" }
