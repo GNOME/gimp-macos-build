@@ -56,10 +56,6 @@
 
   <!-- Copy in Info.plist -->
   <plist>${project}/info-2.10.plist</plist>
-  <!-- Copy in libpyglib, which will pull in other dependencies we need -->
-  <binary>
-    ${prefix}/lib/libpyglib-2.0-python.0.dylib
-  </binary>
   <!-- Gtk+ is required by python modules which aren't searched for
        dependencies, so we have to pull it in explicitly. It will
        bring Pango and Cairo with it. Note the use of ${gtkversion},
@@ -69,8 +65,8 @@
     ${prefix}/lib/libgtk-quartz-${gtkversion}.0.dylib
   </binary>
   <binary>
- ${prefix}/lib/libgegl-sc-0.4.dylib
-</binary>
+    ${prefix}/lib/libgegl-sc-0.4.dylib
+  </binary>
   <!-- We have to pull in the python modules, which are mixed python
        and loadable modules.  -->
 
@@ -78,7 +74,7 @@
     ${prefix}/lib/python2.7/*.so
   </binary>
   <binary>
-  ${prefix}/lib/gio/modules
+    ${prefix}/lib/gio/modules
   </binary>
   <data recurse="True">
     ${prefix}/lib/python2.7/*.py

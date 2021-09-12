@@ -131,7 +131,7 @@ fi
 
 mkdir -p /tmp/artifacts/
 rm -f /tmp/tmp.dmg
-rm -f "gimp-${GIMP_VERSION}-x86_64.dmg"
+rm -f "/tmp/artifacts/gimp-${GIMP_VERSION}-x86_64.dmg"
 
 cd create-dmg
 

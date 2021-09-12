@@ -351,9 +351,19 @@ EOS
 
 if [ $SKIP_JENKINS -eq 0 ]; then
 	applescript_source | sed -e "s/WINX/$WINX/g" -e "s/WINY/$WINY/g" -e "s/WINW/$WINW/g" -e "s/WINH/$WINH/g" -e "s/BACKGROUND_CLAUSE/$BACKGROUND_CLAUSE/g" -e "s/REPOSITION_HIDDEN_FILES_CLAUSE/$REPOSITION_HIDDEN_FILES_CLAUSE/g" -e "s/ICON_SIZE/$ICON_SIZE/g" -e "s/TEXT_SIZE/$TEXT_SIZE/g" | perl -pe  "s/POSITION_CLAUSE/$POSITION_CLAUSE/g" | perl -pe "s/QL_CLAUSE/$QL_CLAUSE/g" | perl -pe "s/APPLICATION_CLAUSE/$APPLICATION_CLAUSE/g" | perl -pe "s/HIDING_CLAUSE/$HIDING_CLAUSE/" >"$APPLESCRIPT"
-	sleep 2 # pause to workaround occasional "Can’t get disk" (-1728) issues  
-	echo "Running Applescript: /usr/bin/osascript \"${APPLESCRIPT}\" \"${VOLUME_NAME}\""
-	(/usr/bin/osascript "${APPLESCRIPT}" "${VOLUME_NAME}" || if [[ "$?" -ne 0 ]]; then echo "Failed running AppleScript"; hdiutil detach "${DEV_NAME}"; exit 64; fi)
+	sleep 2 # pause to workaround occasional "Can’t get disk" (-1728) issues
+	if false; then
+		echo "Compiling and running ${APPLESCRIPT}.app --args \"${VOLUME_NAME}\""
+		osacompile -o "${APPLESCRIPT}.app" "${APPLESCRIPT}"
+		while [ ! -f "${APPLESCRIPT}.app/Contents/MacOS/applet" ]; do sleep 1; done
+		sleep 10
+		(open -g -W "${APPLESCRIPT}.app" --args "${VOLUME_NAME}" || if [[ "$?" -ne 0 ]]; then echo "Failed running AppleScript"; hdiutil detach "${DEV_NAME}"; exit 64; fi)
+		sleep 4
+		rm -rf "${APPLESCRIPT}.app"
+	else
+		echo "Running Applescript: /usr/bin/osascript \"${APPLESCRIPT}\" \"${VOLUME_NAME}\""
+		(/usr/bin/osascript "${APPLESCRIPT}" "${VOLUME_NAME}" || if [[ "$?" -ne 0 ]]; then echo "Failed running AppleScript"; hdiutil detach "${DEV_NAME}"; exit 64; fi)
+	fi
 	echo "Done running the applescript..."
 	sleep 4
 	rm "$APPLESCRIPT"
