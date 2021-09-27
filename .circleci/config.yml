@@ -140,7 +140,7 @@ jobs:
             command: |
               source ~/.profile
               cd ${HOME}/project/package
-              jhbuild run ./build.sh
+              jhbuild run ./build299.sh
         - run:
             name:  Notarizing DMG package
             command: |
