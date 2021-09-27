@@ -2,7 +2,7 @@ version: 2
 jobs:
   build-gimp-2-10:
     macos:
-        xcode: "10.1.0"
+        xcode: "13.0.0"
 
     steps:
         - checkout
@@ -140,7 +140,7 @@ jobs:
             command: |
               source ~/.profile
               cd ${HOME}/project/package
-              jhbuild run ./build.sh
+              jhbuild run ./build299.sh
         - run:
             name:  Notarizing DMG package
             command: |
