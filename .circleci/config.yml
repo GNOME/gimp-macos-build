@@ -16,8 +16,8 @@ jobs:
             name: Setup Python3
             command: |
               cd ~/
-              curl -L 'https://www.python.org/ftp/python/3.6.8/python-3.6.8-macosx10.9.pkg' > python-3.6.8-macosx10.9.pkg
-              sudo installer -pkg python-3.6.8-macosx10.9.pkg -target /
+              curl -L 'https://www.python.org/ftp/python/3.9.7/python-3.9.7-macos11.pkg' > python-3.9.7-macosx11.pkg
+              sudo installer -pkg python-3.9.7-macosx11.pkg -target /
         - run:
             name: Setup 10.12 SDK
             command: |
