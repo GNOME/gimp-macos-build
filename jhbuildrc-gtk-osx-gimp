@@ -169,7 +169,7 @@ module_extra_env['meson'] = { "LC_ALL": "en_US.UTF-8" }
 
 # DJM - gtk-doc needs PYTHON to be python3, and then creates gtkdoc-rebase with a shebang of $PYTHON, so we need to be
 # absolute here, otherwise anything calling gtkdoc-rebase (i.e. the later gtk+ install) will err with  "bad interpreter"
-module_extra_env['gtk-doc'] = { 'PYTHON': '/Library/Frameworks/Python.framework/Versions/3.6/bin/python3.6' }
+module_extra_env['gtk-doc'] = { 'PYTHON': '/Library/Frameworks/Python.framework/Versions/3.6/bin/python3' }
 
 # gimp299 needs PYTHON to be python3
 module_extra_env['gimp299'] = { 'PYTHON': 'python3' }
