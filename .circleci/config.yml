@@ -2,7 +2,7 @@ version: 2
 jobs:
   build-gimp-2-99:
     macos:
-        xcode: "13.0.0"
+        xcode: "12.5.1"
 
     steps:
         - checkout
