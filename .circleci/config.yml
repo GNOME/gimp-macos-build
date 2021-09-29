@@ -37,8 +37,8 @@ jobs:
               chmod +x gtk-osx-setup.sh
               echo 'export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' >> ~/.profile
               echo 'export ARCHFLAGS="-arch x86_64"' >> ~/.profile
-              # PYTHON variable messes up detection in gtk-doc
-              echo 'unset PYTHON' >> ~/.profile 
+              # PYTHON variable seems to be incorrectly set
+              echo 'export PYTHON=/Library/Frameworks/Python.framework/Versions/3.6/bin/python3' >> ~/.profile 
               source ~/.profile
               PIPENV_YES=1 ./gtk-osx-setup.sh
               $HOME/.new_local/bin/jhbuild bootstrap-gtk-osx-gimp
