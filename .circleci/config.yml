@@ -85,7 +85,7 @@ jobs:
         - run:
             name: Build all WebKit dependencies
             command: |
-              source ~/.profile && jhbuild build enchant libpsl sqlite vala gnutls libgpg-error
+              source ~/.profile && jhbuild build enchant libpsl sqlite vala gnutls libgpg-error glib-networking
               source ~/.profile && jhbuild buildone libsoup libgcrypt libwebp
         - run:
             name: Cleanup
