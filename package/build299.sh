@@ -29,6 +29,13 @@ BASEDIR=$(dirname "$0")
 #  target directory
 PACKAGE_DIR="${HOME}/gimp299-osx-app"
 
+echo "Move icons to right directory"
+
+pushd ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/icons
+ cp -r Adwaita ../gimp/2.99/icons
+ cp -r hicolor ../gimp/2.99/icons
+popd
+
 echo "Removing pathnames from the libraries and binaries"
 # fix permission for some libs
 find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib -name '*.dylib' -type f | xargs chmod 755
@@ -71,7 +78,7 @@ find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/MacOS/ -type f -perm +111 \
    | xargs -n1 install_name_tool -add_rpath @executable_path/../Resources/lib/
 
 echo "adding @rpath to the plugins"
-find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.0/plug-ins/ -perm +111 -type f \
+find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/plug-ins/ -perm +111 -type f \
    | xargs file \
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
    | xargs -n1 install_name_tool -add_rpath @executable_path/../../../
