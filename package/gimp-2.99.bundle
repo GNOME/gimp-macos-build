@@ -97,8 +97,8 @@
 
   <!-- Name of main gimp binary -->
   <main-binary>${prefix}/bin/gimp-2.99</main-binary>
-  <!-- Copy in gimp plugins -->
-  <binary>${prefix}/lib/gimp/2.99/plug-ins/*</binary>
+  <!-- Copy in gimp plugins - does not preserve directory structure -->
+  <!-- <binary>${prefix}/lib/gimp/2.99/plug-ins/*</binary> -->
   <!-- Copy in gimp modules -->
   <binary>${prefix}/lib/gimp/2.99/modules/*.so</binary>
   <!-- Copy in gimp python modules -->

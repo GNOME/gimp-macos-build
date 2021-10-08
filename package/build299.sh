@@ -43,6 +43,13 @@ pushd ${HOME}/gtk/inst/lib/gimp/2.99/plug-ins/
   cp -r * ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/plug-ins/
 popd
 
+echo "Copy missing libraries (TODO: why are they not copied?)"
+
+pushd ${HOME}/gtk/inst/lib/
+  cp libgimp-3.*.dylib ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/
+  cp libgimpui-3.*.dylib ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/
+popd
+
 echo "Removing pathnames from the libraries and binaries"
 # fix permission for some libs
 find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib -name '*.dylib' -type f | xargs chmod 755
@@ -63,6 +70,17 @@ do
    | awk -v fname="$file" -v old_path="$OLDPATH" '{print "install_name_tool -change "old_path $1" @rpath/"$1" "fname}' \
    | bash
 done
+
+echo "Installing LC_RPATH for plugins"
+PLUGINS=$(
+  find ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/plug-ins -perm +111 -type f \
+   | xargs file \
+   | grep ' Mach-O '|awk -F ':' '{print $1}'
+)
+while IFS= read -r line
+do
+  install_name_tool -add_rpath @executable_path/../../../../ $line
+done < <(printf '%s\n' "$PLUGINS")
 
 if [[ "$1" == "debug" ]]; then
   echo "Generating debug symbols"
