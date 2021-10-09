@@ -57,8 +57,8 @@ jobs:
             name: Setup gtk-mac-bundler
             command: |
               cd ~/Source
-              git clone https://github.com/samm-git/gtk-mac-bundler -b fix-otool
-              cd gtk-mac-bundler
+              git clone https://gitlab.gnome.org/Jehan/gimp-mac-bundler.git
+              cd gimp-mac-bundler
               make install
         # we can try to make it automatically depended on the corresponding modules
         - restore_cache:
