@@ -43,11 +43,21 @@ pushd ${HOME}/gtk/inst/lib/gimp/2.99/plug-ins/
   cp -r * ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/plug-ins/
 popd
 
-echo "Copy missing libraries (TODO: why are they not copied?)"
+echo "Copy missing libraries (TODO: why are they not copied during regular installation?)"
 
 pushd ${HOME}/gtk/inst/lib/
   cp libgimp-3.*.dylib ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/
   cp libgimpui-3.*.dylib ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/
+  # Needed for file-wmf
+  cp libwmf-0.*.dylib ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/
+  cp libwmflite-0.*.dylib ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/
+  # Needed for file-webp
+  cp libwebpmux.3.dylib ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/
+  cp libwebpdemux.2.dylib ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/
+  # Needed for file-ps
+  cp libgs.dylib.9.50 ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/
+  # Needed for file-mng
+  cp libmng.2.dylib ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/
 popd
 
 echo "Removing pathnames from the libraries and binaries"
@@ -72,6 +82,7 @@ do
 done
 
 echo "Installing LC_RPATH for plugins"
+# Unclear why plugins need their own rpath, however they appear to be independent executables
 PLUGINS=$(
   find ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/plug-ins -perm +111 -type f \
    | xargs file \
