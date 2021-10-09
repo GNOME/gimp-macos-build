@@ -77,10 +77,10 @@ PLUGINS=$(
    | xargs file \
    | grep ' Mach-O '|awk -F ':' '{print $1}'
 )
-while IFS= read -r line
+printf "%s\n" "$PLUGINS" | while IFS= read -r line
 do
   install_name_tool -add_rpath @executable_path/../../../../ $line
-done < <(printf '%s\n' "$PLUGINS")
+done
 
 if [[ "$1" == "debug" ]]; then
   echo "Generating debug symbols"
