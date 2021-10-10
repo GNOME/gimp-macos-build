@@ -53,7 +53,7 @@ jobs:
             name: Setup gtk-mac-bundler
             command: |
               cd ~/Source
-              git clone https://github.com/samm-git/gtk-mac-bundler -b fix-otool
+              git clone https://gitlab.gnome.org/GNOME/gtk-mac-bundler
               cd gtk-mac-bundler
               make install
         # we can try to make it automatically depended on the corresponding modules
