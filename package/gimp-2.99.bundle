@@ -61,15 +61,9 @@
        bring Pango and Cairo with it. Note the use of ${gtkversion},
        which expands to either 2.0 or 3.0, depending on which value of
        gtk is specified.-->
-  <!-- <binary>
-    ${prefix}/lib/libgtk-quartz-${gtkversion}.0.dylib
-  </binary> -->
   <binary>
-    ${prefix}/lib/libgtk-quartz-2.0.0.dylib
+    ${prefix}/lib/libgegl-sc-0.4.dylib
   </binary>
-  <binary>
- ${prefix}/lib/libgegl-sc-0.4.dylib
-</binary>
   <!-- We have to pull in the python modules, which are mixed python
        and loadable modules.  -->
 
@@ -77,7 +71,7 @@
     ${prefix}/lib/python3.9/*.so
   </binary>
   <binary>
-  ${prefix}/lib/gio/modules
+    ${prefix}/lib/gio/modules
   </binary>
   <data recurse="True">
     ${prefix}/lib/python3.9/*.py
@@ -98,8 +92,8 @@
   <!-- Copy in gimp modules -->
   <binary>${prefix}/lib/gimp/2.99/modules/*.so</binary>
   <!-- Copy in gimp python modules -->
-  <binary>${prefix}/lib/gimp/2.99/python/*.so</binary>
-  <data>${prefix}/lib/gimp/2.99/python/*.py</data>
+  <!-- <binary>${prefix}/lib/gimp/2.99/python/*.so</binary> -->
+  <!-- <data>${prefix}/lib/gimp/2.99/python/*.py</data> -->
   <!-- Copy in GTK+ modules -->
   <!-- <binary>${prefix}/lib/${gtkdir}/modules/*.so</binary> -->
   <!-- Copy in babl modules -->
