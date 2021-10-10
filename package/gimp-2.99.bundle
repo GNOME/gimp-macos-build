@@ -56,10 +56,6 @@
 
   <!-- Copy in Info.plist -->
   <plist>${project}/info-2.99.plist</plist>
-  <!-- Copy in libpyglib, which will pull in other dependencies we need -->
-  <binary>
-    ${prefix}/lib/libpyglib-2.0-python.0.dylib
-  </binary>
   <!-- Gtk+ is required by python modules which aren't searched for
        dependencies, so we have to pull it in explicitly. It will
        bring Pango and Cairo with it. Note the use of ${gtkversion},
