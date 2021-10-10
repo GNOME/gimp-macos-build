@@ -36,13 +36,6 @@ pushd ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/icons
  cp -r hicolor ../gimp/2.99/icons
 popd
 
-echo "Copy plugins (TODO: add capability to preserve subdirectories)"
-
-pushd ${HOME}/gtk/inst/lib/gimp/2.99/plug-ins/
-  mkdir -p ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/plug-ins/
-  cp -r * ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/plug-ins/
-popd
-
 echo "Removing pathnames from the libraries and binaries"
 # fix permission for some libs
 find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib -name '*.dylib' -type f | xargs chmod 755
