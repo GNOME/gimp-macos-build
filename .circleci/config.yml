@@ -18,6 +18,10 @@ jobs:
               cd ~/
               curl -L 'https://www.python.org/ftp/python/3.9.7/python-3.9.7-macos11.pkg' > python-3.9.7-macosx11.pkg
               sudo installer -pkg python-3.9.7-macosx11.pkg -target /
+              # Certificates are outdated, most likely after the recent
+              # Let's Encrypt root certs fiasco. This fixes it by
+              # updating the certs.
+              open /Applications/Python\ 3.9/Install\ Certificates.command
         - run:
             name: Setup 10.12 SDK
             command: |
