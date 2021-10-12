@@ -57,18 +57,6 @@ do
    | bash
 done
 
-echo "Installing LC_RPATH for plugins"
-# Unclear why plugins need their own rpath, however they appear to be independent executables
-PLUGINS=$(
-  find ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/plug-ins -perm +111 -type f \
-   | xargs file \
-   | grep ' Mach-O '|awk -F ':' '{print $1}'
-)
-printf "%s\n" "$PLUGINS" | while IFS= read -r line
-do
-  install_name_tool -add_rpath @executable_path/../../../../ $line
-done
-
 if [[ "$1" == "debug" ]]; then
   echo "Generating debug symbols"
   find  ${PACKAGE_DIR}/GIMP-2.99.app/ -type f -perm +111 \
@@ -93,7 +81,7 @@ echo "adding @rpath to the plugins"
 find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/plug-ins/ -perm +111 -type f \
    | xargs file \
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
-   | xargs -n1 install_name_tool -add_rpath @executable_path/../../../
+   | xargs -n1 install_name_tool -add_rpath @executable_path/../../../../
 
 echo "fixing pixmap cache"
 sed -i.old 's|@executable_path/../Resources/lib/||' \

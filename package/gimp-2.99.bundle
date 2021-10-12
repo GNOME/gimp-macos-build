@@ -226,21 +226,6 @@
   <!-- <binary>${prefix}/lib/gdk-pixbuf-2.0/${pkg:${gtk}:gtk_binary_version}/loaders/*.so</binary> -->
   <binary>${prefix}/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.so</binary>
   <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gdk-pixbuf-query-loaders</binary>
-  <!-- Additional binaries for plugins -->
-  <binary>${prefix}/lib/libgimp-3.*.dylib</binary>
-  <binary>${prefix}/lib/libgimpui-3.*.dylib</binary>
-  <!-- Needed for file-wmf -->
-  <binary>${prefix}/lib/libwmf-0.*.dylib</binary>
-  <binary>${prefix}/lib/libwmflite-0.*.dylib</binary>
-  <!-- Needed for file-webp -->
-  <binary>${prefix}/lib/libwebpmux.3.dylib</binary>
-  <binary>${prefix}/lib/libwebpdemux.2.dylib</binary>
-  <!-- Needed for file-ps -->
-  <binary>${prefix}/lib/libgs.dylib.9.50</binary>
-  <!-- Needed for file-mng -->
-  <binary>${prefix}/lib/libmng.2.dylib</binary>
-  <!-- Needed for file-jp2-load -->
-  <!-- <binary>${prefix}/lib/libopenjp2.7.dylib</binary> -->
   <!-- Translation filenames-->
   <translations name="gtk30">
     ${prefix}/share/locale
