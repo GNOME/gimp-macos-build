@@ -149,6 +149,11 @@ jobs:
               security set-key-partition-list -S apple-tool:,apple: -k "" signchain
               rm -rf ${HOME}/codesign
         - run:
+            name: pstree to figure out what app is running
+            command: |
+              brew install pstree
+              pstree
+        - run:
             name: Creating DMG package
             command: |
               source ~/.profile
