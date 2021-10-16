@@ -1,4 +1,6 @@
-version: 2
+version: 2.1
+orbs:
+  macos: circleci/macos@2.0.0
 jobs:
   build-gimp-2-99:
     macos:
@@ -6,6 +8,9 @@ jobs:
 
     steps:
         - checkout
+        - macos/add-permission:
+            bundle-id: com.apple.Terminal
+            permission-type: kTCCServiceAppleEvents
         - run:
             name: Cleanup /usr/local
             command: sudo rm -rf /usr/local/*
