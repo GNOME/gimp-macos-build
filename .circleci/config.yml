@@ -134,24 +134,20 @@ jobs:
             paths:
               - ~/gtk
             key: gimp-2.10.22-v3a
-        - when:
-            condition:
-                - not: << pipeline.parameters.missing_certificate >>
-            steps:
-                - run:
-                    name: Importing signing certificate
-                    command: |
-                      mkdir ${HOME}/codesign && cd ${HOME}/codesign
-                      echo "$osx_crt" | base64 -D > gnome.pfx
-                      curl 'https://developer.apple.com/certificationauthority/AppleWWDRCA.cer' > apple.cer
-                      security create-keychain -p "" signchain
-                      security set-keychain-settings signchain
-                      security unlock-keychain -u signchain
-                      security list-keychains  -s "${HOME}/Library/Keychains/signchain-db" "${HOME}/Library/Keychains/login.keychain-db"
-                      security import apple.cer -k signchain  -T /usr/bin/codesign
-                      security import gnome.pfx  -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
-                      security set-key-partition-list -S apple-tool:,apple: -k "" signchain
-                      rm -rf ${HOME}/codesign
+        # - run:
+        #     name: Importing signing certificate
+        #     command: |
+        #       mkdir ${HOME}/codesign && cd ${HOME}/codesign
+        #       echo "$osx_crt" | base64 -D > gnome.pfx
+        #       curl 'https://developer.apple.com/certificationauthority/AppleWWDRCA.cer' > apple.cer
+        #       security create-keychain -p "" signchain
+        #       security set-keychain-settings signchain
+        #       security unlock-keychain -u signchain
+        #       security list-keychains  -s "${HOME}/Library/Keychains/signchain-db" "${HOME}/Library/Keychains/login.keychain-db"
+        #       security import apple.cer -k signchain  -T /usr/bin/codesign
+        #       security import gnome.pfx  -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
+        #       security set-key-partition-list -S apple-tool:,apple: -k "" signchain
+        #       rm -rf ${HOME}/codesign
         - run:
             name: pstree to figure out what app is running
             command: |
@@ -163,16 +159,12 @@ jobs:
               source ~/.profile
               cd ${HOME}/project/package
               jhbuild run ./build299.sh
-        - when:
-            condition:
-                - not: << pipeline.parameters.missing_certificate >>
-            steps:
-                - run:
-                    name:  Notarizing DMG package
-                    command: |
-                      source ~/.profile
-                      cd ${HOME}/project/package
-                      jhbuild run ./notarize.sh
+        # - run:
+        #     name:  Notarizing DMG package
+        #     command: |
+        #       source ~/.profile
+        #       cd ${HOME}/project/package
+        #       jhbuild run ./notarize.sh
         - store_artifacts:
             path: /tmp/artifacts
             destination: builds
