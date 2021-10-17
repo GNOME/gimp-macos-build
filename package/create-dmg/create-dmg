@@ -351,14 +351,7 @@ EOS
 
 if [ $SKIP_JENKINS -eq 0 ]; then
 	applescript_source | sed -e "s/WINX/$WINX/g" -e "s/WINY/$WINY/g" -e "s/WINW/$WINW/g" -e "s/WINH/$WINH/g" -e "s/BACKGROUND_CLAUSE/$BACKGROUND_CLAUSE/g" -e "s/REPOSITION_HIDDEN_FILES_CLAUSE/$REPOSITION_HIDDEN_FILES_CLAUSE/g" -e "s/ICON_SIZE/$ICON_SIZE/g" -e "s/TEXT_SIZE/$TEXT_SIZE/g" | perl -pe  "s/POSITION_CLAUSE/$POSITION_CLAUSE/g" | perl -pe "s/QL_CLAUSE/$QL_CLAUSE/g" | perl -pe "s/APPLICATION_CLAUSE/$APPLICATION_CLAUSE/g" | perl -pe "s/HIDING_CLAUSE/$HIDING_CLAUSE/" >"$APPLESCRIPT"
-	sleep 2 # pause to workaround occasional "Can’t get disk" (-1728) issues  
-	# https://community.oracle.com/tech/developers/discussion/2452845/jdk1-7-u7-not-packaging-on-osx/p2
-	echo "Killing finder to work around applescript but on build server"
-	defaults write com.apple.Finder AppleShowAllFiles TRUE && killall Finder
-	sleep 90
-	defaults write com.apple.Finder AppleShowAllFiles FALSE && killall Finder
-	echo "Completed killing finder"
-
+	sleep 2 # pause to workaround occasional "Can’t get disk" (-1728) issues
 	echo "Running Applescript: /usr/bin/osascript \"${APPLESCRIPT}\" \"${VOLUME_NAME}\""
 	(/usr/bin/osascript "${APPLESCRIPT}" "${VOLUME_NAME}" || if [[ "$?" -ne 0 ]]; then echo "Failed running AppleScript"; hdiutil detach "${DEV_NAME}"; exit 64; fi)
 	echo "Done running the applescript..."
