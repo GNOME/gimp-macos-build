@@ -148,12 +148,12 @@ jobs:
         #       security import gnome.pfx  -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
         #       security set-key-partition-list -S apple-tool:,apple: -k "" signchain
         #       rm -rf ${HOME}/codesign
-        - run:
-            name: pstree to figure out what app is running
-            command: |
-              /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-              brew install pstree
-              pstree
+        # - run:
+        #     name: pstree to figure out what app is running
+        #     command: |
+        #       /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        #       brew install pstree
+        #       pstree
         - run:
             name: Creating DMG package
             command: |
