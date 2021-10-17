@@ -1,6 +1,6 @@
 on run (volumeName)
 	tell application "Finder"
-		log "1 Finder"
+		log "diskname " & volumeName
 		tell disk (volumeName as string)
 			log "2"
 			open
