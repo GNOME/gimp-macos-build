@@ -136,8 +136,7 @@ jobs:
             key: gimp-2.10.22-v3a
         - when:
             condition:
-                - not:
-                    - equal: [ "https://github.com/lukaso/gimp-macos-build.git", << pipeline.project.git_url >> ]
+                - not: << pipeline.parameters.missing_certificate >>
             steps:
                 - run:
                     name: Importing signing certificate
@@ -166,8 +165,7 @@ jobs:
               jhbuild run ./build299.sh
         - when:
             condition:
-                - not:
-                    - equal: [ "https://github.com/lukaso/gimp-macos-build.git", << pipeline.project.git_url >> ]
+                - not: << pipeline.parameters.missing_certificate >>
             steps:
                 - run:
                     name:  Notarizing DMG package
