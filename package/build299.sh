@@ -134,6 +134,7 @@ cd create-dmg
   --hide-extension "Applications" \
   --app-drop-link 450 360 \
   --format UDBZ \
+  --skip-jenkins \
   --hdiutil-verbose \
   "/tmp/artifacts/${DMGNAME}" \
   "$PACKAGE_DIR/"
