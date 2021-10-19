@@ -68,7 +68,7 @@ jobs:
         # we can try to make it automatically depended on the corresponding modules
         - restore_cache:
             keys:
-              - gimp-2.10.22-v3a
+              - gimp-2.99.7-v1
               - webkit-v23
               - gimp-deps-v12
               - bootstrap-v23
@@ -133,7 +133,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-2.10.22-v3a
+            key: gimp-2.99.7-v1
         - run:
             name: Importing signing certificate
             command: |
