@@ -36,6 +36,27 @@ pushd ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/icons
  cp -r hicolor ../gimp/2.99/icons
 popd
 
+echo "Removing pathnames from the libraries and binaries"
+# fix permission for some libs
+find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib -name '*.dylib' -type f | xargs chmod 755
+# getting list of the files to fix
+FILES=$(
+  find ${PACKAGE_DIR}/GIMP-2.99.app -perm +111 -type f \
+   | xargs file \
+   | grep ' Mach-O '|awk -F ':' '{print $1}'
+)
+OLDPATH="${JHBUILD_LIBDIR}/"
+
+for file in $FILES
+do
+  install_name_tool -id "@rpath/$(basename $file)" $file
+  otool -L $file \
+   | grep "\t$OLDPATH" \
+   | sed "s|${OLDPATH}||" \
+   | awk -v fname="$file" -v old_path="$OLDPATH" '{print "install_name_tool -change "old_path $1" @rpath/"$1" "fname}' \
+   | bash
+done
+
 if [[ "$1" == "debug" ]]; then
   echo "Generating debug symbols"
   find  ${PACKAGE_DIR}/GIMP-2.99.app/ -type f -perm +111 \
