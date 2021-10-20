@@ -216,8 +216,6 @@
   <binary>${prefix}/lib/babl-0.1/*.dylib</binary>
   <!-- Copy in gegl modules -->
   <binary>${prefix}/lib/gegl-0.4/*.dylib</binary>
-  <!-- Missing for unclear reasons -->
-  <binary>${prefix}/lib/libexiv2.27.dylib</binary>
   <!-- Copy in GTK+ themeing engines - Don't appear to exist in gtk 3 -->
   <!-- <binary>${prefix}/lib/${gtkdir}/${pkg:${gtk}:gtk_binary_version}/engines/*.so</binary> -->
   <!-- Copy in GTK+ printer backends -->
