@@ -63,10 +63,14 @@ jobs:
         # we can try to make it automatically depended on the corresponding modules
         - restore_cache:
             keys:
-              - gimp-2.10.28-v1
-              - webkit-v2-10
-              - gimp-deps-v2-10
-              - bootstrap-v2-10
+              - gimp-2.10.28-v2
+              - webkit-2.10.28-v2
+              - gimp-deps-2.10.28-v2
+              - bootstrap-2.10.28-v2
+              - gimp-2.10.28-
+              - webkit-2.10.28-
+              - gimp-deps-2.10.28-
+              - bootstrap-2.10.28-
         - run:
             name: Bootstrap
             command: |
@@ -77,7 +81,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: bootstrap-v2-10
+            key: bootstrap-2.10.28-v2
         - run:
             name: Build GIMP dependencies (without gegl/babl)
             command: |
@@ -96,7 +100,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-deps-v2-10
+            key: gimp-deps-2.10.28-v2
         # - run:
             # name: Build WebKit v1
             # no_output_timeout: 1h
@@ -107,7 +111,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: webkit-v2-10
+            key: webkit-2.10.28-v2
         - run:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
@@ -127,7 +131,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-2.10.28-v1
+            key: gimp-2.10.28-v2
         - run:
             name: Importing signing certificate
             command: |
