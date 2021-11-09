@@ -103,10 +103,10 @@ jobs:
             paths:
               - ~/gtk
             key: gimp-deps-2.10.28-v2
-        # - run:
-            # name: Build WebKit v1
-            # no_output_timeout: 1h
-            # command: source ~/.profile && jhbuild buildone webkit
+        - run:
+            name: Build WebKit v1
+            no_output_timeout: 1h
+            command: source ~/.profile && jhbuild buildone webkit
         - run:
             name: Cleanup
             command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
