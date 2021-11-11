@@ -5,6 +5,7 @@ jobs:
         xcode: "13.1.0"
 
     steps:
+        # for local builds, this needs to be checked out to `~/project`
         - checkout
         - run:
             name: Cleanup /usr/local
@@ -31,14 +32,13 @@ jobs:
               echo 'export MACOSX_DEPLOYMENT_TARGET=10.12' >> ~/.profile
         - restore_cache:
             keys:
-              - jhbuild-v2-10
+              - jhbuild-v2-10-v2
+              - jhbuild-v2-10-
         - run:
             name: Setup JHBuild
             command: |
               cd $HOME
               mkdir -p ~/.config && cp ~/project/jhbuildrc-gtk-osx-gimp-2.10 ~/.config/jhbuildrc-custom
-              curl https://gitlab.gnome.org/samm-git/gtk-osx/raw/gimp/gtk-osx-setup.sh > gtk-osx-setup.sh
-              chmod +x gtk-osx-setup.sh
               echo 'export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' >> ~/.profile
               echo 'export ARCHFLAGS="-arch x86_64"' >> ~/.profile
               # PYTHON variable seems to be incorrectly set
@@ -46,7 +46,7 @@ jobs:
               # Unclear why this is needed, but if missing, jhbuild fails in some circumstances
               echo 'export PYENV_VERSION="3.9.7"' >> ~/.profile
               source ~/.profile
-              PIPENV_YES=1 ./gtk-osx-setup.sh
+              PIPENV_YES=1 ~/project/gtk-osx-setup.sh
               $HOME/.new_local/bin/jhbuild bootstrap-gtk-osx-gimp
               cat ~/.profile
         - save_cache:
@@ -54,7 +54,7 @@ jobs:
               - ~/.new_local
               - ~/gtk
               - ~/.config
-            key: jhbuild-v2-10
+            key: jhbuild-v2-10-v2
         - run:
             name: Setup gtk-mac-bundler
             command: |
@@ -64,10 +64,10 @@ jobs:
               make install
         - restore_cache:
             keys:
-              - gimp-2.10.28-v4
-              - webkit-2.10.28-v4
-              - gimp-deps-2.10.28-v4
-              - bootstrap-2.10.28-v4
+              - gimp-2.10.28-v5
+              - webkit-2.10.28-v5
+              - gimp-deps-2.10.28-v5
+              - bootstrap-2.10.28-v5
               - gimp-2.10.28-
               - webkit-2.10.28-
               - gimp-deps-2.10.28-
@@ -82,7 +82,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: bootstrap-2.10.28-v4
+            key: bootstrap-2.10.28-v5
         - run:
             name: Build GIMP dependencies (without gegl/babl)
             command: |
@@ -101,7 +101,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-deps-2.10.28-v4
+            key: gimp-deps-2.10.28-v5
         - run:
             name: Build WebKit v1
             no_output_timeout: 1h
@@ -112,7 +112,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: webkit-2.10.28-v4
+            key: webkit-2.10.28-v5
         - run:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
@@ -132,7 +132,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-2.10.28-v4
+            key: gimp-2.10.28-v5
         - run:
             name: Importing signing certificate
             command: |
