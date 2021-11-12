@@ -59,9 +59,7 @@ at installation. It relies on two Python standard packages,
 [pyenv](https://github.com/pyenv/pyenv). In combination they create a
 Python3 [virtual
 environment](https://docs.python.org/3/tutorial/venv.html) and
-populate it with to required dependencies, the afore-mentioned meson
-and [six](https://pypi.org/project/six/), a python 2/3 compatibility
-library used by gtk-doc.
+populate it with to required dependencies, the afore-mentioned meson.
 
 ### Python Configuration ###
 

@@ -4,32 +4,22 @@
 <moduleset>
 
   <repository type="tarball" name="ftp.gnome.org" default="yes"
-              href="https://ftp.gnome.org/pub/gnome/sources/"/>
+              href="https://download.gnome.org/sources/"/>
   <repository type="tarball" name="ftp.gnu.org" href="https://ftp.gnu.org/gnu/"/>
   <repository type="tarball" name="sourceforge"
-              href="http://downloads.sourceforge.net/sourceforge/"/>
+              href="https://downloads.sourceforge.net/sourceforge/"/>
   <repository type="tarball" name="jpeg"
-              href="http://www.ijg.org/files/"/>
+              href="https://www.ijg.org/files/"/>
   <repository type="tarball" name="libtiff"
-	      href="http://download.osgeo.org/"/>
+	      href="https://download.osgeo.org/"/>
   <repository type="tarball" name="icon-theme"
-	      href="http://icon-theme.freedesktop.org/releases/"/>
+	      href="https://icon-theme.freedesktop.org/releases/"/>
   <repository type="tarball" name="xmlsoft.org"
 	      href="ftp://xmlsoft.org/libxml2/"/>
   <repository type="git" name="git.gnome.org"
               href="https://gitlab.gnome.org/GNOME"/>
-  <repository type="tarball" name="harfbuzz"
-              href="http://www.freedesktop.org/software/harfbuzz/release/"/>
-  <repository type="tarball" name="itstool" href="http://files.itstool.org/"/>
+  <repository type="tarball" name="itstool" href="https://files.itstool.org/"/>
   <repository type="tarball" name="github-tarball" href="https://github.com/"/>
-  <repository type="tarball" name="ragel"
-              href="http://www.colm.net/files/ragel/"/>
-
-  <autotools id='readline' autogen-sh="configure">
-    <branch repo="ftp.gnu.org" module="readline/readline-8.0.tar.gz"
-      version="8.0">
-    </branch>
-  </autotools>
 
   <autotools id="libpng" autogenargs="--enable-shared" autogen-sh="configure">
     <branch version="1.6.37" module="libpng/libpng-1.6.37.tar.xz"
@@ -48,13 +38,14 @@
   </autotools>
 
   <autotools id="libtiff" autogen-sh="configure" autogenargs="--without-x">
-    <branch version="4.1.0" module="libtiff/tiff-4.1.0.tar.gz"
-	    hash="sha156:5d29f32517dadb6dbcd1255ea5bbc93a2b54b94fbf83653b4d65c7d6775b8634"
-	    repo="libtiff">
-	<patch file="https://raw.githubusercontent.com/totaam/gtk-osx-build/master/patches/tiff-nohtml.patch" strip="1" />
+    <branch version="4.2.0" module="libtiff/tiff-4.2.0.tar.gz"
+            repo="libtiff"
+            hash="sha256:eb0484e568ead8fa23b513e9b0041df7e327f4ee2d22db5a533929dfc19633cb">
+	<patch file="tiff-nohtml.patch" strip="1" />
     </branch>
     <dependencies>
       <dep package="libjpeg"/>
+      <dep package="libwebp"/>
     </dependencies>
   </autotools>
 
@@ -65,7 +56,7 @@
        needs libxml2's python module.
        https://bugs.python.org/issue36721 -->
 
-  <autotools id="libxml2" autogen-sh="configure"
+  <autotools id="libxml2" autogen-sh="autoreconf"
              autogenargs='--libdir="$JHBUILD_LIBDIR" --with-python'>
     <branch version="2.9.14" module="libxml2/2.9/libxml2-2.9.14.tar.xz"
             repo="ftp.gnome.org"
@@ -74,7 +65,6 @@
     </branch>
     <after>
       <dep package="python3"/>
-      <dep package="python2"/>
     </after>
   </autotools>
 
@@ -101,27 +91,6 @@
     </dependencies>
   </autotools>
 
-  <autotools id="yelp-xsl">
-    <branch version="3.36.0" module="yelp-xsl/3.36/yelp-xsl-3.36.0.tar.xz"
-            hash="sha256:4fe51c0233b79a4c204c68498d45f09b342c30ed02c4e418506c0e35f0904ec3"/>
-    <dependencies>
-      <dep package="libxml2"/>
-      <dep package="libxslt"/>
-      <dep package="itstool"/>
-    </dependencies>
-  </autotools>
-
-  <autotools id="yelp-tools">
-    <branch version="3.32.2" module="yelp-tools/3.32/yelp-tools-3.32.2.tar.xz"
-            hash="sha256:183856b5ed0b0bb2c05dd1204af023946ed436943e35e789afb0295e5e71e8f9"/>
-    <dependencies>
-      <dep package="libxml2"/>
-      <dep package="libxslt"/>
-      <dep package="itstool"/>
-      <dep package="yelp-xsl"/>
-    </dependencies>
-  </autotools>
-
   <meson id="gtk-doc" mesonargs="-Dyelp_manual=false -Dtests=false -Dpython.platlibdir=lib -Dpython.purelibdir=lib">
     <branch version="1.33.2" module="gtk-doc/1.33/gtk-doc-1.33.2.tar.xz"
             hash="sha256:cc1b709a20eb030a278a1f9842a362e00402b7f834ae1df4c1998a723152bf43"/>
@@ -143,60 +112,12 @@
             hash="sha256:c79193dee3907a2199b8296a93b52c5cb74332c26f3d167269487680d479d625"/>
   </autotools>
 
-
-  <autotools id="ragel" autogen-sh='autoreconf'>
-    <branch repo="ragel" module="ragel-6.10.tar.gz" version="6.10">
-      <patch file="https://gitlab.gnome.org/GNOME/gtk-osx/raw/master/patches/ragel-6.9-setiosflags.patch" strip="1"/>
-    </branch>
-  </autotools>
-
-  <autotools id="harfbuzz" autogen-sh="configure"
-             autogenargs="--with-coretext --with-icu">
-    <branch repo="harfbuzz" module="harfbuzz-2.6.7.tar.xz" version="2.6.7"
-            hash="sha256:49e481d06cdff97bf68d99fa26bdf785331f411614485d892ea4c78eb479b218">
-    </branch>
-    <dependencies>
-      <dep package="ragel"/>
-      <dep package="glib"/>
-    </dependencies>
-    <after>
-      <dep package="icu"/>
-      <dep package="icu55"/>
-    </after>
-  </autotools>
-
-  <autotools id="freetype" autogen-sh="configure"
-             skip-autogen="never"
-             autogenargs="--without-bzip2 --without-harfbuzz">
-    <branch module="freetype/freetype-2.10.2.tar.gz" version="2.10.2"
-            repo="sourceforge">
-    </branch>
-    <dependencies>
-      <dep package="zlib"/>
-    </dependencies>
-  </autotools>
-
-  <autotools id="hicolor-icon-theme" autogen-sh="configure"
-	     supports-non-srcdir-builds="no">
-    <branch module="hicolor-icon-theme-0.17.tar.xz" repo="icon-theme"
-            version="0.17"/>
-  </autotools>
-
   <metamodule id="meta-gtk-osx-bootstrap">
     <dependencies>
       <dep package="libpng"/>
       <dep package="libjpeg"/>
       <dep package="libtiff"/>
-      <dep package="hicolor-icon-theme"/>
       <dep package="gtk-doc"/>
-    </dependencies>
-  </metamodule>
-
-  <metamodule id="meta-gtk-osx-freetype">
-    <dependencies>
-      <dep package="freetype"/>
-      <dep package="fontconfig"/>
-      <dep package="harfbuzz"/>
     </dependencies>
   </metamodule>
 

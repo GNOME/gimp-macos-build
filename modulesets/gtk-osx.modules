@@ -5,11 +5,13 @@
   <repository type="tarball" name="ftp.gnome.org" default="yes"
               href="https://download.gnome.org/sources/"/>
   <repository type="tarball" name="sourceforge"
-              href="http://downloads.sourceforge.net/sourceforge/"/>
+              href="https://downloads.sourceforge.net/sourceforge/"/>
   <repository type="tarball" name="savannah"
               href="https://download.savannah.gnu.org/releases/"/>
   <repository type="tarball" name="cairographics"
               href="https://www.cairographics.org/releases/"/>
+  <repository type="tarball" name="cairographics-temp"
+              href="https://gitlab.freedesktop.org/cairo/cairo/-/archive/"/>
   <repository type="tarball" name="cairographics-temp"
               href="https://gitlab.freedesktop.org/cairo/cairo/-/archive/"/>
   <repository type="tarball" name="ftp.gnu.org"
@@ -17,10 +19,14 @@
   <repository type="tarball" name="freedesktop"
               href="ftp://ftp.freedesktop.org/pub/"/>
   <repository type="tarball" name="fontconfig"
-	            href="http://www.freedesktop.org/software/fontconfig/release/"/>
+	            href="https://www.freedesktop.org/software/fontconfig/release/"/>
+  <repository type="tarball" name="hicolor"
+              href="https://icon-theme.freedesktop.org/releases/"/>
   <repository type="git" name="github" href="https://git@github.com/"/>
   <repository type="tarball" name="github-tarball" href="https://github.com/"/>
   <repository type="system" name="system"/>
+  <repository type="git" name="gtk.git"
+              href="https://gitlab.gnome.org/GNOME/"/>
 
   <!-- This module set works a bit differently than for example the
        GNOME ones do. It's split up in seperate pieces:
@@ -50,9 +56,12 @@
   -->
 
   <include href="gtk-osx-bootstrap.modules"/>
-  <include href="gtk-osx-gstreamer.modules"/>
-  <include href="gtk-osx-gtkmm.modules"/>
-  <include href="gtk-osx-javascript.modules"/>
+  <include href="https://gitlab.gnome.org/GNOME/gtk-osx/-/raw/master/modulesets-stable/gtk-osx-gstreamer.modules"/>
+  <include href="https://gitlab.gnome.org/GNOME/gtk-osx/-/raw/master/modulesets-stable/gtk-osx-gtkmm.modules"/>
+  <include href="https://gitlab.gnome.org/GNOME/gtk-osx/-/raw/master/modulesets-stable/gtk-osx-javascript.modules"/>
+  <!-- gnutls in gtk-osx-network.modules (so might have to add below):
+    "building with p11-kit support breaks g-ir-scanner, for some weird reason." -->
+             <!-- autogenargs="- -without-p11-kit"> -->
   <include href="gtk-osx-network.modules"/>
   <include href="gtk-osx-python.modules"/>
   <include href="gtk-osx-random.modules"/>
@@ -60,15 +69,28 @@
   <include href="gtk-osx-gimp.modules"/>
   <include href="gtk-osx-siril.modules"/>
 
-  <metamodule id="meta-gtk-osx-core">
+  <!-- Dummy meson module to shut up a jhbuild warning. -->
+  <systemmodule id="meson">
+    <branch repo="system"/>
+  </systemmodule>
+
+  <metamodule id="meta-gtk-osx-gtk3">
     <dependencies>
-      <dep package="gtk+"/>
-      <dep package="gtk-mac-integration-gtk2"/>
+      <dep package="gtk+-3.0"/>
+      <dep package="gtk-mac-integration-gtk3"/>
+      <dep package="adwaita-icon-theme"/>
     </dependencies>
     <after>
       <dep package="meta-gtk-osx-bootstrap"/>
     </after>
   </metamodule>
+
+  <autotools id="libffi" autogenargs="--disable-builddir"
+             autogen-sh="configure">
+    <branch module="libffi/libffi/releases/download/v3.4.2/libffi-3.4.2.tar.gz"
+            repo="github-tarball" version="3.4.2"
+            hash="sha256:540fb721619a6aba3bdeef7d940d8e9e0e6d2c193595bc243241b77ff9e93620"/>
+  </autotools>
 
   <autotools id="libpcre" autogen-sh="configure"
              autogenargs="--enable-unicode-properties --enable-newline-is-any --enable-jit">
@@ -97,9 +119,6 @@
     <dependencies>
       <dep package="zlib"/>
     </dependencies>
-    <after>
-      <dep package="meta-gtk-osx-bootstrap"/>
-    </after>
   </meson>
 
   <meson id="harfbuzz-no-cairo" mesonargs="-Dcoretext=enabled -Ddocs=disabled -Dbenchmark=disabled -Dintrospection=disabled">
@@ -140,12 +159,9 @@
             repo="cairographics"
             hash="sha512:063776e132f5d59a6d3f94497da41d6fc1c7dca0d269149c78247f0e0d7f520a25208d908cf5e421d1564889a91da44267b12d61c0bd7934cd54261729a7de5f">
     </branch>
-  </autotools>
-
-  <autotools id="libffi" autogenargs="--disable-builddir"
-             autogen-sh="configure">
-    <branch module="libffi/libffi/releases/download/v3.3/libffi-3.3.tar.gz"
-            repo="github-tarball" version="3.3"/>
+    <after>
+      <dep package="meta-gtk-osx-bootstrap"/>
+    </after>
   </autotools>
 
   <!-- cairo doesn't really need fontconfig, but if Pango finds
@@ -156,6 +172,8 @@
             repo="cairographics-temp"
             hash="sha256:90496d135c9ef7612c98f8ee358390cdec0825534573778a896ea021155599d2">
       <patch file="cairo-1.17.6-snapshot-memory-leak.patch" strip="1"/>
+      <patch file="cairo-1.17.6-improve-quartz.patch" strip="1"/>
+      <patch file="cairo-1.17.6-patch-the-improve-patch.patch" strip="1"/>
     </branch>
     <dependencies>
       <dep package="pixman"/>
@@ -208,12 +226,11 @@
     <dependencies>
       <dep package="glib"/>
       <dep package="cairo"/>
-      <dep package="fribidi"/>
       <dep package="harfbuzz"/>
-     </dependencies>
+      <dep package="fribidi"/>
+    </dependencies>
     <after>
       <dep package="gobject-introspection"/>
-      <dep package="meta-gtk-osx-freetype"/>
       <dep package="meta-gtk-osx-bootstrap"/>
     </after>
   </meson>
@@ -241,47 +258,9 @@
     </after>
   </meson>
 
-  <autotools id="gtk+" autogen-sh="autoreconf" supports-non-srcdir-builds="no"
-             autogenargs="--with-gdktarget=quartz --enable-quartz-relocation --disable-introspection --disable-visibility">
-    <branch module="gtk+/2.24/gtk+-2.24.33.tar.xz" version="2.24.33"
-            hash="sha256:ac2ac757f5942d318a311a54b0c80b5ef295f299c2a73c632f6bfb1ff49cc6da">
-      <!--patch file="https://gitlab.gnome.org/GNOME/gtk-osx/raw/master/patches/0004-Bug-571582-GtkSelection-implementation-for-quartz.patch" strip="1"/-->
-      <patch file="0008-Implement-GtkDragSourceOwner-pasteboardChangedOwner.patch" strip="1"/>
-      <patch file="0006-Bug-658722-Drag-and-Drop-sometimes-stops-working.patch" strip="1"/>
-      <patch file="gtk+-2-m4-creation.patch" strip="1"/>
-      <!-- upstream bug https://bugzilla.gnome.org/show_bug.cgi?id=767091 -->
-      <patch file="gtk-gimp-dnd-bug767091.patch" strip="1"/>
-      <!-- upstream bug: https://gitlab.gnome.org/GNOME/gtk/issues/529 -->
-      <patch file="https://gitlab.gnome.org/GNOME/gtk/uploads/f0c19446b9cd1df467c4cc9050516d4b/0001-Bug-743717-Crashes-on-clipboard-operation-influence-.patch" strip="1"/>
-      <!-- upstream bug: https://gitlab.gnome.org/GNOME/gtk/issues/580 -->
-      <patch file="https://gitlab.gnome.org/GNOME/gtk/uploads/2a194d81de8e8346a81816870264b3bf/gdkimage.patch" strip="1"/>
-      <!-- tablet fix - https://gitlab.gnome.org/GNOME/gtk/merge_requests/398 -->
-      <patch file="https://gitlab.gnome.org/GNOME/gtk/merge_requests/398.patch" strip="1"/>
-      <!-- ComboBox: make sure drop-down list is not narrower than its natural width -->
-      <patch file="https://gitlab.gnome.org/GNOME/gimp/raw/gimp-2-10/build/patches/gtk+-2.24-gimp-issue-2828-0001.patch" strip="1"/>
-      <!--  ComboBox: add "popup-style" style property -->
-      <patch file="https://gitlab.gnome.org/GNOME/gimp/raw/gimp-2-10/build/patches/gtk+-2.24-gimp-issue-2828-0002.patch" strip="1"/>
-      <!-- fix one missing include directive -->
-      <patch file="DJM_gtk_quartzheader.patch" strip="1"/>
-      <!-- GIMP Issue 5989 - performance improvements for MacOS 11 - fix colorspace and avoid lockFocus API-->
-      <patch file="gimp_issue_5989_bigsur_performance_gtk.patch" strip="1"/>
-      <!-- GIMP Issue 5989 - performance improvements for MacOS 11 - remove unnecessary redraws -->
-      <patch file="gimp_issue_5989_bigsur_performance_gtk_2.patch" strip="1"/>
-      <!-- GIMP Issue 2731 - Tool Options DND window obscures Mac menu bar -->
-      <patch file="gtk+-2.24.33-bug-2731-dnd.patch" strip="1"/>
-      <!-- Build for M1 Mac arm64 -->
-      <patch file="gtk+-2.24.33-MacOS11.3SDK.patch" strip="1"/>
-   </branch>
-    <dependencies>
-      <dep package="glib"/>
-      <dep package="pango"/>
-      <dep package="atk"/>
-      <dep package="gdk-pixbuf"/>
-      <dep package="gobject-introspection"/>
-    </dependencies>
-    <after>
-      <dep package="meta-gtk-osx-bootstrap"/>
-    </after>
+  <autotools id="hicolor-icon-theme">
+    <branch module="hicolor-icon-theme-0.17.tar.xz" version="0.17"
+            repo="hicolor"/>
   </autotools>
 
   <autotools id="xorg-util-macros">
@@ -299,10 +278,10 @@
     </dependencies>
   </meson>
 
-  <meson id="graphene" mesonargs="-Dtests=false">
-    <branch repo="github-tarball" version="1.10.6"
-            module="ebassi/graphene/releases/download/1.10.6/graphene-1.10.6.tar.xz"/>
-      <!--      hash="sha256:"/ -->
+  <!-- gtk3 is in maintenance mode with 3.24 the final release series. -->
+  <meson id="gtk+-3.0" mesonargs="-Dtests=false">
+    <branch repo="gtk.git" module="gtk.git" branch="gtk-3-24"
+            tag="09dd73feeb8acce7d562c1f3d263db991caeacac"/>
     <dependencies>
       <dep package="glib"/>
       <dep package="pango"/>
@@ -310,10 +289,21 @@
       <dep package="gdk-pixbuf"/>
       <dep package="gobject-introspection"/>
       <dep package="libepoxy"/>
+      <dep package="hicolor-icon-theme"/>
     </dependencies>
     <after>
       <dep package="meta-gtk-osx-bootstrap"/>
     </after>
+  </meson>
+
+  <meson id="graphene" mesonargs="-Dtests=false">
+    <branch repo="github-tarball" version="1.10.6"
+            module="ebassi/graphene/releases/download/1.10.6/graphene-1.10.6.tar.xz"/>
+      <!--      hash="sha256:"/ -->
+    <dependencies>
+      <dep package="glib"/>
+      <dep package="gobject-introspection"/>
+    </dependencies>
   </meson>
 
   <autotools id="libsass" autogen-sh="autoreconf"
@@ -325,19 +315,30 @@
             <!--hash="sha256:"/ -->
   </autotools>
 
-  <autotools id="gtk-mac-integration-gtk2" autogen-sh="autogen.sh"
-             autogenargs="--disable-python --with-gtk2">
+  <meson id="gtk-4" mesonargs="-Dx11-backend=false">
+    <branch module="gtk/4.6/gtk-4.6.2.tar.xz" version="4.6.2"
+            hash="sha256:ff263af609a50eb76056653592d929459aef4819a444c436f6d52c6f63c1faec"/>
+      <dependencies>
+      <dep package="pango"/>
+      <dep package="atk"/>
+      <dep package="gdk-pixbuf"/>
+      <dep package="graphene"/>
+      <dep package="libsass"/>
+      <dep package="libepoxy"/>
+    </dependencies>
+  </meson>
+
+  <autotools id="gtk-mac-integration-gtk3" autogen-sh="configure"
+             autogenargs="--disable-python --with-gtk3">
     <branch module="gtk-mac-integration/3.0/gtk-mac-integration-3.0.1.tar.xz"
             version="3.0.1"
             hash="sha256:f19e35bc4534963127bbe629b9b3ccb9677ef012fc7f8e97fd5e890873ceb22d">
       <patch file="gtk-mac-integration-work-around-svg-locale-bug.patch" strip="1"/>
-      <patch file="gtk-mac-integration-3.0.1-MacOS11.3SDK.patch" strip="1"/>
     </branch>
     <dependencies>
     </dependencies>
     <after>
-      <dep package="gtk+"/>
-      <dep package="meta-gtk-osx-bootstrap"/>
+      <dep package="gtk+-3.0"/>
     </after>
   </autotools>
 
@@ -353,7 +354,8 @@
       <dep package="gdk-pixbuf"/>
     </dependencies>
     <after>
-      <dep package="meta-gtk-osx-bootstrap"/>
+      <!-- Circular dependency if we depend on meta-gtk-osx or meta-gtk-osx-gtk3 -->
+      <dep package="gtk+-3.0"/>
     </after>
   </autotools>
 
@@ -366,26 +368,7 @@
     </dependencies>
   </autotools>
 
-  <!-- librsvg is converting to the Rust language. This requires
-       substantial infrastructure that's resistant to installing with
-       jhbuild, so we'll freeze at the 2.40 branch. -->
-  <autotools id="librsvg" autogenargs="--disable-Bsymbolic">
-    <branch module="librsvg/2.40/librsvg-2.40.17.tar.xz" version="2.40.17"
-	    hash="sha256:e6f6c5cbecc405bb945c7cd15061276035ae3173bbb3bb25e8a916779c7f69cc"/>
-    <dependencies>
-      <dep package="libcroco"/>
-      <dep package="meta-gtk-osx-freetype"/>
-    </dependencies>
-    <after>
-<!-- Circular dependency if we depend on meta-gtk-osx or meta-gtk-osx-gtk3 -->
-      <dep package="gtk+"/>
-    </after>
-  </autotools>
-
-  <autotools id="libcroco" autogenargs="--disable-Bsymbolic"
-	     autogen-sh="configure">
-    <branch module="libcroco/0.6/libcroco-0.6.13.tar.xz" version="0.6.13"
-	    hash="sha256:767ec234ae7aa684695b3a735548224888132e063f92db585759b422570621d4"/>
-  </autotools>
+  <!-- Null metamodule, provided so as not to break modules that use it. -->
+  <metamodule id="meta-gtk-osx-freetype" />
 
 </moduleset>

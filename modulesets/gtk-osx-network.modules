@@ -3,18 +3,28 @@
 <?xml-stylesheet type="text/xsl" href="moduleset.xsl"?>
 <moduleset>
   <repository name="ftp.gnome.org" type="tarball" default="yes"
-              href="http://ftp.gnome.org/pub/GNOME/sources/"/>
+              href="https://ftp.gnome.org/pub/GNOME/sources/"/>
   <repository name="openssl" type="tarball"
               href="https://www.openssl.org/source/"/>
   <repository name="ftp.gnu.org" type="tarball"
               href="https://ftp.gnu.org/gnu/"/>
   <repository name="sourceforge" type="tarball"
-              href="http://downloads.sourceforge.net/sourceforge/"/>
+              href="https://downloads.sourceforge.net/sourceforge/"/>
   <repository name='gnupg.org' type='tarball' href="https://gnupg.org/ftp/" />
   <repository name="webm" type="tarball"
-              href="http://downloads.webmproject.org/releases/"/>
+              href="https://storage.googleapis.com/downloads.webmproject.org/releases/"/>
+  <repository name="webkit.org" type="tarball"
+              href="https://www.webkitgtk.org/releases/"/>
   <repository type="tarball" name="github-tarball" href="https://github.com/"/>
   <repository type="tarball" name="zlib" href="https://www.zlib.net/"/>
+
+  <!-- Builds latest stable version of WebKitGTK for GTK 3.x -->
+  <metamodule id="meta-gtk-osx-webkit-gtk3">
+    <dependencies>
+      <dep package="meta-gtk-osx-gtk3"/>
+      <dep package="webkit2gtk3"/>
+    </dependencies>
+  </metamodule>
 
   <!-- of the many arguments such as prefix and libdir that jhbuild might pass
   to configure, openssl only understands prefix, and only with =. -->
@@ -130,7 +140,7 @@
       <dep package="glib"/>
     </dependencies>
   </meson>
-
+  
   <autotools id="gnome-keyring"
              autogenargs="--disable-pam --without-root-certs">
     <branch module="gnome-keyring/40/gnome-keyring-40.0.tar.xz"
@@ -143,9 +153,9 @@
   </autotools>
 
   <meson id="glib-networking" mesonargs="-Dopenssl=enabled">
-    <branch module="glib-networking/2.72/glib-networking-2.72.2.tar.xz"
-            version="2.72.2"
-            hash="sha256:cd2a084c7bb91d78e849fb55d40e472f6d8f6862cddc9f12c39149359ba18268"/>
+    <branch module="glib-networking/2.68/glib-networking-2.68.0.tar.xz"
+            version="2.68.0"
+            hash="sha256:0b235e85ad26b3c0d12255d0963c460e5a639c4722f78e2a03e969e224b29f6e"/>
     <dependencies>
       <if condition-unset="pre-Mavericks">
         <dep package="gnutls"/>
@@ -179,5 +189,49 @@
     <branch repo="webm" module="webp/libwebp-1.2.0.tar.gz" version="1.2.0"
             hash="sha256:2fc8bbde9f97f2ab403c0224fb9ca62b2e6852cbc519e91ceaa7c153ffd88a0c"/>
   </autotools>
+
+
+  <!-- This is the stable release of WebKitGTK, for GTK 3.x. Use it if you need
+      the WebKit2 API.
+    ENABLE_MINIBROWSER: This is enabled because it's an easy test of whether the
+      library is working correctly: run "jhbuild run MiniBrowser".
+    USE_SYSTEMD: macOS doesn't have systemd.
+    ENABLE_VIDEO, ENABLE_WEB_AUDIO: Requires gstreamer. If you want video and
+      audio, fix this in your .jhbuildrc-custom. You may need some extra
+      patches, this is untested.
+    ENABLE_CREDENTIAL_STORAGE: Requires libsecret. No module for this.
+    ENABLE_GEOLOCATION: Requires geoclue. No module for this.
+    ENABLE_GRAPHICS_CONTEXT_GL: Known to not work with quartz.
+    ENABLE_GAMEPAD: Requires an extra dependency, libmannette.
+    USE_LIBNOTIFY: Requires libnotify. No module for this.
+    USE_LIBHYPHEN: Requires libhyphen. No module for this.
+    USE_LIBSECRET: Requires libsecret. No module for this.
+    ENABLE_TOUCH_EVENTS: Seems not to be needed.
+    USE_OPENJPEG: Requires openjpeg. No module for this.
+    USE_WOFF2: Requires Woff2. No module for this
+    USE_WPE_RENDERER: For embedded systems, not Macs.  -->
+  <cmake id="webkit2gtk3"
+         cmakeargs='-DPORT=GTK -DENABLE_X11_TARGET=OFF -DENABLE_QUARTZ_TARGET=ON -DENABLE_MINIBROWSER=ON -DENABLE_INTROSPECTION=ON  -DUSE_SYSTEMD=OFF -DENABLE_VIDEO=OFF -DENABLE_WEB_AUDIO=OFF -DENABLE_GEOLOCATION=OFF -DUSE_LIBNOTIFY=OFF -DUSE_LIBHYPHEN=OFF -DUSE_LIBSECRET=OFF -DENABLE_TOUCH_EVENTS=OFF  -DUSE_OPENJPEG=OFF -DUSE_WOFF2=OFF -DUSE_WPE_RENDERER=OFF -DENABLE_GRAPHICS_CONTEXT_GL=OFF -DENABLE_GAMEPAD=OFF -DUSE_APPLE_ICU=NO -DCMAKE_CXX_FLAGS="-stdlib=libc++" -DCMAKE_MACOSX_RPATH=OFF'>
+    <branch repo="webkit.org" module="webkitgtk-2.32.0.tar.xz" version="2.32.0"
+            hash="sha256:9d7df4dae9ada2394257565acc2a68ace9308c4c61c3fcc00111dc1f11076bf0">
+      <patch file="WebKit2Gtk3-2.32.0-cumulative.patch" strip="1"/>
+      <patch file="WebKit2Gtk3-2.30.1-Disable-AUDIT_TOKEN-for-Gtk-builds.patch" strip="1"/>
+      <patch file="WebKit2Gtk3-2.30.1-Fix-Socket-signal-defines-for-Darwin-and-maybe-BSD.patch" strip="1"/>
+      <patch file="WebKit2Gtk3-2.32.0-color-components-correct-math-header.patch" strip="1"/>
+      <patch file="webkit-2.32.0-no-opengl.patch" strip="1"/>
+      <patch file="Webkit-2.32.3-RandomDevicePatchHeader.patch" strip="1"/>
+    </branch>
+    <dependencies>
+      <dep package="libwebp"/>
+      <dep package="enchant"/>
+      <dep package="icu"/>
+      <dep package="libsoup"/>
+      <dep package="libgcrypt"/>
+      <dep package="meta-gtk-osx-gtk3"/>
+    </dependencies>
+    <after>
+      <dep package="meta-gtk-osx-gstreamer"/>
+    </after>
+  </cmake>
 
 </moduleset>

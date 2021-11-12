@@ -32,7 +32,7 @@ if _jhb is None:
 
 # As can the default modules to build.
 #
-# modules = [ "meta-gtk-osx-core", "meta-gstreamer" ]
+# modules = [ "meta-gtk-osx-gtk2", "meta-gstreamer" ]
 
 # You can skip modules.
 #
@@ -132,7 +132,7 @@ setup_sdk()
 #
 # Or just switch branches
 #
-# branches["gtk+"] = (None, "gtk-2-18")
+# branches["gtk+-2.0"] = (None, "gtk-2-18")
 #
 # Tarballs take a whole URL for branches:
 #

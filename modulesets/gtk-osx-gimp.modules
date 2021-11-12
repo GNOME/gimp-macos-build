@@ -2,15 +2,15 @@
 <!DOCTYPE moduleset SYSTEM "moduleset.dtd">
 <?xml-stylesheet type="text/xsl" href="moduleset.xsl"?>
 <moduleset>
-  <repository type="tarball" name="ftp.gnome.org" default="yes" href="http://ftp.gnome.org/pub/GNOME/sources/"/>
+  <repository type="tarball" name="ftp.gnome.org" default="yes" href="https://ftp.gnome.org/pub/GNOME/sources/"/>
   <repository type="tarball" name="gimp" href="https://download.gimp.org/pub/"/>
   <repository type="git" name="git.gnome.org" href="https://gitlab.gnome.org/GNOME"/>
   <repository type="git" name="git-jtojnar" href="https://gitlab.gnome.org/jtojnar/"/>
   <repository type="tarball" name="poppler.freedesktop.org" href="https://poppler.freedesktop.org/"/>
   <repository type="tarball" name="videolan" href="https://downloads.videolan.org/pub/videolan/x265/"/>
   <repository type="tarball" name="github-tarball" href="https://github.com/"/>
-  <repository type="tarball" name="sourceforge" href="http://downloads.sourceforge.net/sourceforge/"/>
-  <repository type="tarball" name="savannah" href="http://download.savannah.nongnu.org/releases/"/>
+  <repository type="tarball" name="sourceforge" href="https://downloads.sourceforge.net/sourceforge/"/>
+  <repository type="tarball" name="savannah" href="https://download.savannah.nongnu.org/releases/"/>
   <repository type="tarball" name="nasm" href="https://www.nasm.us/pub/nasm/releasebuilds/"/>
   <repository type="tarball" name="mirrorservice-ossp"
 	      href="https://www.mirrorservice.org/sites/ftp.ossp.org/pkg/lib/"/>
@@ -19,34 +19,14 @@
   <repository type="tarball" name="googlestorage" href="https://storage.googleapis.com/"/>
   <repository type="git" name="github" href="https://github.com/"/>
 
-  <!-- gimp-help-git fails on libxml2 import test. Disabling while looking for the solution.
-       XXX Fix the autogenargs option when removing the comments. Double-hyphen must not
-           happen within a comment (for compatibility reasons).
-  -->
-
+  <!-- gimp-help-git fails to build. Disabling -->
   <autotools id="gimp-help-git" autogenargs="--without-gimp" supports-non-srcdir-builds="no" autogen-sh="autogen.sh">
-    <branch module="gimp-help" revision="gimp-help-2-10" repo="git.gnome.org"/>
+    <branch module="gimp-help" revision="master" repo="git.gnome.org"/>
     <dependencies>
       <dep package="pngcrush"/>
       <dep package="python3"/>
       <dep package="libxml2"/>
     </dependencies>
-  </autotools>
-
-  <!-- librsvg build requires rust compiler to be installed, see https://rustup.rs -->
-  <autotools id="librsvg-24" autogenargs="--disable-Bsymbolic">
-    <branch repo="ftp.gnome.org"
-      module="librsvg/2.46/librsvg-2.46.3.tar.xz"
-      version="2.46.3"
-      hash="sha256:768e46467d874161a277bd696551f4f364b3c8d51eeedeb9b4fe1277a2496ae8"/>
-    <dependencies>
-      <dep package="libcroco"/>
-      <dep package="meta-gtk-osx-freetype"/>
-    </dependencies>
-    <after>
-      <!-- Circular dependency if we depend on meta-gtk-osx or meta-gtk-osx-gtk3 -->
-      <dep package="gtk+"/>
-    </after>
   </autotools>
 
   <autotools id="pngcrush" supports-non-srcdir-builds="no" autogen-sh="true" autogen-template="%(autogen-sh)s">
@@ -84,21 +64,24 @@
   </metamodule>
 
   <!-- For releases, the tag option should be added to the branch item -->
-  <!-- tag="GIMP_2_10_34" -->
-  <autotools id="gimp" autogen-sh="autogen.sh" autogenargs="--without-x --with-build-id=org.gimp.GIMP_official --with-revision=0">
+  <!-- tag="GIMP_2_99_10" -->
+  <!-- tag="git sha" is also allowed -->
+  <meson id="gimp299" mesonargs="-Dbuild-id=org.gimp.GIMP_official -Drevision=0">
     <branch module="gimp.git"
-            revision="gimp-2-10"
+            revision="master"
+            tag="GIMP_2_99_12"
             repo="git.gnome.org"/>
     <after>
       <dep package="meta-gtk-osx-bootstrap"/>
-      <dep package="meta-gtk-osx-core"/>
+      <dep package="meta-gtk-osx-gtk3"/>
     </after>
     <dependencies>
       <dep package="gimp-common-deps"/>
-      <dep package="python2"/>
-      <dep package="meta-gtk-osx-python2-gtk2"/>
+      <dep package="python3"/>
+      <dep package="meta-gtk-osx-python3"/>
+      <dep package="appstream-glib"/>
     </dependencies>
-  </autotools>
+  </meson>
 
   <autotools id="p2tc" supports-non-srcdir-builds="no" autogen-sh="autogen.sh">
     <branch module="poly2tri-c" tag="p2tc-0.1" repo="git-jtojnar" checkoutdir="poly2tri-c-p2tc-0.1.0">
@@ -150,14 +133,14 @@
 
   <meson id="babl">
     <branch repo="gimp"
-      version="0.1.92"
-      module="babl/0.1/babl-0.1.92.tar.xz"
-      hash="sha256:f667735028944b6375ad18f160a64ceb93f5c7dccaa9d8751de359777488a2c1">
-      <patch file="babl-exports.patch" strip="1"/>
+      version="0.1.96"
+      module="babl/0.1/babl-0.1.96.tar.xz"
+      hash="sha256:33673fe459a983f411245a49f81fd7f1966af1ea8eca9b095a940c542b8545f6">
     </branch>
     <dependencies>
       <dep package="lcms"/>
-      <deb package="gobject-introspection"/>
+      <dep package="gobject-introspection"/>
+      <dep package="vala"/>
     </dependencies>
   </meson>
 
@@ -170,7 +153,6 @@
     <after>
       <dep package="meta-gtk-osx-bootstrap"/>
       <dep package="meta-gtk-osx-gtk3"/>
-      <dep package="meta-gtk-osx-core"/>
     </after>
     <dependencies>
       <dep package="openjpeg"/>
@@ -238,8 +220,8 @@
 
   <autotools id="libheif"
     supports-non-srcdir-builds="no"
-    autogen-template="%(srcdir)s/%(autogen-sh)s --prefix %(prefix)s %(autogenargs)s &amp;&amp; %(srcdir)s/configure --prefix %(prefix)s  %(autogenargs)s"
-    autogenargs="--disable-go">
+    autogenargs="--disable-go"
+    autogen-template="%(srcdir)s/%(autogen-sh)s --prefix %(prefix)s %(autogenargs)s &amp;&amp; %(srcdir)s/configure --prefix %(prefix)s  %(autogenargs)s">
     <branch module="strukturag/libheif/releases/download/v1.12.0/libheif-1.12.0.tar.gz"
       version="1.12.0"
       hash="sha256:e1ac2abb354fdc8ccdca71363ebad7503ad731c84022cf460837f0839e171718"
@@ -352,18 +334,17 @@
       checkoutdir="json-c"/>
   </autotools>
 
-  <!-- 0.12.3 is last version with python2 support -->
-  <meson id="gexiv2" mesonargs="-Dvapi=false">
+  <meson id="gexiv2">
     <branch repo="ftp.gnome.org"
-       version="0.12.3"
-       module="gexiv2/0.12/gexiv2-0.12.3.tar.xz"
-       hash="sha256:d23b7972a2fc6f840150bad1ed79c1cbec672951e180c1e1ec33ca6c730c59f3">
-      <patch file="gexiv2-0.12.3-stop-python-tests.patch" strip="1"/>
+       version="0.14.0"
+       module="gexiv2/0.14/gexiv2-0.14.0.tar.xz"
+       hash="sha256:e58279a6ff20b6f64fa499615da5e9b57cf65ba7850b72fafdf17221a9d6d69e">
+       <patch file="gexiv2-0.12.3-stop-python-tests.patch" strip="1"/>
     </branch>
     <dependencies>
       <dep package="glib"/>
       <dep package="exiv2"/>
-      <dep package="gobject-introspection"/>
+      <dep package="vala"/>
     </dependencies>
   </meson>
 
@@ -385,6 +366,7 @@
       version="9.56.1"
       module="ArtifexSoftware/ghostpdl-downloads/releases/download/gs9561/ghostscript-9.56.1.tar.xz"
       hash="sha256:d43406805650009b42c3d5f6dc535233454533c1e27c13a77dd1d462a056b8e4">
+      <patch file="ghostscript-lib.patch" strip="1"/>
       <patch file="ghostscript-9.55.0-leptonica-MacOSX10.12.sdk-no-open_memstream.patch" strip="1"/>
       <patch file="ghostscript-9.56.1-correct-cxxflags.patch" strip="1"/>
     </branch>
@@ -427,6 +409,72 @@
       module="uuid/uuid-1.6.2.tar.gz"
       hash="sha256:11a615225baa5f8bb686824423f50e4427acd3f70d394765bdff32801f0fd5b0"/>
   </autotools>
+
+  <!--
+    libbrotli is required for libjxl even though it is included and built in
+    libjxl. This is because libbrotli then does not get installed by libjxl
+    for some reason.
+  -->
+  <cmake id="libbrotli"
+    cmakeargs="-DCMAKE_BUILD_TYPE=Release">
+    <branch repo="github-tarball"
+      version="1.0.9"
+      module="google/brotli/archive/v1.0.9.tar.gz"
+      checkoutdir="brotli-1.0.9"
+      hash="sha256:f9e8d81d0405ba66d181529af42a3354f838c939095ff99930da6aa9cdf6fe46">
+      <patch file="libbrotli-1.0.9-cmake-rpath.patch" strip="1"/>
+    </branch>
+  </cmake>
+
+  <!--
+    Version 0.6.1 does not build on mac so have to use "main"
+    but locking revision on "main" so new commits do cannot break build
+    `tag` can be set to a commit id
+  -->
+  <cmake id="jpeg-xl"
+    cmakeargs="-DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DJPEGXL_ENABLE_TOOLS=false -DJPEGXL_ENABLE_MANPAGES=false -DJPEGXL_ENABLE_BENCHMARK=false -DJPEGXL_ENABLE_EXAMPLES=false -DJPEGXL_ENABLE_JNI=false -DJPEGXL_FORCE_SYSTEM_BROTLI=ON">
+    <branch repo="github"
+      branch="main"
+      tag="aa5e8f0f430130162b27c23f7cb82fb300e401bb"
+      module="libjxl/libjxl.git"
+      checkoutdir="libjxl"/>
+    <dependencies>
+      <dep package="libbrotli"/>
+    </dependencies>
+  </cmake>
+
+  <!--
+    libbrotli is required for libjxl even though it is included and built in
+    libjxl. This is because libbrotli then does not get installed by libjxl
+    for some reason.
+  -->
+  <cmake id="libbrotli"
+    cmakeargs="-DCMAKE_BUILD_TYPE=Release">
+    <branch repo="github-tarball"
+      version="1.0.9"
+      module="google/brotli/archive/v1.0.9.tar.gz"
+      checkoutdir="brotli-1.0.9"
+      hash="sha256:f9e8d81d0405ba66d181529af42a3354f838c939095ff99930da6aa9cdf6fe46">
+      <patch file="libbrotli-1.0.9-cmake-rpath.patch" strip="1"/>
+    </branch>
+  </cmake>
+
+  <!--
+    Version 0.6.1 does not build on mac so have to use "main"
+    but locking revision on "main" so new commits do cannot break build
+    `tag` can be set to a commit id
+  -->
+  <cmake id="jpeg-xl"
+    cmakeargs="-DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DJPEGXL_ENABLE_TOOLS=false -DJPEGXL_ENABLE_MANPAGES=false -DJPEGXL_ENABLE_BENCHMARK=false -DJPEGXL_ENABLE_EXAMPLES=false -DJPEGXL_ENABLE_JNI=false -DJPEGXL_FORCE_SYSTEM_BROTLI=ON">
+    <branch repo="github"
+      branch="main"
+      tag="aa5e8f0f430130162b27c23f7cb82fb300e401bb"
+      module="libjxl/libjxl.git"
+      checkoutdir="libjxl"/>
+    <dependencies>
+      <dep package="libbrotli"/>
+    </dependencies>
+  </cmake>
 
   <!--
     libbrotli is required for libjxl even though it is included and built in
