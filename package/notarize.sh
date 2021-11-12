@@ -2,7 +2,7 @@
 
 HEX="[0-9a-f"]
 UUID_REGEX="($HEX{8}-$HEX{4}-$HEX{4}-$HEX{4}-$HEX{12})"
-DMG_FILE=`find /tmp/artifacts/ -name "gimp-2.10*.dmg"`
+DMG_FILE=`find /tmp/artifacts/ -name "gimp-2.99*.dmg"`
 
 # Submit for notarization and get our ticket ID if submission is successful
 ALTOOL_OUT="$(xcrun altool --notarize-app --file ${DMG_FILE} -u ${notarization_login} --primary-bundle-id org.gimp.gimp-2.10 -p ${notarization_password} 2>&1)" || ALTOOL_FAILED=true
