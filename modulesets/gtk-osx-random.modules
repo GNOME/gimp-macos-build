@@ -165,7 +165,7 @@ Libglade itself is deprecated. This is the last release. -->
     </after>
   </autotools>
 
-  <autotools id="lcms" autogen-sh="configure">
+  <autotools id="lcms" autogen-sh="configure" autogenargs="--disable-dependency-tracking">
     <branch module="lcms/lcms2-2.12.tar.gz" version="2.12" repo="sourceforge" />
   </autotools>
 
