@@ -9,10 +9,7 @@ jobs:
         - checkout
         - run:
             name: Cleanup /usr/local
-            command: sudo rm -rf /usr/local/*
-        - run:
-            name: Setup rust
-            command: curl https://sh.rustup.rs -sSf | sh -s -- -y
+            command: PATH=$(echo "$PATH" | sed -e 's/\/usr\/local\/bin://')
         - run:
             name: Setup Python3
             command: |
@@ -32,19 +29,15 @@ jobs:
               echo 'export MACOSX_DEPLOYMENT_TARGET=10.12' >> ~/.profile
         - restore_cache:
             keys:
-              - jhbuild-v3-v1
-              - jhbuild-v3-
+              - 1-jhbuild-v3-v3
+              - 1-jhbuild-v3-
         - run:
             name: Setup JHBuild
             command: |
               cd $HOME
               mkdir -p ~/.config && cp ~/project/jhbuildrc-gtk-osx-gimp-2.99 ~/.config/jhbuildrc-custom
-              echo 'export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' >> ~/.profile
+              echo 'export PATH="$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' >> ~/.profile
               echo 'export ARCHFLAGS="-arch x86_64"' >> ~/.profile
-              # PYTHON variable seems to be incorrectly set
-              echo 'export PYTHON=/Library/Frameworks/Python.framework/Versions/3.9/bin/python3' >> ~/.profile
-              # Unclear why this is needed, but if missing, jhbuild fails in some circumstances
-              echo 'export PYENV_VERSION="3.9.7"' >> ~/.profile
               source ~/.profile
               PIPENV_YES=1 ~/project/gtk-osx-setup.sh
               $HOME/.new_local/bin/jhbuild bootstrap-gtk-osx-gimp
@@ -54,7 +47,7 @@ jobs:
               - ~/.new_local
               - ~/gtk
               - ~/.config
-            key: jhbuild-v3-v1
+            key: 1-jhbuild-v3-v3
         - run:
             name: Setup gtk-mac-bundler
             command: |
@@ -64,24 +57,25 @@ jobs:
               make install
         - restore_cache:
             keys:
-              - gimp-v3-v1
-              - webkit-v3-v1
-              - gimp-deps-v3-v1
-              - bootstrap-v3-v1
-              - gimp-v3-
-              - webkit-v3-
-              - gimp-deps-v3-
-              - bootstrap-v3-
+              - 2-gimp-v3-v3
+              - 2-webkit-v3-v3
+              - 2-gimp-deps-v3-v3
+              - 2-bootstrap-v3-v3
+              - 2-gimp-v3-
+              - 2-webkit-v3-
+              - 2-gimp-deps-v3-
+              - 2-bootstrap-v3-
         - run:
             name: Bootstrap
-            command: source ~/.profile && jhbuild build icu libnsgif meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-gtk3
+            command: |
+              source ~/.profile && jhbuild build icu libnsgif meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-gtk3
         - run:
             name: Cleanup
             command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
         - save_cache:
             paths:
               - ~/gtk
-            key: bootstrap-v3-v1
+            key: 2-bootstrap-v3-v3
         - run:
             name: Build GIMP dependencies (without gegl/babl)
             command: |
@@ -102,7 +96,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-deps-v3-v1
+            key: 2-gimp-deps-v3-v3
         # - run:
             # name: Build WebKit v1
             # no_output_timeout: 1h
@@ -113,7 +107,7 @@ jobs:
         # - save_cache:
         #     paths:
         #       - ~/gtk
-        #     key: webkit-v3-v1
+        #     key: 2-webkit-v3-v3
         - run:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
@@ -133,7 +127,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-v3-v1
+            key: 2-gimp-v3-v3
         - run:
             name: Importing signing certificate
             command: |

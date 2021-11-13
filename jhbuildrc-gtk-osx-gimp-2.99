@@ -32,7 +32,7 @@ if _jhb is None:
 
 # As can the default modules to build.
 #
-# modules = [ "meta-gtk-osx-core", "meta-gstreamer" ]
+# modules = [ "meta-gtk-osx-gtk3", "meta-gstreamer" ]
 
 # You can skip modules.
 #
@@ -139,7 +139,7 @@ environ_prepend('OBJCFLAGS', "-O3")
 #
 # Or just switch branches
 #
-# branches["gtk+"] = (None, "gtk-2-18")
+# branches["gtk+-2.0"] = (None, "gtk-2-18")
 #
 # Tarballs take a whole URL for branches:
 #
@@ -175,11 +175,12 @@ module_extra_env['meson'] = { "LC_ALL": "en_US.UTF-8" }
 # absolute here, otherwise anything calling gtkdoc-rebase (i.e. the later gtk+ install) will err with  "bad interpreter"
 module_extra_env['gtk-doc'] = { 'PYTHON': '/Library/Frameworks/Python.framework/Versions/3.9/bin/python3.9' }
 
-# gimp299 needs PYTHON to be python3
-module_extra_env['gimp299'] = { 'PYTHON': 'python3' }
-
 # DJM - c files built from defs are not including all necessary headers - ignore that
 module_extra_env['pygtk'] = { 'CFLAGS' : '-Wno-error=implicit-function-declaration' }
+
+# Handle Big Sur PThreads limitations https://developer.apple.com/forums/thread/666700
+module_extra_env["cairo"] = {'LDFLAGS': os.environ['LDFLAGS'] +
+                                        " -L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib" }
 
 class _cmd_bootstrap_gtk_osx_gimp(jhbuild.commands.base.cmd_build):
     doc = 'Build buildsystem tools not provided by MacOS.'

@@ -27,7 +27,7 @@ import re
 #some variables we'll need defined later
 _default_arch = ""
 _osx_version = 0.0
-_target = '10.9'
+_target = '10.11'
 
 def _popen(cmd_arg):
     from subprocess import Popen, PIPE
@@ -38,8 +38,8 @@ def _popen(cmd_arg):
     cmd.stdout.close()
     devnull.close()
     if err:
-        raise RuntimeError, "Failed to close %s stream" % cmd_arg
-    return retval
+        raise RuntimeError("Failed to close %s stream" % cmd_arg)
+    return retval.decode('utf-8')
 
 # Register an extra command to get the checkout dir for a module.
 #
@@ -61,7 +61,7 @@ class _cmd_get_srcdir(jhbuild.commands.Command):
                 module = module_set.get_module(modname, ignore_case = True)
             except KeyError:
                 raise RuntimeError(_('unknown module %s') % modname)
-            print module.get_srcdir(None)
+            print(module.get_srcdir(None))
         else:
             raise FatalError('no module specified')
 
@@ -112,9 +112,9 @@ class _getenv(jhbuild.commands.Command):
             raise FatalError("No environment variable")
 
         var = args[0]
-        if not os.environ.has_key(var):
+        if var not in os.environ:
             raise FatalError("variable " + var + " not defined in jhbuild environment")
-        print os.environ[var]
+        print(os.environ[var])
 
 jhbuild.commands.register_command(_getenv)
 
@@ -126,16 +126,16 @@ def osx_ver():
     exp = re.compile(r'(\d+\.\d+)\.\d+')
     vernum = exp.match(vstring)
     _osx_version = float(vernum.group(1)) - 4.0
-    _target = '10.%d' % int(_osx_version)
-    
-    x64bit = _popen("sysctl hw.cpu64bit_capable").endswith("1")
-    if x64bit and _osx_version >= 6.0:
-        _default_arch = "x86_64"
+    if _osx_version < 16:
+        _target = '10.%d' % int(_osx_version)
     else:
-        _default_arch = "i386"
+        _target = '%d' % (_osx_version - 5)
+
+    _default_arch = _popen("uname -m")
 
 # Determine the XCode Version:
 def xcode_ver():
+   global conditions
    devdir = _popen("xcode-select -p")
    if devdir != "/Library/Developer/CommandLineTools":
        ver = _popen("xcodebuild -version")
@@ -145,16 +145,18 @@ def xcode_ver():
            _xcode_ver = float(vernum.group(1))
            if _xcode_ver < 5.0:
                raise EnvironmentError("Xcode Version %f is not supported; if you want to build with Xcode versions earlier than 5.0 checkout tag Last-Lion." % _xcode_ver)
+           if _xcode_ver < 10.0:
+               conditions.add('pre-Mavericks')
            return _xcode_ver
        else:
            raise EnvironmentError("No suitable Xcode found. Xcode 5.0 or later is required.")
    else: #Command-Line Tools instead of Xcode
        ver_str = _popen("pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version*")
-       print "Found Command Line Tools '%s'" % ver_str
+       print("Found Command Line Tools '%s'" % ver_str)
        exp = re.compile(r'version: (\d+\.\d+)')
        vernum = exp.match(ver_str)
        if vernum:
-           print "Command Line Tools version %f" % float(vernum.group(1))
+           print("Command Line Tools version %f" % float(vernum.group(1)))
            return float(vernum.group(1))
        else:
            return 8.0
@@ -222,13 +224,13 @@ def setup_release():
 # Set up the environment for building against particular SDK.
 #
 
-#We call osx_ver() here so that we can set up _default_arch for setup_sdk:
+#We call osx_ver() here so that we can set up _default_arch for setup_sdk
 osx_ver()
 
 #
 # This is the workhorse of the setup. Call this function from
 # .jhbuildrc-custom to configure compile and link flags. Optionally
-# specify a minimum MacOS version (10.9, 10.10, 10.10, etc.) and a list
+# specify a minimum MacOS version (10.11, 10.12, 10.13, etc.) and a list
 # of architectures.
 #
 # The sdk_version does nothing, as since Xcode 5 it is preferred to
@@ -240,11 +242,11 @@ osx_ver()
 
 def setup_sdk(target=_target, sdk_version=None, architectures=[_default_arch]):
 
+    global use_local_modulesets, conditions
     os.environ["MACOSX_DEPLOYMENT_TARGET"] = target
     sdkdir = None
     xcodepath = None
-    xcodeversion = None
-
+    xcodeversion = xcode_ver()
 
     sdkdir = _popen("xcrun --show-sdk-path")
 
@@ -283,10 +285,14 @@ def setup_sdk(target=_target, sdk_version=None, architectures=[_default_arch]):
         conditions.add('64-bit')
         append_autogenargs("glib", "ac_cv_c_bigendian=no")
         append_autogenargs("openssl", "darwin64-x86_64-cc #")
-    elif len(set(architectures) - set(["i386",  "x86_64"])) > 0:
-        raise EnvironmentError("Only architectures i386 and x86_64 are supported.")
-    else:
-        print "WARNING: Universal builds are neither prohibited nor supported. It might work, but if it doesn't you're on your own."
+    elif architectures == ["arm64"]:
+        conditions.add('64-bit')
+        append_autogenargs("glib", "ac_cv_c_bigendian=no")
+        append_autogenargs("openssl", "darwin64-arm64-cc #") # Not a legal value
+    elif len(set(architectures) - {"i386",  "x86_64", 'arm64'}) > 0:
+        raise EnvironmentError("Only architectures i386, x86_64, and arm64 are supported.")
+    if len(set(architectures)) > 1:
+        print("WARNING: Universal builds are neither prohibited nor supported. It might work, but if it doesn't you're on your own.")
     # For unknown reasons, iconv is not picked up correctly without this
     #
     gcc = _popen("xcrun -f gcc")
@@ -318,6 +324,11 @@ def setup_sdk(target=_target, sdk_version=None, architectures=[_default_arch]):
         append_autogenargs("gmp", "--host=x86_64-apple-darwin ABI=64")
         append_autogenargs("liboil", "--host=x86_64-apple-darwin")
         append_autogenargs("gnutls", "--host=x86_64-apple-darwin")
+    elif architectures == ["arm64"]:
+        append_autogenargs("glib", "--build=aarch64-apple-darwin")
+        append_autogenargs("gmp", "--host=aarch64-apple-darwin ABI=64")
+        append_autogenargs("liboil", "--host=aarch64-apple-darwin")
+        append_autogenargs("libffi", "--host=aarch64-apple-darwin")
 
     # El Capitan needs bash to work around SIP. If you're using a
     # common bootstrap directory (e.g. $HOME/.local) then override
@@ -426,8 +437,8 @@ _gtk_osx_default_build = ""
 
 #print "Default Architecture %s\n" % _default_arch
 
-if _osx_version < 9.0:
-    print "Error: Mac OS X 10.9 or newer is required, exiting."
+if _osx_version < 11.0:
+    print("Error: Mac OS X 10.11 or newer is required, exiting.")
     raise SystemExit
 
 ###### Import Customizations ######
@@ -459,7 +470,7 @@ if not os.path.exists(_user_rc):
     _user_rc = os.path.join(_home, '.jhbuildrc-custom')
 
 if os.path.exists(_user_rc):
-    execfile(_user_rc)
+    exec(compile(open(_user_rc, "rb").read(), _user_rc, 'exec'))
 
 # Allow including different variants depending on the environment
 # variable JHB. This can be used to have different setups for SDK
@@ -473,6 +484,22 @@ disable_Werror = False
 # custom autogen-templates Gtk-OSX needs to use:"
 nice_build = False
 
+# Harfbuzz needs to be built twice, once before cairo and again after
+# gobject-introspection because cairo needs harfbuzz and
+# gobject-introspection needs cairo. The only way to get jhbuild to
+# run the configuration for harfbuzz the second time is to set
+# alwaysautogen to true.
+
+alwaysautogen = True
+
+# Freetype2 if left to itself will create an install name without the
+# path so none of the libraries that depend on it can link. Require
+# the install name to be an absolute path.
+
+module_cmakeargs["freetype"] = '-DCMAKE_INSTALL_NAME_DIR="' + os.path.join(prefix, 'lib') + '"'
+module_cmakeargs["freetype-no-harfbuzz"] = '-DCMAKE_INSTALL_NAME_DIR="' + os.path.join(prefix, 'lib') + '"'
+module_cmakeargs["webkit2gtk3"] = '-DCMAKE_INSTALL_NAME_DIR="' + os.path.join(prefix, 'lib') + '"'
+
 # Check and warn if jhbuild is started from within jhbuild, since that
 # will mess up environment variables, especially if different build
 # setups are used.
@@ -482,16 +509,16 @@ _old_build = os.environ.get('JHBUILD_CONFIG', "")
 _ran_recursively = _old_prefix != ""
 if _ran_recursively:
     if _old_build != _build:
-        print "Error: jhbuild is already running with a different build setup, exiting."
+        print("Error: jhbuild is already running with a different build setup, exiting.")
         raise SystemExit
 
-    print "Warning: jhbuild is started from within a jhbuild session."
+    print("Warning: jhbuild is started from within a jhbuild session.")
 
 if _build != "":
     try:
-        execfile(os.path.join(os.environ['HOME'], '.jhbuildrc-' + _build))
-    except EnvironmentError, e:
-        print "Couldn't find the file '.jhbuildrc-" + _build + "', exiting."
+        exec(compile(open(os.path.join(os.environ['HOME'], '.jhbuildrc-' + _build), "rb").read(), os.path.join(os.environ['HOME'], '.jhbuildrc-' + _build), 'exec'))
+    except EnvironmentError as e:
+        print("Couldn't find the file '.jhbuildrc-" + _build + "', exiting.")
         raise SystemExit
 
 # The following parameters were set to None at the top of the file;
@@ -521,7 +548,7 @@ os.environ['JHBUILD_SOURCE'] = checkoutroot
 #os.environ['LIBTOOLIZE'] = _exec_prefix + '/bin/libtoolize'
 #Some autogens detect that it's a Mac and use glibtoolize if it's
 #available. Override this behavior.
-if not (os.environ.has_key ("LIBTOOLIZE") and os.environ["LIBTOOLIZE"]):
+if not ("LIBTOOLIZE" in os.environ and os.environ["LIBTOOLIZE"]):
     environ_append('LIBTOOLIZE', os.path.join(prefix, "bin", "libtoolize"))
 
 
@@ -556,10 +583,6 @@ if 'XML_CATALOG_FILES' in os.environ:
 else:
     os.environ['XML_CATALOG_FILES'] = _pfx_cat_file
 
-#Freetype has -ansi added by its configure, but uses c99 code
-#
-append_autogenargs("freetype", 'CFLAGS="$CFLAGS -std=c99"')
-
 #GConf needs to be built static, overriding the generic autogenargs,
 #but including it in the module puts it in front of where autogenargs
 #puts --disable-static, so we need the override here.
@@ -568,11 +591,11 @@ append_autogenargs("gconf", "--enable-static")
 
 if _build:
     if "shell" in sys.argv:
-        print "Build setup: %s, prefix: %s" % (_build, prefix)
+        print("Build setup: %s, prefix: %s" % (_build, prefix))
     os.environ["JHBUILD_CONFIG"] = _build
 else:
     if "shell" in sys.argv:
-        print "Prefix: %s" % (prefix)
+        print("Prefix: %s" % (prefix))
 
 if not _ran_recursively and _gtk_osx_prompt_prefix:
     os.environ["JHBUILD_PROMPT"] = "[" + _gtk_osx_prompt_prefix + "] "
@@ -581,24 +604,39 @@ if not _ran_recursively and _gtk_osx_prompt_prefix:
 # we're not building python because if it tries to install in the
 # virtenv site-packages jhbuild will refuse to install it. Ideally
 # we'd do this only if not building python because if we do then it
-# finds the right place and does the right thing. Unfortunately
-# there's no way to get the config object from the project to find out
-# if we're building python.
+# finds the right place and does the right thing.
 
-# Note that this will break if the built python is a different major + minor
-# version from the virtenv one.
-_python_ver = _popen('bash -c "python -V"')
-if _python_ver:
-    _python_ver = 'python' + _python_ver.split(" ")[1][0:3]
-    _python_install_path = os.path.join(prefix, 'lib',
-                                        _python_ver, 'site-packages')
+# Unfortunately there's no way to get the config object from the
+# project to find out if we're building python3. We test the modules
+# list here but that's not really reliable because python3 might be
+# pulled in as a dependency by another module.
+
+# Note that this will break if there's an undetected python3 build and
+# the built python is a different major + minor version from the
+# virtenv one.
+
+if ('python3' in modules or 'meta-gtk-osx-python3' in modules or
+    'pygments' in modules):
+    os.environ['PYTHON'] = os.path.join(prefix, 'bin', 'python3')
+    module_extra_env['pkg-config'] = {'PYTHON':sys.executable}
+else:
+    _python_ver = str(sys.version_info.major) + '.' + str(sys.version_info.minor)
+    _python_install_path = os.path.join(prefix, 'lib', 'python' + _python_ver,
+                                        'site-packages')
     append_autogenargs('libxml2',
                        '--with-python-install-dir=' + _python_install_path)
     environ_append('PYTHONPATH', _python_install_path, ':')
-os.environ['PYTHON'] = '/usr/bin/env python3'
+    _python_library_path = os.path.join(os.environ['PYENV_ROOT'], 'versions',
+                                       os.environ['PYENV_VERSION'], 'lib')
+    environ_append('LDFLAGS', '-L' + _python_library_path)
+    os.environ['PYTHON'] = sys.executable
+
+module_extra_env["pygtk"] = {'PYTHON':os.path.join(prefix, 'bin', 'python2')}
+module_extra_env["pygobject2"] = {'PYTHON':os.path.join(prefix, 'bin', 'python2')}
+module_extra_env["spidermonkey"] = {'AUTOCONF':'autoconf'}
 # Unset this so we don't mess with the check for not starting
 # recursively.
 os.unsetenv("JHB")
 
 if "shell" in sys.argv:
-    print "Entered jhbuild shell, type 'exit' to return."
+    print("Entered jhbuild shell, type 'exit' to return.")

@@ -24,6 +24,7 @@
     </dependencies>
     <after>
       <dep package="meta-gtk-osx-gtk3"/>
+      <dep package="meta-gtk-osx-gtk3.14"/>
     </after>
   </metamodule>
 
@@ -48,19 +49,20 @@
     <after>
       <dep package="python3"/>
       <dep package="meta-gtk-osx-gtk3"/>
+      <dep package="meta-gtk-osx-gtk3.14"/>
     </after>
   </meson>
 
-   <meson id="pygobject3" >
-    <branch version="3.40.1" module="pygobject/3.40/pygobject-3.40.1.tar.xz"
-	    hash="sha256:00c6d591f4cb40c335ab1fd3e8c17869ba15cfda54416fe363290af766790035"/>
+  <meson id="pygobject3" >
+    <branch version="3.32.2" module="pygobject/3.32/pygobject-3.32.2.tar.xz"
+	    hash="sha256:c39ca2a28364b57fa00549c6e836346031e6b886c3ceabfd8ab4b4fed0a83611"/>
     <dependencies>
       <dep package="pycairo"/>
     </dependencies>
     <after>
       <dep package="python3"/>
     </after>
-   </meson>
+  </meson>
 
   <autotools id="gtk-mac-integration-python" autogen-sh="configure"
              autogenargs="--enable-python">
@@ -74,14 +76,5 @@
       <dep package="pygobject3"/>
     </after>
   </autotools>
-
-  <distutils id="pygments">
-    <branch repo="pymodules" version="2.9.0"
-            module="ba/6e/7a7c13c21d8a4a7f82ccbfe257a045890d4dbf18c023f985f565f97393e3/Pygments-2.9.0.tar.gz">
-    </branch>
-    <dependencies>
-      <dep package="python3"/>
-    </dependencies>
-  </distutils>
 
 </moduleset>
