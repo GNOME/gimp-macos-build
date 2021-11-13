@@ -181,6 +181,9 @@ module_extra_env['gimp299'] = { 'PYTHON': 'python3' }
 # DJM - c files built from defs are not including all necessary headers - ignore that
 module_extra_env['pygtk'] = { 'CFLAGS' : '-Wno-error=implicit-function-declaration' }
 
+# Handle Big Sur PThreads limitations https://developer.apple.com/forums/thread/666700
+module_extra_env["cairo"] = {'LDFLAGS':os.environ['LDFLAGS'] + " -L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"}
+
 class _cmd_bootstrap_gtk_osx_gimp(jhbuild.commands.base.cmd_build):
     doc = 'Build buildsystem tools not provided by MacOS.'
 
