@@ -9,10 +9,7 @@ jobs:
         - checkout
         - run:
             name: Cleanup /usr/local
-            command: sudo rm -rf /usr/local/*
-        - run:
-            name: Setup rust
-            command: curl https://sh.rustup.rs -sSf | sh -s -- -y
+            command: PATH=$(echo "$PATH" | sed -e 's/\/usr\/local\/bin://')
         - run:
             name: Setup Python3
             command: |
@@ -39,12 +36,8 @@ jobs:
             command: |
               cd $HOME
               mkdir -p ~/.config && cp ~/project/jhbuildrc-gtk-osx-gimp-2.99 ~/.config/jhbuildrc-custom
-              echo 'export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' >> ~/.profile
+              echo 'export PATH="$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' >> ~/.profile
               echo 'export ARCHFLAGS="-arch x86_64"' >> ~/.profile
-              # PYTHON variable seems to be incorrectly set
-              echo 'export PYTHON=/Library/Frameworks/Python.framework/Versions/3.9/bin/python3' >> ~/.profile
-              # Unclear why this is needed, but if missing, jhbuild fails in some circumstances
-              echo 'export PYENV_VERSION="3.9.7"' >> ~/.profile
               source ~/.profile
               PIPENV_YES=1 ~/project/gtk-osx-setup.sh
               $HOME/.new_local/bin/jhbuild bootstrap-gtk-osx-gimp
