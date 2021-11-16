@@ -17,7 +17,6 @@
   <metamodule id="meta-gtk-osx-unsupported">
     <dependencies>
       <dep package="gnome-mime-data"/>
-      <dep package="iso-codes"/>
     </dependencies>
   </metamodule>
 
@@ -26,24 +25,6 @@
            version="2.18.0" md5sum="541858188f80090d12a33b5a7c34d42c"/>
     <dependencies>
       <dep package="glib"/>
-    </dependencies>
-  </autotools>
-
-  <!-- Iso-codes >= 3.68 requires Python3, a dependency too far. -->
-  <autotools id="iso-codes" autogen-sh="configure">
-    <branch checkoutdir="iso-codes-iso-codes-3.67-080f941e075fef791b22feae659e8a510f57fe2c" module="iso-codes-3.67/iso-codes-3.67.tar.bz2" version="3.67"
-	    repo="iso-codes"/>
-  </autotools>
-
-  <autotools id="p11-kit" autogen-sh="configure"
-             autogenargs="--without-trust-paths">
-    <branch repo="p11-glue" version="0.23.2"
-	    module="p11-kit-0.23.2.tar.gz">
-      <patch file="https://gitlab.gnome.org/GNOME/gtk-osx/raw/master/patches/p11-kit-dirfd.patch"
-       strip="1"/>
-    </branch>
-    <dependencies>
-      <dep package="libtasn1"/>
     </dependencies>
   </autotools>
 
@@ -68,15 +49,6 @@
     </dependencies>
   </autotools>
 
-  <autotools id="libgpg-error" autogen-sh="autoreconf"
-             autogenargs="--disable-doc">
-    <branch repo="gnupg.org" version="1.27"
-            module="gcrypt/libgpg-error/libgpg-error-1.27.tar.bz2">
-            <patch file="https://gitlab.gnome.org/GNOME/gtk-osx/raw/master/patches/libgpg-error-cflags-for-cc-for-build.patch"
-       strip="1"/>
-    </branch>
-  </autotools>
-
   <autotools id="libgcrypt" autogen-sh="configure"
              autogenargs="--disable-asm --disable-doc"
              autogen-template="%(srcdir)s/%(autogen-sh)s &amp;&amp; %(srcdir)s/configure --prefix %(prefix)s  %(autogenargs)s">
@@ -90,15 +62,4 @@
     </dependencies>
   </autotools>
 
-   <autotools id="gnome-keyring"
-	      autogenargs="--disable-pam --without-root-certs">
-     <branch module="gnome-keyring/3.20/gnome-keyring-3.20.0.tar.xz"
-             version="3.20.0"
-             hash="sha256:bc17cecd748a0e46e302171d11c3ae3d76bba5258c441fabec3786f418e7ec99"/>
-    <dependencies>
-      <dep package="gtk+"/>
-      <dep package="libgcrypt"/>
-      <dep package="libtasn1"/>
-    </dependencies>
-  </autotools>
 </moduleset>

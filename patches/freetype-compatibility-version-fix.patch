@@ -1,0 +1,25 @@
+diff --git a/meson.build b/meson.build
+index 0eb780b..3b61358 100644
+--- a/meson.build
++++ b/meson.build
+@@ -233,6 +233,12 @@ endif
+ 
+ ft2_deps = []
+ 
++# Correct compatibility version for OS x
++if host_machine.system() == 'darwin'
++  # Maintain compatibility with autotools on macOS
++  common_ldflags = [ '-compatibility_version', ft2_pkgconfig_version.split('.')[0], '-current_version', ft2_pkgconfig_version]
++endif
++
+ 
+ # Generate `ftoption.h` based on available dependencies.
+ 
+@@ -345,6 +351,7 @@ ft2_lib = library('freetype',
+   dependencies: ft2_deps,
+   install: true,
+   version: ft2_so_version,
++  link_args: common_ldflags,
+ )
+ 
+ 

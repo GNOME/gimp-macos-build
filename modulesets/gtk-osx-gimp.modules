@@ -31,24 +31,6 @@
     </dependencies>
   </autotools>
 
-  <!-- librsvg build requires rust compiler to be installed, see https://rustup.rs -->
-  <autotools id="librsvg-24" autogenargs="--disable-Bsymbolic">
-    <branch repo="ftp.gnome.org"
-      module="librsvg/2.46/librsvg-2.46.3.tar.xz"
-      version="2.46.3"
-      hash="sha256:768e46467d874161a277bd696551f4f364b3c8d51eeedeb9b4fe1277a2496ae8"/>
-    <dependencies>
-      <dep package="libcroco"/>
-      <dep package="meta-gtk-osx-freetype"/>
-    </dependencies>
-    <after>
-      <!-- Circular dependency if we depend on meta-gtk-osx or meta-gtk-osx-gtk3 -->
-      <dep package="gtk+"/>
-      <dep package="gtk+-3.0"/>
-      <dep package="gtk+-3.14"/>
-    </after>
-  </autotools>
-
   <autotools id="pngcrush" supports-non-srcdir-builds="no" autogen-sh="true" autogen-template="%(autogen-sh)s">
     <branch module="pmt/pngcrush-1.8.13.tar.xz"
       version="1.8.13"
@@ -82,32 +64,6 @@
       <dep package="ghostscript"/>
     </dependencies>
   </metamodule>
-
-  <autotools id="gimp" autogen-sh="autoreconf" autogenargs="--without-x --with-build-id=org.gimp.GIMP_official --with-revision=0">
-    <branch module="gimp/v2.10/gimp-2.10.28.tar.bz2"
-      version="2.10.28"
-      hash="sha256:4f4dc22cff1ab5f026feaa2ab55e05775b3a11e198186b47bdab79cbfa078826" repo="gimp">
-      <!-- fix wrong position on the printing dialog on macOS.  -->
-      <patch file="https://gitlab.gnome.org/GNOME/gimp/merge_requests/205.patch" strip="1"/>
-      <!-- issue 5952 - Backport of Selection not showing on Mac OS Big Sur 11 though "Show Selection" is enabled -->
-      <patch file="Issue-5952-0001-Issue-5640-Selection-tools-not-showing-selection-on-.patch" strip="1"/>
-      <patch file="Issue-5952-0002-app-fix-selection-display-on-right-bottom-borders-wh.patch" strip="1"/>
-      <patch file="Issue-5952-0003-app-check-the-time-before-last-selection-draw-before.patch" strip="1"/>
-      <patch file="Issue-5952-0004-app-add-back-a-timeout-based-idle-function-to-queue-.patch" strip="1"/>
-      <patch file="Issue-5952-0005-app-replace-gtk_widget_queue_draw_region-with.patch" strip="1"/>
-      <patch file="Issue-5952-0006-app-replace-using-the-draw-signal-by-expose-event-on.patch" strip="1"/>
-    </branch>
-    <after>
-      <dep package="meta-gtk-osx-bootstrap"/>
-      <dep package="meta-gtk-osx-core"/>
-      <deb package="webkit"/>
-    </after>
-    <dependencies>
-      <dep package="gimp-common-deps"/>
-      <dep package="python2"/>
-      <dep package="meta-gtk-osx-python2-gtk2"/>
-    </dependencies>
-  </autotools>
 
   <autotools id="gimp299" autogen-sh="autogen.sh" autogenargs="--without-x --with-build-id=org.gimp.GIMP_official --with-revision=0">
     <branch module="gimp" revision="master" repo="git.gnome.org">
@@ -195,7 +151,6 @@
     <after>
       <dep package="meta-gtk-osx-bootstrap"/>
       <dep package="meta-gtk-osx-gtk3"/>
-      <dep package="meta-gtk-osx-core"/>
     </after>
     <dependencies>
       <dep package="openjpeg"/>
