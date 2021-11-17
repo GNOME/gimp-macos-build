@@ -16,11 +16,11 @@
   <repository type="tarball" name="github-tarball"
               href="https://github.com"/>
 
-  <metamodule id="meta-gtk-osx-python3-gtk3">
+  <metamodule id="meta-gtk-osx-python3">
     <dependencies>
       <dep package="pycairo"/>
       <dep package="pygobject3"/>
-      <dep package="gtk-mac-integration-gtk3-python"/>
+      <dep package="gtk-mac-integration-python"/>
     </dependencies>
     <after>
       <dep package="meta-gtk-osx-gtk3"/>
@@ -64,7 +64,7 @@
     </after>
   </meson>
 
-  <autotools id="gtk-mac-integration-gtk3-python" autogen-sh="configure"
+  <autotools id="gtk-mac-integration-python" autogen-sh="configure"
              autogenargs="--enable-python">
     <branch module="gtk-mac-integration/2.1/gtk-mac-integration-2.1.3.tar.xz"
             version="2.1.3"

@@ -97,20 +97,7 @@
     </dependencies>
   </meson>
 
-  <!-- To build Freetype *with* harfbuzz requires harfbuzz to be built
-       with freetype so we first have to build it *without* harfbuzz,
-       then build harfbuzz without cairo because cairo requires
-       harfbuzz. -->
-  <cmake id="freetype-no-harfbuzz" cmakeargs="-DCMAKE_DISABLE_FIND_PACKAGE_HarfBuzz=TRUE -DCMAKE_DISABLE_FIND_PACKAGE_BZip2=TRUE -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=Release">
-    <branch module="freetype/freetype-2.11.0.tar.gz" version="2.11.0"
-            repo="savannah"
-            hash="sha256:a45c6b403413abd5706f3582f04c8339d26397c4304b78fa552f2215df64101f"/>
-    <dependencies>
-      <dep package="zlib"/>
-    </dependencies>
-  </cmake>
-
-  <meson id="harfbuzz-no-cairo" mesonargs="-Dcoretext=enabled -Ddocs=disabled -Dbenchmark=disabled">
+  <meson id="harfbuzz-no-cairo" mesonargs="-Dcoretext=enabled -Ddocs=disabled -Dbenchmark=disabled -Dintrospection=disabled">
     <branch repo="github-tarball" version="2.8.0"
             module="harfbuzz/harfbuzz/releases/download/2.8.0/harfbuzz-2.8.0.tar.xz"
             hash="sha256:a1079fd021adaf5683351f34587a255975cc3bcadba31246ae40ebebb95ecd42">
@@ -130,6 +117,21 @@
     </branch>
     <dependencies>
       <dep package="harfbuzz-no-cairo"/>
+      <dep package="zlib"/>
+    </dependencies>
+  </meson>
+
+  <!-- To build Freetype *with* harfbuzz requires harfbuzz to be built
+       with freetype so we first have to build it *without* harfbuzz,
+       then build harfbuzz without cairo because cairo requires
+       harfbuzz. -->
+  <meson id="freetype-no-harfbuzz" mesonargs="-Dbzip2=disabled -Dharfbuzz=disabled">
+    <branch module="freetype/freetype-2.11.0.tar.gz" version="2.11.0"
+            repo="savannah"
+            hash="sha256:a45c6b403413abd5706f3582f04c8339d26397c4304b78fa552f2215df64101f">
+      <patch file="freetype-compatibility-version-fix.patch" strip="1"/>
+    </branch>
+    <dependencies>
       <dep package="zlib"/>
     </dependencies>
   </meson>

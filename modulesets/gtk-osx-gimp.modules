@@ -76,7 +76,7 @@
     <dependencies>
       <dep package="gimp-common-deps"/>
       <dep package="python3"/>
-      <dep package="meta-gtk-osx-python3-gtk3"/>
+      <dep package="meta-gtk-osx-python3"/>
       <dep package="appstream-glib"/>
     </dependencies>
   </autotools>
@@ -193,6 +193,7 @@
 
   <autotools id="libheif"
     supports-non-srcdir-builds="no"
+    autogenargs="--disable-go"
     autogen-template="%(srcdir)s/%(autogen-sh)s --prefix %(prefix)s %(autogenargs)s &amp;&amp; %(srcdir)s/configure --prefix %(prefix)s  %(autogenargs)s">
     <branch module="strukturag/libheif/releases/download/v1.6.1/libheif-1.6.1.tar.gz"
       version="1.6.1"
@@ -337,7 +338,14 @@
       module="ArtifexSoftware/ghostpdl-downloads/releases/download/gs950/ghostscript-9.50.tar.xz"
       hash="sha256:db9bb0817b6f22974e6d5ad751975f346420c2c86a0afcfe6b4e09c47803e7d4">
       <patch file="ghostscript-lib.patch" strip="0"/>
+      <patch file="ghostscript-9.50-add-required-config-files.patch" strip="1"/>
     </branch>
+    <!-- <branch repo="github-tarball"
+      version="9.55.0"
+      module="ArtifexSoftware/ghostpdl-downloads/releases/download/gs9550/ghostscript-9.55.0.tar.gz"
+      hash="sha256:31e2064be67e15b478a8da007d96d6cd4d2bee253e5be220703a225f7f79a70b">
+      <patch file="ghostscript-9.55.0-leptonica-MacOSX10.12.sdk-no-open_memstream.patch" strip="1"/>
+    </branch> -->
     <dependencies>
       <dep package="lcms"/>
     </dependencies>
