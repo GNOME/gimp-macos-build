@@ -97,7 +97,7 @@ fi
 
 export PYTHON_CONFIGURE_OPTS="--enable-shared"
 export PYENV_VERSION=3.10.0
-$PYENV install $PYENV_VERSION
+$PYENV install $PYENV_VERSION --skip-existing
 PIP="$PYENV_ROOT/shims/pip"
 $PIP install --upgrade --user pip
 
