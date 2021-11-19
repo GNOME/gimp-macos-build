@@ -65,7 +65,7 @@
     </dependencies>
   </metamodule>
 
-  <autotools id="gimp299" autogen-sh="autogen.sh" autogenargs="--without-x --with-build-id=org.gimp.GIMP_official --with-revision=0">
+  <autotools id="gimp299" autogen-sh="autogen.sh" autogenargs="--without-x --with-build-id=org.gimp.GIMP_official --with-revision=0 --with-vala=no">
     <branch module="gimp" revision="master" repo="git.gnome.org">
     </branch>
     <after>
