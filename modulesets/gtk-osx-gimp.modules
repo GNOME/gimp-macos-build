@@ -145,10 +145,10 @@
 
   <cmake id="poppler"
     cmakeargs="-DENABLE_QT5:BOOL=OFF -DWITH_NSS3:BOOL=OFF -DENABLE_BOOST=OFF -DCMAKE_INSTALL_NAME_DIR=$JHBUILD_PREFIX/lib">
-    <branch module="poppler-21.10.0.tar.xz"
-      version="21.10.0"
+    <branch module="poppler-21.11.0.tar.xz"
+      version="21.11.0"
       repo="poppler.freedesktop.org"
-      hash="sha256:964b5b16290fbec3fae57c2a5bcdea49bb0736bd750c3a3711c47995c9efc394"/>
+      hash="sha256:31b76b5cac0a48612fdd154c02d9eca01fd38fb8eaa77c1196840ecdeb53a584"/>
     <after>
       <dep package="meta-gtk-osx-bootstrap"/>
       <dep package="meta-gtk-osx-gtk3"/>
