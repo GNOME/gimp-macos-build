@@ -98,11 +98,9 @@
       <dep package="libxml2"/>
       <dep package="libxslt"/>
       <dep package="itstool"/>
-    </dependencies>
-    <after>
       <dep package="python3"/>
       <dep package="pygments"/>
-    </after>
+    </dependencies>
   </meson>
 
   <autotools id="icu" autogen-sh="source/configure" autogenargs="--enable-rpath"
