@@ -312,6 +312,7 @@
        version="0.12.3"
        module="gexiv2/0.12/gexiv2-0.12.3.tar.xz"
        hash="sha256:d23b7972a2fc6f840150bad1ed79c1cbec672951e180c1e1ec33ca6c730c59f3">
+       <patch file="gexiv2-0.12.3-stop-python-tests.patch" strip="1"/>
     </branch>
     <dependencies>
       <dep package="glib"/>
