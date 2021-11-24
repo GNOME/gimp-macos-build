@@ -29,7 +29,7 @@ jobs:
               echo 'export MACOSX_DEPLOYMENT_TARGET=10.12' >> ~/.profile
         - restore_cache:
             keys:
-              - 1-jhbuild-v3-v3
+              - 1-jhbuild-v3-v4
               - 1-jhbuild-v3-
         - run:
             name: Setup JHBuild
@@ -47,7 +47,7 @@ jobs:
               - ~/.new_local
               - ~/gtk
               - ~/.config
-            key: 1-jhbuild-v3-v3
+            key: 1-jhbuild-v3-v4
         - run:
             name: Setup gtk-mac-bundler
             command: |
@@ -57,10 +57,10 @@ jobs:
               make install
         - restore_cache:
             keys:
-              - 2-gimp-v3-v3
-              - 2-webkit-v3-v3
-              - 2-gimp-deps-v3-v3
-              - 2-bootstrap-v3-v3
+              - 2-gimp-v3-v4
+              - 2-webkit-v3-v4
+              - 2-gimp-deps-v3-v4
+              - 2-bootstrap-v3-v4
               - 2-gimp-v3-
               - 2-webkit-v3-
               - 2-gimp-deps-v3-
@@ -75,7 +75,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: 2-bootstrap-v3-v3
+            key: 2-bootstrap-v3-v4
         - run:
             name: Build GIMP dependencies (without gegl/babl)
             command: |
@@ -96,7 +96,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: 2-gimp-deps-v3-v3
+            key: 2-gimp-deps-v3-v4
         # - run:
             # name: Build WebKit v1
             # no_output_timeout: 1h
@@ -107,7 +107,7 @@ jobs:
         # - save_cache:
         #     paths:
         #       - ~/gtk
-        #     key: 2-webkit-v3-v3
+        #     key: 2-webkit-v3-v4
         - run:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
@@ -127,7 +127,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: 2-gimp-v3-v3
+            key: 2-gimp-v3-v4
         - run:
             name: Importing signing certificate
             command: |
