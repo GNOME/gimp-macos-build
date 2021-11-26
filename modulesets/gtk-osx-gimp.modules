@@ -66,7 +66,7 @@
   </metamodule>
 
   <autotools id="gimp299" autogen-sh="autogen.sh" autogenargs="--without-x --with-build-id=org.gimp.GIMP_official --with-revision=0">
-    <branch module="gimp" revision="master" repo="git.gnome.org">
+    <branch module="gimp" branch="master" tag="GIMP_2_99_8" repo="git.gnome.org">
     </branch>
     <after>
       <dep package="meta-gtk-osx-bootstrap"/>
