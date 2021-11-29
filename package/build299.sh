@@ -82,6 +82,16 @@ find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/plug-ins/ -p
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
    | xargs -n1 install_name_tool -add_rpath @executable_path/../../../../
 
+echo "removing build path and adding @rpath to .gir files"
+find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/gir-1.0/*.gir \
+   -exec sed -i '' "s|${OLDPATH}|@rpath/|g" {} +
+
+echo "generating .typelib files with @rpath"
+find ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/gir-1.0/*.gir | while IFS= read -r pathname; do
+    base=$(basename "$pathname")
+    g-ir-compiler --includedir=${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/gir-1.0 ${pathname} -o ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/girepository-1.0/${base/.gir/.typelib}
+done
+
 echo "fixing pixmap cache"
 sed -i.old 's|@executable_path/../Resources/lib/||' \
     ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache
