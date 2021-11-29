@@ -260,8 +260,9 @@
   <data recurse="True">
     ${prefix}/share/glib-2.0/schemas/*
   </data>
-  <!-- gi repository typlibs -->
-  <data>${prefix}/lib/girepository-1.0/*</data>
+  <!-- gi repository information -->
+  <binary>${prefix}/lib/girepository-1.0/*</binary>
+  <data>${prefix}/share/gir-1.0/*</data>
   <!-- GTK+ theme data -->
   <!-- <data>${prefix}/share/gtk-engines/*.xml</data> -->
   <!-- mitch says this will change default theme, didn't work. -->
@@ -270,7 +271,7 @@
   </data>
 -->
   <!-- Interesting defaults -->
-  <!-- <data dest="${bundle}/Contents/Resources/etc/gimp/2.0/gimprc">
+  <!-- <data dest="${bundle}/Contents/Resources/etc/gimp/2.99/gimprc">
     ${project}/gimprc
   </data>
 -->

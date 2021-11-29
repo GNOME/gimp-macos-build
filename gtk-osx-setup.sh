@@ -235,9 +235,7 @@ if test "x`echo $PATH | grep "$DEVPREFIX/bin"`" == x ; then
 fi
 # pipenv wants enum34 because it's installed with Py2 but that conflicts
 # with Py3 so remove it.
-if test $PYVER -eq 3; then
-    pip_remove enum34
-fi
+pip_remove enum34
 
 SDKROOT=`xcrun --show-sdk-path`
 

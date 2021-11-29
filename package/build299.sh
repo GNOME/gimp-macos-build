@@ -19,7 +19,7 @@ echo "$GIMP_VERSION"
 cat info-2.99.plist.tmpl | sed "s|%VERSION%|${GIMP_VERSION}|g" > info-2.99.plist
 
 echo "Copying charset.alias"
-cp "/usr/lib/charset.alias" "${HOME}/gtk/inst/lib/"
+cp -f "/usr/lib/charset.alias" "${HOME}/gtk/inst/lib/"
 echo "Creating bundle"
 gtk-mac-bundler gimp-2.99.bundle
 
@@ -64,7 +64,7 @@ if [[ "$1" == "debug" ]]; then
      | xargs -n1 dsymutil
 fi
 
-echo "remove @rpath to the libraries"
+echo "remove @rpath from the libraries"
 find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/ -mindepth 1 -maxdepth 1 -perm +111 -type f \
    | xargs file \
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
@@ -82,6 +82,20 @@ find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/plug-ins/ -p
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
    | xargs -n1 install_name_tool -add_rpath @executable_path/../../../../
 
+echo "removing build path from the .gir files"
+find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/gir-1.0/*.gir \
+   -exec sed -i '' "s|${OLDPATH}||g" {} +
+
+echo "adding @rpath to the .gir files"
+find ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/gir-1.0/*.gir \
+   -exec sed -i '' 's|[a-z0-9/\._-]*.dylib|@rpath/&|g' {} +
+
+echo "generating .typelib files with @rpath"
+find ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/gir-1.0/*.gir | while IFS= read -r pathname; do
+    base=$(basename "$pathname")
+    g-ir-compiler --includedir=${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/gir-1.0 ${pathname} -o ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/girepository-1.0/${base/.gir/.typelib}
+done
+
 echo "fixing pixmap cache"
 sed -i.old 's|@executable_path/../Resources/lib/||' \
     ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache
@@ -95,7 +109,8 @@ echo "create missing links. should we use wrappers instead?"
 pushd ${PACKAGE_DIR}/GIMP-2.99.app/Contents/MacOS
  ln -s gimp-console-2.99 gimp-console
  ln -s gimp-debug-tool-2.99 gimp-debug-tool
- ln -s python python3.9
+ ln -s python3.9 python
+ ln -s python3.9 python3
 popd
 
 echo "copy xdg-email wrapper to the package"
