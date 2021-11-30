@@ -182,6 +182,7 @@
             version="1.68.0"
             hash="sha256:d229242481a201b84a0c66716de1752bca41db4133672cfcfb37c93eb6e54a27">
       <patch file="girscanner-objc.patch" strip="1"/>
+      <patch file="gobject-introspection-1.68.0-protect-bad-gtype.patch" strip="1"/>
     </branch>
     <dependencies>
       <dep package="glib"/>
