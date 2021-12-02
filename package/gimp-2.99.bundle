@@ -216,6 +216,7 @@
   <binary>${prefix}/lib/babl-0.1/*.dylib</binary>
   <!-- Copy in gegl modules -->
   <binary>${prefix}/lib/gegl-0.4/*.dylib</binary>
+  <data>${prefix}/lib/gegl-0.4/*.json</data>
   <!-- Copy in GTK+ themeing engines - Don't appear to exist in gtk 3 -->
   <!-- <binary>${prefix}/lib/${gtkdir}/${pkg:${gtk}:gtk_binary_version}/engines/*.so</binary> -->
   <!-- Copy in GTK+ printer backends -->
@@ -226,6 +227,7 @@
   <!-- <binary>${prefix}/lib/gdk-pixbuf-2.0/${pkg:${gtk}:gtk_binary_version}/loaders/*.so</binary> -->
   <binary>${prefix}/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.so</binary>
   <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gdk-pixbuf-query-loaders</binary>
+  <binary>${prefix}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache</binary>
   <!-- Translation filenames-->
   <translations name="gtk30">
     ${prefix}/share/locale
@@ -258,6 +260,8 @@
   <data recurse="True">
     ${prefix}/share/glib-2.0/schemas/*
   </data>
+  <!-- gi repository typlibs -->
+  <data>${prefix}/lib/girepository-1.0/*</data>
   <!-- GTK+ theme data -->
   <!-- <data>${prefix}/share/gtk-engines/*.xml</data> -->
   <!-- mitch says this will change default theme, didn't work. -->
