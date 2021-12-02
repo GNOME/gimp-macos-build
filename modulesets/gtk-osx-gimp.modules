@@ -66,12 +66,16 @@
   </metamodule>
 
   <autotools id="gimp299" autogen-sh="autogen.sh" autogenargs="--without-x --with-build-id=org.gimp.GIMP_official --with-revision=0">
-    <branch module="gimp" branch="master" tag="GIMP_2_99_8" repo="git.gnome.org">
+    <branch module="gimp/v2.99/gimp-2.99.8.tar.bz2"
+      version="2.99.8"
+      hash="sha256:dd916bd3474ef2efc652a0510280977ab8ea95e3d95d918394b0662261c32aae"
+      repo="ftp.gimp.org">
+      <patch file="gimp-2.99.8-gsettings.patch" strip="1"/>
     </branch>
     <after>
       <dep package="meta-gtk-osx-bootstrap"/>
       <dep package="meta-gtk-osx-gtk3"/>
-      <deb package="webkit"/>
+      <dep package="webkit"/>
     </after>
     <dependencies>
       <dep package="gimp-common-deps"/>
@@ -139,7 +143,7 @@
     </branch>
     <dependencies>
       <dep package="lcms"/>
-      <deb package="gobject-introspection"/>
+      <dep package="gobject-introspection"/>
     </dependencies>
   </meson>
 

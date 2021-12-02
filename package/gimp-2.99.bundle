@@ -254,6 +254,10 @@
   <data>${prefix}/share/xml/iso-codes</data>
   <!-- libwmf fonts -->
   <data>${prefix}/share/libwmf</data>
+  <!-- glib 2 schemas -->
+  <data recurse="True">
+    ${prefix}/share/glib-2.0/schemas/*
+  </data>
   <!-- GTK+ theme data -->
   <!-- <data>${prefix}/share/gtk-engines/*.xml</data> -->
   <!-- mitch says this will change default theme, didn't work. -->
