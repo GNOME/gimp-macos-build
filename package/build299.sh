@@ -19,7 +19,7 @@ echo "$GIMP_VERSION"
 cat info-2.99.plist.tmpl | sed "s|%VERSION%|${GIMP_VERSION}|g" > info-2.99.plist
 
 echo "Copying charset.alias"
-cp "/usr/lib/charset.alias" "${HOME}/gtk/inst/lib/"
+cp -f "/usr/lib/charset.alias" "${HOME}/gtk/inst/lib/"
 echo "Creating bundle"
 gtk-mac-bundler gimp-2.99.bundle
 
@@ -105,7 +105,8 @@ echo "create missing links. should we use wrappers instead?"
 pushd ${PACKAGE_DIR}/GIMP-2.99.app/Contents/MacOS
  ln -s gimp-console-2.99 gimp-console
  ln -s gimp-debug-tool-2.99 gimp-debug-tool
- ln -s python python3.9
+ ln -s python3.9 python
+ ln -s python3.9 python3
 popd
 
 echo "copy xdg-email wrapper to the package"
