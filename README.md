@@ -59,6 +59,44 @@ framework. Probably could be a small Python plugin as [there is a module](https:
 
 - `master`: latest GIMP release
 - `gimp-2-10`: gimp-2-10 build
-- `debug`: same as the `master`, but with full debug symbols
-- `hardened-runtime`: singed and notarized package with a hardened runtime enabled
 
+## How to build locally (quick and dirty and might not work)
+
+For a script that builds locally, a quick and dirty way to get all the commands is to run:
+
+`brew install yq`
+
+and then
+
+```sh
+git clone https://gitlab.gnome.org/Infrastructure/gimp-macos-build.git
+cd gimp-macos-build
+```
+
+Then get the branch for the build you want to create a script for.
+
+For 2.99:
+
+```sh
+git checkout master
+```
+
+Or for 2.10.28
+
+```sh
+git checkout gimp-2-10
+```
+
+Then
+
+```sh
+yq e '.jobs.[].steps[].run.command | select(length!=0)' .circleci/config.yml > ~/build_gimp.sh
+cd ~
+chmod +x build_gimp.sh
+```
+
+But then please please check the file and make sure you are comfortable with all the commands. And as you go, you may want to comment things out.
+
+To run it of course:
+
+`./build_gimp.sh`
