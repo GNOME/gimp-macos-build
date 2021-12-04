@@ -66,6 +66,7 @@ All contents of source\_folder will be copied into the disk image.
 - **--format:** specify the final image format (default is UDZO)
 - **--add-file \<target_name\> \<file|folder\> \<x\> \<y\>:** add additional file or folder (can be used multiple times)
 - **--disk-image-size \<x\>:** set the disk image size manually to x MB
+- **--hdiutil-debug:** execute hdiutil in debug mode
 - **--hdiutil-verbose:** execute hdiutil in verbose mode
 - **--hdiutil-quiet:** execute hdiutil in quiet mode
 - **--sandbox-safe:** execute hdiutil with sandbox compatibility, do not bless and do not execute the cosmetic AppleScript
