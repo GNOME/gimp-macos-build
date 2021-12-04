@@ -54,6 +54,8 @@ function usage() {
 	echo "      add additional folder (option can be used multiple times)"
 	echo "  --disk-image-size x"
 	echo "      set the disk image size manually to x MB"
+	echo "  --hdiutil-debug"
+	echo "      execute hdiutil in debug mode"
 	echo "  --hdiutil-verbose"
 	echo "      execute hdiutil in verbose mode"  
 	echo "  --hdiutil-quiet"
@@ -161,6 +163,9 @@ while test "${1:0:1}" = "-"; do
 	--disk-image-size)
 		DISK_IMAGE_SIZE="$2"
 		shift; shift;;
+	--hdiutil-debug)
+		HDIUTIL_VERBOSITY='-debug'
+		shift;;
 	--hdiutil-verbose)
 		HDIUTIL_VERBOSITY='-verbose'
 		shift;;
