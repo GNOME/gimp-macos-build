@@ -169,7 +169,7 @@ cd create-dmg
   --hide-extension "Applications" \
   --app-drop-link 450 360 \
   --format UDBZ \
-  --hdiutil-verbose \
+  --hdiutil-debug \
   "/tmp/artifacts/${DMGNAME}" \
   "$PACKAGE_DIR/"
 rm -f /tmp/artifacts/rw.*.dmg
