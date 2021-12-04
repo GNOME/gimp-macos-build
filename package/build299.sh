@@ -64,7 +64,7 @@ if [[ "$1" == "debug" ]]; then
      | xargs -n1 dsymutil
 fi
 
-echo "remove @rpath to the libraries"
+echo "remove @rpath from the libraries"
 find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/ -mindepth 1 -maxdepth 1 -perm +111 -type f \
    | xargs file \
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
@@ -82,9 +82,13 @@ find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/plug-ins/ -p
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
    | xargs -n1 install_name_tool -add_rpath @executable_path/../../../../
 
-echo "removing build path and adding @rpath to .gir files"
+echo "removing build path from the .gir files"
 find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/gir-1.0/*.gir \
-   -exec sed -i '' "s|${OLDPATH}|@rpath/|g" {} +
+   -exec sed -i '' "s|${OLDPATH}||g" {} +
+
+echo "adding @rpath to the .gir files"
+find ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/gir-1.0/*.gir \
+   -exec sed -i '' 's|[a-z0-9/\._-]*.dylib|@rpath/&|g' {} +
 
 echo "generating .typelib files with @rpath"
 find ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/gir-1.0/*.gir | while IFS= read -r pathname; do
