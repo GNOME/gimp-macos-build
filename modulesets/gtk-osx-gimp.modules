@@ -139,6 +139,7 @@
     <dependencies>
       <dep package="lcms"/>
       <dep package="gobject-introspection"/>
+      <dep package="vala"/>
     </dependencies>
   </meson>
 
@@ -317,6 +318,7 @@
     <dependencies>
       <dep package="glib"/>
       <dep package="exiv2"/>
+      <dep package="vala"/>
     </dependencies>
   </meson>
 

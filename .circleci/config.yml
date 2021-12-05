@@ -57,14 +57,14 @@ jobs:
               make install
         - restore_cache:
             keys:
-              - 2-gimp-v3-v4
-              - 2-webkit-v3-v4
-              - 2-gimp-deps-v3-v4
-              - 2-bootstrap-v3-v4
-              - 2-gimp-v3-
-              - 2-webkit-v3-
-              - 2-gimp-deps-v3-
-              - 2-bootstrap-v3-
+              - break3-gimpv3-cacheiter2
+              - break3-webkitv3-cacheiter2
+              - break3-gimp-depsv3-cacheiter2
+              - break3-bootstrapv3-cacheiter2
+              - break3-gimp-v3-
+              - break3-webkit-v3-
+              - break3-gimp-deps-v3-
+              - break3-bootstrap-v3-
         - run:
             name: Bootstrap
             command: |
@@ -75,15 +75,15 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: 2-bootstrap-v3-v4
+            key: break3-bootstrapv3-cacheiter2
         - run:
             name: Build GIMP dependencies (without gegl/babl)
             command: |
               # dependencies from 2.99 build: at-spi2-core build-essential desktop-file-utils ffmpeg ghostscript git glib-networking gobject-introspection graphviz graphviz-dev gtk-doc-tools hicolor-icon-theme intltool iso-codes libappstream-glib-dev libbz2-dev libdbus-glib-1-dev libexif-dev libgexiv2-dev libgirepository1.0-dev libgtk-3-bin libgtk-3-dev libgudev-1.0-dev libjson-glib-dev liblcms2-dev liblzma-dev libmng-dev libmypaint-dev libopenexr-dev libpoppler-glib-dev libraw-dev libraw20 librsvg2-dev libspiro-dev libsuitesparse-dev libtiff-dev libtiff5-dev libtool libumfpack5 libwebp-dev libwmf-dev libxmu-dev libxpm-dev luajit meson mypaint-brushes poppler-data python3 valac xauth xvfb
               # source ~/.profile && jhbuild build suitesparse lcms libunistring gmp libnettle libtasn1 gnutls libjpeg readline python glib-networking openjpeg  gtk-mac-integration poppler poppler-data
-              # source ~/.profile && jhbuild build json-glib p2tc exiv2 gexiv2 ilmbase openexr libwebp libcroco librsvg-24 json-c
-              # source ~/.profile && jhbuild build libmypaint mypaint-brushes libde265 nasm x265 libheif aalib shared-mime-info iso-codes libwmf libmng ghostscript
-              # source ~/.profile && jhbuild build pycairo pygobject pygtk gtk-mac-integration-python
+              source ~/.profile && jhbuild build openjpeg ilmbase json-c libde265 nasm x265
+              source ~/.profile && jhbuild build frodo-getopt xmlto pycairo pygobject3 gtk-mac-integration-python libarchive libyaml uuid
+              source ~/.profile && jhbuild build gimp-common-deps appstream-glib 
               source ~/.profile && jhbuild build python3
         - run:
             name: Build all WebKit dependencies
@@ -96,7 +96,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: 2-gimp-deps-v3-v4
+            key: break3-gimp-depsv3-cacheiter2
         # - run:
             # name: Build WebKit v1
             # no_output_timeout: 1h
@@ -107,7 +107,7 @@ jobs:
         # - save_cache:
         #     paths:
         #       - ~/gtk
-        #     key: 2-webkit-v3-v4
+        #     key: break3-webkitv3-cacheiter2
         - run:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
@@ -127,7 +127,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: 2-gimp-v3-v4
+            key: break3-gimpv3-cacheiter2
         - run:
             name: Importing signing certificate
             command: |

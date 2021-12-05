@@ -86,6 +86,10 @@ echo "removing build path from the .gir files"
 find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/gir-1.0/*.gir \
    -exec sed -i '' "s|${OLDPATH}||g" {} +
 
+echo "removing previous rpath from the .gir files (in case it's there)"
+find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/gir-1.0/*.gir \
+   -exec sed -i '' "s|@rpath/||g" {} +
+
 echo "adding @rpath to the .gir files"
 find ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/gir-1.0/*.gir \
    -exec sed -i '' 's|[a-z0-9/\._-]*.dylib|@rpath/&|g' {} +
