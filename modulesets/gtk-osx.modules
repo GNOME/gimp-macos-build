@@ -80,7 +80,7 @@
     </after>
   </metamodule>
 
-  <autotools id="libffi" autogenargs="--disable-builddir"
+  <autotools id="libffi" autogenargs="--disable-builddir --enable-exec-static-tramp"
              autogen-sh="configure">
     <branch module="libffi/libffi/releases/download/v3.4.2/libffi-3.4.2.tar.gz"
             repo="github-tarball" version="3.4.2"
