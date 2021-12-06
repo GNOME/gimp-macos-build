@@ -80,21 +80,11 @@
     </after>
   </metamodule>
 
-  <autotools id="libffi" autogenargs="--disable-builddir"
-             autogen-sh="configure">
-    <branch module="libffi/libffi/releases/download/v3.4.2/libffi-3.4.2.tar.gz"
-            repo="github-tarball" version="3.4.2"
-            hash="sha256:540fb721619a6aba3bdeef7d940d8e9e0e6d2c193595bc243241b77ff9e93620"/>
-  </autotools>
-
   <meson id="glib" mesonargs="--force-fallback-for libpcre -Dlibmount=disabled">
     <branch module="glib/2.70/glib-2.70.0.tar.xz"  version="2.70.0"
             hash="sha256:200d7df811c5ba634afbf109f14bb40ba7fde670e89389885da14e27c0840742">
       <patch file="glib2-libpcre.patch" strip="1"/>
     </branch>
-    <dependencies>
-        <dep package="libffi"/>
-    </dependencies>
   </meson>
 
   <meson id="harfbuzz-no-cairo" mesonargs="-Dcoretext=enabled -Ddocs=disabled -Dbenchmark=disabled -Dintrospection=disabled">
