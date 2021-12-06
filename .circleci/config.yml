@@ -57,14 +57,14 @@ jobs:
               make install
         - restore_cache:
             keys:
-              - 2-gimp-v3-v6-temp
-              - 2-webkit-v3-v6-temp
-              - 2-gimp-deps-v3-v6-temp
-              - 2-bootstrap-v3-v6-temp
-              - 2-gimp-v3-
-              - 2-webkit-v3-
-              - 2-gimp-deps-v3-
-              - 2-bootstrap-v3-
+              - temp-2-gimp-v3-v6
+              - temp-2-webkit-v3-v6
+              - temp-2-gimp-deps-v3-v6
+              - temp-2-bootstrap-v3-v6
+              - temp-2-gimp-v3-
+              - temp-2-webkit-v3-
+              - temp-2-gimp-deps-v3-
+              - temp-2-bootstrap-v3-
         - run:
             name: Bootstrap
             command: |
@@ -75,7 +75,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: 2-bootstrap-v3-v6-temp
+            key: temp-2-bootstrap-v3-v6
         - run:
             name: Build GIMP dependencies (without gegl/babl)
             command: |
@@ -96,7 +96,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: 2-gimp-deps-v3-v6-temp
+            key: temp-2-gimp-deps-v3-v6
         # - run:
             # name: Build WebKit v1
             # no_output_timeout: 1h
@@ -107,7 +107,7 @@ jobs:
         # - save_cache:
         #     paths:
         #       - ~/gtk
-        #     key: 2-webkit-v3-v6-temp
+        #     key: temp-2-webkit-v3-v6
         - run:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
@@ -127,7 +127,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: 2-gimp-v3-v6-temp
+            key: temp-2-gimp-v3-v6
         - run:
             name: Importing signing certificate
             command: |
