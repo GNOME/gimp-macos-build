@@ -134,3 +134,15 @@ depends on all of the modules that you want to build.
 The build is quite flaky and at least fiddly. Making the build work
 locally can be a battle. For now, with the exception of webkit,
 the build appears to be quite stable.
+
+## Notarization and security ##
+
+These links have content around code signing and security entitlements.
+When these weren't set correctly, the application, and specifically
+Python plug-ins failed to load and basically hung. There were no error
+messages, so it was difficult to figure out what was going wrong.
+
+- [https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_security_cs_allow-unsigned-executable-memory](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_security_cs_allow-unsigned-executable-memory)
+- [https://developer.apple.com/documentation/apple-silicon/porting-just-in-time-compilers-to-apple-silicon](https://developer.apple.com/documentation/apple-silicon/porting-just-in-time-compilers-to-apple-silicon)
+- [https://developer.apple.com/forums/thread/132908](https://developer.apple.com/forums/thread/132908)
+- [https://developer.apple.com/forums/thread/130560](https://developer.apple.com/forums/thread/130560)
