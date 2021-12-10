@@ -3,7 +3,6 @@ jobs:
   build-gimp-2-99:
     macos:
         xcode: "13.1.0"
-    resource_class: large
 
     steps:
         # for local builds, this needs to be checked out to `~/project`
