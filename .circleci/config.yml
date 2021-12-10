@@ -57,18 +57,18 @@ jobs:
               make install
         - restore_cache:
             keys:
-              - break4-gimpv3-cacheiter1
-              - break4-webkitv3-cacheiter1
-              - break4-gimp-webkit-depsv3-cacheiter1
-              - break4-gimp-depspt2v3-cacheiter1
-              - break4-gimp-depspt1v3-cacheiter1
-              - break4-bootstrapv3-cacheiter1
-              - break4-gimpv3-
-              - break4-webkitv3-
-              - break4-gimp-webkit-depsv3-
-              - break4-gimp-depspt2v3-
-              - break4-gimp-depspt1v3-
-              - break4-bootstrapv3-
+              - break5-gimpv3-cacheiter1
+              - break5-webkitv3-cacheiter1
+              - break5-gimp-webkit-depsv3-cacheiter1
+              - break5-gimp-depspt2v3-cacheiter1
+              - break5-gimp-depspt1v3-cacheiter1
+              - break5-bootstrapv3-cacheiter1
+              - break5-gimpv3-
+              - break5-webkitv3-
+              - break5-gimp-webkit-depsv3-
+              - break5-gimp-depspt2v3-
+              - break5-gimp-depspt1v3-
+              - break5-bootstrapv3-
         - run:
             name: Bootstrap
             command: |
@@ -79,7 +79,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break4-bootstrapv3-cacheiter1
+            key: break5-bootstrapv3-cacheiter1
         - run:
             name: Build GIMP dependencies part 1 (without gegl/babl)
             command: |
@@ -93,7 +93,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break4-gimp-depspt1v3-cacheiter1
+            key: break5-gimp-depspt1v3-cacheiter1
         - run:
             name: Build GIMP dependencies part 2
             command: |
@@ -105,7 +105,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break4-gimp-depspt2v3-cacheiter1
+            key: break5-gimp-depspt2v3-cacheiter1
         - run:
             name: Build all WebKit dependencies
             command: |
@@ -117,7 +117,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break4-gimp-webkit-depsv3-cacheiter1
+            key: break5-gimp-webkit-depsv3-cacheiter1
         - run:
             name: Build WebKit
             no_output_timeout: 1h
@@ -128,7 +128,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break4-webkitv3-cacheiter1
+            key: break5-webkitv3-cacheiter1
         - run:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
@@ -148,7 +148,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break4-gimpv3-cacheiter1
+            key: break5-gimpv3-cacheiter1
         - run:
             name: Importing signing certificate
             command: |
