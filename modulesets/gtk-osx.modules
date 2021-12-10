@@ -56,7 +56,7 @@
   <!-- gnutls in gtk-osx-network.modules (so might have to add below):
     "building with p11-kit support breaks g-ir-scanner, for some weird reason." -->
              <!-- autogenargs="- -without-p11-kit"> -->
-  <include href="https://gitlab.gnome.org/GNOME/gtk-osx/-/raw/master/modulesets-stable/gtk-osx-network.modules"/>
+  <include href="gtk-osx-network.modules"/>
   <include href="gtk-osx-python.modules"/>
   <include href="gtk-osx-random.modules"/>
   <include href="gtk-osx-themes.modules"/>
@@ -80,7 +80,7 @@
     </after>
   </metamodule>
 
-  <autotools id="libffi" autogenargs="--disable-builddir --enable-exec-static-tramp"
+  <autotools id="libffi" autogenargs="--disable-builddir"
              autogen-sh="configure">
     <branch module="libffi/libffi/releases/download/v3.4.2/libffi-3.4.2.tar.gz"
             repo="github-tarball" version="3.4.2"
@@ -405,6 +405,7 @@
             version="41.0" hash="sha256:ef5339d8c35fcad5d10481b70480803f0fa20b3d3cbc339238fcaceeaee01eba"/>
     <dependencies>
       <dep package="librsvg"/>
+      <dep package="glib"/>
     </dependencies>
   </autotools>
 

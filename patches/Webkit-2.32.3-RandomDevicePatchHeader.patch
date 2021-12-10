@@ -1,4 +1,6 @@
 diff --git a/Source/WTF/wtf/RandomDevice.cpp b/Source/WTF/wtf/RandomDevice.cpp
+--- a/Source/WTF/wtf/RandomDevice.cpp
++++ b/Source/WTF/wtf/RandomDevice.cpp
 @@ -41,6 +41,7 @@
  #endif
 
