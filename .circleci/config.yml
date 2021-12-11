@@ -64,10 +64,10 @@ jobs:
               make install
         - restore_cache:
             keys:
-              - gimp-2.10.28-cacheiter1
-              - webkit-2.10.28-cacheiter1
-              - gimp-deps-2.10.28-cacheiter1
-              - bootstrap-2.10.28-cacheiter1
+              - gimp-2.10.28-cacheiter2
+              - webkit-2.10.28-cacheiter2
+              - gimp-deps-2.10.28-cacheiter2
+              - bootstrap-2.10.28-cacheiter2
               - gimp-2.10.28-
               - webkit-2.10.28-
               - gimp-deps-2.10.28-
@@ -82,7 +82,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: bootstrap-2.10.28-cacheiter1
+            key: bootstrap-2.10.28-cacheiter2
         - run:
             name: Build GIMP dependencies (without gegl/babl)
             command: |
@@ -101,7 +101,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-deps-2.10.28-cacheiter1
+            key: gimp-deps-2.10.28-cacheiter2
         - run:
             name: Build WebKit v1
             no_output_timeout: 1h
@@ -112,7 +112,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: webkit-2.10.28-cacheiter1
+            key: webkit-2.10.28-cacheiter2
         - run:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
@@ -132,7 +132,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-2.10.28-cacheiter1
+            key: gimp-2.10.28-cacheiter2
         - run:
             name: Importing signing certificate
             command: |
