@@ -88,7 +88,6 @@
   <!-- Name of main gimp binary -->
   <main-binary>${prefix}/bin/gimp-2.99</main-binary>
   <!-- Copy in gimp plugins -->
-  <binary recurse="True">${prefix}/lib/gimp/2.99/plug-ins/file-jp2-load/*</binary>
   <binary recurse="True">${prefix}/lib/gimp/2.99/plug-ins/align-layers/*</binary>
   <binary recurse="True">${prefix}/lib/gimp/2.99/plug-ins/animation-optimize/*</binary>
   <binary recurse="True">${prefix}/lib/gimp/2.99/plug-ins/animation-play/*</binary>
@@ -132,7 +131,6 @@
   <binary recurse="True">${prefix}/lib/gimp/2.99/plug-ins/file-ico/*</binary>
   <binary recurse="True">${prefix}/lib/gimp/2.99/plug-ins/file-jp2-load/*</binary>
   <binary recurse="True">${prefix}/lib/gimp/2.99/plug-ins/file-jpeg/*</binary>
-  <binary recurse="True">${prefix}/lib/gimp/2.99/plug-ins/file-mng/*</binary>
   <binary recurse="True">${prefix}/lib/gimp/2.99/plug-ins/file-openraster/*</binary>
   <binary recurse="True">${prefix}/lib/gimp/2.99/plug-ins/file-pat/*</binary>
   <binary recurse="True">${prefix}/lib/gimp/2.99/plug-ins/file-pcx/*</binary>
@@ -141,7 +139,6 @@
   <binary recurse="True">${prefix}/lib/gimp/2.99/plug-ins/file-pix/*</binary>
   <binary recurse="True">${prefix}/lib/gimp/2.99/plug-ins/file-png/*</binary>
   <binary recurse="True">${prefix}/lib/gimp/2.99/plug-ins/file-pnm/*</binary>
-  <binary recurse="True">${prefix}/lib/gimp/2.99/plug-ins/file-ps/*</binary>
   <binary recurse="True">${prefix}/lib/gimp/2.99/plug-ins/file-psd/*</binary>
   <binary recurse="True">${prefix}/lib/gimp/2.99/plug-ins/file-psp/*</binary>
   <binary recurse="True">${prefix}/lib/gimp/2.99/plug-ins/file-raw-data/*</binary>
