@@ -32,7 +32,7 @@ jobs:
               echo 'export MACOSX_DEPLOYMENT_TARGET=10.12' >> ~/.profile
         - restore_cache:
             keys:
-              - jhbuild-v2-10-v2
+              - jhbuild-v2-10-v3
               - jhbuild-v2-10-
         - run:
             name: Setup JHBuild
@@ -54,7 +54,7 @@ jobs:
               - ~/.new_local
               - ~/gtk
               - ~/.config
-            key: jhbuild-v2-10-v2
+            key: jhbuild-v2-10-v3
         - run:
             name: Setup gtk-mac-bundler
             command: |
@@ -64,10 +64,10 @@ jobs:
               make install
         - restore_cache:
             keys:
-              - gimp-2.10.28-v5
-              - webkit-2.10.28-v5
-              - gimp-deps-2.10.28-v5
-              - bootstrap-2.10.28-v5
+              - gimp-2.10.28-cacheiter1
+              - webkit-2.10.28-cacheiter1
+              - gimp-deps-2.10.28-cacheiter1
+              - bootstrap-2.10.28-cacheiter1
               - gimp-2.10.28-
               - webkit-2.10.28-
               - gimp-deps-2.10.28-
@@ -82,7 +82,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: bootstrap-2.10.28-v5
+            key: bootstrap-2.10.28-cacheiter1
         - run:
             name: Build GIMP dependencies (without gegl/babl)
             command: |
@@ -101,7 +101,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-deps-2.10.28-v5
+            key: gimp-deps-2.10.28-cacheiter1
         - run:
             name: Build WebKit v1
             no_output_timeout: 1h
@@ -112,7 +112,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: webkit-2.10.28-v5
+            key: webkit-2.10.28-cacheiter1
         - run:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
@@ -132,7 +132,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-2.10.28-v5
+            key: gimp-2.10.28-cacheiter1
         - run:
             name: Importing signing certificate
             command: |
