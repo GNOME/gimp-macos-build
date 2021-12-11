@@ -186,7 +186,12 @@ module_extra_env['gtk-mac-integration-gtk2-python'] = { 'PYTHON': 'python2' }
 module_extra_env['pygtk'] = { 'CFLAGS' : '-Wno-error=implicit-function-declaration' }
 
 # Handle Big Sur PThreads limitations https://developer.apple.com/forums/thread/666700
-module_extra_env["cairo"] = {'LDFLAGS':os.environ['LDFLAGS'] + " -L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"}
+module_extra_env["cairo"] = {'LDFLAGS': os.environ['LDFLAGS'] +
+                                        " -L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"}
+
+# https://trac.macports.org/ticket/60656
+# Happens on CI (though appeared randomly)
+module_extra_env["lcms"] = { 'LDFLAGS': os.environ['LDFLAGS'] + " -w" }
 
 class _cmd_bootstrap_gtk_osx_gimp(jhbuild.commands.base.cmd_build):
     doc = 'Build buildsystem tools not provided by MacOS.'
