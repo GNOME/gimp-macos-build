@@ -66,12 +66,14 @@ jobs:
             keys:
               - gimp-2.10.28-cacheiter2
               - webkit-2.10.28-cacheiter2
-              - gimp-deps-2.10.28-cacheiter2
+              - gimp-depspt2-2.10.28-cacheiter2
+              - gimp-depspt1-2.10.28-cacheiter2
               - bootstrap-2.10.28-cacheiter2
               - gimp-2.10.28-
               - webkit-2.10.28-
-              - gimp-deps-2.10.28-
-              - bootstrap-2.10.28-
+              - gimp-depspt2-2.10.28-
+              - gimp-depspt1-2.10.28-
+              - bootstrappt-2.10.28-
         - run:
             name: Bootstrap
             command: |
@@ -84,10 +86,20 @@ jobs:
               - ~/gtk
             key: bootstrap-2.10.28-cacheiter2
         - run:
-            name: Build GIMP dependencies (without gegl/babl)
+            name: Build GIMP dependencies part 1 (without gegl/babl)
             command: |
               source ~/.profile && jhbuild build suitesparse lcms libunistring gmp libnettle libtasn1 gnutls libjpeg readline python2 glib-networking openjpeg  gtk-mac-integration-gtk2 poppler poppler-data
               source ~/.profile && jhbuild build json-glib p2tc exiv2 gexiv2 ilmbase openexr libwebp libcroco librsvg-24 json-c
+        - run:
+            name: Cleanup
+            command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
+        - save_cache:
+            paths:
+              - ~/gtk
+            key: gimp-depspt1-2.10.28-cacheiter2
+        - run:
+            name: Build GIMP dependencies part 2 (without gegl/babl)
+            command: |
               source ~/.profile && jhbuild build libmypaint mypaint-brushes libde265 nasm x265 libheif aalib shared-mime-info iso-codes libwmf libmng ghostscript
               source ~/.profile && jhbuild build pycairo pygobject pygtk gtk-mac-integration-gtk2-python
         - run:
@@ -101,7 +113,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-deps-2.10.28-cacheiter2
+            key: gimp-depspt2-2.10.28-cacheiter2
         - run:
             name: Build WebKit v1
             no_output_timeout: 1h
