@@ -3,9 +3,10 @@ stages:
 
 build-gimp:
   stage: build-gimp
-  # tags:
-  #   - shared-macos-amd64
-  image: macos-11-xcode-12 # https://docs.gitlab.com/ee/ci/runners/build_cloud/macos/environment.html
+  tags:
+    - macos
+
+  # image: macos-11-xcode-12 # https://docs.gitlab.com/ee/ci/runners/build_cloud/macos/environment.html
   script:
     - |
       echo "Cleanup /usr/local"
