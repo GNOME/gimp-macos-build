@@ -320,6 +320,7 @@
       <patch file="Quartz-version-detection-for-macOS-12.patch" strip="1"/>
       <patch file="gtk+-scale-absolute-value.patch" strip="1"/>
       <patch file="gimp_issue_5989_bigsur_performance_gtk_3-24.patch" strip="1"/>
+      <patch file="gtk+-3.24.30-offscreen-window.patch" strip="1"/>
     </branch>
     <dependencies>
       <dep package="glib"/>
