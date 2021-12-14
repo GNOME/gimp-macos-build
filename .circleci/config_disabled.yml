@@ -97,7 +97,7 @@ jobs:
         - run:
             name: Build GIMP dependencies part 2
             command: |
-              source ~/.profile && jhbuild build gimp-common-deps appstream-glib 
+              source ~/.profile && jhbuild build gimp-common-deps appstream-glib
               source ~/.profile && jhbuild build python3
         - run:
             name: Cleanup
