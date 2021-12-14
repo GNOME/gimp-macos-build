@@ -1,0 +1,43 @@
+diff --git a/gdk/quartz/gdkdisplay-quartz.c b/gdk/quartz/gdkdisplay-quartz.c
+index 70b3536..3f7b1e1 100644
+--- a/gdk/quartz/gdkdisplay-quartz.c
++++ b/gdk/quartz/gdkdisplay-quartz.c
+@@ -32,6 +32,7 @@
+ #include "gdkdisplay-quartz.h"
+ #include "gdkmonitor-quartz.h"
+ #include "gdkglcontext-quartz.h"
++#include "gdkwindow.h"
+ 
+ /* Note about coordinates: There are three coordinate systems at play:
+  *
+@@ -452,10 +453,27 @@ static GdkMonitor *
+ gdk_quartz_display_get_monitor_at_window (GdkDisplay *display,
+                                           GdkWindow *window)
+ {
+-  GdkWindowImplQuartz *impl = GDK_WINDOW_IMPL_QUARTZ (window->impl);
+-  NSWindow *nswindow = impl->toplevel;
+-  NSScreen *screen = [nswindow screen];
++  GdkWindowImplQuartz *impl = NULL;
++  NSWindow *nswindow = NULL;
++  NSScreen *screen = NULL;
+   GdkMonitor *monitor = NULL;
++  GdkWindow *onscreen_window = window;
++
++  /*
++   * This function crashes when it tries to access the NSWindow on
++   * an offscreen window.
++   * https://gitlab.gnome.org/GNOME/gimp/-/issues/7608
++   */
++  while (onscreen_window && onscreen_window->window_type == GDK_WINDOW_OFFSCREEN)
++    onscreen_window = onscreen_window->parent;
++
++  if (!onscreen_window)
++    return NULL;
++
++  impl = GDK_WINDOW_IMPL_QUARTZ (onscreen_window->impl);
++  nswindow = impl->toplevel;
++  screen = [nswindow screen];
++
+   if (screen)
+   {
+     GdkQuartzDisplay *quartz_display = GDK_QUARTZ_DISPLAY (display);
