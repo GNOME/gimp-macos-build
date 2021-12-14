@@ -113,10 +113,10 @@ setup_sdk("10.12","x86_64")
 
 # enable optimization
 
-environ_prepend('CFLAGS', "-O3")
-environ_prepend('CXXFLAGS', "-O3")
-environ_prepend('OBJCFLAGS', "-O3")
-# setup_debug()
+# environ_prepend('CFLAGS', "-O3")
+# environ_prepend('CXXFLAGS', "-O3")
+# environ_prepend('OBJCFLAGS', "-O3")
+setup_debug()
 
 # Comment out the previous and uncomment this one to build for all
 # systems running SnowLeopard and later:
@@ -181,6 +181,43 @@ module_extra_env['pygtk'] = { 'CFLAGS' : '-Wno-error=implicit-function-declarati
 # Handle Big Sur PThreads limitations https://developer.apple.com/forums/thread/666700
 module_extra_env["cairo"] = { 'LDFLAGS': os.environ['LDFLAGS'] +
                                         " -L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib" }
+
+module_extra_env['gtk+-3.0'] = {
+    'CFLAGS': os.environ['CFLAGS'] + ' -fsanitize=address',
+    'CXXFLAGS': os.environ['CXXFLAGS'] + ' -fsanitize=address',
+    'OBJCFLAGS': os.environ['OBJCFLAGS'] + ' -fsanitize=address',
+    'LDFLAGS': os.environ['LDFLAGS'] + ' -fsanitize=address',
+}
+module_extra_env['gimp299'] = {
+    'CFLAGS': os.environ['CFLAGS'] + ' -fsanitize=address',
+    'CXXFLAGS': os.environ['CXXFLAGS'] + ' -fsanitize=address',
+    'OBJCFLAGS': os.environ['OBJCFLAGS'] + ' -fsanitize=address',
+    'LDFLAGS': os.environ['LDFLAGS'] + ' -fsanitize=address -Wl,-undefined,dynamic_lookup',
+}
+module_extra_env['gegl'] = {
+    'CFLAGS': os.environ['CFLAGS'] + ' -fsanitize=address',
+    'CXXFLAGS': os.environ['CXXFLAGS'] + ' -fsanitize=address',
+    'OBJCFLAGS': os.environ['OBJCFLAGS'] + ' -fsanitize=address',
+    'LDFLAGS': os.environ['LDFLAGS'] + ' -fsanitize=address',
+}
+module_extra_env['babl'] = {
+    'CFLAGS': os.environ['CFLAGS'] + ' -fsanitize=address',
+    'CXXFLAGS': os.environ['CXXFLAGS'] + ' -fsanitize=address',
+    'OBJCFLAGS': os.environ['OBJCFLAGS'] + ' -fsanitize=address',
+    'LDFLAGS': os.environ['LDFLAGS'] + ' -fsanitize=address',
+}
+module_extra_env['gtk-mac-integration-gtk3'] = {
+    'CFLAGS': os.environ['CFLAGS'] + ' -fsanitize=address',
+    'CXXFLAGS': os.environ['CXXFLAGS'] + ' -fsanitize=address',
+    'OBJCFLAGS': os.environ['OBJCFLAGS'] + ' -fsanitize=address',
+    'LDFLAGS': os.environ['LDFLAGS'] + ' -fsanitize=address',
+}
+module_extra_env['gtk-mac-integration-python'] = {
+    'CFLAGS': os.environ['CFLAGS'] + ' -fsanitize=address',
+    'CXXFLAGS': os.environ['CXXFLAGS'] + ' -fsanitize=address',
+    'OBJCFLAGS': os.environ['OBJCFLAGS'] + ' -fsanitize=address',
+    'LDFLAGS': os.environ['LDFLAGS'] + ' -fsanitize=address',
+}
 
 class _cmd_bootstrap_gtk_osx_gimp(jhbuild.commands.base.cmd_build):
     doc = 'Build buildsystem tools not provided by MacOS.'
