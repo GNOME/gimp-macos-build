@@ -1,0 +1,138 @@
+diff --git a/gdk/quartz/GdkQuartzNSWindow.c b/gdk/quartz/GdkQuartzNSWindow.c
+index f0e5743..ff4bf7e 100644
+--- a/gdk/quartz/GdkQuartzNSWindow.c	
++++ b/gdk/quartz/GdkQuartzNSWindow.c
+@@ -910,4 +910,11 @@ typedef enum
+   [self setFrame:lastUnfullscreenFrame display:YES];
+ }
+ 
++-(void)dealloc
++{
++  g_warning ("********GdkQuartzNSWindow dealloc: %p", self);
++  [super dealloc];
++}
++
++
+ @end
+diff --git a/gdk/quartz/GdkQuartzView.c b/gdk/quartz/GdkQuartzView.c
+index 3eaace1..e6c5fdd 100644
+--- a/gdk/quartz/GdkQuartzView.c	
++++ b/gdk/quartz/GdkQuartzView.c
+@@ -256,6 +256,7 @@
+       trackingRect = 0;
+     }
+ 
++  g_warning ("********GdkQuartzView dealloc: %p", self);
+   [super dealloc];
+ }
+ 
+diff --git a/gdk/quartz/gdkwindow-quartz.c b/gdk/quartz/gdkwindow-quartz.c
+index 4710f0a..e302c5c 100644
+--- a/gdk/quartz/gdkwindow-quartz.c	
++++ b/gdk/quartz/gdkwindow-quartz.c
+@@ -131,6 +131,9 @@ gdk_quartz_window_get_nsview (GdkWindow *window)
+   if (GDK_WINDOW_DESTROYED (window))
+     return NULL;
+ 
++  if (!GDK_IS_WINDOW_IMPL_QUARTZ(window->impl))
++    return NULL;
++
+   return ((GdkWindowImplQuartz *)window->impl)->view;
+ }
+ 
+@@ -140,6 +143,9 @@ gdk_quartz_window_get_nswindow (GdkWindow *window)
+   if (GDK_WINDOW_DESTROYED (window))
+     return NULL;
+ 
++  if (!GDK_IS_WINDOW_IMPL_QUARTZ(window->impl))
++    return NULL;
++
+   return ((GdkWindowImplQuartz *)window->impl)->toplevel;
+ }
+ 
+@@ -233,9 +239,13 @@ gdk_window_impl_quartz_finalize (GObject *object)
+     g_object_unref (impl->transient_for);
+ 
+   if (impl->view)
+-    [[NSNotificationCenter defaultCenter] removeObserver: impl->toplevel
+-                                       name: @"NSViewFrameDidChangeNotification"
+-                                     object: impl->view];
++    {
++      [[NSNotificationCenter defaultCenter] removeObserver: impl->toplevel
++                                        name: @"NSViewFrameDidChangeNotification"
++                                      object: impl->view];
++      [impl->view release];
++      impl->view = NULL;
++    }
+ 
+   G_OBJECT_CLASS (parent_class)->finalize (object);
+ }
+@@ -869,6 +879,8 @@ _gdk_quartz_display_create_window_impl (GdkDisplay    *display,
+   impl = g_object_new (GDK_TYPE_WINDOW_IMPL_QUARTZ, NULL);
+   window->impl = GDK_WINDOW_IMPL (impl);
+   impl->wrapper = window;
++  impl->view = NULL;
++  impl->toplevel = NULL;
+ 
+   parent_impl = GDK_WINDOW_IMPL_QUARTZ (window->parent->impl);
+ 
+@@ -893,9 +905,6 @@ _gdk_quartz_display_create_window_impl (GdkDisplay    *display,
+ 				  (attributes->cursor) :
+ 				  NULL));
+ 
+-  impl->view = NULL;
+-  impl->toplevel = NULL;
+-
+   if (attributes_mask & GDK_WA_TYPE_HINT)
+     {
+       type_hint = attributes->type_hint;
+@@ -948,6 +957,7 @@ _gdk_quartz_display_create_window_impl (GdkDisplay    *display,
+ 			                                        backing:NSBackingStoreBuffered
+ 			                                          defer:NO
+                                                                   screen:screen];
++  g_warning ("********GdkQuartzNSWindow alloc: %p", impl->toplevel);
+ 
+         if (type_hint != GDK_WINDOW_TYPE_HINT_NORMAL)
+           impl->toplevel.excludedFromWindowsMenu = true;
+@@ -969,13 +979,13 @@ _gdk_quartz_display_create_window_impl (GdkDisplay    *display,
+         content_rect.origin.y = 0;
+ 
+ 	impl->view = [[GdkQuartzView alloc] initWithFrame:content_rect];
++  g_warning ("********GdkQuartzView alloc: %p", impl->view);
+ 	[impl->view setGdkWindow:window];
+ 	[impl->toplevel setContentView:impl->view];
+         [[NSNotificationCenter defaultCenter] addObserver: impl->toplevel
+                                       selector: @selector (windowDidResize:)
+                                       name: @"NSViewFrameDidChangeNotification"
+                                       object: impl->view];
+-	[impl->view release];
+       }
+       break;
+ 
+@@ -989,15 +999,15 @@ _gdk_quartz_display_create_window_impl (GdkDisplay    *display,
+                                             window->y + window->parent->abs_y,
+                                             window->width,
+                                             window->height);
+-	
++
+ 	    impl->view = [[GdkQuartzView alloc] initWithFrame:frame_rect];
+-	    
++      g_warning ("********GdkQuartzView alloc: %p", impl->view);
++
+ 	    [impl->view setGdkWindow:window];
+ 
+ 	    /* GdkWindows should be hidden by default */
+ 	    [impl->view setHidden:YES];
+ 	    [parent_impl->view addSubview:impl->view];
+-	    [impl->view release];
+ 	  }
+       }
+       break;
+@@ -2541,6 +2551,7 @@ gdk_quartz_window_set_decorations (GdkWindow       *window,
+                                                                   backing:NSBackingStoreBuffered
+                                                                     defer:NO
+                                                                    screen:screen];
++          g_warning ("********GdkQuartzNSWindow alloc: %p", impl->toplevel);
+           _gdk_quartz_window_update_has_shadow (impl);
+ 
+           [impl->toplevel setLevel: window_type_hint_to_level (impl->type_hint)];

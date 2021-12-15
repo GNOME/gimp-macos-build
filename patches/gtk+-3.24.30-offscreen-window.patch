@@ -41,3 +41,15 @@ index 70b3536..3f7b1e1 100644
    if (screen)
    {
      GdkQuartzDisplay *quartz_display = GDK_QUARTZ_DISPLAY (display);
+diff --git a/gdk/quartz/gdkwindow-quartz.c b/gdk/quartz/gdkwindow-quartz.c
+index 0fcd05b..e94e502 100644
+--- a/gdk/quartz/gdkwindow-quartz.c
++++ b/gdk/quartz/gdkwindow-quartz.c
+@@ -894,6 +894,7 @@ _gdk_quartz_display_create_window_impl (GdkDisplay    *display,
+ 				  NULL));
+ 
+   impl->view = NULL;
++  impl->toplevel = NULL;
+ 
+   if (attributes_mask & GDK_WA_TYPE_HINT)
+     {

@@ -57,12 +57,12 @@ jobs:
               make install
         - restore_cache:
             keys:
-              - break5-gimpv3-cacheiter4
-              - break5-webkitv3-cacheiter4
-              - break5-gimp-webkit-depsv3-cacheiter4
-              - break5-gimp-depspt2v3-cacheiter4
-              - break5-gimp-depspt1v3-cacheiter4
-              - break5-bootstrapv3-cacheiter4
+              - break5-gimpv3-cacheiter5
+              - break5-webkitv3-cacheiter5
+              - break5-gimp-webkit-depsv3-cacheiter5
+              - break5-gimp-depspt2v3-cacheiter5
+              - break5-gimp-depspt1v3-cacheiter5
+              - break5-bootstrapv3-cacheiter5
               - break5-gimpv3-
               - break5-webkitv3-
               - break5-gimp-webkit-depsv3-
@@ -72,6 +72,7 @@ jobs:
         - run:
             name: Bootstrap
             command: |
+              # source ~/.profile && jhbuild buildone --force gtk+-3.0
               source ~/.profile && jhbuild build icu libnsgif meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-gtk3
         - run:
             name: Cleanup
@@ -79,7 +80,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break5-bootstrapv3-cacheiter4
+            key: break5-bootstrapv3-cacheiter5
         - run:
             name: Build GIMP dependencies part 1 (without gegl/babl)
             command: |
@@ -93,7 +94,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break5-gimp-depspt1v3-cacheiter4
+            key: break5-gimp-depspt1v3-cacheiter5
         - run:
             name: Build GIMP dependencies part 2
             command: |
@@ -105,7 +106,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break5-gimp-depspt2v3-cacheiter4
+            key: break5-gimp-depspt2v3-cacheiter5
         - run:
             name: Build all WebKit dependencies
             command: |
@@ -117,7 +118,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break5-gimp-webkit-depsv3-cacheiter4
+            key: break5-gimp-webkit-depsv3-cacheiter5
         # Had to be disabled because build takes more than 1 hour and circleci aborts build
         # after 1 hour
         # - run:
@@ -130,7 +131,7 @@ jobs:
         # - save_cache:
         #     paths:
         #       - ~/gtk
-        #     key: break5-webkitv3-cacheiter4
+        #     key: break5-webkitv3-cacheiter5
         - run:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
@@ -150,7 +151,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break5-gimpv3-cacheiter4
+            key: break5-gimpv3-cacheiter5
         - run:
             name: Importing signing certificate
             command: |
