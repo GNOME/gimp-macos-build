@@ -122,6 +122,22 @@ To run it of course:
 
 `./build_gimp.sh`
 
+## Debug info ##
+
+By default, the executable will be built with debug symbols but optimizations, which make
+debugging difficult. If you would like unoptimized code to be able to use the `lldb`
+debugger to go through step by step, set:
+
+```
+$ export GIMP_DEBUG="true"
+```
+
+or if you followed the above local build instructions
+
+```
+GIMP_DEBUG="true" ./build_gimp.sh
+```
+
 ## Appendix ##
 
 The build used to depend on this [fork](https://gitlab.gnome.org/samm-git/gtk-osx/tree/gimp) of

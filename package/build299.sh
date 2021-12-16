@@ -56,14 +56,6 @@ do
    | bash
 done
 
-if [[ "$1" == "debug" ]]; then
-  echo "Generating debug symbols"
-  find  ${PACKAGE_DIR}/GIMP-2.99.app/ -type f -perm +111 \
-     | xargs file \
-     | grep ' Mach-O '|awk -F ':' '{print $1}' \
-     | xargs -n1 dsymutil
-fi
-
 echo "remove @rpath from the libraries"
 find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/ -mindepth 1 -maxdepth 1 -perm +111 -type f \
    | xargs file \
@@ -107,6 +99,14 @@ sed -i.old 's|@executable_path/../Resources/lib/||' \
 echo "fixing IMM cache"
 sed -i.old 's|@executable_path/../Resources/lib/||' \
     ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/etc/gtk-3.0/gtk.immodules
+
+if [[ "$1" == "debug" ]]; then
+  echo "Generating debug symbols"
+  find  ${PACKAGE_DIR}/GIMP-2.99.app/ -type f -perm +111 \
+     | xargs file \
+     | grep ' Mach-O '|awk -F ':' '{print $1}' \
+     | xargs -n1 dsymutil
+fi
 
 echo "create missing links. should we use wrappers instead?"
 
