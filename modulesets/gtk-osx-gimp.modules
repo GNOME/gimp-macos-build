@@ -132,11 +132,10 @@
 
   <meson id="gegl" mesonargs="-Dvapigen=disabled">
     <branch repo="ftp.gimp.org"
-      version="0.4.32"
-      hash="sha256:668e3c6b9faf75fb00512701c36274ab6f22a8ba05ec62dbf187d34b8d298fa1"
-      module="gegl/0.4/gegl-0.4.32.tar.xz">
+      version="0.4.34"
+      hash="sha256:ef63f0bca5b431c6119addd834ca7fbb507c900c4861c57b3667b6f4ccfcaaaa"
+      module="gegl/0.4/gegl-0.4.34.tar.xz">
       <patch file="gegl-0.4.32-no_python_tests.patch" strip="1"/>
-      <patch file="Issue-288-gegl-broken-meson-build.patch" strip="1"/>
     </branch>
     <after>
       <dep package="suitesparse"/>
