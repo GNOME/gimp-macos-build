@@ -84,18 +84,11 @@
   </metamodule>
 
   <autotools id="gimp" autogen-sh="autoreconf" autogenargs="--without-x --with-build-id=org.gimp.GIMP_official --with-revision=0">
-    <branch module="gimp/v2.10/gimp-2.10.28.tar.bz2"
-      version="2.10.28"
-      hash="sha256:4f4dc22cff1ab5f026feaa2ab55e05775b3a11e198186b47bdab79cbfa078826" repo="gimp">
+    <branch module="gimp/v2.10/gimp-2.10.30.tar.bz2"
+      version="2.10.30"
+      hash="sha256:88815daa76ed7d4277eeb353358bafa116cd2fcd2c861d95b95135c1d52b67dc" repo="gimp">
       <!-- fix wrong position on the printing dialog on macOS.  -->
       <patch file="https://gitlab.gnome.org/GNOME/gimp/merge_requests/205.patch" strip="1"/>
-      <!-- issue 5952 - Backport of Selection not showing on Mac OS Big Sur 11 though "Show Selection" is enabled -->
-      <patch file="Issue-5952-0001-Issue-5640-Selection-tools-not-showing-selection-on-.patch" strip="1"/>
-      <patch file="Issue-5952-0002-app-fix-selection-display-on-right-bottom-borders-wh.patch" strip="1"/>
-      <patch file="Issue-5952-0003-app-check-the-time-before-last-selection-draw-before.patch" strip="1"/>
-      <patch file="Issue-5952-0004-app-add-back-a-timeout-based-idle-function-to-queue-.patch" strip="1"/>
-      <patch file="Issue-5952-0005-app-replace-gtk_widget_queue_draw_region-with.patch" strip="1"/>
-      <patch file="Issue-5952-0006-app-replace-using-the-draw-signal-by-expose-event-on.patch" strip="1"/>
     </branch>
     <after>
       <dep package="meta-gtk-osx-bootstrap"/>
