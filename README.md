@@ -57,8 +57,88 @@ framework. Probably could be a small Python plugin as [there is a module](https:
 
 ## Branches
 
-- `master`: latest GIMP release
-- `gimp-2-10`: gimp-2-10 build
-- `debug`: same as the `master`, but with full debug symbols
-- `hardened-runtime`: singed and notarized package with a hardened runtime enabled
+- `master`: latest GIMP release and build
+- `gimp-2-10`: latest GIMP 2.10 release and build
+
+## How to build locally (quick and dirty and might not work) ##
+
+For a script that builds locally, a quick and dirty way to get all the commands is to run:
+
+`brew install yq`
+
+(remember that you are using `homebrew` here which won't be availabe during build time)
+
+and then
+
+```sh
+git clone https://gitlab.gnome.org/Infrastructure/gimp-macos-build.git project
+cd project
+```
+
+Then get the branch for the build you want to create a script for.
+
+For 2.99:
+
+```sh
+git checkout master
+```
+
+Or for 2.10.28 (although there are tags for specific releases so go to that if desired)
+
+```sh
+git checkout gimp-2-10
+```
+
+Then
+
+```sh
+yq e '.jobs.[].steps[].run.command | select(length!=0)' .circleci/config.yml > ~/build_gimp.sh
+cd ~
+chmod +x build_gimp.sh
+```
+
+**Important** Now review the `build_gimp.sh` script and make sure you are comfortable with all
+the commands. And as you go, you may want to comment things out. For example, the code signing
+and notarization commands are not necessary. To understand the context, you can look at
+`.circleci/config.yml` and see what the parts are for.
+
+To run it of course:
+
+`./build_gimp.sh`
+
+## Debug info ##
+
+By default, the executable will be built with debug symbols but optimizations, which make
+debugging difficult. If you would like unoptimized code to be able to use the `lldb`
+debugger to go through step by step, set:
+
+```
+$ export GIMP_DEBUG="true"
+```
+
+or if you followed the above local build instructions
+
+```
+GIMP_DEBUG="true" ./build_gimp.sh
+```
+
+## Swap local build ##
+
+A tool to swap local builds is available. This allows local devs to have multiple versions
+of gimp running at the same time.
+
+This tool can be called at the top of a local build file using:
+
+```
+project/swap-local-build.sh --gimp210
+```
+
+or
+
+```
+project/swap-local-build.sh --gimp299
+```
+
+Other options are available. This tool will only be available once the setup script has been
+run once as it is within the `project` directory.
 
