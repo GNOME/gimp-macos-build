@@ -138,6 +138,26 @@ or if you followed the above local build instructions
 GIMP_DEBUG="true" ./build_gimp.sh
 ```
 
+## Swap local build ##
+
+A tool to swap local builds is available. This allows local devs to have multiple versions
+of gimp running at the same time.
+
+This tool can be called at the top of a local build file using:
+
+```
+project/swap-local-build.sh --gimp210
+```
+
+or
+
+```
+project/swap-local-build.sh --gimp299
+```
+
+Other options are available. This tool will only be available once the setup script has been
+run once as it is within the `project` directory.
+
 ## Appendix ##
 
 The build used to depend on this [fork](https://gitlab.gnome.org/samm-git/gtk-osx/tree/gimp) of
