@@ -28,13 +28,6 @@ BASEDIR=$(dirname "$0")
 #  target directory
 PACKAGE_DIR="${HOME}/gimp299-osx-app"
 
-echo "Move icons to right directory"
-
-pushd ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/icons
- cp -r Adwaita ../gimp/2.99/icons
- cp -r hicolor ../gimp/2.99/icons
-popd
-
 echo "Removing pathnames from the libraries and binaries"
 # fix permission for some libs
 find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib -name '*.dylib' -type f | xargs chmod 755
