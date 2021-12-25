@@ -114,10 +114,6 @@ echo "copy xdg-email wrapper to the package"
 mkdir -p ${PACKAGE_DIR}/GIMP-2.99.app/Contents/MacOS
 cp xdg-email ${PACKAGE_DIR}/GIMP-2.99.app/Contents/MacOS
 
-echo "copy pygimp.interp to the package"
-mkdir -p ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/interpreters
-cp pygimp.interp ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/interpreters
-
 echo "Creating pyc files"
 python3.9 -m compileall -q ${PACKAGE_DIR}/GIMP-2.99.app
 
