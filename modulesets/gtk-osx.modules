@@ -21,6 +21,8 @@
   <repository type="git" name="github" href="https://git@github.com/"/>
   <repository type="tarball" name="github-tarball" href="https://github.com/"/>
   <repository type="system" name="system"/>
+  <repository type="git" name="lukaso.git.gnome.org" href="git@gitlab.gnome.org:lukaso"/>
+
 
   <!-- This module set works a bit differently than for example the
        GNOME ones do. It's split up in seperate pieces:
@@ -275,12 +277,14 @@
   <!-- gtk3 is in maintenance mode with 3.24 the final release series. -->
   <autotools id="gtk+-3.0" autogen-sh="autogen.sh"
              autogenargs="--enable-quartz-backend --enable-quartz-relocation --enable-debug=yes">
-    <branch module="gtk+/3.24/gtk+-3.24.31.tar.xz" version="3.24.31"
-            hash="sha256:423c3e7fdb4c459ee889e35fd4d71fd2623562541c1041b11c07e5ad1ff10bf9">
+    <branch module="gtk.git" revision="gtk-3-24-dev" repo="lukaso.git.gnome.org"/>
+    <!-- <branch module="gtk+/3.24/gtk+-3.24.31.tar.xz" version="3.24.31"
+            hash="sha256:423c3e7fdb4c459ee889e35fd4d71fd2623562541c1041b11c07e5ad1ff10bf9"> -->
       <!-- This patch is in MR https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/4262 -->
-      <patch file="gtk+-3.24.30-fontbox.patch" strip="1"/>
-      <patch file="gtk+-3.24.30-robust-pointers.patch" strip="1"/>
-    </branch>
+      <!-- <patch file="gtk+-3.24.30-fontbox.patch" strip="1"/> -->
+      <!-- This patch is in MR https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/4293 -->
+      <!-- <patch file="gtk+-3.24.30-robust-pointers.patch" strip="1"/> -->
+    <!-- </branch> -->
     <dependencies>
       <dep package="glib"/>
       <dep package="pango"/>
