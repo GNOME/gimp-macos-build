@@ -9,7 +9,8 @@ jobs:
         - checkout
         - run:
             name: Cleanup /usr/local
-            command: PATH=$(echo "$PATH" | sed -e 's/\/usr\/local\/bin://')
+            command: |
+              echo "export PATH=$(echo "$PATH" | sed -e 's/\/usr\/local\/bin://')" >> $BASH_ENV
         - run:
             name: Setup Python3
             command: |
