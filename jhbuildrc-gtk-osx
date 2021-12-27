@@ -571,8 +571,8 @@ addpath("LTDL_LIBRARY_PATH", prefix + "/lib")
 prependpath('PERL5LIB', prefix + '/lib/perl5/vendor_perl')
 prependpath('PERL5LIB', prefix + '/lib/perl5/site_perl')
 
-# Point gtk-doc and other xsltproc users to our XML catalog.
-#
+# Point gtk-doc* and other xsltproc users to our XML catalog.
+# *gtk-doc has been removed, but this might still be necessary.
 _pfx_cat_file = os.path.join(prefix, 'share', 'xml', 'catalog')
 if not os.path.exists(_pfx_cat_file):
     os.makedirs(os.path.dirname(_pfx_cat_file))
