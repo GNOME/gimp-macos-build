@@ -8,9 +8,6 @@ jobs:
         # for local builds, this needs to be checked out to `~/project`
         - checkout
         - run:
-            name: Cleanup /usr/local
-            command: PATH=$(echo "$PATH" | sed -e 's/\/usr\/local\/bin://')
-        - run:
             name: Setup Python3
             command: |
               cd ~/
