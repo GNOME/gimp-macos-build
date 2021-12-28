@@ -3,8 +3,6 @@ jobs:
   build-gimp-2-99:
     macos:
         xcode: "13.1.0"
-    environment:
-      CACHEITER: cacheiter5
 
     steps:
         # for local builds, this needs to be checked out to `~/project`
@@ -60,12 +58,12 @@ jobs:
               make install
         - restore_cache:
             keys:
-              - break5-gimpv3-{{ .Environment.CACHEITER }}
-              - break5-webkitv3-{{ .Environment.CACHEITER }}
-              - break5-gimp-webkit-depsv3-{{ .Environment.CACHEITER }}
-              - break5-gimp-depspt2v3-{{ .Environment.CACHEITER }}
-              - break5-gimp-depspt1v3-{{ .Environment.CACHEITER }}
-              - break5-bootstrapv3-{{ .Environment.CACHEITER }}
+              - break5-gimpv3-cacheiter6
+              - break5-webkitv3-cacheiter6
+              - break5-gimp-webkit-depsv3-cacheiter6
+              - break5-gimp-depspt2v3-cacheiter6
+              - break5-gimp-depspt1v3-cacheiter6
+              - break5-bootstrapv3-cacheiter6
               - break5-gimpv3-
               - break5-webkitv3-
               - break5-gimp-webkit-depsv3-
@@ -83,7 +81,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break5-bootstrapv3-{{ .Environment.CACHEITER }}
+            key: break5-bootstrapv3-cacheiter6
         - run:
             name: Build GIMP dependencies part 1 (without gegl/babl)
             command: |
@@ -95,7 +93,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break5-gimp-depspt1v3-{{ .Environment.CACHEITER }}
+            key: break5-gimp-depspt1v3-cacheiter6
         - run:
             name: Build GIMP dependencies part 2
             command: |
@@ -107,7 +105,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break5-gimp-depspt2v3-{{ .Environment.CACHEITER }}
+            key: break5-gimp-depspt2v3-cacheiter6
         - run:
             name: Build all WebKit dependencies
             command: |
@@ -119,7 +117,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break5-gimp-webkit-depsv3-{{ .Environment.CACHEITER }}
+            key: break5-gimp-webkit-depsv3-cacheiter6
         # Had to be disabled because build takes more than 1 hour and circleci aborts build
         # after 1 hour
         # - run:
@@ -132,7 +130,7 @@ jobs:
         # - save_cache:
         #     paths:
         #       - ~/gtk
-        #     key: break5-webkitv3-{{ .Environment.CACHEITER }}
+        #     key: break5-webkitv3-cacheiter6
         - run:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
@@ -152,7 +150,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break5-gimpv3-{{ .Environment.CACHEITER }}
+            key: break5-gimpv3-cacheiter6
         - run:
             name: Importing signing certificate
             command: |
