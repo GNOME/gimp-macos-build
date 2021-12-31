@@ -1,0 +1,483 @@
+diff --git a/examples/application10/meson.build b/examples/application10/meson.build
+index ce842ae794..417a64155e 100644
+--- a/examples/application10/meson.build
++++ b/examples/application10/meson.build
+@@ -5,7 +5,7 @@ app10_resources = gnome.compile_resources(
+   source_dir: '.'
+ )
+ 
+-app10_schemas = gnome.compile_schemas()
++app10_schemas = gnome.compile_schemas(depend_files: files(['org.gtk.exampleapp.gschema.xml']))
+ 
+ 
+ app10 = executable(
+@@ -21,3 +21,5 @@ app10 = executable(
+   app10_schemas,
+   dependencies: libgtk_dep
+ )
++
++install_data('org.gtk.exampleapp.gschema.xml', install_dir: gtk_schemasdir)
+diff --git a/examples/application5/meson.build b/examples/application5/meson.build
+index f0fed1ca59..8ecb41948e 100644
+--- a/examples/application5/meson.build
++++ b/examples/application5/meson.build
+@@ -5,7 +5,7 @@ app5_resources = gnome.compile_resources(
+   source_dir: '.'
+ )
+ 
+-app5_schemas = gnome.compile_schemas()
++app5_schemas = gnome.compile_schemas(depend_files: files(['org.gtk.exampleapp.gschema.xml']))
+ 
+ 
+ app5 = executable(
+@@ -19,3 +19,5 @@ app5 = executable(
+   app5_schemas,
+   dependencies: libgtk_dep
+ )
++
++install_data('org.gtk.exampleapp.gschema.xml', install_dir: gtk_schemasdir)
+diff --git a/examples/application6/meson.build b/examples/application6/meson.build
+index 2d923f35a3..8a172e2e26 100644
+--- a/examples/application6/meson.build
++++ b/examples/application6/meson.build
+@@ -5,7 +5,7 @@ app6_resources = gnome.compile_resources(
+   source_dir: '.'
+ )
+ 
+-app6_schemas = gnome.compile_schemas()
++app6_schemas = gnome.compile_schemas(depend_files: files(['org.gtk.exampleapp.gschema.xml']))
+ 
+ 
+ app6 = executable(
+@@ -21,3 +21,5 @@ app6 = executable(
+   app6_schemas,
+   dependencies: libgtk_dep
+ )
++
++install_data('org.gtk.exampleapp.gschema.xml', install_dir: gtk_schemasdir)
+diff --git a/examples/application7/meson.build b/examples/application7/meson.build
+index cc32f36ad0..4c46221085 100644
+--- a/examples/application7/meson.build
++++ b/examples/application7/meson.build
+@@ -5,7 +5,7 @@ app7_resources = gnome.compile_resources(
+   source_dir: '.'
+ )
+ 
+-app7_schemas = gnome.compile_schemas()
++app7_schemas = gnome.compile_schemas(depend_files: files(['org.gtk.exampleapp.gschema.xml']))
+ 
+ 
+ app7 = executable(
+@@ -21,3 +21,5 @@ app7 = executable(
+   app7_schemas,
+   dependencies: libgtk_dep
+ )
++
++install_data('org.gtk.exampleapp.gschema.xml', install_dir: gtk_schemasdir)
+diff --git a/examples/application8/meson.build b/examples/application8/meson.build
+index 1192f4d688..ee49034d2b 100644
+--- a/examples/application8/meson.build
++++ b/examples/application8/meson.build
+@@ -5,7 +5,7 @@ app8_resources = gnome.compile_resources(
+   source_dir: '.'
+ )
+ 
+-app8_schemas = gnome.compile_schemas()
++app8_schemas = gnome.compile_schemas(depend_files: files(['org.gtk.exampleapp.gschema.xml']))
+ 
+ 
+ app8 = executable(
+@@ -21,3 +21,5 @@ app8 = executable(
+   app8_schemas,
+   dependencies: libgtk_dep
+ )
++
++install_data('org.gtk.exampleapp.gschema.xml', install_dir: gtk_schemasdir)
+diff --git a/examples/application9/meson.build b/examples/application9/meson.build
+index fccee738cb..46b77c4d17 100644
+--- a/examples/application9/meson.build
++++ b/examples/application9/meson.build
+@@ -5,7 +5,7 @@ app9_resources = gnome.compile_resources(
+   source_dir: '.'
+ )
+ 
+-app9_schemas = gnome.compile_schemas()
++app9_schemas = gnome.compile_schemas(depend_files: files(['org.gtk.exampleapp.gschema.xml']))
+ 
+ 
+ app9 = executable(
+@@ -21,3 +21,5 @@ app9 = executable(
+   app9_schemas,
+   dependencies: libgtk_dep
+ )
++
++install_data('org.gtk.exampleapp.gschema.xml', install_dir: gtk_schemasdir)
+diff --git a/gdk/quartz/GdkQuartzView.c b/gdk/quartz/GdkQuartzView.c
+index d3eca93207..c20c5de83a 100644
+--- a/gdk/quartz/GdkQuartzView.c
++++ b/gdk/quartz/GdkQuartzView.c
+@@ -298,8 +298,10 @@
+    */
+   if(gdk_quartz_osx_version() >= GDK_OSX_BIGSUR)
+   {
++#if MAC_OS_X_VERSION_MIN_REQUIRED >= 101200
+     CALayer* layer = self.layer;
+     layer.contentsFormat = kCAContentsFormatRGBA8Uint;
++#endif
+   }
+ 
+   [super viewWillDraw];
+diff --git a/gdk/quartz/meson.build b/gdk/quartz/meson.build
+index 70d688e1a7..619c0242e0 100644
+--- a/gdk/quartz/meson.build
++++ b/gdk/quartz/meson.build
+@@ -48,8 +48,9 @@ core_graphics_dep = dependency('appleframeworks', modules : 'CoreGraphics', requ
+ appkit_dep = dependency('appleframeworks', modules : 'AppKit', required : true)
+ cocoa_dep = dependency('appleframeworks', modules : 'Cocoa', required : true)
+ carbon_dep = dependency('appleframeworks', modules : 'Carbon', required : true)
++quartzcore_dep = dependency('appleframeworks', modules : 'QuartzCore', required : true)
+ 
+-gdk_quartz_deps = [ core_graphics_dep, appkit_dep, cocoa_dep, carbon_dep ]
++gdk_quartz_deps = [ core_graphics_dep, appkit_dep, cocoa_dep, carbon_dep, quartzcore_dep ]
+ 
+ libgdk_quartz = static_library('gdk-quartz',
+   gdk_quartz_sources, gdkconfig, gdkenum_h,
+diff --git a/gdk/wayland/gdkscreen-wayland.c b/gdk/wayland/gdkscreen-wayland.c
+index b0abd61b8c..890fc75a4a 100644
+--- a/gdk/wayland/gdkscreen-wayland.c
++++ b/gdk/wayland/gdkscreen-wayland.c
+@@ -555,6 +555,7 @@ static TranslationEntry translations[] = {
+   { FALSE, "org.gnome.desktop.wm.preferences", "action-middle-click-titlebar", "gtk-titlebar-middle-click", G_TYPE_STRING, { .s = "none" } },
+   { FALSE, "org.gnome.desktop.wm.preferences", "action-right-click-titlebar", "gtk-titlebar-right-click", G_TYPE_STRING, { .s = "menu" } },
+   { FALSE, "org.gnome.desktop.a11y", "always-show-text-caret", "gtk-keynav-use-caret", G_TYPE_BOOLEAN, { .b = FALSE } },
++  { FALSE, "org.gnome.desktop.a11y.interface", "high-contrast", "high-contrast", G_TYPE_NONE, { .b = FALSE } },
+   { FALSE, "org.gnome.fontconfig", "serial", "gtk-fontconfig-timestamp", G_TYPE_INT, { .i = 0 } }
+ };
+ 
+@@ -602,6 +603,13 @@ find_translation_entry_by_setting (const gchar *setting)
+   return NULL;
+ }
+ 
++static void
++high_contrast_changed (GdkScreen *screen)
++{
++  notify_setting (screen, "gtk-theme-name");
++  notify_setting (screen, "gtk-icon-theme-name");
++}
++
+ static void
+ settings_changed (GSettings   *settings,
+                   const gchar *key,
+@@ -615,6 +623,8 @@ settings_changed (GSettings   *settings,
+     {
+       if (entry->type != G_TYPE_NONE)
+         notify_setting (screen, entry->setting);
++      else if (strcmp (key, "high-contrast") == 0)
++        high_contrast_changed (screen);
+       else
+         update_xft_settings (screen);
+     }
+@@ -997,6 +1007,32 @@ set_decoration_layout_from_entry (GdkScreen        *screen,
+     }
+ }
+ 
++static void
++set_theme_from_entry (GdkScreen        *screen,
++                      TranslationEntry *entry,
++                      GValue           *value)
++{
++  GdkWaylandScreen *screen_wayland = GDK_WAYLAND_SCREEN (screen);
++  GSettings *settings = NULL;
++  GSettingsSchema *schema = NULL;
++  gboolean hc = FALSE;
++
++  settings = (GSettings *)g_hash_table_lookup (screen_wayland->settings, "org.gnome.desktop.a11y.interface");
++
++  if (settings)
++    g_object_get (settings, "settings-schema", &schema, NULL);
++
++  if (schema && g_settings_schema_has_key (schema, "high-contrast"))
++    hc = g_settings_get_boolean (settings, "high-contrast");
++
++  g_clear_pointer (&schema, g_settings_schema_unref);
++
++  if (hc)
++    g_value_set_static_string (value, "HighContrast");
++  else
++    set_value_from_entry (screen, entry, value);
++}
++
+ static gboolean
+ set_capability_setting (GdkScreen                 *screen,
+                         GValue                    *value,
+@@ -1028,6 +1064,9 @@ gdk_wayland_screen_get_setting (GdkScreen   *screen,
+     {
+       if (strcmp (name, "gtk-decoration-layout") == 0)
+         set_decoration_layout_from_entry (screen, entry, value);
++      else if (strcmp (name, "gtk-theme-name") == 0 ||
++               strcmp (name, "gtk-icon-theme-name") == 0)
++        set_theme_from_entry (screen, entry, value);
+       else
+         set_value_from_entry (screen, entry, value);
+       return TRUE;
+diff --git a/gdk/win32/Makefile.am b/gdk/win32/Makefile.am
+index 03abcd3f26..a2d52cecbe 100644
+--- a/gdk/win32/Makefile.am
++++ b/gdk/win32/Makefile.am
+@@ -57,6 +57,7 @@ libgdk_win32_la_SOURCES = \
+ 	gdkglcontext-win32.h \
+ 	gdkglobals-win32.c \
+ 	gdkkeys-win32.c \
++	gdkkeys-win32.h \
+ 	gdkkeys-win32-impl.c \
+ 	gdkkeys-win32-impl-wow64.c \
+ 	gdkmain-win32.c \
+diff --git a/gtk/gtkapplication-quartz.c b/gtk/gtkapplication-quartz.c
+index f614dea296..efa88b4b5d 100644
+--- a/gtk/gtkapplication-quartz.c
++++ b/gtk/gtkapplication-quartz.c
+@@ -80,13 +80,19 @@ G_DEFINE_TYPE (GtkApplicationImplQuartz, gtk_application_impl_quartz, GTK_TYPE_A
+ 
+ -(NSApplicationTerminateReply) applicationShouldTerminate:(NSApplication *)sender
+ {
+-  /* We have no way to give our message other than to pop up a dialog
+-   * ourselves, which we should not do since the OS will already show
+-   * one when we return NSTerminateNow.
+-   *
+-   * Just let the OS show the generic message...
+-   */
+-  return quartz->quit_inhibit == 0 ? NSTerminateNow : NSTerminateCancel;
++  const gchar *quit_action_name = "quit";
++  GActionGroup *action_group = G_ACTION_GROUP (quartz->impl.application);
++
++  if (quartz->quit_inhibit != 0)
++    return NSTerminateCancel;
++
++  if (g_action_group_has_action (action_group, quit_action_name))
++    {
++      g_action_group_activate_action (action_group, quit_action_name, NULL);
++      return NSTerminateCancel;
++    }
++
++  return NSTerminateNow;
+ }
+ 
+ -(void)application:(NSApplication *)theApplication openFiles:(NSArray *)filenames
+diff --git a/gtk/gtkswitch.c b/gtk/gtkswitch.c
+index 002968e14e..8a4aa72ca2 100644
+--- a/gtk/gtkswitch.c
++++ b/gtk/gtkswitch.c
+@@ -812,11 +812,6 @@ gtk_switch_dispose (GObject *object)
+       priv->action = NULL;
+     }
+ 
+-  g_clear_object (&priv->gadget);
+-  g_clear_object (&priv->slider_gadget);
+-  g_clear_object (&priv->on_gadget);
+-  g_clear_object (&priv->off_gadget);
+-
+   g_clear_object (&priv->pan_gesture);
+   g_clear_object (&priv->multipress_gesture);
+ 
+@@ -826,8 +821,14 @@ gtk_switch_dispose (GObject *object)
+ static void
+ gtk_switch_finalize (GObject *object)
+ {
++  GtkSwitchPrivate *priv = GTK_SWITCH (object)->priv;
+   gtk_switch_end_toggle_animation (GTK_SWITCH (object));
+ 
++  g_clear_object (&priv->gadget);
++  g_clear_object (&priv->slider_gadget);
++  g_clear_object (&priv->on_gadget);
++  g_clear_object (&priv->off_gadget);
++
+   G_OBJECT_CLASS (gtk_switch_parent_class)->finalize (object);
+ }
+ 
+diff --git a/gtk/meson.build b/gtk/meson.build
+index 9754686cca..12aa7db5c3 100644
+--- a/gtk/meson.build
++++ b/gtk/meson.build
+@@ -959,7 +959,7 @@ foreach l: immodules
+   cond = l.get(2, true)
+   cflags = l.get(3, [])
+ 
+-  if cond and builtin_immodules
++  if cond and (builtin_immodules.contains(name) or builtin_all_immodules)
+     gtk_cargs += ['-DINCLUDE_IM_@0@'.format(name.underscorify())]
+     mod = static_library('staticimmodule-@0@'.format(name),
+                          sources + gtk_dep_sources,
+diff --git a/meson.build b/meson.build
+index 16d1597116..15cca3de15 100644
+--- a/meson.build
++++ b/meson.build
+@@ -499,6 +499,8 @@ else
+   cdata.set_quoted('ISO_CODES_PREFIX', get_option('prefix'))
+ endif
+ 
++backend_immodules = []
++
+ pc_gdk_extra_libs = []
+ 
+ cairo_found_type = cairo_dep.type_name()
+@@ -554,6 +556,7 @@ if wayland_enabled
+   wlprotocolsdep = dependency('wayland-protocols', version: wayland_proto_req)
+   wlcursordep    = dependency('wayland-cursor', version: wayland_req)
+   wlegldep       = dependency('wayland-egl')
++  backend_immodules += ['wayland']
+ 
+   wayland_pkgs = [
+     'wayland-client', wayland_req,
+@@ -578,6 +581,8 @@ if x11_enabled
+   fontconfig_dep = dependency('fontconfig', fallback: ['fontconfig', 'fontconfig_dep'])
+   atkbridge_dep  = dependency('atk-bridge-2.0', version: at_spi2_atk_req)
+ 
++  backend_immodules += ['xim']
++
+   x11_pkgs = ['fontconfig', 'x11', 'xext', 'xi', 'xrandr']
+ 
+   if xcursor_dep.found()
+@@ -656,10 +661,12 @@ endif
+ 
+ if broadway_enabled
+   pc_gdk_extra_libs += ['-lz']
++  backend_immodules += ['broadway']
+ endif
+ 
+ if quartz_enabled
+   pc_gdk_extra_libs += ['-Wl,-framework,Cocoa', '-Wl,-framework,Carbon', '-Wl,-framework,CoreGraphics']
++  backend_immodules += ['quartz']
+ endif
+ 
+ extra_demo_ldflags = []
+@@ -674,6 +681,7 @@ if win32_enabled
+     pc_gdk_extra_libs += ['-Wl,-luuid']
+   endif
+   pc_gdk_extra_libs += ['-lwinmm', '-ldwmapi', '-lsetupapi', '-lcfgmgr32']
++  backend_immodules += ['ime']
+ 
+   # Check whether libepoxy is built with EGL support on Windows
+   win32_has_egl = epoxy_dep.get_variable(
+@@ -684,20 +692,30 @@ endif
+ 
+ # IMModules stuff-unfortunately we need to put items here
+ # as they can be built as modules or built directly into GTK
++builtin_all_immodules = false
++
+ builtin_modules_opt = get_option('builtin_immodules')
+-if builtin_modules_opt == 'auto'
++builtin_immodules = []
++
++if builtin_modules_opt == ''
+   if os_win32
+     # Current MSVC projects build all immodules directly into GTK by default,
+     # as does the mingw autotools build
+     message('IMModules are built into GTK for MSVC builds by default')
+-    builtin_immodules = true
++    builtin_immodules = ['all']
+   else
+-    builtin_immodules = false
++    builtin_immodules = ['none']
+   endif
+-elif builtin_modules_opt == 'yes'
+-  builtin_immodules = true
+ else
+-  builtin_immodules = false
++  builtin_immodules = builtin_modules_opt.split(',')
++endif
++
++if builtin_immodules.contains('none')
++  builtin_immodules = []
++elif builtin_immodules.contains('all')
++  builtin_all_immodules = true
++elif builtin_immodules.contains('backend')
++  builtin_immodules += backend_immodules
+ endif
+ 
+ proto_sources = [
+diff --git a/meson_options.txt b/meson_options.txt
+index 1ca55b1467..94099aa01e 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -45,5 +45,5 @@ option('installed_tests', type: 'boolean', value: 'false',
+   description : 'enable installed tests')
+ 
+ # input modules
+-option('builtin_immodules', type: 'combo', choices : ['yes', 'no', 'auto'],
+-       value: 'auto', description: 'Build immodules into GTK so/DLL')
++option('builtin_immodules', type: 'string',
++       value: '', description: 'Build specified immodules into GTK so/DLL (comma-separated list), "all", "none" or "backend"')
+diff --git a/modules/input/meson.build b/modules/input/meson.build
+index 7b201af894..95534b05ec 100644
+--- a/modules/input/meson.build
++++ b/modules/input/meson.build
+@@ -7,7 +7,7 @@ foreach l: immodules
+   cond = l.get(2, true)
+   cflags = l.get(3, [])
+ 
+-  if cond and not builtin_immodules
++  if cond and not (builtin_immodules.contains(name) or builtin_all_immodules)
+     shared_module('im-@0@'.format(name),
+                   immod_sources,
+                   c_args: common_cflags + cflags,
+diff --git a/testsuite/reftests/meson.build b/testsuite/reftests/meson.build
+index 9bfe1bb698..2135ebb434 100644
+--- a/testsuite/reftests/meson.build
++++ b/testsuite/reftests/meson.build
+@@ -22,9 +22,7 @@ libreftest = shared_library('reftest',
+ 
+ gtk_reftest = executable('gtk-reftest', 'gtk-reftest.c',
+   link_with : [libgtkreftestprivate, libreftest],
+-  dependencies : libgtk_dep,
+-  install: get_option('installed_tests'),
+-  install_dir: installed_test_bindir)
++  dependencies : libgtk_dep)
+ 
+ test_data = [
+   '721800-0px-dotted-border.css',
+@@ -291,9 +289,6 @@ test_data = [
+   'label-text-shadow-clipping.css',
+   'label-text-shadow-clipping.ref.ui',
+   'label-text-shadow-clipping.ui',
+-  'label-text-shadow-changes-modify-clip.css',
+-  'label-text-shadow-changes-modify-clip.ref.ui',
+-  'label-text-shadow-changes-modify-clip.ui',
+   'label-width-chars-dont-shrink.ref.ui',
+   'label-width-chars-dont-shrink.ui',
+   'label-wrap-justify.ref.ui',
+@@ -405,10 +400,6 @@ test_data = [
+   'textview-margins.ui',
+   'textview-tags.ref.ui',
+   'textview-tags.ui',
+-  'toplevel-vs-popup.ref.ui',
+-  'toplevel-vs-popup.ui',
+-  'treeview-crash-too-wide.ref.ui',
+-  'treeview-crash-too-wide.ui',
+   'treeview-fixed-height.css',
+   'treeview-fixed-height.ref.ui',
+   'treeview-fixed-height.ui',
+@@ -464,24 +455,3 @@ foreach testname : test_data
+          is_parallel: false)
+   endif
+ endforeach
+-
+-reftests_installed_tests = [
+-  'reftests-dark.test',
+-  'reftests-hc.test',
+-  'reftests-hci.test',
+-  'reftests.test',
+-]
+-
+-if get_option('installed_tests')
+-  test_cdata = configuration_data()
+-  test_cdata.set('libexecdir', gtk_libexecdir)
+-
+-  foreach t: reftests_installed_tests
+-    configure_file(input: '@0@.in'.format(t),
+-                   output: t,
+-                   configuration: test_cdata,
+-                   install_dir: installed_test_datadir)
+-  endforeach
+-
+-  install_data(test_data, install_dir: testexecdir)
+-endif
