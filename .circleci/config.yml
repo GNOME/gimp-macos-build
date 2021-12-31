@@ -39,6 +39,8 @@ jobs:
               mkdir -p ~/.config && cp ~/project/jhbuildrc-gtk-osx-gimp-2.99 ~/.config/jhbuildrc-custom
               echo 'export PATH="$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' >> ~/.profile
               echo 'export ARCHFLAGS="-arch x86_64"' >> ~/.profile
+              # PYTHON variable seems to be incorrectly set
+              echo 'export PYTHON=/Library/Frameworks/Python.framework/Versions/3.9/bin/python3' >> ~/.profile
               source ~/.profile
               echo "=====set up profile"
               cat ~/.profile
