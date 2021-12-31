@@ -40,6 +40,8 @@ jobs:
               echo 'export PATH="$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' >> ~/.profile
               echo 'export ARCHFLAGS="-arch x86_64"' >> ~/.profile
               source ~/.profile
+              echo "set up profile"
+              cat ~/.profile
               PIPENV_YES=1 ~/project/gtk-osx-setup.sh
               $HOME/.new_local/bin/jhbuild bootstrap-gtk-osx-gimp
               cat ~/.profile
