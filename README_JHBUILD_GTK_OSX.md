@@ -133,6 +133,21 @@ The build is quite flaky and at least fiddly. Making the build work
 locally can be a battle. For now, with the exception of webkit,
 the build appears to be quite stable.
 
+In `~/gtk/inst/_jhbuild` is a db of package install metadata. This
+has been seen to be corrupted on at least one occasion.
+
+The error was this:
+
+```
+  File "/Users/distiller/Source/jhbuild/jhbuild/utils/packagedb.py", line 120, in open
+    with open(os.path.join (dirname, 'info', package), "rb") as info:
+  File "/Users/distiller/.new_local/share/pyenv/versions/3.10.0/lib/python3.10/posixpath.py", line 90, in join
+    genericpath._check_arg_types('join', a, *p)
+  File "/Users/distiller/.new_local/share/pyenv/versions/3.10.0/lib/python3.10/genericpath.py", line 152, in _check_arg_types
+    raise TypeError(f'{funcname}() argument must be str, bytes, or '
+TypeError: join() argument must be str, bytes, or os.PathLike object, not 'NoneType'
+```
+
 ## Notarization and security ##
 
 These links have content around code signing and security entitlements.
