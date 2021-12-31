@@ -1,0 +1,71 @@
+From 72585ace4376ab2571509eb13527f6feacfe83c7 Mon Sep 17 00:00:00 2001
+From: Jehan <jehan@girinstud.io>
+Date: Thu, 30 Dec 2021 12:38:28 +0100
+Subject: [PATCH] meson, configure, gtk: fix GDK pkg-config for macOS.
+
+Since commit 7e732caa1e, gdkquartz.h is included directly from
+gdkquartz-cocoa-access.h, yet it is in the include/gtk+-3.0/gdk
+subdirectory (which is currently not in the dir list to search for
+headers). It is made so on purpose so that the headers is also found in
+the source tree. Yet it also definitely needs to be found in the install
+prefix tree, which is the job of the pkg-config file.
+---
+ configure.ac |  2 ++
+ meson.build  | 13 ++++++++-----
+ 2 files changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index f99621d568..c49f97db03 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -410,6 +410,8 @@ if test "x$enable_quartz_backend" = xyes; then
+   GDK_WINDOWING="$GDK_WINDOWING
+ #define GDK_WINDOWING_QUARTZ"
+   GDK_EXTRA_LIBS="$GDK_EXTRA_LIBS -Wl,-framework,Cocoa"
++  # See discussion of MR !535.
++  GDK_EXTRA_CFLAGS="$GDK_EXTRA_CFLAGS -I${includedir}/gtk-$GTK_API_VERSION/gdk/"
+   DISABLE_ON_QUARTZ='%'
+   AM_CONDITIONAL(USE_QUARTZ, true)
+   if test "x$quartz_relocation" = xyes; then
+diff --git a/meson.build b/meson.build
+index 15cca3de15..8ea5708a8d 100644
+--- a/meson.build
++++ b/meson.build
+@@ -499,9 +499,10 @@ else
+   cdata.set_quoted('ISO_CODES_PREFIX', get_option('prefix'))
+ endif
+ 
+-backend_immodules = []
++backend_immodules   = []
+ 
+-pc_gdk_extra_libs = []
++pc_gdk_extra_libs   = []
++pc_gdk_extra_cflags = []
+ 
+ cairo_found_type = cairo_dep.type_name()
+ if cairo_found_type == 'internal'
+@@ -665,8 +666,10 @@ if broadway_enabled
+ endif
+ 
+ if quartz_enabled
+-  pc_gdk_extra_libs += ['-Wl,-framework,Cocoa', '-Wl,-framework,Carbon', '-Wl,-framework,CoreGraphics']
+-  backend_immodules += ['quartz']
++  pc_gdk_extra_libs   += ['-Wl,-framework,Cocoa', '-Wl,-framework,Carbon', '-Wl,-framework,CoreGraphics']
++  # See discussion of MR !535.
++  pc_gdk_extra_cflags += ['-I${includedir}/gtk-@0@/gdk/'.format(gtk_api_version)]
++  backend_immodules   += ['quartz']
+ endif
+ 
+ extra_demo_ldflags = []
+@@ -950,7 +953,7 @@ pkgconf.set('GDK_EXTRA_LIBS', ' '.join(pc_gdk_extra_libs))
+ pkgconf.set('GSK_EXTRA_LIBS', '')
+ pkgconf.set('GTK_EXTRA_LIBS', '')
+ 
+-pkgconf.set('GDK_EXTRA_CFLAGS', '')
++pkgconf.set('GDK_EXTRA_CFLAGS', ' '.join(pc_gdk_extra_cflags))
+ pkgconf.set('GSK_EXTRA_CFLAGS', '')
+ pkgconf.set('GTK_EXTRA_CFLAGS', '')
+ 
+-- 
+2.33.1
+
