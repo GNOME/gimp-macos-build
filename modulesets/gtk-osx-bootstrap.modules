@@ -91,6 +91,20 @@
     </dependencies>
   </autotools>
 
+  <meson id="gtk-doc" mesonargs="-Dyelp_manual=false -Dtests=false -Dpython.platlibdir=lib -Dpython.purelibdir=lib">
+    <branch version="1.33.2" module="gtk-doc/1.33/gtk-doc-1.33.2.tar.xz"
+            hash="sha256:cc1b709a20eb030a278a1f9842a362e00402b7f834ae1df4c1998a723152bf43"/>
+      <!-- Patch has been applied upstream -->
+      <patch file="gtk-doc-1.33.2-find-system-python.patch" strip="1"/>
+    <dependencies>
+      <dep package="libxml2"/>
+      <dep package="libxslt"/>
+      <dep package="itstool"/>
+      <dep package="python3"/>
+      <dep package="pygments"/>
+    </dependencies>
+  </meson>
+
   <autotools id="icu" autogen-sh="source/configure" autogenargs="--enable-rpath"
              makeargs='CFLAGS="$CFLAGS -DU_CHARSET_IS_UTF8=1 -DU_USING_ICU_NAMESPACE=0"'>
     <branch repo="github-tarball" version="66.1" checkoutdir="icu"
@@ -103,6 +117,7 @@
       <dep package="libpng"/>
       <dep package="libjpeg"/>
       <dep package="libtiff"/>
+      <dep package="gtk-doc"/>
     </dependencies>
   </metamodule>
 
