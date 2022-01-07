@@ -8,6 +8,9 @@ jobs:
         # for local builds, this needs to be checked out to `~/project`
         - checkout
         - run:
+            name: Avoid hosts unknown for gitlab.gnome.org
+            command: mkdir -p ~/.ssh/ && echo -e "Host gitlab.gnome.org\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+        - run:
             name: Setup Python3
             command: |
               cd ~/
