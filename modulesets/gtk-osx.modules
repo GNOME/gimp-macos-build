@@ -21,7 +21,8 @@
   <repository type="git" name="github" href="https://git@github.com/"/>
   <repository type="tarball" name="github-tarball" href="https://github.com/"/>
   <repository type="system" name="system"/>
-  <repository type="git" name="lukaso.git.gnome.org" href="git@gitlab.gnome.org:lukaso"/>
+  <repository type="git" name="lukaso.git.gnome.org"
+              href="https://gitlab.gnome.org/lukaso/"/>
 
 
   <!-- This module set works a bit differently than for example the
