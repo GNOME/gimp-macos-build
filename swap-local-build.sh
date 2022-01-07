@@ -52,6 +52,8 @@ function usage() {
   echo "      if current is incorrect or not set, sets current without making changes"
 	echo "  --folder folder_path"
 	echo "      switch to main build being folder_path and swap out current if needed"
+	echo "  --list"
+	echo "      list current version and backed up versions"
 	echo "  --version         show tool version number"
 	echo "  -h, --help        display this help"
 	exit 0
@@ -70,6 +72,9 @@ while test "${1:0:1}" = "-"; do
 		shift;;
 	--status)
 		STATUS="true"
+		shift;;
+	--list)
+		LIST="true"
 		shift;;
 	--force-current)
     FORCE_CURRENT="true"
@@ -110,6 +115,15 @@ fi
 
 if [ ! -z "${STATUS}" ]; then
   echo "Current: ${CURRENT_EXT}"
+  exit 0;
+fi
+
+if [ ! -z "${LIST}" ]; then
+  echo "Current:"
+	echo "${CURRENT_EXT}"
+	echo ""
+	echo "Saved:"
+	ls -1 $SAVE_DIR
   exit 0;
 fi
 
