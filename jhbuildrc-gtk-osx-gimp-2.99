@@ -117,9 +117,9 @@ if 'GIMP_DEBUG' in os.environ:
     environ_prepend('CXXFLAGS', "-O0 -g")
     environ_prepend('OBJCFLAGS', "-O0 -g")
 else:
-    environ_prepend('CFLAGS', "-O3 -g")
-    environ_prepend('CXXFLAGS', "-O3 -g")
-    environ_prepend('OBJCFLAGS', "-O3 -g")
+    environ_prepend('CFLAGS', "-O3 -gline-tables-only")
+    environ_prepend('CXXFLAGS', "-O3 -gline-tables-only")
+    environ_prepend('OBJCFLAGS', "-O3 -gline-tables-only")
 
 # Comment out the previous and uncomment this one to build for all
 # systems running SnowLeopard and later:
@@ -184,6 +184,13 @@ module_extra_env["cairo"] = { 'LDFLAGS': os.environ['LDFLAGS'] +
 
 # force embedded python 3.9 for gimp so system python and build python not detected
 module_extra_env['gimp299'] = { "PYTHON": "python3.9" }
+
+module_extra_env['gtk+-3.0'] = {
+    'CFLAGS': os.environ['CFLAGS'] + ' -fprofile-instr-generate -fcoverage-mapping',
+    'CXXFLAGS': os.environ['CXXFLAGS'] + ' -fprofile-instr-generate -fcoverage-mapping',
+    'OBJCFLAGS': os.environ['OBJCFLAGS'] + ' -fprofile-instr-generate -fcoverage-mapping',
+    'LDFLAGS': os.environ['LDFLAGS'] + ' -fprofile-instr-generate',
+}
 
 class _cmd_bootstrap_gtk_osx_gimp(jhbuild.commands.base.cmd_build):
     doc = 'Build buildsystem tools not provided by MacOS.'
