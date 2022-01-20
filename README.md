@@ -158,6 +158,24 @@ project/swap-local-build.sh --gimp299
 Other options are available. This tool will only be available once the setup script has been
 run once as it is within the `project` directory.
 
+## Apple tools ##
+
+There are a number of Apple tools that can help with debugging.
+
+### Instruments ###
+
+Instruments allows you to get profiling runs. The most interesting ones are the Time Profiler
+and the Animation Hitches tool.
+
+### XCode for debugging view hierarchies and the like ###
+
+This How To works incredibly well for Gimp, even though it is written for Firefox.
+
+https://firefox-source-docs.mozilla.org/contributing/debugging/debugging_on_macos.html
+
+One change you need to make. In the scheme, add an "Argument Passed on Launch" and set it
+to `--`.
+
 ## Appendix ##
 
 The build used to depend on this [fork](https://gitlab.gnome.org/samm-git/gtk-osx/tree/gimp) of
