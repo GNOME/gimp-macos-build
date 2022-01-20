@@ -109,14 +109,17 @@ if _jhb is None:
 
 #  Set up a particular target and SDK: For default operation, set the
 # architecture and SDK for the native machine:
-setup_sdk("10.9","x86_64")
+setup_sdk("10.12","x86_64")
 
-# enable optimization
-
-environ_prepend('CFLAGS', "-O3")
-environ_prepend('CXXFLAGS', "-O3")
-environ_prepend('OBJCFLAGS', "-O3")
-# setup_debug()
+# enable optimization or debugging
+if 'GIMP_DEBUG' in os.environ:
+    environ_prepend('CFLAGS', "-O0 -g")
+    environ_prepend('CXXFLAGS', "-O0 -g")
+    environ_prepend('OBJCFLAGS', "-O0 -g")
+else:
+    environ_prepend('CFLAGS', "-O3 -gline-tables-only")
+    environ_prepend('CXXFLAGS', "-O3 -gline-tables-only")
+    environ_prepend('OBJCFLAGS', "-O3 -gline-tables-only")
 
 # Comment out the previous and uncomment this one to build for all
 # systems running SnowLeopard and later:
