@@ -49,15 +49,7 @@ do
    | bash
 done
 
-if [[ "$1" == "debug" ]]; then
-  echo "Generating debug symbols"
-  find  ${PACKAGE_DIR}/GIMP-2.10.app/ -type f -perm +111 \
-     | xargs file \
-     | grep ' Mach-O '|awk -F ':' '{print $1}' \
-     | xargs -n1 dsymutil
-fi
-
-echo "remove @rpath to the libraries"
+echo "remove @rpath from the libraries"
 find  ${PACKAGE_DIR}/GIMP-2.10.app/Contents/Resources/lib/ -mindepth 1 -maxdepth 1 -perm +111 -type f \
    | xargs file \
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
@@ -83,6 +75,14 @@ echo "fixing IMM cache"
 sed -i.old 's|@executable_path/../Resources/lib/||' \
     ${PACKAGE_DIR}/GIMP-2.10.app/Contents/Resources/etc/gtk-2.0/gtk.immodules
 
+if [[ "$1" == "debug" ]]; then
+  echo "Generating debug symbols"
+  find  ${PACKAGE_DIR}/GIMP-2.10.app/ -type f -perm +111 \
+     | xargs file \
+     | grep ' Mach-O '|awk -F ':' '{print $1}' \
+     | xargs -n1 dsymutil
+fi
+
 echo "create missing links. should we use wrappers instead?"
 
 pushd ${PACKAGE_DIR}/GIMP-2.10.app/Contents/MacOS
@@ -92,6 +92,7 @@ pushd ${PACKAGE_DIR}/GIMP-2.10.app/Contents/MacOS
 popd
 
 echo "copy xdg-email wrapper to the package"
+mkdir -p ${PACKAGE_DIR}/GIMP-2.10.app/Contents/MacOS
 cp xdg-email ${PACKAGE_DIR}/GIMP-2.10.app/Contents/MacOS
 
 echo "copy pygimp.interp to the package"
