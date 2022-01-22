@@ -33,7 +33,7 @@ jobs:
               echo 'export PYENV_PYTHON_VERSION=3.10.0' >> ~/.profile
         - restore_cache:
             keys:
-              - jhbuild-v2-10-v3
+              - jhbuild-v2-10-v4
               - jhbuild-v2-10-
         - run:
             name: Setup JHBuild
@@ -55,7 +55,7 @@ jobs:
               - ~/.new_local
               - ~/gtk
               - ~/.config
-            key: jhbuild-v2-10-v3
+            key: jhbuild-v2-10-v4
         - run:
             name: Setup gtk-mac-bundler
             command: |
@@ -65,11 +65,11 @@ jobs:
               make install
         - restore_cache:
             keys:
-              - gimp-2.10.28-cacheiter2
-              - webkit-2.10.28-cacheiter2
-              - gimp-depspt2-2.10.28-cacheiter2
-              - gimp-depspt1-2.10.28-cacheiter2
-              - bootstrap-2.10.28-cacheiter2
+              - gimp-2.10.28-cacheiter3
+              - webkit-2.10.28-cacheiter3
+              - gimp-depspt2-2.10.28-cacheiter3
+              - gimp-depspt1-2.10.28-cacheiter3
+              - bootstrap-2.10.28-cacheiter3
               - gimp-2.10.28-
               - webkit-2.10.28-
               - gimp-depspt2-2.10.28-
@@ -85,7 +85,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: bootstrap-2.10.28-cacheiter2
+            key: bootstrap-2.10.28-cacheiter3
         - run:
             name: Build GIMP dependencies part 1 (without gegl/babl)
             command: |
@@ -97,7 +97,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-depspt1-2.10.28-cacheiter2
+            key: gimp-depspt1-2.10.28-cacheiter3
         - run:
             name: Build GIMP dependencies part 2 (without gegl/babl)
             command: |
@@ -114,7 +114,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-depspt2-2.10.28-cacheiter2
+            key: gimp-depspt2-2.10.28-cacheiter3
         # Having to comment out due to taking more than an hour to build
         # - run:
         #     name: Build WebKit v1
@@ -126,7 +126,7 @@ jobs:
         # - save_cache:
         #     paths:
         #       - ~/gtk
-        #     key: webkit-2.10.28-cacheiter2
+        #     key: webkit-2.10.28-cacheiter3
         - run:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
@@ -146,7 +146,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: gimp-2.10.28-cacheiter2
+            key: gimp-2.10.28-cacheiter3
         - run:
             name: Importing signing certificate
             command: |
