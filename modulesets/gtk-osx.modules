@@ -176,11 +176,11 @@
     <branch module="gtk+/2.24/gtk+-2.24.33.tar.xz" version="2.24.33"
             hash="sha256:ac2ac757f5942d318a311a54b0c80b5ef295f299c2a73c632f6bfb1ff49cc6da">
       <!--patch file="https://gitlab.gnome.org/GNOME/gtk-osx/raw/master/patches/0004-Bug-571582-GtkSelection-implementation-for-quartz.patch" strip="1"/-->
-      <patch file="https://gitlab.gnome.org/GNOME/gtk-osx/raw/master/patches/0008-Implement-GtkDragSourceOwner-pasteboardChangedOwner.patch" strip="1"/>
-      <patch file="https://gitlab.gnome.org/GNOME/gtk-osx/raw/master/patches/0006-Bug-658722-Drag-and-Drop-sometimes-stops-working.patch" strip="1"/>
-      <patch file="https://gitlab.gnome.org/GNOME/gtk-osx/raw/master/patches/gtk+-2-m4-creation.patch" strip="1"/>
+      <patch file="0008-Implement-GtkDragSourceOwner-pasteboardChangedOwner.patch" strip="1"/>
+      <patch file="0006-Bug-658722-Drag-and-Drop-sometimes-stops-working.patch" strip="1"/>
+      <patch file="gtk+-2-m4-creation.patch" strip="1"/>
       <!-- upstream bug https://bugzilla.gnome.org/show_bug.cgi?id=767091 -->
-      <patch file="https://gitlab.gnome.org/GNOME/gtk-osx/raw/master/patches/gtk-gimp-dnd-bug767091.patch" strip="1"/>
+      <patch file="gtk-gimp-dnd-bug767091.patch" strip="1"/>
       <!-- upstream bug: https://gitlab.gnome.org/GNOME/gtk/issues/529 -->
       <patch file="https://gitlab.gnome.org/GNOME/gtk/uploads/f0c19446b9cd1df467c4cc9050516d4b/0001-Bug-743717-Crashes-on-clipboard-operation-influence-.patch" strip="1"/>
       <!-- upstream bug: https://gitlab.gnome.org/GNOME/gtk/issues/580 -->
