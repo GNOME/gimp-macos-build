@@ -103,11 +103,11 @@ jobs:
             command: |
               source ~/.profile && jhbuild build libmypaint mypaint-brushes libde265 nasm x265 libheif aalib shared-mime-info iso-codes libwmf libmng ghostscript
               source ~/.profile && jhbuild build pycairo pygobject pygtk gtk-mac-integration-gtk2-python
-        - run:
-            name: Build all WebKit dependencies
-            command: |
-              source ~/.profile && jhbuild build enchant libpsl sqlite vala gnutls
-              source ~/.profile && jhbuild buildone libsoup
+        # - run:
+        #     name: Build all WebKit dependencies
+        #     command: |
+        #       source ~/.profile && jhbuild build enchant libpsl sqlite vala gnutls
+        #       source ~/.profile && jhbuild buildone libsoup
         - run:
             name: Cleanup
             command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
