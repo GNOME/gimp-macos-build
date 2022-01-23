@@ -175,7 +175,7 @@ jobs:
               sudo sqlite3 "/Users/distiller/Library/Application Support/com.apple.TCC/TCC.db" "$tcc_service_appleevents"
 
               # run script
-              jhbuild run ./build.sh
+              jhbuild run ./build.sh debug
         - run:
             name:  Notarizing DMG package
             command: |
