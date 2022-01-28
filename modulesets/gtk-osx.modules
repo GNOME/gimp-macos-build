@@ -160,10 +160,9 @@
     </after>
   </meson>
 
-  <meson id="gdk-pixbuf" mesonargs="-Dx11=false -Dman=false">
-    <branch module="gdk-pixbuf/2.40/gdk-pixbuf-2.40.0.tar.xz" version="2.40.0"
-            hash="sha256:1582595099537ca8ff3b99c6804350b4c058bb8ad67411bbaae024ee7cead4e6">
-      <patch file="https://gitlab.gnome.org/GNOME/gtk-osx/raw/master/patches/gdk-pixbuf-loader-name.patch" strip="1"/>
+  <meson id="gdk-pixbuf" mesonargs="-Dman=false">
+    <branch module="gdk-pixbuf/2.42/gdk-pixbuf-2.42.6.tar.xz" version="2.42.6"
+            hash="sha256:c4a6b75b7ed8f58ca48da830b9fa00ed96d668d3ab4b1f723dcf902f78bde77f">
     </branch>
     <after>
       <dep package="pango"/>

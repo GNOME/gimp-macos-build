@@ -18,7 +18,7 @@
 	      href="https://www.mirrorservice.org/sites/ftp.ossp.org/pkg/lib/"/>
   <repository type="tarball" name="openbsd"
         href="https://ftp.openbsd.org/pub/OpenBSD/distfiles/"/>
-  <repository type="git" name="aomedia" href="https://aomedia.googlesource.com/"/>
+  <repository type="tarball" name="googlestorage" href="https://storage.googleapis.com/"/>
 
   <!-- gimp-help-git fails on libxml2 import test. Disabling while looking for the solution.
        XXX Fix the autogenargs option when removing the comments. Double-hyphen must not
@@ -242,7 +242,14 @@
   </autotools>
 
   <cmake id="aom" cmakeargs="-DENABLE_DOCS=off -DENABLE_EXAMPLES=off -DENABLE_TESTDATA=off -DENABLE_TESTS=off -DENABLE_TOOLS=off -DBUILD_SHARED_LIBS=on">
-    <branch module="aom" revision="v3.2.0" repo="aomedia"/>
+    <branch module="aom-releases/libaom-3.2.0.tar.gz"
+      version="3.2.0"
+      hash="sha256:8fa7418bf4ea12ef6dcf0eeb21cba932b71c6079ffdf7b9d13cf907fa46c0568"
+      repo="googlestorage"
+      checkoutdir="libaom-3.2.0">
+      <!-- Forces cmake to put full install path instead of @rpath which breaks gdk-pixbuf loaders -->
+      <patch file="aom-3.2.0-fix-rpath.patch" strip="1"/>
+    </branch>
     <dependencies>
       <dep package="yasm"/>
     </dependencies>
@@ -260,6 +267,7 @@
       <dep package="libde265"/>
       <dep package="x265"/>
       <dep package="aom"/>
+      <deb package="gdk-pixbuf"/>
     </dependencies>
   </autotools>
 
