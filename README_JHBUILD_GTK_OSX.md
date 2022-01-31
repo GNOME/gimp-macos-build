@@ -134,3 +134,69 @@ depends on all of the modules that you want to build.
 The build is quite flaky and at least fiddly. Making the build work
 locally can be a battle. For now, with the exception of webkit,
 the build appears to be quite stable.
+
+## Speeding up build loops ##
+
+One of the problems of JHBuild is that it takes over everything, and
+you have to let it.
+
+One solution around this is to pop into a local build shell and build
+from there. This can massively speed up the compile loop.
+
+Here are some sample commands that you could put in your build
+script to help pop into the shell:
+
+```
+source ~/.profile && jhbuild shell
+```
+
+Once you've entered the shell:
+
+```
+cd .cache/jhbuild/build/gimp
+```
+
+For autotools `head config.log` will tell you what the configure was (don't know meson version)
+
+### examples ###
+
+#### autotools ####
+
+```
+~/gtk/source/gimp/configure --prefix ~/gtk/inst --without-x --with-build-id=org.IMP_official --with-revision=0"
+make && make install"
+make uninstall"
+```
+
+I've generally been able to just run `make && make install`
+
+#### meson ####
+
+But to be honest, `ninja install` seems to make sure everything happens that
+needs to. And if meson needs to be fixed, it might be as simple as
+`meson --reconfigure`
+
+Other possible commands:
+
+```
+meson --prefix ~/gtk/inst --libdir lib -Dopenssl=enabled --wrap-mode=nofallback source/glib-networking-2.68.0
+ninja && ninja install
+ninja uninstall
+```
+
+#### Note ####
+
+If you've compiled with `autotools`, first uninstall that before compiling with
+`meson`.
+
+## Notarization and security ##
+
+These links have content around code signing and security entitlements.
+When these weren't set correctly, the application, and specifically
+Python plug-ins failed to load and basically hung. There were no error
+messages, so it was difficult to figure out what was going wrong.
+
+- [https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_security_cs_allow-unsigned-executable-memory](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_security_cs_allow-unsigned-executable-memory)
+- [https://developer.apple.com/documentation/apple-silicon/porting-just-in-time-compilers-to-apple-silicon](https://developer.apple.com/documentation/apple-silicon/porting-just-in-time-compilers-to-apple-silicon)
+- [https://developer.apple.com/forums/thread/132908](https://developer.apple.com/forums/thread/132908)
+- [https://developer.apple.com/forums/thread/130560](https://developer.apple.com/forums/thread/130560)
