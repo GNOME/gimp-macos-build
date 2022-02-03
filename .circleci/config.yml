@@ -74,7 +74,6 @@ jobs:
             name: Bootstrap
             command: |
               rm -rf ~/gtk/source/gtk
-              # source ~/.profile && jhbuild buildone --force gtk+-3.0
               source ~/.profile && jhbuild build icu libnsgif meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-gtk3
         - run:
             name: Cleanup
