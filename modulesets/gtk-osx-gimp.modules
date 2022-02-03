@@ -12,7 +12,6 @@
   <repository type="tarball" name="github-tarball" href="https://github.com/"/>
   <repository type="tarball" name="sourceforge" href="http://downloads.sourceforge.net/sourceforge/"/>
   <repository type="tarball" name="savannah" href="http://download.savannah.nongnu.org/releases/"/>
-  <repository type="tarball" name="www.exiv2.org" href="http://www.exiv2.org/builds/"/>
   <repository type="tarball" name="nasm" href="https://www.nasm.us/pub/nasm/releasebuilds/"/>
   <repository type="tarball" name="mirrorservice-ossp"
 	      href="https://www.mirrorservice.org/sites/ftp.ossp.org/pkg/lib/"/>
@@ -383,10 +382,10 @@
   </meson>
 
   <cmake id="exiv2" cmakeargs="-DCMAKE_INSTALL_NAME_DIR=$JHBUILD_PREFIX/lib">
-    <branch repo="www.exiv2.org"
+    <branch repo="github-tarball"
       checkoutdir="exiv2-0.27.5-Source"
       version="0.27.5"
-      module="exiv2-0.27.5-Source.tar.gz"
+      module="Exiv2/exiv2/releases/download/v0.27.5/exiv2-0.27.5-Source.tar.gz"
       hash="sha256:35a58618ab236a901ca4928b0ad8b31007ebdc0386d904409d825024e45ea6e2">
     </branch>
   </cmake>
