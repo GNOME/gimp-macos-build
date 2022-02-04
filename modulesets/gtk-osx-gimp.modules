@@ -378,6 +378,7 @@
     <dependencies>
       <dep package="glib"/>
       <dep package="exiv2"/>
+      <dep package="gobject-introspection"/>
     </dependencies>
   </meson>
 
