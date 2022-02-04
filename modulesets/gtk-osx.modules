@@ -276,8 +276,8 @@
   </meson>
 
   <!-- gtk3 is in maintenance mode with 3.24 the final release series. -->
-  <autotools id="gtk+-3.0" autogen-sh="autogen.sh"
-             autogenargs="--enable-quartz-backend --enable-quartz-relocation --enable-debug=yes">
+  <meson id="gtk+-3.0"
+             mesonargs="-Dtests=false">
     <branch module="gtk.git" revision="gtk-3-24-dev" repo="lukaso.git.gnome.org"/>
     <!-- <branch module="gtk+/3.24/gtk+-3.24.31.tar.xz" version="3.24.31"
             hash="sha256:423c3e7fdb4c459ee889e35fd4d71fd2623562541c1041b11c07e5ad1ff10bf9"> -->
@@ -300,7 +300,7 @@
     <after>
       <dep package="meta-gtk-osx-bootstrap"/>
     </after>
-  </autotools>
+  </meson>
 
   <meson id="graphene" mesonargs="-Dtests=false -Dbenchmarks=false">
     <branch repo="github-tarball" version="1.10.4"
