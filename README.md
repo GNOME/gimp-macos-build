@@ -57,11 +57,55 @@ At a minimum, you will need to install:
 - Notarize package using Apple `altool` utility
 - Upload a DMG to the CircleCI build artifacts
 
+## Managing the Circle CI build ##
+
+The Circle CI build and its interaction with JHBuild create some specific issues that a packager needs to be aware of.
+
+### Build timelimit ###
+
+The builds have a strict time limit of 1 hour. As soon as the build takes longer, it is canceled.
+
+Due to this, and the fact that the build as a whole takes much more than an hour, creative measures
+have had to be taken.
+
+**Note** There is a hard limit on the length of a single build step. If a step takes longer than an hour it simply
+can't be build in Circle CI. For this reason, support for Webkit has had to be dropped.
+
+### JHBuild not detecting changes ###
+
+Because of JHBuild's architecture, certain changes to packages it is building, are not detected at build time. This means that the build can become out of date and a full cache-break build will have to be undertaken.
+
+Examples of things that JHBuild does not detect:
+
+- A new patch file being added
+- Changes to environment variables (such a `CFLAGS`)
+- Changes to the build command
+
+Exmaples of things that JHBuild does detect:
+
+- A new URL/version of a package
+- New commits on a git based repo
+- Changes in a dependency
+### Caching to get around build timelimit ###
+
+In order to get around the build time limit, each step of the build (or sometimes group of steps) is cached. This
+uses Circleci's caching mechanism.
+
+The following are aspects of the caching:
+
+- The JHBuild cache and the rest of the build cache are managed separately
+- The cache is only saved when a new cache key is used, so by default, nothing new that happens in a build is saved until the cache key is changed
+- They keys are arranged in an onion shape. Meaning the most specific cache is hit first, but with the broadest number of items cached. This means the full build up to and including Gimp. Narrower keys don't include Gimp, then Gegl/Babl, then Dependencies Part 2, then dependencies Part 1, and so on.
+- The keys for reloading the cache are tested and loaded in order. Each key is tested, and if found, loaded. If it is not found, the algorithm goes to the next key. Circleci the drops the suffix (after the '-') and tries to load those keys (if they are listed in the keys)
+- When new information is layered onto the cache, the tail end of the cache keys should be iterated. So `break5-gimpv3-cacheiter7` should be changed to `break5-gimpv3-cacheiter8`. This will keep using the cache, but allow new changes to be saved.
+- When the build has to be redone from scratch, because a dependency has changed, then the first part of the cache key changes. This then means no cache is found and everything goes from scratch. Here the key goes from `break5-gimpv3-cacheiter7` to `break6-gimpv3-cacheiter1` (the `break` part matters, the `cacheiter` part doesn't). Be warned though as the build will time out 4-5 times and needs to be restarted after each timeout by hand.
+
 ## Other related links
 
  - [Gtk-OSX](https://gitlab.gnome.org/GNOME/gtk-osx/) project to simplify building MacOS application bundles for Gtk+-based applications
  - [gimp-plugins-collection](https://github.com/aferrero2707/gimp-plugins-collection) - GMIC, LiquidRescale, NUFraw, PhFGimp and ResynthesizerPlugin GIMP plugin builds, including macOS version
  - CircleCI [gimp-macos-build project](https://circleci.com/gh/GNOME/gimp-macos-build)
+ - How this repo uses [JHBuild and Gtk-OSX](README_JHBUILD_GTK_OSX.md)
 
 ## Known bugs and limitations (merge requests are welcome!)
 
