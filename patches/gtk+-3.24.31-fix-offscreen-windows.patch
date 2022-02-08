@@ -1,18 +1,160 @@
-diff --git a/gdk/quartz/GdkQuartzView.c b/gdk/quartz/GdkQuartzView.c
-index c20c5de83a..d3eca93207 100644
---- a/gdk/quartz/GdkQuartzView.c
-+++ b/gdk/quartz/GdkQuartzView.c
-@@ -298,10 +298,8 @@
-    */
-   if(gdk_quartz_osx_version() >= GDK_OSX_BIGSUR)
-   {
--#if MAC_OS_X_VERSION_MIN_REQUIRED >= 101200
-     CALayer* layer = self.layer;
-     layer.contentsFormat = kCAContentsFormatRGBA8Uint;
--#endif
-   }
+From 1b84201b6d0aed20a315cd8aca6c5d3bb6b4e9d3 Mon Sep 17 00:00:00 2001
+From: Lukas Oberhuber <lukaso@gmail.com>
+Date: Mon, 27 Dec 2021 23:09:33 +0000
+Subject: [PATCH 1/3] macOS: improve robustness of pointers
+
+Tries to put more rigour in casting of pointers to gobject types.
+The existing casts are not typesafe. With this change, things
+ will explode earlier rather than access random parts of memory.
+
+Also adds some warnings.
+---
+ gdk/quartz/gdkevents-quartz.c |  6 +++---
+ gdk/quartz/gdkwindow-quartz.c | 24 +++++++++++++++---------
+ modules/input/imquartz.c      | 14 +++++++++++++-
+ 3 files changed, 31 insertions(+), 13 deletions(-)
+
+diff --git a/gdk/quartz/gdkevents-quartz.c b/gdk/quartz/gdkevents-quartz.c
+index 0d492c1619..56350d567a 100644
+--- a/gdk/quartz/gdkevents-quartz.c
++++ b/gdk/quartz/gdkevents-quartz.c
+@@ -387,7 +387,7 @@ get_window_point_from_screen_point (GdkWindow *window,
+   NSPoint point;
+   GdkQuartzNSWindow *nswindow;
  
-   [super viewWillDraw];
+-  nswindow = (GdkQuartzNSWindow*)(((GdkWindowImplQuartz *)window->impl)->toplevel);
++  nswindow = (GdkQuartzNSWindow*)(GDK_WINDOW_IMPL_QUARTZ (window->impl)->toplevel);
+   point = [nswindow convertPointFromScreen:screen_point];
+   *x = point.x;
+   *y = window->height - point.y;
+@@ -793,7 +793,7 @@ find_toplevel_for_mouse_event (NSEvent    *nsevent,
+ 
+           toplevel = toplevel_under_pointer;
+ 
+-          toplevel_impl = (GdkWindowImplQuartz *)toplevel->impl;
++          toplevel_impl = GDK_WINDOW_IMPL_QUARTZ (toplevel->impl);
+ 
+           *x = x_tmp;
+           *y = y_tmp;
+@@ -1405,7 +1405,7 @@ test_resize (NSEvent *event, GdkWindow *toplevel, gint x, gint y)
+   /* Resizing from the resize indicator only begins if an GDK_QUARTZ_LEFT_MOUSE_BUTTON
+    * event is received in the resizing area.
+    */
+-  toplevel_impl = (GdkWindowImplQuartz *)toplevel->impl;
++  toplevel_impl = GDK_WINDOW_IMPL_QUARTZ (toplevel->impl);
+   if ([toplevel_impl->toplevel showsResizeIndicator])
+   if ([event type] == GDK_QUARTZ_LEFT_MOUSE_DOWN &&
+       [toplevel_impl->toplevel showsResizeIndicator])
+diff --git a/gdk/quartz/gdkwindow-quartz.c b/gdk/quartz/gdkwindow-quartz.c
+index 1ad947c8bd..185936b6cb 100644
+--- a/gdk/quartz/gdkwindow-quartz.c
++++ b/gdk/quartz/gdkwindow-quartz.c
+@@ -132,10 +132,13 @@ gdk_quartz_window_get_nsview (GdkWindow *window)
+   if (GDK_WINDOW_DESTROYED (window))
+     return NULL;
+ 
+-  if (!GDK_IS_WINDOW_IMPL_QUARTZ(window->impl))
+-    return NULL;
++  if (!GDK_IS_WINDOW_IMPL_QUARTZ (window->impl))
++    {
++      g_warning ("gdk_quartz_window_get_nsview called without GdkWindowImplQuartz impl");
++      return NULL;
++    }
+ 
+-  return ((GdkWindowImplQuartz *)window->impl)->view;
++  return GDK_WINDOW_IMPL_QUARTZ (window->impl)->view;
+ }
+ 
+ NSWindow *
+@@ -144,10 +147,13 @@ gdk_quartz_window_get_nswindow (GdkWindow *window)
+   if (GDK_WINDOW_DESTROYED (window))
+     return NULL;
+ 
+-  if (!GDK_IS_WINDOW_IMPL_QUARTZ(window->impl))
+-    return NULL;
++  if (!GDK_IS_WINDOW_IMPL_QUARTZ (window->impl))
++    {
++      g_warning ("gdk_quartz_window_get_nswindow called without GdkWindowImplQuartz impl");
++      return NULL;
++    }
+ 
+-  return ((GdkWindowImplQuartz *)window->impl)->toplevel;
++  return GDK_WINDOW_IMPL_QUARTZ (window->impl)->toplevel;
+ }
+ 
+ static CGContextRef
+@@ -423,7 +429,7 @@ _gdk_quartz_window_process_updates_recurse (GdkWindow *window,
+           GdkWindowImplQuartz *toplevel_impl;
+           NSWindow *nswindow;
+ 
+-          toplevel_impl = (GdkWindowImplQuartz *)toplevel->impl;
++          toplevel_impl = GDK_WINDOW_IMPL_QUARTZ (toplevel->impl);
+           nswindow = toplevel_impl->toplevel;
+ #if MAC_OS_X_VERSION_MIN_REQUIRED < 101400
+           /* In theory, we could skip the flush disabling, since we only
+@@ -1580,7 +1586,7 @@ gdk_window_quartz_raise (GdkWindow *window)
+         {
+           GdkWindowImplQuartz *impl;
+ 
+-          impl = (GdkWindowImplQuartz *)parent->impl;
++          impl = GDK_WINDOW_IMPL_QUARTZ (parent->impl);
+ 
+           impl->sorted_children = g_list_remove (impl->sorted_children, window);
+           impl->sorted_children = g_list_prepend (impl->sorted_children, window);
+@@ -1611,7 +1617,7 @@ gdk_window_quartz_lower (GdkWindow *window)
+         {
+           GdkWindowImplQuartz *impl;
+ 
+-          impl = (GdkWindowImplQuartz *)parent->impl;
++          impl = GDK_WINDOW_IMPL_QUARTZ (parent->impl);
+ 
+           impl->sorted_children = g_list_remove (impl->sorted_children, window);
+           impl->sorted_children = g_list_append (impl->sorted_children, window);
+diff --git a/modules/input/imquartz.c b/modules/input/imquartz.c
+index bdee6da2f4..e8a1901136 100644
+--- a/modules/input/imquartz.c
++++ b/modules/input/imquartz.c
+@@ -362,7 +362,19 @@ quartz_set_cursor_location (GtkIMContext *context, GdkRectangle *area)
+     return;
+ 
+   nsview = gdk_quartz_window_get_nsview (qc->client_window);
+-  win = (GdkWindow *)[ (GdkQuartzView*)nsview gdkWindow];
++  if (nsview == NULL)
++    {
++      g_warning ("quartz_set_cursor_location received NULL NSView");
++      return;
++    }
++
++  win = (GdkWindow *)[(GdkQuartzView*)nsview gdkWindow];
++  if (win == NULL)
++    {
++      g_warning ("quartz_set_cursor_location received NULL gdkWindow");
++      return;
++    }
++
+   g_object_set_data (G_OBJECT (win), GIC_CURSOR_RECT, qc->cursor_rect);
+ }
+ 
+-- 
+GitLab
+
+
+From bd71d33c1c8da9b1b65fd1364313fbf5cc79685e Mon Sep 17 00:00:00 2001
+From: Lukas Oberhuber <lukaso@gmail.com>
+Date: Thu, 30 Dec 2021 15:09:41 +0000
+Subject: [PATCH 2/3] macos: Fix to offscreen window selections
+
+This change completely fixes the problems with offscreen windows that
+make the text tool widget unable to adjust the font.
+
+Issue here: https://gitlab.gnome.org/GNOME/gimp/-/issues/7626
+---
+ gdk/quartz/gdkdevice-core-quartz.c |  5 +--
+ gdk/quartz/gdkevents-quartz.c      | 34 ++++++++------
+ gdk/quartz/gdkwindow-quartz.c      | 72 +++++++++++++++++++-----------
+ modules/input/imquartz.c           |  5 +--
+ 4 files changed, 70 insertions(+), 46 deletions(-)
+
 diff --git a/gdk/quartz/gdkdevice-core-quartz.c b/gdk/quartz/gdkdevice-core-quartz.c
 index a8fd34f224..8f399782cd 100644
 --- a/gdk/quartz/gdkdevice-core-quartz.c
@@ -39,7 +181,7 @@ index a8fd34f224..8f399782cd 100644
        point = [nswindow mouseLocationOutsideOfEventStream];
  
 diff --git a/gdk/quartz/gdkevents-quartz.c b/gdk/quartz/gdkevents-quartz.c
-index 0d492c1619..934f700810 100644
+index 56350d567a..a3e1fc0c72 100644
 --- a/gdk/quartz/gdkevents-quartz.c
 +++ b/gdk/quartz/gdkevents-quartz.c
 @@ -38,6 +38,7 @@
@@ -54,7 +196,7 @@ index 0d492c1619..934f700810 100644
    NSPoint point;
    GdkQuartzNSWindow *nswindow;
  
--  nswindow = (GdkQuartzNSWindow*)(((GdkWindowImplQuartz *)window->impl)->toplevel);
+-  nswindow = (GdkQuartzNSWindow*)(GDK_WINDOW_IMPL_QUARTZ (window->impl)->toplevel);
 +  nswindow = gdk_quartz_window_get_nswindow (window);
    point = [nswindow convertPointFromScreen:screen_point];
    *x = point.x;
@@ -79,9 +221,9 @@ index 0d492c1619..934f700810 100644
 +    return NULL;
 +
 +  /*
-+    * Root window type does not need translation, but also does not have
-+    * an associated NSWindow and therefore can't translate screen points
-+    */
++   * Root window type does not need translation, but also does not have
++   * an associated NSWindow and therefore can't translate screen points
++   */
 +  if (toplevel == _gdk_root)
 +    return toplevel;
 +
@@ -97,53 +239,45 @@ index 0d492c1619..934f700810 100644
  
    return toplevel;
  }
-@@ -793,7 +801,7 @@ find_toplevel_for_mouse_event (NSEvent    *nsevent,
- 
-           toplevel = toplevel_under_pointer;
- 
--          toplevel_impl = (GdkWindowImplQuartz *)toplevel->impl;
-+          toplevel_impl = GDK_WINDOW_IMPL_QUARTZ (toplevel->impl);
- 
-           *x = x_tmp;
-           *y = y_tmp;
-@@ -1405,7 +1413,7 @@ test_resize (NSEvent *event, GdkWindow *toplevel, gint x, gint y)
-   /* Resizing from the resize indicator only begins if an GDK_QUARTZ_LEFT_MOUSE_BUTTON
-    * event is received in the resizing area.
-    */
--  toplevel_impl = (GdkWindowImplQuartz *)toplevel->impl;
-+  toplevel_impl = GDK_WINDOW_IMPL_QUARTZ (toplevel->impl);
-   if ([toplevel_impl->toplevel showsResizeIndicator])
-   if ([event type] == GDK_QUARTZ_LEFT_MOUSE_DOWN &&
-       [toplevel_impl->toplevel showsResizeIndicator])
 diff --git a/gdk/quartz/gdkwindow-quartz.c b/gdk/quartz/gdkwindow-quartz.c
-index aa85318e0b..f18b9c4ac6 100644
+index 185936b6cb..a42db554d5 100644
 --- a/gdk/quartz/gdkwindow-quartz.c
 +++ b/gdk/quartz/gdkwindow-quartz.c
-@@ -129,19 +129,75 @@ gdk_quartz_window_init (GdkQuartzWindow *quartz_window)
- NSView *
- gdk_quartz_window_get_nsview (GdkWindow *window)
+@@ -126,34 +126,56 @@ gdk_quartz_window_init (GdkQuartzWindow *quartz_window)
+  * GdkQuartzWindowImpl
+  */
+ 
+-NSView *
+-gdk_quartz_window_get_nsview (GdkWindow *window)
++static inline NSObject *
++gdk_quartz_window_get_nsobject (GdkWindow *window, bool get_nswindow_instead_of_nsview)
  {
 +  GdkWindow *onscreen_window = window;
-+  NSView    *nsview          = NULL;
++  NSObject  *nsobject        = NULL;
 +
    if (GDK_WINDOW_DESTROYED (window))
      return NULL;
  
--  return ((GdkWindowImplQuartz *)window->impl)->view;
+-  if (!GDK_IS_WINDOW_IMPL_QUARTZ (window->impl))
 +  /*
 +   * if window is type GDK_WINDOW_OFFSCREEN
 +   * you need to get the embedder in order to find the NSView
 +   * see: gdkdevice.c:1461
 +   */
 +  while (1)
-+    {
+     {
+-      g_warning ("gdk_quartz_window_get_nsview called without GdkWindowImplQuartz impl");
+-      return NULL;
 +      g_return_val_if_fail (onscreen_window != NULL, NULL);
 +
 +      if (GDK_IS_WINDOW_IMPL_QUARTZ (onscreen_window->impl))
 +        {
-+          nsview = GDK_WINDOW_IMPL_QUARTZ (onscreen_window->impl)->view;
++          if (get_nswindow_instead_of_nsview)
++            nsobject = GDK_WINDOW_IMPL_QUARTZ (onscreen_window->impl)->toplevel;
++          else
++            nsobject = GDK_WINDOW_IMPL_QUARTZ (onscreen_window->impl)->view;
 +
-+          if (nsview != NULL)
++          if (nsobject != NULL)
 +            break;
 +        }
 +
@@ -151,325 +285,343 @@ index aa85318e0b..f18b9c4ac6 100644
 +        onscreen_window = gdk_offscreen_window_get_embedder (onscreen_window);
 +      else
 +        onscreen_window = onscreen_window->parent;
-+    }
+     }
+ 
+-  return GDK_WINDOW_IMPL_QUARTZ (window->impl)->view;
++  g_return_val_if_fail (nsobject != NULL, NULL);
 +
-+  g_return_val_if_fail (nsview != NULL, NULL);
++  return nsobject;
++}
 +
-+  return nsview;
++NSView *
++gdk_quartz_window_get_nsview (GdkWindow *window)
++{
++  return (NSView *)gdk_quartz_window_get_nsobject (window, FALSE);
  }
  
  NSWindow *
  gdk_quartz_window_get_nswindow (GdkWindow *window)
  {
-+  GdkWindow *onscreen_window = window;
-+  NSWindow  *toplevel        = NULL;
-+
-   if (GDK_WINDOW_DESTROYED (window))
-     return NULL;
- 
--  return ((GdkWindowImplQuartz *)window->impl)->toplevel;
-+  /*
-+   * if window is type GDK_WINDOW_OFFSCREEN
-+   * you need to get the embedder in order to find the NSWindow
-+   * see: gdkdevice.c:1461
-+   */
-+  while (1)
-+    {
-+      g_return_val_if_fail (onscreen_window != NULL, NULL);
-+
-+      if (GDK_IS_WINDOW_IMPL_QUARTZ (onscreen_window->impl))
-+        {
-+          toplevel = GDK_WINDOW_IMPL_QUARTZ (onscreen_window->impl)->toplevel;
-+
-+          if (toplevel != NULL)
-+            break;
-+        }
-+
-+      if (onscreen_window->window_type == GDK_WINDOW_OFFSCREEN)
-+        onscreen_window = gdk_offscreen_window_get_embedder (onscreen_window);
-+      else
-+        onscreen_window = onscreen_window->parent;
-+    }
-+
-+  g_return_val_if_fail (toplevel != NULL, NULL);
-+
-+  return toplevel;
+-  if (GDK_WINDOW_DESTROYED (window))
+-    return NULL;
+-
+-  if (!GDK_IS_WINDOW_IMPL_QUARTZ (window->impl))
+-    {
+-      g_warning ("gdk_quartz_window_get_nswindow called without GdkWindowImplQuartz impl");
+-      return NULL;
+-    }
+-
+-  return GDK_WINDOW_IMPL_QUARTZ (window->impl)->toplevel;
++  return (NSWindow *)gdk_quartz_window_get_nsobject (window, TRUE);
  }
  
  static CGContextRef
-@@ -234,9 +290,13 @@ gdk_window_impl_quartz_finalize (GObject *object)
-     g_object_unref (impl->transient_for);
- 
-   if (impl->view)
--    [[NSNotificationCenter defaultCenter] removeObserver: impl->toplevel
--                                       name: @"NSViewFrameDidChangeNotification"
--                                     object: impl->view];
-+    {
-+      [[NSNotificationCenter defaultCenter] removeObserver: impl->toplevel
-+                                        name: @"NSViewFrameDidChangeNotification"
-+                                      object: impl->view];
-+      [impl->view release];
-+      impl->view = NULL;
-+    }
+@@ -251,7 +273,6 @@ gdk_window_impl_quartz_finalize (GObject *object)
+                                         name: @"NSViewFrameDidChangeNotification"
+                                       object: impl->view];
+       [impl->view release];
+-      impl->view = NULL;
+     }
  
    G_OBJECT_CLASS (parent_class)->finalize (object);
+@@ -380,6 +401,8 @@ static void
+ gdk_window_impl_quartz_init (GdkWindowImplQuartz *impl)
+ {
+   impl->type_hint = GDK_WINDOW_TYPE_HINT_NORMAL;
++  impl->view      = NULL;
++  impl->toplevel  = NULL;
  }
-@@ -347,7 +407,7 @@ gdk_quartz_ref_cairo_surface (GdkWindow *window)
-     {
-       gint scale = gdk_window_get_scale_factor (impl->wrapper);
  
--      impl->cairo_surface = 
-+      impl->cairo_surface =
-           gdk_quartz_create_cairo_surface (impl,
-                                            gdk_window_get_width (impl->wrapper) * scale,
-                                            gdk_window_get_height (impl->wrapper) * scale);
-@@ -413,7 +473,7 @@ _gdk_quartz_window_process_updates_recurse (GdkWindow *window,
-           GdkWindowImplQuartz *toplevel_impl;
-           NSWindow *nswindow;
- 
--          toplevel_impl = (GdkWindowImplQuartz *)toplevel->impl;
-+          toplevel_impl = GDK_WINDOW_IMPL_QUARTZ (toplevel->impl);
-           nswindow = toplevel_impl->toplevel;
- #if MAC_OS_X_VERSION_MIN_REQUIRED < 101400
-           /* In theory, we could skip the flush disabling, since we only
-@@ -870,6 +930,8 @@ _gdk_quartz_display_create_window_impl (GdkDisplay    *display,
+ static gboolean
+@@ -886,8 +909,6 @@ _gdk_quartz_display_create_window_impl (GdkDisplay    *display,
    impl = g_object_new (GDK_TYPE_WINDOW_IMPL_QUARTZ, NULL);
    window->impl = GDK_WINDOW_IMPL (impl);
    impl->wrapper = window;
-+  impl->view = NULL;
-+  impl->toplevel = NULL;
+-  impl->view = NULL;
+-  impl->toplevel = NULL;
  
    parent_impl = GDK_WINDOW_IMPL_QUARTZ (window->parent->impl);
  
-@@ -894,9 +956,6 @@ _gdk_quartz_display_create_window_impl (GdkDisplay    *display,
- 				  (attributes->cursor) :
- 				  NULL));
- 
--  impl->view = NULL;
--  impl->toplevel = NULL;
--
-   if (attributes_mask & GDK_WA_TYPE_HINT)
-     {
-       type_hint = attributes->type_hint;
-@@ -944,7 +1003,7 @@ _gdk_quartz_display_create_window_impl (GdkDisplay    *display,
-                           GDK_QUARTZ_RESIZABLE_WINDOW);
-           }
- 
--	impl->toplevel = [[GdkQuartzNSWindow alloc] initWithContentRect:content_rect 
-+        impl->toplevel = [[GdkQuartzNSWindow alloc] initWithContentRect:content_rect 
- 			                                      styleMask:style_mask
- 			                                        backing:NSBackingStoreBuffered
- 			                                          defer:NO
-@@ -953,53 +1012,51 @@ _gdk_quartz_display_create_window_impl (GdkDisplay    *display,
-         if (type_hint != GDK_WINDOW_TYPE_HINT_NORMAL)
-           impl->toplevel.excludedFromWindowsMenu = true;
- 
--	if (attributes_mask & GDK_WA_TITLE)
--	  title = attributes->title;
--	else
--	  title = get_default_title ();
-+        if (attributes_mask & GDK_WA_TITLE)
-+          title = attributes->title;
-+        else
-+          title = get_default_title ();
-+
-+        gdk_window_set_title (window, title);
- 
--	gdk_window_set_title (window, title);
--  
--	if (gdk_window_get_visual (window) == gdk_screen_get_rgba_visual (_gdk_screen))
--	  {
--	    [impl->toplevel setOpaque:NO];
--	    [impl->toplevel setBackgroundColor:[NSColor clearColor]];
--	  }
-+        if (gdk_window_get_visual (window) == gdk_screen_get_rgba_visual (_gdk_screen))
-+          {
-+            [impl->toplevel setOpaque:NO];
-+            [impl->toplevel setBackgroundColor:[NSColor clearColor]];
-+          }
- 
-         content_rect.origin.x = 0;
+@@ -985,13 +1006,12 @@ _gdk_quartz_display_create_window_impl (GdkDisplay    *display,
          content_rect.origin.y = 0;
  
--	impl->view = [[GdkQuartzView alloc] initWithFrame:content_rect];
--	[impl->view setGdkWindow:window];
--	[impl->toplevel setContentView:impl->view];
-+        impl->view = [[GdkQuartzView alloc] initWithFrame:content_rect];
-+        [impl->view setGdkWindow:window];
-+        [impl->toplevel setContentView:impl->view];
+         impl->view = [[GdkQuartzView alloc] initWithFrame:content_rect];
+-
+         [impl->view setGdkWindow:window];
+         [impl->toplevel setContentView:impl->view];
          [[NSNotificationCenter defaultCenter] addObserver: impl->toplevel
--                                      selector: @selector (windowDidResize:)
--                                      name: @"NSViewFrameDidChangeNotification"
--                                      object: impl->view];
--	[impl->view release];
+-                                          selector: @selector (windowDidResize:)
+-                                          name: @"NSViewFrameDidChangeNotification"
+-                                          object: impl->view];
 +                                                 selector: @selector (windowDidResize:)
 +                                                     name: @"NSViewFrameDidChangeNotification"
 +                                                   object: impl->view];
        }
        break;
  
-     case GDK_WINDOW_CHILD:
-       {
--	GdkWindowImplQuartz *parent_impl = GDK_WINDOW_IMPL_QUARTZ (window->parent->impl);
-+        GdkWindowImplQuartz *parent_impl = GDK_WINDOW_IMPL_QUARTZ (window->parent->impl);
+@@ -1002,9 +1022,9 @@ _gdk_quartz_display_create_window_impl (GdkDisplay    *display,
+         if (!window->input_only)
+           {
+             NSRect frame_rect = NSMakeRect (window->x + window->parent->abs_x,
+-                                                  window->y + window->parent->abs_y,
+-                                                  window->width,
+-                                                  window->height);
++                                            window->y + window->parent->abs_y,
++                                            window->width,
++                                            window->height);
  
--	if (!window->input_only)
--	  {
--	    NSRect frame_rect = NSMakeRect (window->x + window->parent->abs_x,
-+        if (!window->input_only)
-+          {
-+            NSRect frame_rect = NSMakeRect (window->x + window->parent->abs_x,
-                                             window->y + window->parent->abs_y,
-                                             window->width,
-                                             window->height);
--	
--	    impl->view = [[GdkQuartzView alloc] initWithFrame:frame_rect];
--	    
--	    [impl->view setGdkWindow:window];
--
--	    /* GdkWindows should be hidden by default */
--	    [impl->view setHidden:YES];
--	    [parent_impl->view addSubview:impl->view];
--	    [impl->view release];
--	  }
-+
-+            impl->view = [[GdkQuartzView alloc] initWithFrame:frame_rect];
-+
-+            [impl->view setGdkWindow:window];
-+
-+            /* GdkWindows should be hidden by default */
-+            [impl->view setHidden:YES];
-+            [parent_impl->view addSubview:impl->view];
-+          }
-       }
-       break;
+             impl->view = [[GdkQuartzView alloc] initWithFrame:frame_rect];
  
-@@ -1572,7 +1629,7 @@ gdk_window_quartz_raise (GdkWindow *window)
-         {
-           GdkWindowImplQuartz *impl;
- 
--          impl = (GdkWindowImplQuartz *)parent->impl;
-+          impl = GDK_WINDOW_IMPL_QUARTZ (parent->impl);
- 
-           impl->sorted_children = g_list_remove (impl->sorted_children, window);
-           impl->sorted_children = g_list_prepend (impl->sorted_children, window);
-@@ -1603,7 +1660,7 @@ gdk_window_quartz_lower (GdkWindow *window)
-         {
-           GdkWindowImplQuartz *impl;
- 
--          impl = (GdkWindowImplQuartz *)parent->impl;
-+          impl = GDK_WINDOW_IMPL_QUARTZ (parent->impl);
- 
-           impl->sorted_children = g_list_remove (impl->sorted_children, window);
-           impl->sorted_children = g_list_append (impl->sorted_children, window);
-diff --git a/gdk/quartz/meson.build b/gdk/quartz/meson.build
-index 619c0242e0..70d688e1a7 100644
---- a/gdk/quartz/meson.build
-+++ b/gdk/quartz/meson.build
-@@ -48,9 +48,8 @@ core_graphics_dep = dependency('appleframeworks', modules : 'CoreGraphics', requ
- appkit_dep = dependency('appleframeworks', modules : 'AppKit', required : true)
- cocoa_dep = dependency('appleframeworks', modules : 'Cocoa', required : true)
- carbon_dep = dependency('appleframeworks', modules : 'Carbon', required : true)
--quartzcore_dep = dependency('appleframeworks', modules : 'QuartzCore', required : true)
- 
--gdk_quartz_deps = [ core_graphics_dep, appkit_dep, cocoa_dep, carbon_dep, quartzcore_dep ]
-+gdk_quartz_deps = [ core_graphics_dep, appkit_dep, cocoa_dep, carbon_dep ]
- 
- libgdk_quartz = static_library('gdk-quartz',
-   gdk_quartz_sources, gdkconfig, gdkenum_h,
-diff --git a/gtk/gtkapplication-quartz.c b/gtk/gtkapplication-quartz.c
-index efa88b4b5d..f614dea296 100644
---- a/gtk/gtkapplication-quartz.c
-+++ b/gtk/gtkapplication-quartz.c
-@@ -80,19 +80,13 @@ G_DEFINE_TYPE (GtkApplicationImplQuartz, gtk_application_impl_quartz, GTK_TYPE_A
- 
- -(NSApplicationTerminateReply) applicationShouldTerminate:(NSApplication *)sender
- {
--  const gchar *quit_action_name = "quit";
--  GActionGroup *action_group = G_ACTION_GROUP (quartz->impl.application);
--
--  if (quartz->quit_inhibit != 0)
--    return NSTerminateCancel;
--
--  if (g_action_group_has_action (action_group, quit_action_name))
--    {
--      g_action_group_activate_action (action_group, quit_action_name, NULL);
--      return NSTerminateCancel;
--    }
--
--  return NSTerminateNow;
-+  /* We have no way to give our message other than to pop up a dialog
-+   * ourselves, which we should not do since the OS will already show
-+   * one when we return NSTerminateNow.
-+   *
-+   * Just let the OS show the generic message...
-+   */
-+  return quartz->quit_inhibit == 0 ? NSTerminateNow : NSTerminateCancel;
- }
- 
- -(void)application:(NSApplication *)theApplication openFiles:(NSArray *)filenames
 diff --git a/modules/input/imquartz.c b/modules/input/imquartz.c
-index bdee6da2f4..e8a1901136 100644
+index e8a1901136..16760e6a38 100644
 --- a/modules/input/imquartz.c
 +++ b/modules/input/imquartz.c
-@@ -362,7 +362,19 @@ quartz_set_cursor_location (GtkIMContext *context, GdkRectangle *area)
-     return;
+@@ -363,10 +363,7 @@ quartz_set_cursor_location (GtkIMContext *context, GdkRectangle *area)
  
    nsview = gdk_quartz_window_get_nsview (qc->client_window);
--  win = (GdkWindow *)[ (GdkQuartzView*)nsview gdkWindow];
-+  if (nsview == NULL)
-+    {
-+      g_warning ("quartz_set_cursor_location received NULL NSView");
-+      return;
-+    }
-+
-+  win = (GdkWindow *)[(GdkQuartzView*)nsview gdkWindow];
-+  if (win == NULL)
-+    {
-+      g_warning ("quartz_set_cursor_location received NULL gdkWindow");
-+      return;
-+    }
-+
-   g_object_set_data (G_OBJECT (win), GIC_CURSOR_RECT, qc->cursor_rect);
+   if (nsview == NULL)
+-    {
+-      g_warning ("quartz_set_cursor_location received NULL NSView");
+-      return;
+-    }
++    return;
+ 
+   win = (GdkWindow *)[(GdkQuartzView*)nsview gdkWindow];
+   if (win == NULL)
+-- 
+GitLab
+
+
+From 0949f25cc805b4e494d64e2cb53b15a512b1ec46 Mon Sep 17 00:00:00 2001
+From: Lukas Oberhuber <lukaso@gmail.com>
+Date: Sun, 23 Jan 2022 22:16:19 +0000
+Subject: [PATCH 3/3] macOS: changes to preserve API for cocoa-access
+
+These changes introduce a new internal set of functions to ensure that
+the external API for `gdk_quartz_window_get_nsview` and
+`gdk_quartz_window_get_nswindow` do not provide an NSView or a
+NSWindow under any new circumstances than previously the case.
+However, those two functions now no longer crash when being
+passed a GdkWindow that does not have a quartz implementation.
+
+These changes done to meet the requests in
+https://gitlab.gnome.org/GNOME/gimp/-/issues/2731
+---
+ gdk/quartz/gdkdevice-core-quartz.c |  3 +--
+ gdk/quartz/gdkevents-quartz.c      |  3 +--
+ gdk/quartz/gdkglcontext-quartz.c   |  4 ++--
+ gdk/quartz/gdkwindow-quartz.c      | 24 +++++++++++++++++++++---
+ gdk/quartz/gdkwindow-quartz.h      |  5 +++++
+ gtk/gtkdnd-quartz.c                |  4 ++--
+ gtk/gtkfilechoosernativequartz.c   |  4 ++--
+ modules/input/imquartz.c           |  6 +++---
+ 8 files changed, 37 insertions(+), 16 deletions(-)
+
+diff --git a/gdk/quartz/gdkdevice-core-quartz.c b/gdk/quartz/gdkdevice-core-quartz.c
+index 8f399782cd..4fd2ae940c 100644
+--- a/gdk/quartz/gdkdevice-core-quartz.c
++++ b/gdk/quartz/gdkdevice-core-quartz.c
+@@ -27,7 +27,6 @@
+ #include "gdkprivate-quartz.h"
+ #include "gdkquartzdevice-core.h"
+ #include "gdkinternal-quartz.h"
+-#include "gdkquartz-cocoa-access.h"
+ 
+ struct _GdkQuartzDeviceCore
+ {
+@@ -231,7 +230,7 @@ gdk_quartz_device_core_query_state_helper (GdkWindow       *window,
+     {
+       NSWindow *nswindow;
+ 
+-      nswindow = gdk_quartz_window_get_nswindow (window);
++      nswindow = gdk_quartz_window_search_for_nearest_nswindow (window);
+ 
+       point = [nswindow mouseLocationOutsideOfEventStream];
+ 
+diff --git a/gdk/quartz/gdkevents-quartz.c b/gdk/quartz/gdkevents-quartz.c
+index a3e1fc0c72..e54b55570e 100644
+--- a/gdk/quartz/gdkevents-quartz.c
++++ b/gdk/quartz/gdkevents-quartz.c
+@@ -38,7 +38,6 @@
+ #include "gdkquartzdevicemanager-core.h"
+ #include "gdkquartzkeys.h"
+ #include "gdkkeys-quartz.h"
+-#include "gdkquartz-cocoa-access.h"
+ 
+ #define GRIP_WIDTH 15
+ #define GRIP_HEIGHT 15
+@@ -388,7 +387,7 @@ get_window_point_from_screen_point (GdkWindow *window,
+   NSPoint point;
+   GdkQuartzNSWindow *nswindow;
+ 
+-  nswindow = gdk_quartz_window_get_nswindow (window);
++  nswindow = gdk_quartz_window_search_for_nearest_nswindow (window);
+   point = [nswindow convertPointFromScreen:screen_point];
+   *x = point.x;
+   *y = window->height - point.y;
+diff --git a/gdk/quartz/gdkglcontext-quartz.c b/gdk/quartz/gdkglcontext-quartz.c
+index a244d66e43..ddd18e1e7c 100644
+--- a/gdk/quartz/gdkglcontext-quartz.c
++++ b/gdk/quartz/gdkglcontext-quartz.c
+@@ -28,7 +28,7 @@
+ #include "gdkquartzglcontext.h"
+ #include "gdkquartzwindow.h"
+ #include "gdkprivate-quartz.h"
+-#include "gdkquartz-cocoa-access.h"
++#include "gdkinternal-quartz.h"
+ 
+ #include "gdkinternals.h"
+ 
+@@ -138,7 +138,7 @@ gdk_quartz_window_create_gl_context (GdkWindow     *window,
+ 
+   if (attached)
+     {
+-      NSView *view = gdk_quartz_window_get_nsview (window);
++      NSView *view = gdk_quartz_window_search_for_nearest_nsview (window);
+ 
+       if ([view respondsToSelector:@selector(setWantsBestResolutionOpenGLSurface:)])
+         [view setWantsBestResolutionOpenGLSurface:YES];
+diff --git a/gdk/quartz/gdkwindow-quartz.c b/gdk/quartz/gdkwindow-quartz.c
+index a42db554d5..df96d6a84b 100644
+--- a/gdk/quartz/gdkwindow-quartz.c
++++ b/gdk/quartz/gdkwindow-quartz.c
+@@ -127,7 +127,7 @@ gdk_quartz_window_init (GdkQuartzWindow *quartz_window)
+  */
+ 
+ static inline NSObject *
+-gdk_quartz_window_get_nsobject (GdkWindow *window, bool get_nswindow_instead_of_nsview)
++gdk_quartz_window_search_for_nearest_nsobject (GdkWindow *window, bool get_nswindow_instead_of_nsview)
+ {
+   GdkWindow *onscreen_window = window;
+   NSObject  *nsobject        = NULL;
+@@ -166,16 +166,34 @@ gdk_quartz_window_get_nsobject (GdkWindow *window, bool get_nswindow_instead_of_
+   return nsobject;
  }
  
-diff --git a/testsuite/reftests/meson.build b/testsuite/reftests/meson.build
-index 2135ebb434..b4bf6784cc 100644
---- a/testsuite/reftests/meson.build
-+++ b/testsuite/reftests/meson.build
-@@ -22,7 +22,9 @@ libreftest = shared_library('reftest',
++NSView *
++gdk_quartz_window_search_for_nearest_nsview (GdkWindow *window)
++{
++  return (NSView *)gdk_quartz_window_search_for_nearest_nsobject (window, FALSE);
++}
++
++NSWindow *
++gdk_quartz_window_search_for_nearest_nswindow (GdkWindow *window)
++{
++  return (NSWindow *)gdk_quartz_window_search_for_nearest_nsobject (window, TRUE);
++}
++
+ NSView *
+ gdk_quartz_window_get_nsview (GdkWindow *window)
+ {
+-  return (NSView *)gdk_quartz_window_get_nsobject (window, FALSE);
++  if (GDK_WINDOW_DESTROYED (window) || !GDK_IS_WINDOW_IMPL_QUARTZ (window->impl))
++    return NULL;
++
++  return GDK_WINDOW_IMPL_QUARTZ (window->impl)->view;
+ }
  
- gtk_reftest = executable('gtk-reftest', 'gtk-reftest.c',
-   link_with : [libgtkreftestprivate, libreftest],
--  dependencies : libgtk_dep)
-+  dependencies : libgtk_dep,
-+  install: get_option('installed_tests'),
-+  install_dir: installed_test_bindir)
+ NSWindow *
+ gdk_quartz_window_get_nswindow (GdkWindow *window)
+ {
+-  return (NSWindow *)gdk_quartz_window_get_nsobject (window, TRUE);
++  if (GDK_WINDOW_DESTROYED (window) || !GDK_IS_WINDOW_IMPL_QUARTZ (window->impl))
++    return NULL;
++
++  return GDK_WINDOW_IMPL_QUARTZ (window->impl)->toplevel;
+ }
  
- test_data = [
-   '721800-0px-dotted-border.css',
-@@ -455,3 +457,24 @@ foreach testname : test_data
-          is_parallel: false)
-   endif
- endforeach
+ static CGContextRef
+diff --git a/gdk/quartz/gdkwindow-quartz.h b/gdk/quartz/gdkwindow-quartz.h
+index 1175f072e4..e9ecc6816d 100644
+--- a/gdk/quartz/gdkwindow-quartz.h
++++ b/gdk/quartz/gdkwindow-quartz.h
+@@ -83,6 +83,11 @@ CGContextRef gdk_quartz_window_get_context     (GdkWindowImplQuartz *window,
+ void         gdk_quartz_window_release_context (GdkWindowImplQuartz *window,
+                                                 CGContextRef         context);
+ 
++_GDK_EXTERN /* Required for immmodue.cache */
++NSView *     gdk_quartz_window_search_for_nearest_nsview   (GdkWindow *window);
++_GDK_EXTERN /* Required for immmodue.cache */
++NSWindow *   gdk_quartz_window_search_for_nearest_nswindow (GdkWindow *window);
 +
-+reftests_installed_tests = [
-+  'reftests-dark.test',
-+  'reftests-hc.test',
-+  'reftests-hci.test',
-+  'reftests.test',
-+]
-+
-+if get_option('installed_tests')
-+  test_cdata = configuration_data()
-+  test_cdata.set('libexecdir', gtk_libexecdir)
-+
-+  foreach t: reftests_installed_tests
-+    configure_file(input: '@0@.in'.format(t),
-+                   output: t,
-+                   configuration: test_cdata,
-+                   install_dir: installed_test_datadir)
-+  endforeach
-+
-+  install_data(test_data, install_dir: testexecdir)
-+endif
+ /* Root window implementation for Quartz
+  */
+ 
+diff --git a/gtk/gtkdnd-quartz.c b/gtk/gtkdnd-quartz.c
+index 3460de6edd..225c9353d2 100644
+--- a/gtk/gtkdnd-quartz.c
++++ b/gtk/gtkdnd-quartz.c
+@@ -42,7 +42,7 @@
+ #include "gtkintl.h"
+ #include "gtkquartz.h"
+ #include "gdk/quartz/gdkquartz.h"
+-#include "gdk/quartz/gdkquartz-cocoa-access.h"
++#include "gdk/quartz/gdkinternal-quartz.h"
+ #include "gdk/quartz/gdkquartz-gtk-only.h"
+ #include "gdk/quartz/gdkquartzdnd.h"
+ #include "gtkselectionprivate.h"
+@@ -364,7 +364,7 @@ get_toplevel_nswindow (GtkWidget *widget)
+     return NULL;
+ 
+   if (gtk_widget_is_toplevel (toplevel) && window)
+-    return [gdk_quartz_window_get_nsview (window) window];
++    return [gdk_quartz_window_search_for_nearest_nsview (window) window];
+   else
+     return NULL;
+ }
+diff --git a/gtk/gtkfilechoosernativequartz.c b/gtk/gtkfilechoosernativequartz.c
+index fb5abd5390..e295143b97 100644
+--- a/gtk/gtkfilechoosernativequartz.c
++++ b/gtk/gtkfilechoosernativequartz.c
+@@ -40,7 +40,7 @@
+ #include "gtklabel.h"
+ #include "gtkfilechooserentry.h"
+ #include "gtkfilefilterprivate.h"
+-#include <quartz/gdkquartz-cocoa-access.h>
++#include "gdk/quartz/gdkinternal-quartz.h"
+ 
+ #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1060
+ typedef struct {
+@@ -533,7 +533,7 @@ gtk_file_chooser_native_quartz_show (GtkFileChooserNative *self)
+   if (transient_for)
+     {
+       gtk_widget_realize (GTK_WIDGET (transient_for));
+-      data->parent = gdk_quartz_window_get_nswindow (gtk_widget_get_window (GTK_WIDGET (transient_for)));
++      data->parent = gdk_quartz_window_search_for_nearest_nswindow (gtk_widget_get_window (GTK_WIDGET (transient_for)));
+ 
+       if (gtk_native_dialog_get_modal (GTK_NATIVE_DIALOG (self)))
+         data->modal = TRUE;
+diff --git a/modules/input/imquartz.c b/modules/input/imquartz.c
+index 16760e6a38..084e04f603 100644
+--- a/modules/input/imquartz.c
++++ b/modules/input/imquartz.c
+@@ -227,7 +227,7 @@ quartz_filter_keypress (GtkIMContext *context,
+         return gtk_im_context_filter_keypress (qc->slave, event);
+     }
+ 
+-  nsview = gdk_quartz_window_get_nsview (qc->client_window);
++  nsview = gdk_quartz_window_search_for_nearest_nsview (qc->client_window);
+ 
+   win = (GdkWindow *)[(GdkQuartzView *)[[nsevent window] contentView] gdkWindow];
+   GTK_NOTE (MISC, g_print ("client_window: %p, win: %p, nsview: %p\n",
+@@ -272,7 +272,7 @@ discard_preedit (GtkIMContext *context)
+   if (!GDK_IS_QUARTZ_WINDOW (qc->client_window))
+     return;
+ 
+-  NSView *nsview = gdk_quartz_window_get_nsview (qc->client_window);
++  NSView *nsview = gdk_quartz_window_search_for_nearest_nsview (qc->client_window);
+   if (!nsview)
+     return;
+ 
+@@ -361,7 +361,7 @@ quartz_set_cursor_location (GtkIMContext *context, GdkRectangle *area)
+   if (!GDK_IS_QUARTZ_WINDOW (qc->client_window))
+     return;
+ 
+-  nsview = gdk_quartz_window_get_nsview (qc->client_window);
++  nsview = gdk_quartz_window_search_for_nearest_nsview (qc->client_window);
+   if (nsview == NULL)
+     return;
+ 
+-- 
+GitLab
+
