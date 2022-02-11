@@ -289,6 +289,8 @@
       <!-- Use cairo_image_surfaces for most drawing. Once
            https://gitlab.gnome.org/GNOME/gtk/-/issues/3714 is closed, this can be removed -->
       <patch file="gtk-3.24.31-use-cairo-surface-for-drawing.patch" strip="1"/>
+      <!-- patch in new API function to stop GtkLabel from always resizing when text set -->
+      <patch file="gtk+-3.24.31-gtklabel-set-text-no-resize.patch" strip="1"/>
     </branch>
     <dependencies>
       <dep package="glib"/>

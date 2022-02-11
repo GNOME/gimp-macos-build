@@ -1,0 +1,112 @@
+diff --git a/gtk/gtklabel.h b/gtk/gtklabel.h
+index 14d0a44..965f5af 100644
+--- a/gtk/gtklabel.h
++++ b/gtk/gtklabel.h
+@@ -94,6 +94,9 @@ GtkWidget*            gtk_label_new_with_mnemonic (const gchar   *str);
+ GDK_AVAILABLE_IN_ALL
+ void                  gtk_label_set_text          (GtkLabel      *label,
+ 						   const gchar   *str);
++GDK_AVAILABLE_IN_3_24
++void                  gtk_label_set_text_no_resize (GtkLabel     *label,
++						   const gchar   *str);
+ GDK_AVAILABLE_IN_ALL
+ const gchar*          gtk_label_get_text          (GtkLabel      *label);
+ GDK_AVAILABLE_IN_ALL
+diff --git a/gtk/gtklabel.c b/gtk/gtklabel.c
+index 7933ab2..a7b943a 100644
+--- a/gtk/gtklabel.c
++++ b/gtk/gtklabel.c
+@@ -2279,6 +2279,93 @@ gtk_label_set_text (GtkLabel    *label,
+   g_object_thaw_notify (G_OBJECT (label));
+ }
+ 
++
++/* Calculates text, attrs and mnemonic_keyval from
++ * label, use_underline and use_markup
++ *
++ * This function will *not* resize the widget, which means that painting
++ * speed on macos is *much* improved.
++ *
++ * *Note* Copied from `gtk_label_recalculate`
++ */
++void
++gtk_label_recalculate_no_resize (GtkLabel *label)
++{
++  GtkLabelPrivate *priv = label->priv;
++  guint keyval = priv->mnemonic_keyval;
++
++  gtk_label_clear_links (label);
++
++  if (priv->use_markup)
++    gtk_label_set_markup_internal (label, priv->label, priv->use_underline);
++  else if (priv->use_underline)
++    gtk_label_set_uline_text_internal (label, priv->label);
++  else
++    {
++      if (!priv->pattern_set)
++        {
++          if (priv->markup_attrs)
++            pango_attr_list_unref (priv->markup_attrs);
++          priv->markup_attrs = NULL;
++        }
++      gtk_label_set_text_internal (label, g_strdup (priv->label));
++    }
++
++  if (!priv->use_underline)
++    priv->mnemonic_keyval = GDK_KEY_VoidSymbol;
++
++  if (keyval != priv->mnemonic_keyval)
++    {
++      gtk_label_setup_mnemonic (label, keyval);
++      g_object_notify_by_pspec (G_OBJECT (label), label_props[PROP_MNEMONIC_KEYVAL]);
++    }
++
++  gtk_label_clear_layout (label);
++  gtk_label_clear_select_info (label);
++
++  /* Do not resize on text update */
++  if (gtk_widget_get_realized (GTK_WIDGET (label)))
++    gtk_widget_queue_draw (GTK_WIDGET (label));
++}
++
++/**
++ * gtk_label_set_text_no_redraw:
++ * @label: a #GtkLabel
++ * @str: The text you want to set
++ *
++ * Sets the text within the #GtkLabel widget. It overwrites any text that
++ * was there before.
++ *
++ * This function will clear any previously set mnemonic accelerators, and
++ * set the #GtkLabel:use-underline property to %FALSE as a side effect.
++ *
++ * This function will set the #GtkLabel:use-markup property to %FALSE
++ * as a side effect.
++ *
++ * This function will *not* resize the widget, which means that painting
++ * speed on macos is *much* improved.
++ *
++ * See also: gtk_label_set_markup()
++ *
++ * *Note* Copied from `gtk_label_set_text`
++ **/
++void
++gtk_label_set_text_no_resize (GtkLabel    *label,
++		                          const gchar *str)
++{
++  g_return_if_fail (GTK_IS_LABEL (label));
++
++  g_object_freeze_notify (G_OBJECT (label));
++
++  gtk_label_set_label_internal (label, g_strdup (str ? str : ""));
++  gtk_label_set_use_markup_internal (label, FALSE);
++  gtk_label_set_use_underline_internal (label, FALSE);
++  
++  gtk_label_recalculate_no_resize (label);
++
++  g_object_thaw_notify (G_OBJECT (label));
++}
++
+ /**
+  * gtk_label_set_attributes:
+  * @label: a #GtkLabel
