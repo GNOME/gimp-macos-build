@@ -290,6 +290,7 @@
            https://gitlab.gnome.org/GNOME/gtk/-/issues/3714 is closed, this can be removed -->
       <patch file="gtk-3.24.31-use-cairo-surface-for-drawing.patch" strip="1"/>
       <patch file="gtk3-gdk-in-Quartz-send-expose-events-for-individual-dama.patch" strip="1"/>
+      <patch file="gtk3-gdk-do-not-draw-contents-outside-the-rect-passed-by-.patch" strip="1"/>
     </branch>
     <dependencies>
       <dep package="glib"/>
