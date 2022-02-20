@@ -1,9 +1,11 @@
 version: 2.1
-jobs:
-  build-gimp-2-99:
-    macos:
-        xcode: "13.1.0"
 
+# -------------------------
+#        COMMANDS
+# -------------------------
+commands:
+
+  setup:
     steps:
         # for local builds, this needs to be checked out to `~/project`
         - checkout
@@ -28,6 +30,9 @@ jobs:
               echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.12.sdk' > ~/.profile
               echo 'export MACOSX_DEPLOYMENT_TARGET=10.12' >> ~/.profile
               echo 'export PYENV_PYTHON_VERSION=3.10.0' >> ~/.profile
+
+  build-env:
+    steps:
         - restore_cache:
             keys:
               - 1-jhbuild-v3-v4
@@ -49,27 +54,45 @@ jobs:
               - ~/gtk
               - ~/.config
             key: 1-jhbuild-v3-v4
-        - run:
-            name: Setup gtk-mac-bundler
-            command: |
-              cd ~/Source
-              git clone https://gitlab.gnome.org/lukaso/gtk-mac-bundler
-              cd gtk-mac-bundler
-              make install
+
+  get-cached-data:
+    steps:
         - restore_cache:
             keys:
-              - break7-gimpv3-cacheiter1
-              - break7-webkitv3-cacheiter1
-              - break7-gimp-webkit-depsv3-cacheiter1
-              - break7-gimp-depspt2v3-cacheiter1
-              - break7-gimp-depspt1v3-cacheiter1
-              - break7-bootstrapv3-cacheiter1
-              - break7-gimpv3-
-              - break7-webkitv3-
-              - break7-gimp-webkit-depsv3-
-              - break7-gimp-depspt2v3-
-              - break7-gimp-depspt1v3-
-              - break7-bootstrapv3-
+              - break8-gimpv3-cacheiter1
+              - break8-webkitv3-cacheiter1
+              - break8-gimp-webkit-depsv3-cacheiter1
+              - break8-gimp-depspt2v3-cacheiter1
+              - break8-gimp-depspt1v3-cacheiter1
+              - break8-bootstrapv3-cacheiter1
+              - break8-gimpv3-
+              - break8-webkitv3-
+              - break8-gimp-webkit-depsv3-
+              - break8-gimp-depspt2v3-
+              - break8-gimp-depspt1v3-
+              - break8-bootstrapv3-
+
+# -------------------------
+#        JOBS
+# -------------------------
+jobs:
+
+  build-env:
+    macos:
+        xcode: "13.1.0"
+
+    steps:
+        - setup
+        - build-env
+
+  bootstrap:
+    macos:
+        xcode: "13.1.0"
+
+    steps:
+        - setup
+        - build-env
+        - get-cached-data
         - run:
             name: Bootstrap
             command: |
@@ -80,7 +103,16 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break7-bootstrapv3-cacheiter1
+            key: break8-bootstrapv3-cacheiter1
+
+  dependencies-part1:
+    macos:
+        xcode: "13.1.0"
+
+    steps:
+        - setup
+        - build-env
+        - get-cached-data
         - run:
             name: Build GIMP dependencies part 1 (without gegl/babl)
             command: |
@@ -92,7 +124,16 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break7-gimp-depspt1v3-cacheiter1
+            key: break8-gimp-depspt1v3-cacheiter1
+
+  dependencies-part2:
+    macos:
+        xcode: "13.1.0"
+
+    steps:
+        - setup
+        - build-env
+        - get-cached-data
         - run:
             name: Build GIMP dependencies part 2
             command: |
@@ -104,22 +145,28 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break7-gimp-depspt2v3-cacheiter1
-        - run:
-            name: Build all WebKit dependencies
-            command: |
-              source ~/.profile && jhbuild build enchant libpsl sqlite vala gnutls libgpg-error glib-networking
-              source ~/.profile && jhbuild buildone libsoup libgcrypt libwebp
-        - run:
-            name: Cleanup
-            command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
-        - save_cache:
-            paths:
-              - ~/gtk
-            key: break7-gimp-webkit-depsv3-cacheiter1
+            key: break8-gimp-depspt2v3-cacheiter1
+
+  dependencies-babl-gegl:
+    macos:
+        xcode: "13.1.0"
+
+    steps:
+        - setup
+        - build-env
+        - get-cached-data
         - run:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
+
+  build-gimp-2-99-and-package:
+    macos:
+        xcode: "13.1.0"
+
+    steps:
+        - setup
+        - build-env
+        - get-cached-data
         - run:
             name: Build GIMP
             # XXX `make check` is not working reliably under circle ci, so we are
@@ -136,7 +183,14 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break7-gimpv3-cacheiter1
+            key: break8-gimpv3-cacheiter1
+        - run:
+            name: Setup gtk-mac-bundler
+            command: |
+              cd ~/Source
+              git clone https://gitlab.gnome.org/lukaso/gtk-mac-bundler
+              cd gtk-mac-bundler
+              make install
         - run:
             name: Importing signing certificate
             command: |
@@ -182,4 +236,19 @@ workflows:
   version: 2
   build-different-versions:
     jobs:
-      - build-gimp-2-99
+      - build-env
+      - bootstrap:
+          requires:
+            - build-env
+      - dependencies-part1:
+          requires:
+            - bootstrap
+      - dependencies-part2:
+          requires:
+            - dependencies-part1
+      - dependencies-babl-gegl:
+          requires:
+            - dependencies-part2
+      - build-gimp-2-99-and-package:
+          requires:
+            - dependencies-babl-gegl
