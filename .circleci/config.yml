@@ -57,12 +57,16 @@ jobs:
               cd gtk-mac-bundler
               make install
         - find ./modulesets -type f -exec md5 {} \; | md5 | cut -d' ' -f1
-        - run: |
-            echo $(find ./patches -type f -exec md5 {} \; | md5 | cut -d' ' -f1)  >> CACHE_BREAK
-            echo $(find ./modulesets -type f -exec md5 {} \; | md5 | cut -d' ' -f1)  >> CACHE_ITER
-        - run: |
-            cat CACHE_BREAK
-            cat CACHE_ITER
+        - run:
+            name: checksums
+            command: |
+                echo $(find ./patches -type f -exec md5 {} \; | md5 | cut -d' ' -f1)  >> CACHE_BREAK
+                echo $(find ./modulesets -type f -exec md5 {} \; | md5 | cut -d' ' -f1)  >> CACHE_ITER
+        - run:
+            name: print checksums
+            command: |
+                cat CACHE_BREAK
+                cat CACHE_ITER
         - restore_cache:
             keys:
               - v{{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
