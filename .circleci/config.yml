@@ -56,20 +56,25 @@ jobs:
               git clone https://gitlab.gnome.org/lukaso/gtk-mac-bundler
               cd gtk-mac-bundler
               make install
+        - find ./modulesets -type f -exec md5 {} \; | md5 | cut -d' ' -f1
+        - run: |
+            echo $(find ./patches -type f -exec md5 {} \; | md5 | cut -d' ' -f1)  >> CACHE_BREAK
+            echo $(find ./modulesets -type f -exec md5 {} \; | md5 | cut -d' ' -f1)  >> CACHE_ITER
+        - run: |
+            cat CACHE_BREAK
+            cat CACHE_ITER
         - restore_cache:
             keys:
-              - break7-gimpv3-cacheiter1
-              - break7-webkitv3-cacheiter1
-              - break7-gimp-webkit-depsv3-cacheiter1
-              - break7-gimp-depspt2v3-cacheiter1
-              - break7-gimp-depspt1v3-cacheiter1
-              - break7-bootstrapv3-cacheiter1
-              - break7-gimpv3-
-              - break7-webkitv3-
-              - break7-gimp-webkit-depsv3-
-              - break7-gimp-depspt2v3-
-              - break7-gimp-depspt1v3-
-              - break7-bootstrapv3-
+              - {{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
+              - {{ checksum "CACHE_BREAK" }}-webkitv3-{{ checksum "CACHE_ITER" }}
+              - {{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-{{ checksum "CACHE_ITER" }}
+              - {{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-{{ checksum "CACHE_ITER" }}
+              - {{ checksum "CACHE_BREAK" }}-bootstrapv3-{{ checksum "CACHE_ITER" }}
+              - {{ checksum "CACHE_BREAK" }}-gimpv3-
+              - {{ checksum "CACHE_BREAK" }}-gimp-webkit-depsv3-
+              - {{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-
+              - {{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-
+              - {{ checksum "CACHE_BREAK" }}-bootstrapv3-
         - run:
             name: Bootstrap
             command: |
@@ -80,7 +85,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break7-bootstrapv3-cacheiter1
+            key: {{ checksum "CACHE_BREAK" }}-bootstrapv3-{{ checksum "CACHE_ITER" }}
         - run:
             name: Build GIMP dependencies part 1 (without gegl/babl)
             command: |
@@ -92,7 +97,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break7-gimp-depspt1v3-cacheiter1
+            key: {{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-{{ checksum "CACHE_ITER" }}
         - run:
             name: Build GIMP dependencies part 2
             command: |
@@ -104,7 +109,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break7-gimp-depspt2v3-cacheiter1
+            key: {{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-{{ checksum "CACHE_ITER" }}
         - run:
             name: Build all WebKit dependencies
             command: |
@@ -116,7 +121,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break7-gimp-webkit-depsv3-cacheiter1
+            key: {{ checksum "CACHE_BREAK" }}-gimp-webkit-depsv3-{{ checksum "CACHE_ITER" }}
         - run:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
@@ -136,7 +141,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break7-gimpv3-cacheiter1
+            key: {{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
         - run:
             name: Importing signing certificate
             command: |
