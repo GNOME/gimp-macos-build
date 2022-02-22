@@ -30,6 +30,13 @@ commands:
               echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.12.sdk' > ~/.profile
               echo 'export MACOSX_DEPLOYMENT_TARGET=10.12' >> ~/.profile
               echo 'export PYENV_PYTHON_VERSION=3.10.0' >> ~/.profile
+        - run:
+            name: checksums for caching
+            command: |
+              echo $(find ./patches -type f -exec md5 {} \; | md5 | cut -d' ' -f1)  >> CACHE_BREAK
+              echo $(find ./modulesets -type f -exec md5 {} \; | md5 | cut -d' ' -f1)  >> CACHE_ITER
+              cat CACHE_BREAK
+              cat CACHE_ITER
 
   build-env:
     steps:
@@ -59,18 +66,14 @@ commands:
     steps:
         - restore_cache:
             keys:
-              - break8-gimpv3-cacheiter1
-              - break8-webkitv3-cacheiter1
-              - break8-gimp-webkit-depsv3-cacheiter1
-              - break8-gimp-depspt2v3-cacheiter1
-              - break8-gimp-depspt1v3-cacheiter1
-              - break8-bootstrapv3-cacheiter1
-              - break8-gimpv3-
-              - break8-webkitv3-
-              - break8-gimp-webkit-depsv3-
-              - break8-gimp-depspt2v3-
-              - break8-gimp-depspt1v3-
-              - break8-bootstrapv3-
+              - v{{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
+              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-{{ checksum "CACHE_ITER" }}
+              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-{{ checksum "CACHE_ITER" }}
+              - v{{ checksum "CACHE_BREAK" }}-bootstrapv3-{{ checksum "CACHE_ITER" }}
+              - v{{ checksum "CACHE_BREAK" }}-gimpv3-
+              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-
+              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-
+              - v{{ checksum "CACHE_BREAK" }}-bootstrapv3-
 
 # -------------------------
 #        JOBS
@@ -103,7 +106,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break8-bootstrapv3-cacheiter1
+            key: v{{ checksum "CACHE_BREAK" }}-bootstrapv3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part1:
     macos:
@@ -124,7 +127,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break8-gimp-depspt1v3-cacheiter1
+            key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part2:
     macos:
@@ -145,7 +148,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break8-gimp-depspt2v3-cacheiter1
+            key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-{{ checksum "CACHE_ITER" }}
 
   dependencies-babl-gegl:
     macos:
@@ -183,7 +186,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: break8-gimpv3-cacheiter1
+            key: v{{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
         - run:
             name: Setup gtk-mac-bundler
             command: |
