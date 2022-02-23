@@ -19,13 +19,9 @@
         href="https://ftp.openbsd.org/pub/OpenBSD/distfiles/"/>
   <repository type="tarball" name="googlestorage" href="https://storage.googleapis.com/"/>
 
-  <!-- gimp-help-git fails on libxml2 import test. Disabling while looking for the solution.
-       XXX Fix the autogenargs option when removing the comments. Double-hyphen must not
-           happen within a comment (for compatibility reasons).
-  -->
-
+  <!-- gimp-help-git fails to build. Disabling -->
   <autotools id="gimp-help-git" autogenargs="--without-gimp" supports-non-srcdir-builds="no" autogen-sh="autogen.sh">
-    <branch module="gimp-help" revision="gimp-help-2-10" repo="git.gnome.org"/>
+    <branch module="gimp-help" revision="master" repo="git.gnome.org"/>
     <dependencies>
       <dep package="pngcrush"/>
       <dep package="python3"/>
@@ -72,6 +68,7 @@
   <autotools id="gimp299" autogen-sh="autogen.sh" autogenargs="--without-x --with-build-id=org.gimp.GIMP_official --with-revision=0">
     <branch module="gimp.git"
             revision="master"
+            tag="GIMP_2_99_10"
             repo="git.gnome.org"/>
     <after>
       <dep package="meta-gtk-osx-bootstrap"/>
@@ -93,11 +90,10 @@
 
   <meson id="gegl">
     <branch repo="ftp.gimp.org"
-      version="0.4.34"
-      hash="sha256:ef63f0bca5b431c6119addd834ca7fbb507c900c4861c57b3667b6f4ccfcaaaa"
-      module="gegl/0.4/gegl-0.4.34.tar.xz">
+      version="0.4.36"
+      hash="sha256:6fd58a0cdcc7702258adaeffb573a389228ae8f0eff47578efda2309b61b2ca6"
+      module="gegl/0.4/gegl-0.4.36.tar.xz">
       <patch file="gegl-0.4.32-no_python_tests.patch" strip="1"/>
-      <patch file="gegl-fix-build-MR111.patch" strip="1"/>
     </branch>
     <after>
       <dep package="suitesparse"/>
@@ -137,10 +133,12 @@
 
   <meson id="babl">
     <branch repo="ftp.gimp.org"
-      version="0.1.88"
-      module="babl/0.1/babl-0.1.88.tar.xz"
-      hash="sha256:4f0d7f4aaa0bb2e725f349adf7b351a957d9fb26d555d9895a7af816b4167039">
+      version="0.1.90"
+      module="babl/0.1/babl-0.1.90.tar.xz"
+      hash="sha256:6e2ebb636f37581588e3d02499b3d2f69f9ac73e34a262f42911d7f5906a9243">
       <patch file="babl-exports.patch" strip="1"/>
+      <!-- fixed on master, so remove on next version bump -->
+      <patch file="babl-0.1.90-static-inline.patch" strip="1"/>
     </branch>
     <dependencies>
       <dep package="lcms"/>

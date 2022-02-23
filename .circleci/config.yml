@@ -177,12 +177,12 @@ jobs:
             command: |
               source ~/.profile
               jhbuild build gimp299
-        - run:
-            name: Building GIMP help (en) from git
-            command: source ~/.profile && ALL_LINGUAS=en jhbuild build gimp-help-git
-        - run:
-            name: Cleanup
-            command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
+        # - run:
+        #     name: Building GIMP help (en) from git
+        #     command: source ~/.profile && ALL_LINGUAS=en jhbuild build gimp-help-git
+        # - run:
+        #     name: Cleanup
+        #     command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
         - save_cache:
             paths:
               - ~/gtk
