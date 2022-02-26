@@ -104,22 +104,6 @@
     </dependencies>
   </autotools>
 
-  <autotools id="gimp299" autogen-sh="autogen.sh" autogenargs="--without-x --with-build-id=org.gimp.GIMP_official --with-revision=0">
-    <branch module="gimp" revision="master" repo="git.gnome.org">
-    </branch>
-    <after>
-      <dep package="meta-gtk-osx-bootstrap"/>
-      <dep package="meta-gtk-osx-gtk3"/>
-      <deb package="webkit"/>
-    </after>
-    <dependencies>
-      <dep package="gimp-common-deps"/>
-      <dep package="python3"/>
-      <dep package="meta-gtk-osx-python3-gtk3"/>
-      <dep package="appstream-glib"/>
-    </dependencies>
-  </autotools>
-
   <autotools id="p2tc" supports-non-srcdir-builds="no" autogen-sh="autogen.sh">
     <branch module="poly2tri-c" tag="p2tc-0.1" repo="git-jtojnar" checkoutdir="poly2tri-c-p2tc-0.1.0">
     </branch>
@@ -441,25 +425,5 @@
       module="uuid/uuid-1.6.2.tar.gz"
       hash="sha256:11a615225baa5f8bb686824423f50e4427acd3f70d394765bdff32801f0fd5b0"/>
   </autotools>
-
-  <meson id="appstream-glib" mesonargs="-Dstemmer=false -Drpm=false">
-    <branch repo="github-tarball"
-      checkoutdir="appstream-glib"
-      version="0.7.18"
-      module="hughsie/appstream-glib/archive/appstream_glib_0_7_18.zip"
-      hash="sha256:7b0aebc7dda1694b01aaae7e00e207b4a38d3b5274adbfbfbabb1df749c5d899">
-    </branch>
-    <dependencies>
-      <dep package="freetype"/>
-      <dep package="gdk-pixbuf"/>
-      <dep package="glib"/>
-      <dep package="gtk+-3.0"/>
-      <dep package="json-glib"/>
-      <dep package="libarchive"/>
-      <dep package="libsoup"/>
-      <dep package="libyaml"/>
-      <dep package="uuid"/>
-    </dependencies>
-  </meson>
 
 </moduleset>
