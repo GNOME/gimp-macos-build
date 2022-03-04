@@ -157,7 +157,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
-            key: v{{ checksum "CACHE_BREAK" }}-depspt2-2.10-{{ checksum "CACHE_ITER" }}
+            key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt2-2.10-{{ checksum "CACHE_ITER" }}
 
   dependencies-babl-gegl:
     macos:
