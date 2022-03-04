@@ -112,9 +112,9 @@
 
   <meson id="gegl" mesonargs="-Dvapigen=disabled">
     <branch repo="ftp.gimp.org"
-      version="0.4.34"
-      hash="sha256:ef63f0bca5b431c6119addd834ca7fbb507c900c4861c57b3667b6f4ccfcaaaa"
-      module="gegl/0.4/gegl-0.4.34.tar.xz">
+      version="0.4.36"
+      hash="sha256:6fd58a0cdcc7702258adaeffb573a389228ae8f0eff47578efda2309b61b2ca6"
+      module="gegl/0.4/gegl-0.4.36.tar.xz">
       <patch file="gegl-0.4.32-no_python_tests.patch" strip="1"/>
     </branch>
     <after>
@@ -155,9 +155,11 @@
 
   <meson id="babl" mesonargs="-Denable-vapi=false">
     <branch repo="ftp.gimp.org"
-      version="0.1.88"
-      module="babl/0.1/babl-0.1.88.tar.xz"
-      hash="sha256:4f0d7f4aaa0bb2e725f349adf7b351a957d9fb26d555d9895a7af816b4167039">
+      version="0.1.90"
+      module="babl/0.1/babl-0.1.90.tar.xz"
+      hash="sha256:6e2ebb636f37581588e3d02499b3d2f69f9ac73e34a262f42911d7f5906a9243">
+      <!-- fixed on master, so remove on next version bump -->
+      <patch file="babl-0.1.90-static-inline.patch" strip="1"/>
     </branch>
     <dependencies>
       <dep package="lcms"/>
