@@ -64,11 +64,10 @@
   </metamodule>
 
   <!-- For releases, the tag option should be added to the branch item -->
-  <!-- tag="GIMP_2_99_8" -->
+  <!-- tag="GIMP_2_99_10" -->
   <autotools id="gimp299" autogen-sh="autogen.sh" autogenargs="--without-x --with-build-id=org.gimp.GIMP_official --with-revision=0">
     <branch module="gimp.git"
             revision="master"
-            tag="GIMP_2_99_10"
             repo="git.gnome.org"/>
     <after>
       <dep package="meta-gtk-osx-bootstrap"/>
