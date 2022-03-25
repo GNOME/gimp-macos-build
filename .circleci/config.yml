@@ -41,6 +41,9 @@ commands:
               echo $({ find ./modulesets -type f -exec md5 {} \; & cat .circleci/config.yml; } | md5 | cut -d' ' -f1)  >> CACHE_ITER
               cat CACHE_BREAK
               cat CACHE_ITER
+        - run:
+            name: coreutils for realpath (for jpeg-xl)
+            command: brew install coreutils
 
   build-env:
     steps:

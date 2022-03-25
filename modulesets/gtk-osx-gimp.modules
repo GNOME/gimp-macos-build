@@ -18,6 +18,7 @@
   <repository type="tarball" name="openbsd"
         href="https://ftp.openbsd.org/pub/OpenBSD/distfiles/"/>
   <repository type="tarball" name="googlestorage" href="https://storage.googleapis.com/"/>
+  <repository type="git" name="github" href="https://github.com/"/>
 
   <!-- gimp-help-git fails on libxml2 import test. Disabling while looking for the solution.
        XXX Fix the autogenargs option when removing the comments. Double-hyphen must not
@@ -238,6 +239,7 @@
     </branch>
     <dependencies>
       <dep package="yasm"/>
+      <dep package="jpeg-xl"/>
     </dependencies>
   </cmake>
 
@@ -430,5 +432,56 @@
       module="uuid/uuid-1.6.2.tar.gz"
       hash="sha256:11a615225baa5f8bb686824423f50e4427acd3f70d394765bdff32801f0fd5b0"/>
   </autotools>
+
+  <meson id="appstream-glib" mesonargs="-Dstemmer=false -Drpm=false">
+    <branch repo="github-tarball"
+      checkoutdir="appstream-glib"
+      version="0.7.18"
+      module="hughsie/appstream-glib/archive/appstream_glib_0_7_18.zip"
+      hash="sha256:7b0aebc7dda1694b01aaae7e00e207b4a38d3b5274adbfbfbabb1df749c5d899">
+    </branch>
+    <dependencies>
+      <dep package="freetype"/>
+      <dep package="gdk-pixbuf"/>
+      <dep package="glib"/>
+      <dep package="gtk+-3.0"/>
+      <dep package="json-glib"/>
+      <dep package="libarchive"/>
+      <dep package="libsoup"/>
+      <dep package="libyaml"/>
+      <dep package="uuid"/>
+    </dependencies>
+  </meson>
+
+  <!--
+    libbrotli is required for libjxl even though it is included and built in
+    libjxl. This is because libbrotli then does not get installed by libjxl
+    for some reason.
+  -->
+  <cmake id="libbrotli"
+    cmakeargs="-DCMAKE_BUILD_TYPE=Release">
+    <branch repo="github-tarball"
+      version="1.0.9"
+      module="google/brotli/archive/v1.0.9.tar.gz"
+      checkoutdir="brotli-1.0.9"
+      hash="sha256:f9e8d81d0405ba66d181529af42a3354f838c939095ff99930da6aa9cdf6fe46"/>
+  </cmake>
+
+  <!--
+    Version 0.6.1 does not build on mac so have to use "main"
+    but locking revision on "main" so new commits do cannot break build
+    `tag` can be set to a commit id
+  -->
+  <cmake id="jpeg-xl"
+    cmakeargs="-DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DJPEGXL_ENABLE_TOOLS=false -DJPEGXL_ENABLE_MANPAGES=false -DJPEGXL_ENABLE_BENCHMARK=false -DJPEGXL_ENABLE_EXAMPLES=false -DJPEGXL_ENABLE_JNI=false">
+    <branch repo="github"
+      branch="main"
+      tag="7594374942b349d22b241144bf2aeb87280fd961"
+      module="libjxl/libjxl.git"
+      checkoutdir="libjxl"/>
+    <dependencies>
+      <dep package="libbrotli"/>
+    </dependencies>
+  </cmake>
 
 </moduleset>
