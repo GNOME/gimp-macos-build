@@ -85,7 +85,7 @@ jobs:
 
   build-env:
     macos:
-        xcode: "13.1.0"
+        xcode: "13.3.0"
 
     steps:
         - setup
@@ -93,7 +93,7 @@ jobs:
 
   bootstrap:
     macos:
-        xcode: "13.1.0"
+        xcode: "13.3.0"
 
     steps:
         - setup
@@ -113,7 +113,7 @@ jobs:
 
   dependencies-part1:
     macos:
-        xcode: "13.1.0"
+        xcode: "13.3.0"
 
     steps:
         - setup
@@ -134,7 +134,7 @@ jobs:
 
   dependencies-part2:
     macos:
-        xcode: "13.1.0"
+        xcode: "13.3.0"
 
     steps:
         - setup
@@ -155,7 +155,7 @@ jobs:
 
   dependencies-babl-gegl:
     macos:
-        xcode: "13.1.0"
+        xcode: "13.3.0"
 
     steps:
         - setup
@@ -167,7 +167,7 @@ jobs:
 
   build-gimp-2-99-and-package:
     macos:
-        xcode: "13.1.0"
+        xcode: "13.3.0"
 
     steps:
         - setup

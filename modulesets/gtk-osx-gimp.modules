@@ -66,14 +66,13 @@
 
   <!-- For releases, the tag option should be added to the branch item -->
   <!-- tag="GIMP_2_99_10" -->
-  <autotools id="gimp299" autogen-sh="autogen.sh" autogenargs="--without-x --with-build-id=org.gimp.GIMP_official --with-revision=0">
+  <meson id="gimp299" mesonargs="-Dbuild-id=org.gimp.GIMP_official -Drevision=0">
     <branch module="gimp.git"
             revision="master"
             repo="git.gnome.org"/>
     <after>
       <dep package="meta-gtk-osx-bootstrap"/>
       <dep package="meta-gtk-osx-gtk3"/>
-      <dep package="webkit"/>
     </after>
     <dependencies>
       <dep package="gimp-common-deps"/>
@@ -81,7 +80,7 @@
       <dep package="meta-gtk-osx-python3"/>
       <dep package="appstream-glib"/>
     </dependencies>
-  </autotools>
+  </meson>
 
   <autotools id="p2tc" supports-non-srcdir-builds="no" autogen-sh="autogen.sh">
     <branch module="poly2tri-c" tag="p2tc-0.1" repo="git-jtojnar" checkoutdir="poly2tri-c-p2tc-0.1.0">
