@@ -28,4 +28,11 @@
     </foaf:Person>
   </maintainer>
 
+  <maintainer>
+    <foaf:Person>
+      <foaf:name>Lukas Oberhuber</foaf:name>
+      <gnome:userid>lukaso</gnome:userid>
+    </foaf:Person>
+  </maintainer>
+
 </Project>
