@@ -365,18 +365,12 @@
     makeinstallargs="install install-so"
     autogenargs="--disable-cups">
     <branch repo="github-tarball"
-      version="9.50"
-      module="ArtifexSoftware/ghostpdl-downloads/releases/download/gs950/ghostscript-9.50.tar.xz"
-      hash="sha256:db9bb0817b6f22974e6d5ad751975f346420c2c86a0afcfe6b4e09c47803e7d4">
-      <patch file="ghostscript-lib.patch" strip="0"/>
-      <patch file="ghostscript-9.50-add-required-config-files.patch" strip="1"/>
-    </branch>
-    <!-- <branch repo="github-tarball"
-      version="9.55.0"
-      module="ArtifexSoftware/ghostpdl-downloads/releases/download/gs9550/ghostscript-9.55.0.tar.gz"
-      hash="sha256:31e2064be67e15b478a8da007d96d6cd4d2bee253e5be220703a225f7f79a70b">
+      version="9.56.1"
+      module="ArtifexSoftware/ghostpdl-downloads/releases/download/gs9561/ghostscript-9.56.1.tar.xz"
+      hash="sha256:d43406805650009b42c3d5f6dc535233454533c1e27c13a77dd1d462a056b8e4">
       <patch file="ghostscript-9.55.0-leptonica-MacOSX10.12.sdk-no-open_memstream.patch" strip="1"/>
-    </branch> -->
+      <patch file="ghostscript-9.56.1-correct-cxxflags.patch" strip="1"/>
+    </branch>
     <dependencies>
       <dep package="lcms"/>
     </dependencies>
