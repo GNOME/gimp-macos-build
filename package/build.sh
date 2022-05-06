@@ -55,17 +55,17 @@ find  ${PACKAGE_DIR}/GIMP-2.10.app/Contents/Resources/lib/ -mindepth 1 -maxdepth
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
    | xargs -n1 install_name_tool -delete_rpath ${HOME}/gtk/inst/lib
 
-echo "adding @rpath to the binaries"
+echo "adding @rpath to the binaries (incl special ghostscript 9.56 fix)"
 find  ${PACKAGE_DIR}/GIMP-2.10.app/Contents/MacOS/ -type f -perm +111 \
    | xargs file \
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
-   | xargs -n1 install_name_tool -add_rpath @executable_path/../Resources/lib/
+   | xargs -n1 install_name_tool -add_rpath @executable_path/../Resources/lib/ -change libgs.dylib.9.56 @rpath/libgs.dylib.9.56
 
-echo "adding @rpath to the plugins"
+echo "adding @rpath to the plugins (incl special ghostscript 9.56 fix)"
 find  ${PACKAGE_DIR}/GIMP-2.10.app/Contents/Resources/lib/gimp/2.0/plug-ins/ -perm +111 -type f \
    | xargs file \
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
-   | xargs -n1 install_name_tool -add_rpath @executable_path/../../../
+   | xargs -n1 install_name_tool -add_rpath @executable_path/../../../ -change libgs.dylib.9.56 @rpath/libgs.dylib.9.56
 
 echo "fixing pixmap cache"
 sed -i.old 's|@executable_path/../Resources/lib/||' \

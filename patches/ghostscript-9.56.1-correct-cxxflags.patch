@@ -1,0 +1,13 @@
+diff --git a/configure.ac b/configure.ac
+index e955b2f..37e0bf1 100644
+--- a/configure.ac	
++++ b/configure.ac
+@@ -835,7 +835,7 @@ if test x$with_tesseract != xno; then
+       for flag in $cxxflags_to_try ; do
+         CXXFLAGS="$CXXFLAGS $flag"
+ 
+-        AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <cstdlib>]], [[return 0;]])],[
++        AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <cstdint>]], [[return 0;]])],[
+                 echo "   $flag"; CXXFLAGS_TO_USE="$CXXFLAGS_TO_USE $flag"
+         ],[])
+ 
