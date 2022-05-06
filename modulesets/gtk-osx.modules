@@ -191,6 +191,7 @@
     <dependencies>
       <dep package="glib"/>
       <dep package="cairo"/>
+      <dep package="libbrotli"/>
     </dependencies>
     <after>
       <dep package='python3'/>
