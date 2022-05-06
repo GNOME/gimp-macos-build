@@ -187,6 +187,21 @@
             hash="sha256:ac6ce1e1fbd4d0254c4ddb9d37f1fa99dec83619c1253328155206b896210d4c"/>
   </autotools>
 
+  <meson id="libsoup" mesonargs="-Dvapi=disabled">
+    <branch module="libsoup/2.74/libsoup-2.74.0.tar.xz" version="2.74.0"
+            hash="sha256:33b1d4e0d639456c675c227877e94a8078d731233e2d57689c11abcef7d3c48e">
+    </branch>
+    <dependencies>
+      <dep package="libpsl"/>
+      <dep package="libbrotli"/>
+      <dep package="python3"/>
+      <dep package="glib"/>
+      <dep package="glib-networking"/>
+      <dep package="sqlite"/>
+      <dep package="vala"/>
+    </dependencies>
+  </meson>
+
   <autotools id="libwebp" autogen-sh="configure"  autogenargs="--enable-libwebpmux --enable-libwebpdecoder">
     <branch repo="webm" module="webp/libwebp-1.2.0.tar.gz" version="1.2.0"
             hash="sha256:2fc8bbde9f97f2ab403c0224fb9ca62b2e6852cbc519e91ceaa7c153ffd88a0c"/>

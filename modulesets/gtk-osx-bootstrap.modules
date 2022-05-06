@@ -64,7 +64,8 @@
        building "native" you can safely add python to the skip list, but
        otherwise the links in the SDKs are messed up and libxml's python
        module won't link. In case you're wondering, itstool
-       needs libxml2's python module. -->
+       needs libxml2's python module.
+       https://bugs.python.org/issue36721 -->
 
   <autotools id="libxml2" autogen-sh="configure"
              autogenargs='--libdir="$JHBUILD_LIBDIR" --with-python'>
