@@ -188,11 +188,12 @@
   </autotools>
 
   <meson id="libsoup" mesonargs="-Dvapi=disabled">
-    <branch module="libsoup/2.72/libsoup-2.72.0.tar.xz" version="2.72.0"
-            hash="sha256:170c3f8446b0f65f8e4b93603349172b1085fb8917c181d10962f02bb85f5387">
+    <branch module="libsoup/2.74/libsoup-2.74.0.tar.xz" version="2.74.0"
+            hash="sha256:33b1d4e0d639456c675c227877e94a8078d731233e2d57689c11abcef7d3c48e">
     </branch>
     <dependencies>
       <dep package="libpsl"/>
+      <dep package="libbrotli"/>
       <dep package="python3"/>
       <dep package="glib"/>
       <dep package="glib-networking"/>
