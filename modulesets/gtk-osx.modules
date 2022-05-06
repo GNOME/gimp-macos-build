@@ -3,7 +3,7 @@
 <?xml-stylesheet type="text/xsl" href="moduleset.xsl"?>
 <moduleset>
   <repository type="tarball" name="ftp.gnome.org" default="yes"
-              href="http://ftp.gnome.org/pub/GNOME/sources/"/>
+              href="https://download.gnome.org/sources/"/>
   <repository type="tarball" name="sourceforge"
               href="http://downloads.sourceforge.net/sourceforge/"/>
   <repository type="tarball" name="savannah"
@@ -121,6 +121,7 @@
     <dependencies>
       <dep package="harfbuzz-no-cairo"/>
       <dep package="zlib"/>
+      <dep package="libbrotli"/>
     </dependencies>
   </meson>
 
@@ -141,9 +142,9 @@
 
   <autotools id="fontconfig" autogen-sh="configure"
              autogenargs="--disable-docs --with-default-fonts=/System/Library/Fonts --with-add-fonts=/Library/Fonts --with-cache-dir=home">
-    <branch repo="fontconfig" version="2.13.1"
-            module="fontconfig-2.13.1.tar.bz2"
-            hash="sha256:f655dd2a986d7aa97e052261b36aa67b0a64989496361eca8d604e6414006741"/>
+    <branch repo="fontconfig" version="2.14.0"
+            module="fontconfig-2.14.0.tar.gz"
+            hash="sha256:b8f607d556e8257da2f3616b4d704be30fd73bd71e367355ca78963f9a7f0434"/>
     <dependencies>
       <dep package="freetype"/>
     </dependencies>
@@ -220,8 +221,8 @@
   </meson>
 
   <meson id="pango" mesonargs="-Dfontconfig=enabled">
-    <branch version="1.48.4" module="pango/1.48/pango-1.48.4.tar.xz"
-            hash="sha256:418913fb062071a075846244989d4a67aa5c80bf0eae8ee4555a092fd566a37a">
+    <branch version="1.50.7" module="pango/1.50/pango-1.50.7.tar.xz"
+            hash="sha256:0477f369a3d4c695df7299a6989dc004756a7f4de27eecac405c6790b7e3ad33">
     </branch>
     <dependencies>
       <dep package="glib"/>
