@@ -93,13 +93,15 @@
   <if condition-unset="pre-Mavericks">
     <autotools id="gnutls" autogen-sh="autoreconf"
                autogenargs="--disable-gtk-doc-html --with-included-unistring">
-      <branch repo="gnupg.org" version="3.7.1"
-              module="gcrypt/gnutls/v3.7/gnutls-3.7.1.tar.xz"
-              hash="sha256:3777d7963eca5e06eb315686163b7b3f5045e2baac5e54e038ace9835e5cac6f">
+      <branch repo="gnupg.org" version="3.7.4"
+              module="gcrypt/gnutls/v3.7/gnutls-3.7.4.tar.xz"
+              hash="sha256:e6adbebcfbc95867de01060d93c789938cf89cc1d1f6ef9ef661890f6217451f">
+        <patch file="gnutls-3.7.4-patch-lib-accelerated-aarch64-Makefile.am.patch" strip="1"/>
       </branch>
       <dependencies>
         <dep package="libnettle"/>
         <dep package="libtasn1"/>
+        <dep package="libbrotli"/>
         <dep package="zlib"/>
         <dep package="p11-kit"/>
         <dep package="libgcrypt"/>
