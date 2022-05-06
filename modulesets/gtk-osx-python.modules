@@ -69,9 +69,12 @@
     </after>
   </autotools>
 
+    <!-- <branch repo="python" module="3.10.4/Python-3.10.4.tar.xz" version="3.10.4"
+            hash="sha256:80bf925f571da436b35210886cf79f6eb5fa5d6c571316b73568343451f77a19"
+            /> -->
   <autotools id="python3" autogenargs="--enable-shared" autogen-sh="configure">
-    <branch repo="python" module="3.9.6/Python-3.9.6.tar.xz" version="3.9.6"
-            hash="sha256:397920af33efc5b97f2e0b57e91923512ef89fc5b3c1d21dbfc8c4828ce0108a"
+    <branch repo="python" module="3.9.12/Python-3.9.12.tar.xz" version="3.9.12"
+            hash="sha256:2cd94b20670e4159c6d9ab57f91dbf255b97d8c1a1451d1c35f4ec1968adf971"
             />
     <dependencies>
       <dep package='readline'/>
