@@ -111,6 +111,7 @@ if _jhb is None:
 # architecture and SDK for the native machine:
 if 'GIMP_ARM64' in os.environ:
     setup_sdk("11.3","arm64")
+    append_autogenargs("libde265", "--build=aarch64-apple-darwin")
 else:
     setup_sdk("10.12","x86_64")
 
