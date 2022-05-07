@@ -235,7 +235,7 @@
       repo="googlestorage"
       checkoutdir="libaom-3.2.0">
       <!-- Forces cmake to put full install path instead of @rpath which breaks gdk-pixbuf loaders -->
-      <patch file="aom-3.2.0-fix-rpath.patch" strip="1"/>
+      <patch file="libaom-3.2.0-fix-rpath.patch" strip="1"/>
     </branch>
     <dependencies>
       <dep package="yasm"/>
