@@ -183,11 +183,10 @@
   </autotools>
 
   <meson id="gobject-introspection">
-    <branch module="gobject-introspection/1.68/gobject-introspection-1.68.0.tar.xz"
-            version="1.68.0"
-            hash="sha256:d229242481a201b84a0c66716de1752bca41db4133672cfcfb37c93eb6e54a27">
+    <branch module="gobject-introspection/1.72/gobject-introspection-1.72.0.tar.xz"
+            version="1.72.0"
+            hash="sha256:02fe8e590861d88f83060dd39cda5ccaa60b2da1d21d0f95499301b186beaabc">
       <patch file="girscanner-objc.patch" strip="1"/>
-      <patch file="gobject-introspection-1.68.0-protect-bad-gtype.patch" strip="1"/>
     </branch>
     <dependencies>
       <dep package="glib"/>
