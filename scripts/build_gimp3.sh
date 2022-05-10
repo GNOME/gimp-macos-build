@@ -1,4 +1,36 @@
-# Build script for M1 Mac version of gimp 2.99.
+#!/usr/bin/env bash
+#####################################################################
+ # build_gimp3.sh: builds gimp on a local mac                       #
+ #                                                                  #
+ # Copyright 2022 Lukas Oberhuber <lukaso@gmail.com>                #
+ #                                                                  #
+ # This program is free software; you can redistribute it and/or    #
+ # modify it under the terms of the GNU General Public License as   #
+ # published by the Free Software Foundation; either version 2 of   #
+ # the License, or (at your option) any later version.              #
+ #                                                                  #
+ # This program is distributed in the hope that it will be useful,  #
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of   #
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the    #
+ # GNU General Public License for more details.                     #
+ #                                                                  #
+ # You should have received a copy of the GNU General Public License#
+ # along with this program; if not, contact:                        #
+ #                                                                  #
+ # Free Software Foundation           Voice:  +1-617-542-5942       #
+ # 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652       #
+ # Boston, MA  02110-1301,  USA       gnu@gnu.org                   #
+ ####################################################################
+
+set -e;
+
+if [[ $(uname -m) == 'arm64' ]]; then
+  build_arm64=true
+  echo "*** Build: arm64"
+else
+  build_arm64=false
+  echo "*** Build: x86_64"
+fi
 
 # Must be run from home directory
 cd $HOME
@@ -9,32 +41,46 @@ if [ ! -d ~/project ]; then
     git clone https://gitlab.gnome.org/Infrastructure/gimp-macos-build.git project
 fi
 
-# ~/project/swap-local-build.sh --folder gimp299-arm64
-# if [ ! -z "${BRANCH}" ]; then
-#   cd ~/project
-#   git checkout wip/lukaso/tests-2.99-arm64
-#   cd $HOME
+# if [ "$build_arm64" = true ] ; then
+#     ~/project/swap-local-build.sh --folder gimp299-arm64
+#     if [ ! -z "${BRANCH}" ]; then
+#     cd ~/project
+#     git checkout wip/lukaso/tests-2.99-arm64
+#     cd $HOME
+#     fi
 # fi
 
-echo "*** Setup 11.3 SDK"
-cd /Library/Developer/CommandLineTools/SDKs
-if [ ! -d "MacOSX11.3.sdk" ]
-then
-    sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz' | sudo tar -xzf -
+if [ "$build_arm64" = true ] ; then
+    echo "*** Setup 11.3 SDK"
+    cd /Library/Developer/CommandLineTools/SDKs
+    if [ ! -d "MacOSX11.3.sdk" ]
+    then
+        sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz' | sudo tar -xzf -
+    fi
+    echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk' > ~/.profile
+    echo 'export MACOSX_DEPLOYMENT_TARGET=11.0' >> ~/.profile
+    echo 'export ARCHFLAGS="-arch arm64"' >> ~/.profile
+    echo 'export GIMP_ARM64=true' >> ~/.profile
+else
+    echo "*** Setup 10.12 SDK"
+    cd /Library/Developer/CommandLineTools/SDKs
+    if [ ! -d "MacOSX10.12.sdk" ]
+    then
+        sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.12.sdk.tar.xz' | sudo tar -xzf -
+    fi
+    echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.12.sdk' > ~/.profile
+    echo 'export MACOSX_DEPLOYMENT_TARGET=10.12' >> ~/.profile
+    echo 'export ARCHFLAGS="-arch x86_64"' >> ~/.profile
+    echo 'export PYENV_PYTHON_VERSION=3.10.0' >> ~/.profile
 fi
-echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk' > ~/.profile
-echo 'export MACOSX_DEPLOYMENT_TARGET=11.0' >> ~/.profile
 
 echo "*** Setup JHBuild"
 cd $HOME
 mkdir -p ~/.config && cp ~/project/jhbuildrc-gtk-osx-gimp-2.99 ~/.config/jhbuildrc-custom
 echo 'export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' >> ~/.profile
 echo 'export GIMP_DEBUG=true' >> ~/.profile
-echo 'export GIMP_ARM64=true' >> ~/.profile
 source ~/.profile
 PIPENV_YES=1 ~/project/gtk-osx-setup.sh
-
-echo 'export ARCHFLAGS="-arch arm64"' >> ~/.profile
 
 echo "*** bootstrap"
 # $HOME/.new_local/bin/jhbuild bootstrap-gtk-osx-gimp
