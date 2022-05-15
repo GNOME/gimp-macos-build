@@ -27,17 +27,18 @@ to your ~/.jhbuildrc-custom, replacing "modulesets-stable" (the default) with
 
 ## Customization ##
 
-Jhbuild has a hook that opens a special file ~/.jhbuildrc (the
+Jhbuild has a hook that opens a special file ~/.config/jhbuildrc (the
 name and path can be overridden with the ```-f``` command-line
 parameter). Gtk-OSX provides a file intended to be installed as
-~/.jhbuildrc that configures the build parameters according to
+~/.config/jhbuildrc that configures the build parameters according to
 the version of MacOS that you're running or that you intend to target,
-i.e. MACOS_DEPLOYMENT_TARGET. That file, jhbuildrc-gtk-osx, includes
-it's own hook to load a file named ~/.jhbuildrc-custom (not
-overrideable, sorry). This second rc file is for local customization,
-including the usual things contemplated by the jhbuild developers for
-the [configuration
-file](https://developer.gnome.org/jhbuild/unstable/config-reference.html.en).
+i.e. MACOS_DEPLOYMENT_TARGET. NOTE: This file is downloaded from the
+[gtk-osx](https://gitlab.gnome.org/GNOME/gtk-osx) repo and installed
+as a build step. That file, jhbuildrc-gtk-osx, includes it's own hook to
+load a file named ~/.config/jhbuildrc-custom. This second rc file is for
+local customization, including the usual things contemplated by the jhbuild
+developers for the
+[configuration file](https://developer.gnome.org/jhbuild/unstable/config-reference.html.en).
 While Gtk-OSX provides a sample file with extensive comments
 explaining possible options, users should in no way feel constrained
 by those comments. The file is Python and is loaded and executed just
