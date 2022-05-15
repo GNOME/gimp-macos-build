@@ -161,18 +161,14 @@
     </after>
   </autotools>
 
-  <!-- Cairo will automatically enable freetype and fontconfig if
-       meta-gtk-osx-freetype is built, so packages which require
-       cairoft or cairofc should have meta-gtk-osx-freetype as a
-       dependency. -->
-  <autotools id="cairo"  autogen-sh="autoreconf"
-             autogenargs="--enable-pdf --enable-quartz --disable-xlib --without-x">
-    <branch module="cairo-1.16.0.tar.xz"  version="1.16.0"
-            repo="cairographics"
-            hash="sha256:5e7b29b3f113ef870d1e3ecf8adf21f923396401604bda16d44be45e66052331">
-      <patch file="cairo-freetype-font-variations.patch" strip="1"/>
-      <patch file="issue19__backport_cairo_issue_420_bugfix.patch" strip="1"/>
-      <patch file="cairo-1.16.0-redundant-memcpy.patch" strip="1"/>
+  <!-- cairo doesn't really need fontconfig, but if Pango finds
+       freetype it insists that it has to have fontconfig too and that
+       they are both built into cairo. -->
+  <meson id="cairo">
+    <branch module="1.17.6/cairo-1.17.6.tar.bz2"  version="1.17.6"
+            repo="cairographics-temp"
+            hash="sha256:90496d135c9ef7612c98f8ee358390cdec0825534573778a896ea021155599d2">
+      <patch file="cairo-1.17.6-snapshot-memory-leak.patch" strip="1"/>
     </branch>
     <dependencies>
       <dep package="pixman"/>
@@ -180,7 +176,7 @@
       <dep package="harfbuzz-no-cairo"/>
       <dep package="fontconfig"/>
     </dependencies>
-  </autotools>
+  </meson>
 
   <meson id="gobject-introspection">
     <branch module="gobject-introspection/1.72/gobject-introspection-1.72.0.tar.xz"

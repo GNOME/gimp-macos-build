@@ -20,9 +20,6 @@ gtk2:		0004-Bug-571582-GtkSelection-implementation-for-quartz.patch
 		0008-Implement-GtkDragSourceOwner-pasteboardChangedOwner.patch
 		gtk+-Bug-655065-autotestkeywords-ldadd.patch
 
-cairo: 		Cairo-44584-llvm-no-flto.patch Rejected. Cairo maintainer wants
-		optimization suppressed instead.
-
 libunique:	libunique-663913-sockaddr-un.patch No Love from maintainer
 
 pygtk:		pygtk-libtool.patch: The PyGtk-2.24.0 tarball uses an argument
