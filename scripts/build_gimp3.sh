@@ -24,6 +24,69 @@
 
 set -e;
 
+function pure_version() {
+	echo '0.1'
+}
+
+function version() {
+	echo "build_gimp3.sh $(pure_version)"
+}
+
+function usage() {
+    version
+    echo ""
+    echo "Builds Gimp 3 locally."
+    echo "Usage:  $(basename $0) [options]"
+    echo ""
+    echo "Builds Gimp 3 or subsets of the program to facilitate rapid"
+    echo "local development."
+    echo "By default builds all of Gimp, end to end."
+    echo "Gimp can then be run from '~/gtk/inst/bin/gimp'"
+    echo "Options:"
+    echo "  --nodmg"
+    echo "      skips building the DMG (big build speedup)"
+    echo "  --shell"
+    echo "      drops into a jhbuild shell for rapid rebuilds of a single"
+    echo "      package"
+    echo "  --build-package package_name"
+    echo "      force build a particular package (uses 'jhbuild buildone --force')"
+    echo "  --wipe-out-rebuild package_name"
+    echo "      re-downloads the package before building. Otherwise same as"
+    echo "      --build-package (experimental)"
+    echo "  --version         show tool version number"
+    echo "  -h, --help        display this help"
+    exit 0
+}
+
+NO_DMG=''
+SHELL_OUT=''
+ONLY_PACKAGE=''
+WIPE_OUT_PACKAGE=''
+
+while test "${1:0:1}" = "-"; do
+	case $1 in
+	--nodmg)
+		NO_DMG="true"
+		shift;;
+	--shell)
+		SHELL_OUT="true"
+		shift;;
+	--build-package)
+		ONLY_PACKAGE=$2
+		shift; shift;;
+    --wipe-out-rebuild)
+		WIPE_OUT_PACKAGE=$2
+		shift; shift;;
+	-h | --help)
+		usage;;
+	--version)
+		version; exit 0;;
+	-*)
+		echo "Unknown option $1. Run with --help for help."
+		exit 1;;
+	esac
+done
+
 if [[ $(uname -m) == 'arm64' ]]; then
   build_arm64=true
   echo "*** Build: arm64"
@@ -97,6 +160,44 @@ then
     cd ~
 fi
 
+if [ ! -z "${ONLY_PACKAGE}" ]; then
+    echo "*** Only building ${ONLY_PACKAGE}"
+    source ~/.profile && jhbuild buildone --force ${ONLY_PACKAGE}
+    exit 0;
+fi
+
+if [ ! -z "${WIPE_OUT_PACKAGE}" ]; then
+    echo "*** Only building ${WIPE_OUT_PACKAGE}"
+    source ~/.profile && jhbuild buildone -afc ${WIPE_OUT_PACKAGE}
+    exit 0;
+fi
+
+if [ ! -z "${SHELL_OUT}" ]; then
+    echo "*** Enable this to shell out to jhbuild"
+    export PACKAGE=gimp
+    echo "Once you've entered the shell, cd to the build directory."
+    echo "For example, ${PACKAGE} is built here:"
+    echo "cd .cache/jhbuild/build/$PACKAGE"
+    echo "Then you can execute the build."
+    echo "head config.log"
+    echo "will tell you what the configure was (for autotools)"
+    echo "*examples:"
+    echo "**autotools:"
+    echo "~/gtk/source/gimp/configure --prefix ~/gtk/inst --without-x --with-build-id=org.gimp.GIMP_official --with-revision=0"
+    echo "make && make install"
+    echo "make uninstall"
+    echo "**meson:"
+    echo "meson --prefix ~/gtk/inst --libdir lib -Dopenssl=enabled --wrap-mode=nofallback ~/gtk/source/glib-networking-2.68.0"
+    echo "ninja && ninja install"
+    echo "ninja uninstall"
+    echo "don't forget you might have to --reconfigure meson"
+    echo "Call:"
+    echo "exit"
+    echo "To carry on."
+    source ~/.profile && jhbuild shell
+    exit 0;
+fi
+
 echo "*** Bootstrap"
 source ~/.profile && jhbuild build icu libnsgif meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-gtk3
 echo "*** Cleanup"
@@ -134,30 +235,34 @@ echo "*** Build GIMP"
 source ~/.profile
 jhbuild build gimp299
 
-echo "Building GIMP help (en) from git"
-# source ~/.profile && ALL_LINGUAS=en jhbuild build gimp-help-git
-# Cleanup
-# find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
+# echo "Building GIMP help (en) from git"
+# # source ~/.profile && ALL_LINGUAS=en jhbuild build gimp-help-git
+# # Cleanup
+# # find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
 
-echo "*** Importing signing certificate"
-# mkdir ${HOME}/codesign && cd ${HOME}/codesign
-# echo "$osx_crt" | base64 -D > gnome.pfx
-# curl 'https://developer.apple.com/certificationauthority/AppleWWDRCA.cer' > apple.cer
-# security create-keychain -p "" signchain
-# security set-keychain-settings signchain
-# security unlock-keychain -u signchain
-# security list-keychains  -s "${HOME}/Library/Keychains/signchain-db" "${HOME}/Library/Keychains/login.keychain-db"
-# security import apple.cer -k signchain  -T /usr/bin/codesign
-# security import gnome.pfx  -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
-# security set-key-partition-list -S apple-tool:,apple: -k "" signchain
-# rm -rf ${HOME}/codesign
+# echo "*** Importing signing certificate"
+# # mkdir ${HOME}/codesign && cd ${HOME}/codesign
+# # echo "$osx_crt" | base64 -D > gnome.pfx
+# # curl 'https://developer.apple.com/certificationauthority/AppleWWDRCA.cer' > apple.cer
+# # security create-keychain -p "" signchain
+# # security set-keychain-settings signchain
+# # security unlock-keychain -u signchain
+# # security list-keychains  -s "${HOME}/Library/Keychains/signchain-db" "${HOME}/Library/Keychains/login.keychain-db"
+# # security import apple.cer -k signchain  -T /usr/bin/codesign
+# # security import gnome.pfx  -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
+# # security set-key-partition-list -S apple-tool:,apple: -k "" signchain
+# # rm -rf ${HOME}/codesign
 
-echo "*** Creating DMG package"
-source ~/.profile
-cd ${HOME}/project/package
-jhbuild run ./build299.sh debug
+if [ -z "${NO_DMG}" ]; then
+    echo "*** Creating DMG package"
+    source ~/.profile
+    cd ${HOME}/project/package
+    jhbuild run ./build299.sh debug
+else
+    echo "*** Skipping building DMG"
+fi
 
-echo "*** Notarizing DMG package"
-# source ~/.profile
-# cd ${HOME}/project/package
-# jhbuild run ./notarize.sh
+# echo "*** Notarizing DMG package"
+# # source ~/.profile
+# # cd ${HOME}/project/package
+# # jhbuild run ./notarize.sh
