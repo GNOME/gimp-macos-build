@@ -25,6 +25,8 @@
               href="https://gitlab.gnome.org/lukaso/"/>
   <repository type="git" name="jralls.git.gnome.org"
               href="https://gitlab.gnome.org/jralls/"/>
+  <repository type="git" name="git.gnome.org"
+              href="https://gitlab.gnome.org/gnome/"/>
 
   <!-- This module set works a bit differently than for example the
        GNOME ones do. It's split up in seperate pieces:
@@ -279,7 +281,7 @@
 
   <!-- gtk3 is in maintenance mode with 3.24 the final release series. -->
   <meson id="gtk+-3.0" mesonargs="-Dtests=false">
-    <branch module="gtk.git" revision="quartz-redraw-pixbuf" repo="jralls.git.gnome.org"/>
+    <branch module="gtk.git" revision="gtk-3-24" repo="git.gnome.org"/>
     <dependencies>
       <dep package="glib"/>
       <dep package="pango"/>
