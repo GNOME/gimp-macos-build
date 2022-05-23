@@ -371,11 +371,11 @@
   </autotools>
 
   <autotools id="adwaita-icon-theme" autogen-sh="configure">
-    <branch module="adwaita-icon-theme/41/adwaita-icon-theme-41.0.tar.xz"
-            version="41.0" hash="sha256:ef5339d8c35fcad5d10481b70480803f0fa20b3d3cbc339238fcaceeaee01eba"/>
+    <branch module="adwaita-icon-theme/42/adwaita-icon-theme-42.0.tar.xz"
+            version="42.0"
+            hash="sha256:5e85b5adc8dee666900fcaf271ba717f7dcb9d0a03d96dae08f9cbd27e18b1e0"/>
     <dependencies>
       <dep package="librsvg"/>
-      <dep package="glib"/>
     </dependencies>
   </autotools>
 
