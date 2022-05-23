@@ -51,7 +51,6 @@
   <include href="gtk-osx-python.modules"/>
   <include href="gtk-osx-random.modules"/>
   <include href="gtk-osx-themes.modules"/>
-  <include href="gtk-osx-unsupported.modules"/>
   <include href="gtk-osx-gimp.modules"/>
   <include href="gtk-osx-siril.modules"/>
 
@@ -65,32 +64,16 @@
     </after>
   </metamodule>
 
-  <metamodule id="meta-gtk-osx-gtk3">
-    <dependencies>
-      <dep package="gtk+-3.0"/>
-      <dep package="gtk-mac-integration-gtk3"/>
-      <dep package="adwaita-icon-theme"/>
-    </dependencies>
-    <after>
-      <dep package="meta-gtk-osx-bootstrap"/>
-    </after>
-  </metamodule>
+  <autotools id="libpcre" autogen-sh="configure"
+             autogenargs="--enable-unicode-properties --enable-newline-is-any --enable-jit">
+    <branch repo="sourceforge" version="8.45"
+            module="pcre/pcre-8.45.tar.bz2"
+            hash="sha256:4dae6fdcd2bb0bb6c37b5f97c33c2be954da743985369cddac3546e3218bffb8"/>
+  </autotools>
 
-  <metamodule id="meta-gtk-osx-gtk3.14">
-    <dependencies>
-      <dep package="gtk+-3.14"/>
-      <dep package="gtk-mac-integration-gtk3"/>
-      <dep package="adwaita-icon-theme"/>
-    </dependencies>
-    <after>
-      <dep package="meta-gtk-osx-bootstrap"/>
-    </after>
-  </metamodule>
-
-  <meson id="glib" mesonargs="--force-fallback-for libpcre -Dlibmount=disabled">
-    <branch module="glib/2.70/glib-2.70.0.tar.xz"  version="2.70.0"
-            hash="sha256:200d7df811c5ba634afbf109f14bb40ba7fde670e89389885da14e27c0840742">
-      <patch file="glib2-libpcre.patch" strip="1"/>
+  <meson id="glib" mesonargs="-Dlibmount=disabled">
+    <branch module="glib/2.72/glib-2.72.0.tar.xz"  version="2.72.0"
+            hash="sha256:d7bef0d4c4e7a62e08efb8e5f252a01357007b9588a87ff2b463a3857011f79d">
     </branch>
     <dependencies>
         <dep package="libffi"/>
@@ -299,36 +282,10 @@
     </dependencies>
   </meson>
 
-  <autotools id="gtk+-3.14" autogen-sh="autogen.sh"
-             autogenargs="--enable-quartz-backend --enable-quartz-relocation">
-    <branch module="gtk+/3.14/gtk+-3.14.15.tar.xz" version="3.14.15"
-            hash="sha256:3ac87659112ced9e5ee5bd55d055faa881aafd040f26ca40b0d8ba0fa6509c83">
-      <patch file="https://gitlab.gnome.org/GNOME/gtk-osx/raw/master/patches/0001-Bug-707945-GTK2-Quartz-typeahead-find-in-GtkTreeView.patch" strip="1"/>
-      <!-- https://bugzilla.gnome.org/show_bug.cgi?id=763779 -->
-      <patch file="https://gitlab.gnome.org/GNOME/gtk-osx/raw/master/patches/gtk-quartz-fix-pixelated-image-surfaces-in-retina-hidpi-.patch" strip="1"/>
-      <patch file="https://gitlab.gnome.org/GNOME/gtk-osx/raw/master/patches/gtk3-14-get-scale-factor.patch" strip="1"/>
-      <patch file="https://gitlab.gnome.org/GNOME/gtk-osx/raw/master/patches/gtk-3.14-stylecontext-unnecessary-assert.patch" strip="1"/>
-      <patch file="https://gitlab.gnome.org/GNOME/gtk-osx/raw/master/patches/gtk-3.14-GDesktopAppInfo-not-implemented-on-Mac.patch" strip="1"/>
-   </branch>
-    <dependencies>
-      <dep package="glib"/>
-      <dep package="pango"/>
-      <dep package="atk"/>
-      <dep package="cairo"/>
-      <dep package="gdk-pixbuf"/>
-      <dep package="gobject-introspection"/>
-    </dependencies>
-    <after>
-      <dep package="meta-gtk-osx-bootstrap"/>
-    </after>
-  </autotools>
-
-  <autotools id="gtk+-3.0" autogen-sh="autogen.sh"
-             autogenargs="--enable-quartz-backend --enable-quartz-relocation">
-    <branch module="gtk+/3.24/gtk+-3.24.30.tar.xz" version="3.24.30"
-            hash="sha256:ba75bfff320ad1f4cfbee92ba813ec336322cc3c660d406aad014b07087a3ba9">
-      <patch file="gimp_issue_5989_bigsur_performance_gtk_3-24.patch" strip="1"/>
-    </branch>
+  <meson id="graphene" mesonargs="-Dtests=false">
+    <branch repo="github-tarball" version="1.10.6"
+            module="ebassi/graphene/releases/download/1.10.6/graphene-1.10.6.tar.xz"/>
+      <!--      hash="sha256:"/ -->
     <dependencies>
       <dep package="glib"/>
       <dep package="pango"/>
@@ -340,7 +297,7 @@
     <after>
       <dep package="meta-gtk-osx-bootstrap"/>
     </after>
-  </autotools>
+  </meson>
 
   <autotools id="pixman" autogenargs="--disable-gtk --disable-mmx"
              autogen-sh="configure">
@@ -379,8 +336,6 @@
       <dep package="gdk-pixbuf"/>
     </dependencies>
     <after>
-      <dep package="gtk+-3.0"/>
-      <dep package="gtk+-3.14"/>
       <dep package="meta-gtk-osx-bootstrap"/>
     </after>
   </autotools>
@@ -406,8 +361,6 @@
     <after>
 <!-- Circular dependency if we depend on meta-gtk-osx or meta-gtk-osx-gtk3 -->
       <dep package="gtk+"/>
-      <dep package="gtk+-3.0"/>
-      <dep package="gtk+-3.14"/>
     </after>
   </autotools>
 

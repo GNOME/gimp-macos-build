@@ -6,7 +6,6 @@
   <repository type="tarball" name="gimp" href="https://download.gimp.org/pub/"/>
   <repository type="git" name="git.gnome.org" href="https://gitlab.gnome.org/GNOME"/>
   <repository type="git" name="git-jtojnar" href="https://gitlab.gnome.org/jtojnar/"/>
-  <repository type="tarball" name="ftp.gimp.org" href="https://ftp.gimp.org/pub/"/>
   <repository type="tarball" name="poppler.freedesktop.org" href="https://poppler.freedesktop.org/"/>
   <repository type="tarball" name="videolan" href="https://downloads.videolan.org/pub/videolan/x265/"/>
   <repository type="tarball" name="github-tarball" href="https://github.com/"/>
@@ -47,8 +46,6 @@
     <after>
       <!-- Circular dependency if we depend on meta-gtk-osx or meta-gtk-osx-gtk3 -->
       <dep package="gtk+"/>
-      <dep package="gtk+-3.0"/>
-      <dep package="gtk+-3.14"/>
     </after>
   </autotools>
 
@@ -111,8 +108,8 @@
     </branch>
   </autotools>
 
-  <meson id="gegl" mesonargs="-Dvapigen=disabled">
-    <branch repo="ftp.gimp.org"
+  <meson id="gegl">
+    <branch repo="gimp"
       version="0.4.36"
       hash="sha256:6fd58a0cdcc7702258adaeffb573a389228ae8f0eff47578efda2309b61b2ca6"
       module="gegl/0.4/gegl-0.4.36.tar.xz">
@@ -154,8 +151,8 @@
       hash="sha256:fd55a9037d39e7a10f0db64309f5f0265fa32ec962bf85066087b83a2807f40a"/>
   </autotools>
 
-  <meson id="babl" mesonargs="-Denable-vapi=false">
-    <branch repo="ftp.gimp.org"
+  <meson id="babl">
+    <branch repo="gimp"
       version="0.1.90"
       module="babl/0.1/babl-0.1.90.tar.xz"
       hash="sha256:6e2ebb636f37581588e3d02499b3d2f69f9ac73e34a262f42911d7f5906a9243">
@@ -433,26 +430,6 @@
       module="uuid/uuid-1.6.2.tar.gz"
       hash="sha256:11a615225baa5f8bb686824423f50e4427acd3f70d394765bdff32801f0fd5b0"/>
   </autotools>
-
-  <meson id="appstream-glib" mesonargs="-Dstemmer=false -Drpm=false">
-    <branch repo="github-tarball"
-      checkoutdir="appstream-glib"
-      version="0.7.18"
-      module="hughsie/appstream-glib/archive/appstream_glib_0_7_18.zip"
-      hash="sha256:7b0aebc7dda1694b01aaae7e00e207b4a38d3b5274adbfbfbabb1df749c5d899">
-    </branch>
-    <dependencies>
-      <dep package="freetype"/>
-      <dep package="gdk-pixbuf"/>
-      <dep package="glib"/>
-      <dep package="gtk+-3.0"/>
-      <dep package="json-glib"/>
-      <dep package="libarchive"/>
-      <dep package="libsoup"/>
-      <dep package="libyaml"/>
-      <dep package="uuid"/>
-    </dependencies>
-  </meson>
 
   <!--
     libbrotli is required for libjxl even though it is included and built in

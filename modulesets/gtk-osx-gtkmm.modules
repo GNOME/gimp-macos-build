@@ -84,19 +84,6 @@
             hash="sha256:b1ca0253379596f9c19f070c83d362b12dfd39c0a3ea1dd813e8e21c1a097a98"/>
   </autotools>
 
-  <autotools id="gtkmm3" autogen-sh="configure">
-    <branch module="gtkmm/3.24/gtkmm-3.24.1.tar.xz" version="3.24.1"
-            hash="sha256:ddfe42ed2458a20a34de252854bcf4b52d3f0c671c045f56b42aa27c7542d2fd">
-    </branch>
-    <dependencies>
-      <dep package="glibmm"/>
-      <dep package="cairomm"/>
-      <dep package="pangomm"/>
-      <dep package="atkmm"/>
-      <dep package="gtk+-3.0"/>
-    </dependencies>
-  </autotools>
-
   <autotools id="gtkmm" autogen-sh="configure">
     <branch module="gtkmm/2.24/gtkmm-2.24.5.tar.xz" version="2.24.5"
             hash="sha256:0680a53b7bf90b4e4bf444d1d89e6df41c777e0bacc96e9c09fc4dd2f5fe6b72"/>

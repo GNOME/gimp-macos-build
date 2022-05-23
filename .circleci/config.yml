@@ -11,9 +11,6 @@ commands:
         # for local builds, this needs to be checked out to `~/project`
         - checkout
         - run:
-            name: Cleanup /usr/local
-            command: sudo rm -rf /usr/local/*
-        - run:
             name: Setup rust
             command: curl https://sh.rustup.rs -sSf | sh -s -- -y
         - run:

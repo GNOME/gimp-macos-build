@@ -206,18 +206,6 @@ Libglade itself is deprecated. This is the last release. -->
     </dependencies>
   </autotools>
 
-<!-- Goocanvas2 is for gtk+-3. -->
-
-  <autotools id="goocanvas2" supports-non-srcdir-builds="no">
-    <branch module="goocanvas/2.0/goocanvas-2.0.2.tar.xz" version="2.0.2"
-	    hash="sha256:f20e5fbef8d1a2633033edbd886dd13146a1b948d1813a9c353a80a29295d1d0"/>
-    <branch repo="git.gnome.org" module="goocanvas" checkoutdir="goocanvas2"/>
-    <after>
-      <dep package="gtk+-3.0"/>
-      <dep package="gtk+-3.14"/>
-    </after>
-  </autotools>
-
 <!-- Libart_lgpl is deprecated by gnome. This is probably the last release. -->
   <autotools id="libart_lgpl">
     <branch   module="libart_lgpl/2.3/libart_lgpl-2.3.21.tar.bz2"
