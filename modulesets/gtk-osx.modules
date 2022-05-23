@@ -349,19 +349,16 @@
     </after>
   </autotools>
 
-  <autotools id="libcroco" autogenargs="--disable-Bsymbolic"
-             autogen-sh="configure">
-    <branch module="libcroco/0.6/libcroco-0.6.13.tar.xz" version="0.6.13"
-            hash="sha256:767ec234ae7aa684695b3a735548224888132e063f92db585759b422570621d4"/>
-  </autotools>
-
   <autotools id="librsvg" autogen-sh="autoreconf"
              autogenargs="--disable-Bsymbolic">
-    <branch module="librsvg/2.51/librsvg-2.51.0.tar.xz" version="2.51.0"
-            hash="sha256:89d32e38445025e1b1d9af3dd9d3aeb9f6fce527aeecbecf38b369b34c80c038"/>
+    <branch module="librsvg/2.54/librsvg-2.54.3.tar.xz" version="2.54.3"
+            hash="sha256:66158f2ef46dde260026846c4da102e4a9dd4e5293010f30949c6cc26dd6efe8"/>
     <dependencies>
-      <dep package="libcroco"/>
+      <dep package="cairo"/>
+      <dep package="pango"/>
+      <dep package="harfbuzz"/>
       <dep package="freetype"/>
+      <dep package="gdk-pixbuf"/>
     </dependencies>
     <after>
       <!-- Circular dependency if we depend on meta-gtk-osx or meta-gtk-osx-gtk3 -->
