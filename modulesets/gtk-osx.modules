@@ -91,13 +91,23 @@
             hash="sha256:540fb721619a6aba3bdeef7d940d8e9e0e6d2c193595bc243241b77ff9e93620"/>
   </autotools>
 
-  <meson id="glib" mesonargs="--force-fallback-for libpcre -Dlibmount=disabled">
-    <branch module="glib/2.70/glib-2.70.0.tar.xz"  version="2.70.0"
-            hash="sha256:200d7df811c5ba634afbf109f14bb40ba7fde670e89389885da14e27c0840742">
-      <patch file="glib2-libpcre.patch" strip="1"/>
+  <autotools id="libpcre" autogen-sh="configure"
+             autogenargs="--enable-unicode-properties --enable-newline-is-any --enable-jit">
+    <branch repo="sourceforge" version="8.45"
+            module="pcre/pcre-8.45.tar.bz2"
+            hash="sha256:4dae6fdcd2bb0bb6c37b5f97c33c2be954da743985369cddac3546e3218bffb8"/>
+  </autotools>
+
+  <meson id="glib" mesonargs="-Dlibmount=disabled">
+    <branch module="glib/2.72/glib-2.72.0.tar.xz"  version="2.72.0"
+            hash="sha256:d7bef0d4c4e7a62e08efb8e5f252a01357007b9588a87ff2b463a3857011f79d">
     </branch>
     <dependencies>
-        <dep package="libffi"/>
+      <dep package="libffi"/>
+      <dep package="libpcre"/>
+    </dependencies>
+  </meson>
+
   <!-- To build Freetype *with* harfbuzz requires harfbuzz to be built
        with freetype so we first have to build it *without* harfbuzz,
        then build harfbuzz without cairo because cairo requires
