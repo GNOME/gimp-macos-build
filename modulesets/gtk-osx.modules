@@ -310,15 +310,13 @@
     </after>
   </meson>
 
-  <autotools id="pixman" autogenargs="--disable-gtk --disable-mmx"
-             autogen-sh="configure">
-    <branch version="0.40.0" module="pixman-0.40.0.tar.gz"
-            repo="cairographics"
-            hash="sha512:063776e132f5d59a6d3f94497da41d6fc1c7dca0d269149c78247f0e0d7f520a25208d908cf5e421d1564889a91da44267b12d61c0bd7934cd54261729a7de5f">
-    </branch>
-    <after>
-      <dep package="meta-gtk-osx-bootstrap"/>
-    </after>
+  <autotools id="libsass" autogen-sh="autoreconf"
+             autogenargs="--disable-tests --disable-static">
+    <branch repo="github-tarball" version="3.6.5"
+            module="sass/libsass/archive/refs/tags/3.6.5.tar.gz"
+            rename-tarball="libsass-3.6.5.tar.gz"
+            checkoutdir="libsass-3.6.5"/>
+            <!--hash="sha256:"/ -->
   </autotools>
 
   <autotools id="gtk-mac-integration-gtk2" autogen-sh="configure"
