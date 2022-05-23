@@ -63,7 +63,6 @@
   <include href="gtk-osx-python.modules"/>
   <include href="gtk-osx-random.modules"/>
   <include href="gtk-osx-themes.modules"/>
-  <include href="gtk-osx-unsupported.modules"/>
   <include href="gtk-osx-gimp.modules"/>
   <include href="gtk-osx-siril.modules"/>
 
