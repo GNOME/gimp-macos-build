@@ -244,9 +244,10 @@
     </after>
   </meson>
 
-  <meson id="gdk-pixbuf" mesonargs="-Dman=false">
-    <branch module="gdk-pixbuf/2.42/gdk-pixbuf-2.42.6.tar.xz" version="2.42.6"
-            hash="sha256:c4a6b75b7ed8f58ca48da830b9fa00ed96d668d3ab4b1f723dcf902f78bde77f">
+  <meson id="gdk-pixbuf" mesonargs="-Drelocatable=true -Dman=false">
+    <branch module="gdk-pixbuf/2.42/gdk-pixbuf-2.42.8.tar.xz" version="2.42.8"
+            hash="sha256:84acea3acb2411b29134b32015a5b1aaa62844b19c4b1ef8b8971c6b0759f4c6">
+      <patch file="gdk-pixbuf-loader-name.patch" strip="1"/>
     </branch>
     <after>
       <dep package="pango"/>
