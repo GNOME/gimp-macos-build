@@ -79,6 +79,15 @@
     </branch>
     <dependencies>
         <dep package="libffi"/>
+  <!-- To build Freetype *with* harfbuzz requires harfbuzz to be built
+       with freetype so we first have to build it *without* harfbuzz,
+       then build harfbuzz without cairo because cairo requires
+       harfbuzz. -->
+  <meson id="freetype-no-harfbuzz" mesonargs="-Dbzip2=disabled -Dharfbuzz=disabled">
+    <branch module="freetype/freetype-2.11.1.tar.gz" version="2.11.1"
+            repo="savannah"/>
+    <dependencies>
+      <dep package="zlib"/>
     </dependencies>
     <after>
       <dep package="meta-gtk-osx-bootstrap"/>
@@ -86,9 +95,9 @@
   </meson>
 
   <meson id="harfbuzz-no-cairo" mesonargs="-Dcoretext=enabled -Ddocs=disabled -Dbenchmark=disabled -Dintrospection=disabled">
-    <branch repo="github-tarball" version="3.1.2"
-            module="harfbuzz/harfbuzz/releases/download/3.1.2/harfbuzz-3.1.2.tar.xz"
-            hash="sha256:4056b1541dd8bbd8ec29207fe30e568805c0705515632d7fec53a94399bc7945">
+    <branch repo="github-tarball" version="4.1.0"
+            module="harfbuzz/harfbuzz/releases/download/4.1.0/harfbuzz-4.1.0.tar.xz"
+            hash="sha256:f7984ff4241d4d135f318a93aa902d910a170a8265b7eaf93b5d9a504eed40c8">
     </branch>
     <dependencies>
       <dep package="glib"/>
@@ -98,30 +107,12 @@
   </meson>
 
   <meson id="freetype" mesonargs="-Dbzip2=disabled">
-    <branch module="freetype/freetype-2.11.0.tar.gz" version="2.11.0"
-            repo="savannah"
-            hash="sha256:a45c6b403413abd5706f3582f04c8339d26397c4304b78fa552f2215df64101f">
-      <patch file="freetype-compatibility-version-fix.patch" strip="1"/>
-    </branch>
+    <branch module="freetype/freetype-2.11.1.tar.gz" version="2.11.1"
+            repo="savannah"/>
     <dependencies>
       <dep package="harfbuzz-no-cairo"/>
       <dep package="zlib"/>
       <dep package="libbrotli"/>
-    </dependencies>
-  </meson>
-
-  <!-- To build Freetype *with* harfbuzz requires harfbuzz to be built
-       with freetype so we first have to build it *without* harfbuzz,
-       then build harfbuzz without cairo because cairo requires
-       harfbuzz. -->
-  <meson id="freetype-no-harfbuzz" mesonargs="-Dbzip2=disabled -Dharfbuzz=disabled">
-    <branch module="freetype/freetype-2.11.0.tar.gz" version="2.11.0"
-            repo="savannah"
-            hash="sha256:a45c6b403413abd5706f3582f04c8339d26397c4304b78fa552f2215df64101f">
-      <patch file="freetype-compatibility-version-fix.patch" strip="1"/>
-    </branch>
-    <dependencies>
-      <dep package="zlib"/>
     </dependencies>
   </meson>
 
