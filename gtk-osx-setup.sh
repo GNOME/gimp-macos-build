@@ -166,6 +166,7 @@ verify_ssl = true
 [packages]
 pygments = "*"
 gi-docgen = "*"
+docutils = "*"
 meson = {version=">=0.60.3,<0.61.0"}
 
 [scripts]
