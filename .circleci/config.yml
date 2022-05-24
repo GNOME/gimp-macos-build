@@ -81,18 +81,16 @@ commands:
 jobs:
 
   build-env:
-    macos:
-        xcode: "13.3.0"
-        resource_class: macos.x86.medium.gen2
+    machine: true
+    resource_class: gnome/gimp
 
     steps:
         - setup
         - build-env
 
   bootstrap:
-    macos:
-        xcode: "13.3.0"
-        resource_class: macos.x86.medium.gen2
+    machine: true
+    resource_class: gnome/gimp
 
     steps:
         - setup
@@ -112,9 +110,8 @@ jobs:
             key: v{{ checksum "CACHE_BREAK" }}-bootstrapv3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part1:
-    macos:
-        xcode: "13.3.0"
-        resource_class: macos.x86.medium.gen2
+    machine: true
+    resource_class: gnome/gimp
 
     steps:
         - setup
@@ -135,9 +132,8 @@ jobs:
             key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part2:
-    macos:
-        xcode: "13.3.0"
-        resource_class: macos.x86.medium.gen2
+    machine: true
+    resource_class: gnome/gimp
 
     steps:
         - setup
@@ -158,9 +154,8 @@ jobs:
             key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-{{ checksum "CACHE_ITER" }}
 
   dependencies-babl-gegl:
-    macos:
-        xcode: "13.3.0"
-        resource_class: macos.x86.medium.gen2
+    machine: true
+    resource_class: gnome/gimp
 
     steps:
         - setup
@@ -171,9 +166,8 @@ jobs:
             command: source ~/.profile && jhbuild build --check babl gegl
 
   build-gimp-and-package:
-    macos:
-        xcode: "13.3.0"
-        resource_class: macos.x86.medium.gen2
+    machine: true
+    resource_class: gnome/gimp
 
     steps:
         - setup
