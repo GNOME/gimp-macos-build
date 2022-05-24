@@ -10,6 +10,18 @@ commands:
         # for local builds, this needs to be checked out to `~/project`
         - checkout
         - run:
+            name: Build architecture
+            command: |
+              if [[ $(uname -m) == 'arm64' ]]; then
+                build_arm64=true
+                echo "*** Build: arm64"
+                echo 'export build_arm64=true' > ~/.profile
+              else
+                build_arm64=false
+                echo "*** Build: x86_64"
+                echo 'export build_arm64=false' > ~/.profile
+              fi
+        - run:
             name: Avoid hosts unknown for gitlab.gnome.org
             command: mkdir -p ~/.ssh/ && echo -e "Host gitlab.gnome.org\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
         - run:
@@ -20,13 +32,31 @@ commands:
               wget -c 'https://www.python.org/ftp/python/3.9.13/python-3.9.13-macos11.pkg' -O python-3.9.13-macosx11.pkg
               sudo installer -pkg python-3.9.13-macosx11.pkg -target /
         - run:
-            name: Setup 10.12 SDK
+            name: Setup MacOS SDK
             command: |
-              cd /Library/Developer/CommandLineTools/SDKs
-              sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.12.sdk.tar.xz' | sudo tar -xzf -
-              echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.12.sdk' > ~/.profile
-              echo 'export MACOSX_DEPLOYMENT_TARGET=10.12' >> ~/.profile
-              echo 'export PYENV_PYTHON_VERSION=3.10.0' >> ~/.profile
+              if [ "$build_arm64" = true ] ; then
+                  echo "*** Setup 11.3 SDK"
+                  cd /Library/Developer/CommandLineTools/SDKs
+                  if [ ! -d "MacOSX11.3.sdk" ]
+                  then
+                      sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz' | sudo tar -xzf -
+                  fi
+                  echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk' >> ~/.profile
+                  echo 'export MACOSX_DEPLOYMENT_TARGET=11.0' >> ~/.profile
+                  echo 'export ARCHFLAGS="-arch arm64"' >> ~/.profile
+                  echo 'export GIMP_ARM64=true' >> ~/.profile
+              else
+                  echo "*** Setup 10.12 SDK"
+                  cd /Library/Developer/CommandLineTools/SDKs
+                  if [ ! -d "MacOSX10.12.sdk" ]
+                  then
+                      sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.12.sdk.tar.xz' | sudo tar -xzf -
+                  fi
+                  echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.12.sdk' >> ~/.profile
+                  echo 'export MACOSX_DEPLOYMENT_TARGET=10.12' >> ~/.profile
+                  echo 'export ARCHFLAGS="-arch x86_64"' >> ~/.profile
+                  echo 'export PYENV_PYTHON_VERSION=3.10.0' >> ~/.profile
+              fi
         - run:
             name: checksums for caching
             command: |
@@ -50,7 +80,6 @@ commands:
               cd $HOME
               mkdir -p ~/.config && cp ~/project/jhbuildrc-gtk-osx-gimp ~/.config/jhbuildrc-custom
               echo 'export PATH="$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' >> ~/.profile
-              echo 'export ARCHFLAGS="-arch x86_64"' >> ~/.profile
               source ~/.profile
               PIPENV_YES=1 ~/project/gtk-osx-setup.sh
               $HOME/.new_local/bin/jhbuild bootstrap-gtk-osx-gimp
