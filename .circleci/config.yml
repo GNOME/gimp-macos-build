@@ -58,24 +58,11 @@ commands:
                   echo 'export PYENV_PYTHON_VERSION=3.10.0' >> ~/.profile
               fi
         - run:
-            name: checksums for caching
-            command: |
-              echo "$build_arm64" >> JHBUILD_CACHE_BREAK
-              echo "$build_arm64|$(find ./patches -type f -exec md5 {} \; | md5 | cut -d' ' -f1)" >> CACHE_BREAK
-              echo $(find ./modulesets -type f -exec md5 {} \; | md5 | cut -d' ' -f1)  >> CACHE_ITER
-              cat JHBUILD_CACHE_BREAK
-              cat CACHE_BREAK
-              cat CACHE_ITER
-        - run:
             name: coreutils for realpath (for jpeg-xl)
             command: brew install coreutils
 
   build-env:
     steps:
-        - restore_cache:
-            keys:
-              - v{{ checksum "JHBUILD_CACHE_BREAK" }}-1-jhbuild-v3-v4
-              - v{{ checksum "JHBUILD_CACHE_BREAK" }}-1-jhbuild-v3-
         - run:
             name: Setup JHBuild
             command: |
@@ -86,25 +73,9 @@ commands:
               PIPENV_YES=1 $CIRCLE_WORKING_DIRECTORY/gtk-osx-setup.sh
               $HOME/.new_local/bin/jhbuild bootstrap-gtk-osx-gimp
               cat ~/.profile
-        - save_cache:
-            paths:
-              - ~/.new_local
-              - ~/gtk
-              - ~/.config
-            key: v{{ checksum "JHBUILD_CACHE_BREAK" }}-1-jhbuild-v3-v4
 
   get-cached-data:
     steps:
-        - restore_cache:
-            keys:
-              - v{{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-bootstrapv3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimpv3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-
-              - v{{ checksum "CACHE_BREAK" }}-bootstrapv3-
 
 # -------------------------
 #        JOBS
@@ -126,7 +97,6 @@ jobs:
     steps:
         - setup
         - build-env
-        - get-cached-data
         - run:
             name: Bootstrap
             command: |
@@ -134,11 +104,6 @@ jobs:
         - run:
             name: Cleanup
             command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
-        - save_cache:
-            paths:
-              - ~/gtk
-              - ~/.cache
-            key: v{{ checksum "CACHE_BREAK" }}-bootstrapv3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part1:
     machine: true
@@ -147,7 +112,6 @@ jobs:
     steps:
         - setup
         - build-env
-        - get-cached-data
         - run:
             name: Build GIMP dependencies part 1 (without gegl/babl)
             command: |
@@ -156,11 +120,6 @@ jobs:
         - run:
             name: Cleanup
             command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
-        - save_cache:
-            paths:
-              - ~/gtk
-              - ~/.cache
-            key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part2:
     machine: true
@@ -169,7 +128,6 @@ jobs:
     steps:
         - setup
         - build-env
-        - get-cached-data
         - run:
             name: Build GIMP dependencies part 2
             command: |
@@ -178,11 +136,6 @@ jobs:
         - run:
             name: Cleanup
             command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
-        - save_cache:
-            paths:
-              - ~/gtk
-              - ~/.cache
-            key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-{{ checksum "CACHE_ITER" }}
 
   dependencies-babl-gegl:
     machine: true
@@ -191,7 +144,6 @@ jobs:
     steps:
         - setup
         - build-env
-        - get-cached-data
         - run:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
@@ -203,7 +155,6 @@ jobs:
     steps:
         - setup
         - build-env
-        - get-cached-data
         - run:
             name: Build GIMP
             # XXX `make check` is not working reliably under circle ci, so we are
@@ -217,11 +168,6 @@ jobs:
         # - run:
         #     name: Cleanup
         #     command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
-        - save_cache:
-            paths:
-              - ~/gtk
-              - ~/.cache
-            key: v{{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
         - run:
             name: Setup gtk-mac-bundler
             command: |
