@@ -60,7 +60,7 @@ commands:
         - run:
             name: checksums for caching
             command: |
-              echo $(find ./patches -type f -exec md5 {} \; | md5 | cut -d' ' -f1)  >> CACHE_BREAK
+              echo "$build_arm64|$(find ./patches -type f -exec md5 {} \; | md5 | cut -d' ' -f1)" >> CACHE_BREAK
               echo $(find ./modulesets -type f -exec md5 {} \; | md5 | cut -d' ' -f1)  >> CACHE_ITER
               cat CACHE_BREAK
               cat CACHE_ITER
