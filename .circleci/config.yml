@@ -7,7 +7,7 @@ commands:
 
   setup:
     steps:
-        # for local builds, this needs to be checked out to `~/project`
+        # for local builds, this needs to be checked out to `$CIRCLE_WORKING_DIRECTORY`
         - checkout
         - run:
             name: Build architecture
@@ -80,10 +80,10 @@ commands:
             name: Setup JHBuild
             command: |
               cd $HOME
-              mkdir -p ~/.config && cp ~/project/jhbuildrc-gtk-osx-gimp ~/.config/jhbuildrc-custom
+              mkdir -p ~/.config && cp $CIRCLE_WORKING_DIRECTORY/jhbuildrc-gtk-osx-gimp ~/.config/jhbuildrc-custom
               echo 'export PATH="$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' >> ~/.profile
               source ~/.profile
-              PIPENV_YES=1 ~/project/gtk-osx-setup.sh
+              PIPENV_YES=1 $CIRCLE_WORKING_DIRECTORY/gtk-osx-setup.sh
               $HOME/.new_local/bin/jhbuild bootstrap-gtk-osx-gimp
               cat ~/.profile
         - save_cache:
