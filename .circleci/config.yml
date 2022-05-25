@@ -74,8 +74,8 @@ commands:
     steps:
         - restore_cache:
             keys:
-              - {{ checksum "JHBUILD_CACHE_BREAK" }}-1-jhbuild-v3-v4
-              - {{ checksum "JHBUILD_CACHE_BREAK" }}-1-jhbuild-v3-
+              - v{{ checksum "JHBUILD_CACHE_BREAK" }}-1-jhbuild-v3-v4
+              - v{{ checksum "JHBUILD_CACHE_BREAK" }}-1-jhbuild-v3-
         - run:
             name: Setup JHBuild
             command: |
@@ -91,7 +91,7 @@ commands:
               - ~/.new_local
               - ~/gtk
               - ~/.config
-            key: 1-jhbuild-v3-v5
+            key: v{{ checksum "JHBUILD_CACHE_BREAK" }}-1-jhbuild-v3-v4
 
   get-cached-data:
     steps:
