@@ -60,8 +60,10 @@ commands:
         - run:
             name: checksums for caching
             command: |
+              echo "$build_arm64" >> JHBUILD_CACHE_BREAK
               echo "$build_arm64|$(find ./patches -type f -exec md5 {} \; | md5 | cut -d' ' -f1)" >> CACHE_BREAK
               echo $(find ./modulesets -type f -exec md5 {} \; | md5 | cut -d' ' -f1)  >> CACHE_ITER
+              cat JHBUILD_CACHE_BREAK
               cat CACHE_BREAK
               cat CACHE_ITER
         - run:
@@ -72,8 +74,8 @@ commands:
     steps:
         - restore_cache:
             keys:
-              - 1-jhbuild-v3-v5
-              - 1-jhbuild-v3-
+              - {{ checksum "JHBUILD_CACHE_BREAK" }}-1-jhbuild-v3-v4
+              - {{ checksum "JHBUILD_CACHE_BREAK" }}-1-jhbuild-v3-
         - run:
             name: Setup JHBuild
             command: |
