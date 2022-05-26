@@ -168,10 +168,14 @@ jobs:
         - run:
             name: Setup gtk-mac-bundler
             command: |
-              cd ~/Source
-              git clone https://gitlab.gnome.org/lukaso/gtk-mac-bundler
-              cd gtk-mac-bundler
-              make install
+              if [ ! -d "$HOME/Source/gtk-mac-bundler" ]
+              then
+                  cd ~/Source
+                  git clone https://gitlab.gnome.org/lukaso/gtk-mac-bundler
+                  cd gtk-mac-bundler
+                  make install
+                  cd ~
+              fi
         - run:
             name: Importing signing certificate
             command: |
