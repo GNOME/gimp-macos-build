@@ -164,6 +164,7 @@ rm -f "/tmp/artifacts/gimp-${GIMP_VERSION}-x86_64.dmg"
 
 cd create-dmg
 
+# --skip-jenkins doesn't try to do applescript formatting
 ./create-dmg \
   --volname "GIMP 2.99 Install" \
   --background "../gimp-dmg.png" \
@@ -176,6 +177,7 @@ cd create-dmg
   --app-drop-link 450 360 \
   --format UDBZ \
   --hdiutil-verbose \
+  --skip-jenkins \
   "/tmp/artifacts/${DMGNAME}" \
   "$PACKAGE_DIR/"
 rm -f /tmp/artifacts/rw.*.dmg
