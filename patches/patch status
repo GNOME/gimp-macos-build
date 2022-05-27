@@ -7,9 +7,7 @@ libproxy: 	0001-Bug-168-libproxy-pc-file.patch (fixed in r827)
 gtkmm3: 	0001-Gtkmm-won-t-build-for-Quartz.patch
 		(Bug 662975, fixed 11/29/11, not yet released)
 
-gobject-intro:  0001-scanner-split-CC-environment-variable.patch fixed, not
-		released in stable.
-		girscanner-objc.patch: Bug 626995, will likely never be
+gobject-intro:  girscanner-objc.patch: Bug 626995, will likely never be
 		committed.
 		gobject-introspection-625195-Fix-non-libtool-linker-flags-on-Darwin.patch:
 		https://bugzilla.gnome.org/show_bug.cgi?id=625195, required only
