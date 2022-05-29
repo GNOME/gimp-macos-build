@@ -17,20 +17,18 @@
   <repository type="tarball" name="dbus.freedesktop.org"
               href="http://dbus.freedesktop.org/releases/"/>
   <repository type="tarball" name="sqlite" href="http://www.sqlite.org/"/>
-  <repository type="tarball" name="oracle"
-	      href="http://download.oracle.com/"/>
-  <repository type="tarball" name="ftp.gnu.org"
-	      href="https://ftp.gnu.org/gnu/"/>
-  <repository type="tarball" name="gmplib.org"
-	      href="ftp://ftp.gmplib.org/pub/"/>
-  <repository type="git" name="git.gnome.org"
-              href="https://gitlab.gnome.org/GNOME"/>
-  <repository type="tarball" name="itstool"
-	      href="http://files.itstool.org/"/>
-  <repository type="tarball" name="abisource/enchant"
-              href="http://www.abisource.com/downloads/enchant/"/>
+  <repository type="tarball" name="frodo"
+              href="http://frodo.looijaard.name/system/files/software/"/>
+  <repository type="tarball" name="fossies"
+              href="https://fossies.org/linux/misc/"/>
+  <repository type="tarball" name="paguire" href="https://releases.pagure.org/"/>
+  <repository type="tarball" name="pcre" href="https://ftp.pcre.org/pub/"/>
 
-  <metamodule id="meta-gtk-osx-random">
+   <cmake id="graphviz">
+    <branch module="4.0.0/graphviz-4.0.0.tar.bz2" version="4.0.0"
+            repo="graphviz"
+            hash="sha256:af3c104607b9fe597b05c9a0b4ebd7bf7aa3562ae598f5b05e1f9428da76de10">
+    </branch>
     <dependencies>
       <dep package="devhelp"/>
       <dep package="shared-mime-info"/>
