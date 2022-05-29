@@ -26,10 +26,9 @@
   <repository type="tarball" name="pcre" href="https://ftp.pcre.org/pub/"/>
 
    <cmake id="graphviz">
-    <branch module="2.47.0/graphviz-2.47.0.tar.bz2" version="2.47.0"
+    <branch module="4.0.0/graphviz-4.0.0.tar.bz2" version="4.0.0"
             repo="graphviz"
-            hash="sha256:dade5b374ce483bf28f2e535baef02280ba8ab86fbe6e93252ab0de48396b714">
-      <patch file="graphviz-remove-rpath.patch" strip="1"/>
+            hash="sha256:af3c104607b9fe597b05c9a0b4ebd7bf7aa3562ae598f5b05e1f9428da76de10">
     </branch>
     <dependencies>
       <dep package="pango"/>
