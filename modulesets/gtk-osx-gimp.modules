@@ -6,7 +6,6 @@
   <repository type="tarball" name="gimp" href="https://download.gimp.org/pub/"/>
   <repository type="git" name="git.gnome.org" href="https://gitlab.gnome.org/GNOME"/>
   <repository type="git" name="git-jtojnar" href="https://gitlab.gnome.org/jtojnar/"/>
-  <repository type="tarball" name="ftp.gimp.org" href="https://ftp.gimp.org/pub/"/>
   <repository type="tarball" name="poppler.freedesktop.org" href="https://poppler.freedesktop.org/"/>
   <repository type="tarball" name="videolan" href="https://downloads.videolan.org/pub/videolan/x265/"/>
   <repository type="tarball" name="github-tarball" href="https://github.com/"/>
@@ -88,7 +87,7 @@
   </autotools>
 
   <meson id="gegl">
-    <branch repo="ftp.gimp.org"
+    <branch repo="gimp"
       version="0.4.36"
       hash="sha256:6fd58a0cdcc7702258adaeffb573a389228ae8f0eff47578efda2309b61b2ca6"
       module="gegl/0.4/gegl-0.4.36.tar.xz">
@@ -131,7 +130,7 @@
   </autotools>
 
   <meson id="babl">
-    <branch repo="ftp.gimp.org"
+    <branch repo="gimp"
       version="0.1.90"
       module="babl/0.1/babl-0.1.90.tar.xz"
       hash="sha256:6e2ebb636f37581588e3d02499b3d2f69f9ac73e34a262f42911d7f5906a9243">
