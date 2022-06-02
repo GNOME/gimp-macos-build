@@ -1,0 +1,21 @@
+diff --git a/configure.ac b/configure.ac
+index 37e0bf1..a9212b2 100644
+--- a/configure.ac	
++++ b/configure.ac
+@@ -2984,11 +2984,11 @@ case $host in
+     ;;
+     *-darwin*)
+       DYNAMIC_CFLAGS="-fPIC $DYNAMIC_CFLAGS"
+-      GS_DYNAMIC_LDFLAGS="-dynamiclib -install_name $DARWIN_LDFLAGS_SO_PREFIX\$(GS_SONAME_MAJOR_MINOR)"
+-      PCL_DYNAMIC_LDFLAGS="-dynamiclib -install_name $DARWIN_LDFLAGS_SO_PREFIX\$(PCL_SONAME_MAJOR_MINOR)"
+-      XPS_DYNAMIC_LDFLAGS="-dynamiclib -install_name $DARWIN_LDFLAGS_SO_PREFIX\$(XPS_SONAME_MAJOR_MINOR)"
+-      PDL_DYNAMIC_LDFLAGS="-dynamiclib -install_name $DARWIN_LDFLAGS_SO_PREFIX\$(GPDL_SONAME_MAJOR_MINOR)"
+-      PDF_DYNAMIC_LDFLAGS="-dynamiclib -install_name $DARWIN_LDFLAGS_SO_PREFIX\$(PDF_SONAME_MAJOR_MINOR)"
++      GS_DYNAMIC_LDFLAGS="-dynamiclib -install_name \$(prefix)/lib/\$(GS_SONAME_MAJOR_MINOR)"
++      PCL_DYNAMIC_LDFLAGS="-dynamiclib -install_name \$(prefix)/lib/\$(PCL_SONAME_MAJOR_MINOR)"
++      XPS_DYNAMIC_LDFLAGS="-dynamiclib -install_name \$(prefix)/lib/\$(XPS_SONAME_MAJOR_MINOR)"
++      PDL_DYNAMIC_LDFLAGS="-dynamiclib -install_name \$(prefix)/lib/\$(GPDL_SONAME_MAJOR_MINOR)"
++      PDF_DYNAMIC_LDFLAGS="-dynamiclib -install_name \$(prefix)/lib/\$(PDF_SONAME_MAJOR_MINOR)"
+       DYNAMIC_LIBS=""
+       SO_LIB_EXT=".dylib"
+     ;;
