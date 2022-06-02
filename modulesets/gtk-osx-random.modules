@@ -29,6 +29,7 @@
     <branch module="4.0.0/graphviz-4.0.0.tar.bz2" version="4.0.0"
             repo="graphviz"
             hash="sha256:af3c104607b9fe597b05c9a0b4ebd7bf7aa3562ae598f5b05e1f9428da76de10">
+      <patch file="graphviz-4.0.0-remove-rpath.patch" strip="1"/>
     </branch>
     <dependencies>
       <dep package="pango"/>

@@ -1,0 +1,268 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0ee5f97..39f2b94 100644
+--- a/CMakeLists.txt	
++++ b/CMakeLists.txt
+@@ -94,6 +94,8 @@ set(GRAPHVIZ_PLUGIN_VERSION 6)
+ # Name of the config file used by Graphviz
+ set(GVPLUGIN_CONFIG_FILE config${GRAPHVIZ_PLUGIN_VERSION})
+ 
++set(CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${LIBRARY_INSTALL_DIR}")
++
+ # ============================ Library dependencies ============================
+ if(WIN32)
+   if(use_win_pre_inst_libs)
+diff --git a/plugin/core/CMakeLists.txt b/plugin/core/CMakeLists.txt
+index 0a1be67..3ac5043 100644
+--- a/plugin/core/CMakeLists.txt	
++++ b/plugin/core/CMakeLists.txt
+@@ -45,6 +45,10 @@ install(
+   ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
+ )
+ 
++set_target_properties(gvplugin_core PROPERTIES
++  INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${PLUGIN_INSTALL_DIR}"
++)
++
+ # Specify library version and soversion
+ set_target_properties(gvplugin_core PROPERTIES
+   VERSION ${GRAPHVIZ_PLUGIN_VERSION}.0.0
+diff --git a/plugin/devil/CMakeLists.txt b/plugin/devil/CMakeLists.txt
+index 2f595c9..b7e7f54 100644
+--- a/plugin/devil/CMakeLists.txt	
++++ b/plugin/devil/CMakeLists.txt
+@@ -34,6 +34,10 @@ if(PANGOCAIRO_FOUND AND DevIL_FOUND)
+     ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
+   )
+ 
++  set_target_properties(gvplugin_devil PROPERTIES
++    INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${PLUGIN_INSTALL_DIR}"
++  )
++
+   set_target_properties(gvplugin_devil PROPERTIES
+     VERSION ${GRAPHVIZ_PLUGIN_VERSION}.0.0
+     SOVERSION ${GRAPHVIZ_PLUGIN_VERSION}
+diff --git a/plugin/dot_layout/CMakeLists.txt b/plugin/dot_layout/CMakeLists.txt
+index c770046..a9c6bb5 100644
+--- a/plugin/dot_layout/CMakeLists.txt	
++++ b/plugin/dot_layout/CMakeLists.txt
+@@ -27,6 +27,10 @@ install(
+   ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
+ )
+ 
++set_target_properties(gvplugin_dot_layout PROPERTIES
++  INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${PLUGIN_INSTALL_DIR}"
++)
++
+ # Specify library version and soversion
+ set_target_properties(gvplugin_dot_layout PROPERTIES
+   VERSION ${GRAPHVIZ_PLUGIN_VERSION}.0.0
+diff --git a/plugin/gd/CMakeLists.txt b/plugin/gd/CMakeLists.txt
+index 047f29b..a2737cf 100644
+--- a/plugin/gd/CMakeLists.txt	
++++ b/plugin/gd/CMakeLists.txt
+@@ -40,6 +40,10 @@ if(GD_FOUND)
+     ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
+   )
+ 
++  set_target_properties(gvplugin_gd PROPERTIES
++    INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${PLUGIN_INSTALL_DIR}"
++  )
++
+   # Include DLLs with this library on Windows
+   if(WIN32 AND install_win_dependency_dlls)
+     install(
+diff --git a/plugin/gdiplus/CMakeLists.txt b/plugin/gdiplus/CMakeLists.txt
+index 3a987df..083d5e7 100644
+--- a/plugin/gdiplus/CMakeLists.txt	
++++ b/plugin/gdiplus/CMakeLists.txt
+@@ -37,6 +37,10 @@ if(WIN32)
+     ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
+   )
+ 
++  set_target_properties(gvplugin_gdiplus PROPERTIES
++    INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${PLUGIN_INSTALL_DIR}"
++  )
++
+   # Specify library version and soversion
+   set_target_properties(gvplugin_gdiplus PROPERTIES
+     VERSION ${GRAPHVIZ_PLUGIN_VERSION}.0.0
+diff --git a/plugin/gdk/CMakeLists.txt b/plugin/gdk/CMakeLists.txt
+index 9b46950..c7b651b 100644
+--- a/plugin/gdk/CMakeLists.txt	
++++ b/plugin/gdk/CMakeLists.txt
+@@ -41,6 +41,10 @@ if(GDK_FOUND AND GDK_PIXBUF_FOUND AND PANGOCAIRO_FOUND)
+     ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
+   )
+ 
++  set_target_properties(gvplugin_gdk PROPERTIES
++    INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${PLUGIN_INSTALL_DIR}"
++  )
++
+   set_target_properties(gvplugin_gdk PROPERTIES
+     VERSION ${GRAPHVIZ_PLUGIN_VERSION}.0.0
+     SOVERSION ${GRAPHVIZ_PLUGIN_VERSION}
+diff --git a/plugin/gs/CMakeLists.txt b/plugin/gs/CMakeLists.txt
+index ea39a81..bab43e1 100644
+--- a/plugin/gs/CMakeLists.txt	
++++ b/plugin/gs/CMakeLists.txt
+@@ -34,6 +34,10 @@ if(GS_FOUND AND PANGOCAIRO_FOUND)
+     ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
+   )
+ 
++  set_target_properties(gvplugin_gs PROPERTIES
++    INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${PLUGIN_INSTALL_DIR}"
++  )
++
+   set_target_properties(gvplugin_gs PROPERTIES
+     VERSION ${GRAPHVIZ_PLUGIN_VERSION}.0.0
+     SOVERSION ${GRAPHVIZ_PLUGIN_VERSION}
+diff --git a/plugin/gtk/CMakeLists.txt b/plugin/gtk/CMakeLists.txt
+index 9ee411f..3f70241 100644
+--- a/plugin/gtk/CMakeLists.txt	
++++ b/plugin/gtk/CMakeLists.txt
+@@ -34,6 +34,10 @@ if(GTK2_FOUND)
+     ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
+   )
+ 
++  set_target_properties(gvplugin_gtk PROPERTIES
++    INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${PLUGIN_INSTALL_DIR}"
++  )
++
+   set_target_properties(gvplugin_gtk PROPERTIES
+     VERSION ${GRAPHVIZ_PLUGIN_VERSION}.0.0
+     SOVERSION ${GRAPHVIZ_PLUGIN_VERSION}
+diff --git a/plugin/lasi/CMakeLists.txt b/plugin/lasi/CMakeLists.txt
+index 2655b36..dd7595f 100644
+--- a/plugin/lasi/CMakeLists.txt	
++++ b/plugin/lasi/CMakeLists.txt
+@@ -42,6 +42,10 @@ if(Freetype_FOUND AND LASI_FOUND AND PANGOCAIRO_FOUND)
+     ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
+   )
+ 
++  set_target_properties(gvplugin_lasi PROPERTIES
++    INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${PLUGIN_INSTALL_DIR}"
++  )
++
+   set_target_properties(gvplugin_lasi PROPERTIES
+     VERSION ${GRAPHVIZ_PLUGIN_VERSION}.0.0
+     SOVERSION ${GRAPHVIZ_PLUGIN_VERSION}
+diff --git a/plugin/neato_layout/CMakeLists.txt b/plugin/neato_layout/CMakeLists.txt
+index 09ab74c..f8fe681 100644
+--- a/plugin/neato_layout/CMakeLists.txt	
++++ b/plugin/neato_layout/CMakeLists.txt
+@@ -42,6 +42,10 @@ install(
+   ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
+ )
+ 
++set_target_properties(gvplugin_neato_layout PROPERTIES
++  INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${PLUGIN_INSTALL_DIR}"
++)
++
+ # Specify library version and soversion
+ set_target_properties(gvplugin_neato_layout PROPERTIES
+   VERSION ${GRAPHVIZ_PLUGIN_VERSION}.0.0
+diff --git a/plugin/pango/CMakeLists.txt b/plugin/pango/CMakeLists.txt
+index 26749af..6cbb70a 100644
+--- a/plugin/pango/CMakeLists.txt	
++++ b/plugin/pango/CMakeLists.txt
+@@ -44,6 +44,10 @@ if(CAIRO_FOUND AND PANGOCAIRO_FOUND)
+     ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
+   )
+ 
++  set_target_properties(gvplugin_pango PROPERTIES
++    INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${PLUGIN_INSTALL_DIR}"
++  )
++
+   # Include DLLs with this library on Windows
+   if(WIN32 AND install_win_dependency_dlls)
+     install(
+diff --git a/plugin/poppler/CMakeLists.txt b/plugin/poppler/CMakeLists.txt
+index 8a63537..b775a77 100644
+--- a/plugin/poppler/CMakeLists.txt	
++++ b/plugin/poppler/CMakeLists.txt
+@@ -37,6 +37,10 @@ if(PANGOCAIRO_FOUND AND POPPLER_FOUND)
+     ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
+   )
+ 
++  set_target_properties(gvplugin_poppler PROPERTIES
++    INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${PLUGIN_INSTALL_DIR}"
++  )
++
+   set_target_properties(gvplugin_poppler PROPERTIES
+     VERSION ${GRAPHVIZ_PLUGIN_VERSION}.0.0
+     SOVERSION ${GRAPHVIZ_PLUGIN_VERSION}
+diff --git a/plugin/quartz/CMakeLists.txt b/plugin/quartz/CMakeLists.txt
+index 8653ca6..e339de9 100644
+--- a/plugin/quartz/CMakeLists.txt	
++++ b/plugin/quartz/CMakeLists.txt
+@@ -38,6 +38,10 @@ if(IS_DIRECTORY "/System/Library/Frameworks/ApplicationServices.framework")
+     ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
+   )
+ 
++  set_target_properties(gvplugin_quartz PROPERTIES
++    INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${PLUGIN_INSTALL_DIR}"
++  )
++
+   set_target_properties(gvplugin_quartz PROPERTIES
+     VERSION ${GRAPHVIZ_PLUGIN_VERSION}.0.0
+     SOVERSION ${GRAPHVIZ_PLUGIN_VERSION}
+diff --git a/plugin/rsvg/CMakeLists.txt b/plugin/rsvg/CMakeLists.txt
+index f95fcfd..d7976a9 100644
+--- a/plugin/rsvg/CMakeLists.txt	
++++ b/plugin/rsvg/CMakeLists.txt
+@@ -34,6 +34,10 @@ if(PANGOCAIRO_FOUND AND RSVG_FOUND AND XRENDER_FOUND)
+     ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
+   )
+ 
++  set_target_properties(gvplugin_rsvg PROPERTIES
++    INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${PLUGIN_INSTALL_DIR}"
++  )
++
+   set_target_properties(gvplugin_rsvg PROPERTIES
+     VERSION ${GRAPHVIZ_PLUGIN_VERSION}.0.0
+     SOVERSION ${GRAPHVIZ_PLUGIN_VERSION}
+diff --git a/plugin/visio/CMakeLists.txt b/plugin/visio/CMakeLists.txt
+index 23a04e0..b63eba3 100644
+--- a/plugin/visio/CMakeLists.txt	
++++ b/plugin/visio/CMakeLists.txt
+@@ -30,6 +30,10 @@ install(
+   ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
+ )
+ 
++set_target_properties(gvplugin_visio PROPERTIES
++  INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${PLUGIN_INSTALL_DIR}"
++)
++
+ set_target_properties(gvplugin_visio PROPERTIES
+   VERSION ${GRAPHVIZ_PLUGIN_VERSION}.0.0
+   SOVERSION ${GRAPHVIZ_PLUGIN_VERSION}
+diff --git a/plugin/webp/CMakeLists.txt b/plugin/webp/CMakeLists.txt
+index ee4e520..efc4e37 100644
+--- a/plugin/webp/CMakeLists.txt	
++++ b/plugin/webp/CMakeLists.txt
+@@ -35,6 +35,10 @@ if(WEBP_FOUND)
+     ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
+   )
+ 
++  set_target_properties(gvplugin_webp PROPERTIES
++    INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${PLUGIN_INSTALL_DIR}"
++  )
++
+   set_target_properties(gvplugin_webp PROPERTIES
+     VERSION ${GRAPHVIZ_PLUGIN_VERSION}.0.0
+     SOVERSION ${GRAPHVIZ_PLUGIN_VERSION}
+diff --git a/plugin/xlib/CMakeLists.txt b/plugin/xlib/CMakeLists.txt
+index f6fe71f..0264564 100644
+--- a/plugin/xlib/CMakeLists.txt	
++++ b/plugin/xlib/CMakeLists.txt
+@@ -40,6 +40,10 @@ if(PANGOCAIRO_FOUND AND X11_FOUND AND XRENDER_FOUND)
+     ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
+   )
+ 
++  set_target_properties(gvplugin_xlib PROPERTIES
++    INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${PLUGIN_INSTALL_DIR}"
++  )
++
+   set_target_properties(gvplugin_xlib PROPERTIES
+     VERSION ${GRAPHVIZ_PLUGIN_VERSION}.0.0
+     SOVERSION ${GRAPHVIZ_PLUGIN_VERSION}
