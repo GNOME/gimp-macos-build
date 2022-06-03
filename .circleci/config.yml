@@ -213,6 +213,10 @@ jobs:
         - store_artifacts:
             path: /tmp/artifacts
             destination: builds
+        - run:
+            name:  cleanup artifacts
+            command: |
+              rm -f /tmp/artifacts/*.dmg
 
 workflows:
   version: 2
