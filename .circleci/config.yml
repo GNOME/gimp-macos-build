@@ -189,7 +189,7 @@ jobs:
               security list-keychains  -s "${HOME}/Library/Keychains/signchain-db" "${HOME}/Library/Keychains/login.keychain-db"
               security import apple.cer -k signchain  -T /usr/bin/codesign
               security import gnome.pfx  -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
-              security set-key-partition-list -S apple-tool:,apple: -k "" signchain
+              security set-key-partition-list -S apple-tool:,apple: -s -k "" signchain
               rm -rf ${HOME}/codesign
         - run:
             name: Creating DMG package
