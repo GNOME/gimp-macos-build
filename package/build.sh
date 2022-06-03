@@ -136,11 +136,11 @@ then
   find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/ -type f -perm +111 \
      | xargs file \
      | grep ' Mach-O '|awk -F ':' '{print $1}' \
-     | xargs /usr/bin/codesign -s "${codesign_subject}" \
+     | xargs /usr/bin/codesign -vvvvv -s "${codesign_subject}" \
          --options runtime \
          --entitlements ${HOME}/project/package/gimp-hardening.entitlements
   echo "Signing app"
-  /usr/bin/codesign -s "${codesign_subject}" \
+  /usr/bin/codesign -vvvvv -s "${codesign_subject}" \
     --timestamp \
     --deep \
     --options runtime \
