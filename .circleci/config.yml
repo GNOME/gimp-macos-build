@@ -231,8 +231,8 @@ jobs:
               security set-key-partition-list -S apple-tool:,apple: -s -k "" signchain
               rm -rf ${HOME}/codesign
         - attach_workspace:
-          # Must be absolute path or relative path from working_directory
-          at: ~/gtk
+            # Must be absolute path or relative path from working_directory
+            at: ~/gtk
         - run:
             name: Creating DMG package
             command: |
