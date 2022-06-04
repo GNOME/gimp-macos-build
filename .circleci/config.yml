@@ -145,7 +145,7 @@ jobs:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
 
-  build-gimp-and-package:
+  build-gimp:
     machine: true
     resource_class: gnome/gimp
 
@@ -165,16 +165,31 @@ jobs:
         # - run:
         #     name: Cleanup
         #     command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
+      - persist_to_workspace:
+        # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
+        # taken to be the root directory of the workspace.
+        root: ~/gtk
+        # Must be relative path from root
+        paths:
+          - inst
+
+  package-gimp:
+    macos:
+      xcode: "13.3.0"
+
+    steps:
+        - setup
+        - build-env
         - run:
             name: Setup gtk-mac-bundler
             command: |
               if [ ! -d "$HOME/Source/gtk-mac-bundler" ]
               then
-                  cd ~/Source
-                  git clone https://gitlab.gnome.org/lukaso/gtk-mac-bundler
-                  cd gtk-mac-bundler
-                  make install
-                  cd ~
+                cd ~/Source
+                git clone https://gitlab.gnome.org/lukaso/gtk-mac-bundler
+                cd gtk-mac-bundler
+                make install
+                cd ~
               fi
         - run:
             name: Importing signing certificate
@@ -191,6 +206,9 @@ jobs:
               security import gnome.pfx  -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
               security set-key-partition-list -S apple-tool:,apple: -s -k "" signchain
               rm -rf ${HOME}/codesign
+        - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: ~/gtk
         - run:
             name: Creating DMG package
             command: |
@@ -198,10 +216,9 @@ jobs:
               cd ${HOME}/project/package
 
               # Authorize applescript on circle ci build
-              echo "Can't authorize applescript on local runner"
-              # epochdate=$(($(date +'%s * 1000 + %-N / 1000000')))
-              # tcc_service_appleevents="replace into access (service,client,client_type,auth_value,auth_reason,auth_version,indirect_object_identifier_type,indirect_object_identifier,flags,last_modified) values (\"kTCCServiceAppleEvents\",\"/usr/sbin/sshd\",1,2,4,1,0,\"com.apple.finder\",0,$epochdate);"
-              # sudo sqlite3 "/Users/distiller/Library/Application Support/com.apple.TCC/TCC.db" "$tcc_service_appleevents"
+              epochdate=$(($(date +'%s * 1000 + %-N / 1000000')))
+              tcc_service_appleevents="replace into access (service,client,client_type,auth_value,auth_reason,auth_version,indirect_object_identifier_type,indirect_object_identifier,flags,last_modified) values (\"kTCCServiceAppleEvents\",\"/usr/sbin/sshd\",1,2,4,1,0,\"com.apple.finder\",0,$epochdate);"
+              sudo sqlite3 "/Users/distiller/Library/Application Support/com.apple.TCC/TCC.db" "$tcc_service_appleevents"
 
               # run script
               jhbuild run ./build.sh debug
@@ -214,10 +231,6 @@ jobs:
         - store_artifacts:
             path: /tmp/artifacts
             destination: builds
-        - run:
-            name:  cleanup artifacts
-            command: |
-              rm -f /tmp/artifacts/*.dmg
 
 workflows:
   version: 2
@@ -236,6 +249,9 @@ workflows:
       - dependencies-babl-gegl:
           requires:
             - dependencies-part2
-      - build-gimp-and-package:
+      - build-gimp:
           requires:
             - dependencies-babl-gegl
+      - package-gimp:
+          requires:
+            - build-gimp
