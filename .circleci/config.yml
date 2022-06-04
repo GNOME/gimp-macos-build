@@ -61,7 +61,7 @@ commands:
             name: coreutils for realpath (for jpeg-xl)
             command: brew install coreutils
 
-  build-env:
+  build-env-local:
     steps:
         - run:
             name: Setup JHBuild
@@ -74,6 +74,30 @@ commands:
               $HOME/.new_local/bin/jhbuild bootstrap-gtk-osx-gimp
               cat ~/.profile
 
+  build-env:
+    steps:
+        - restore_cache:
+            keys:
+              - 1-jhbuild-v3-v4
+              - 1-jhbuild-v3-
+        - run:
+            name: Setup JHBuild
+            command: |
+              cd $HOME
+              mkdir -p ~/.config && cp ~/project/jhbuildrc-gtk-osx-gimp-2.99 ~/.config/jhbuildrc-custom
+              echo 'export PATH="$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' >> ~/.profile
+              source ~/.profile
+              PIPENV_YES=1 ~/project/gtk-osx-setup.sh
+              $HOME/.new_local/bin/jhbuild bootstrap-gtk-osx-gimp
+              cat ~/.profile
+        - save_cache:
+            paths:
+              - ~/.new_local
+              - ~/gtk
+              - ~/.config
+            key: 1-jhbuild-v3-v4
+
+
 # -------------------------
 #        JOBS
 # -------------------------
@@ -85,7 +109,7 @@ jobs:
 
     steps:
         - setup
-        - build-env
+        - build-env-local
 
   bootstrap:
     machine: true
@@ -93,7 +117,7 @@ jobs:
 
     steps:
         - setup
-        - build-env
+        - build-env-local
         - run:
             name: Bootstrap
             command: |
@@ -108,7 +132,7 @@ jobs:
 
     steps:
         - setup
-        - build-env
+        - build-env-local
         - run:
             name: Build GIMP dependencies part 1 (without gegl/babl)
             command: |
@@ -124,7 +148,7 @@ jobs:
 
     steps:
         - setup
-        - build-env
+        - build-env-local
         - run:
             name: Build GIMP dependencies part 2
             command: |
@@ -140,7 +164,7 @@ jobs:
 
     steps:
         - setup
-        - build-env
+        - build-env-local
         - run:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
@@ -150,21 +174,21 @@ jobs:
     resource_class: gnome/gimp
 
     steps:
-        - setup
-        - build-env
-        - run:
-            name: Build GIMP
-            # XXX `make check` is not working reliably under circle ci, so we are
-            # not using --check flag
-            command: |
-              source ~/.profile
-              jhbuild build gimp
-        # - run:
-        #     name: Building GIMP help (en) from git
-        #     command: source ~/.profile && ALL_LINGUAS=en jhbuild build gimp-help-git
-        # - run:
-        #     name: Cleanup
-        #     command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
+      - setup
+      - build-env-local
+      - run:
+          name: Build GIMP
+          # XXX `make check` is not working reliably under circle ci, so we are
+          # not using --check flag
+          command: |
+            source ~/.profile
+            jhbuild build gimp
+      # - run:
+      #     name: Building GIMP help (en) from git
+      #     command: source ~/.profile && ALL_LINGUAS=en jhbuild build gimp-help-git
+      # - run:
+      #     name: Cleanup
+      #     command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
       - persist_to_workspace:
           # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
           # taken to be the root directory of the workspace.
