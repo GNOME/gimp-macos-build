@@ -257,8 +257,8 @@ if [ -z "${NO_DMG}" ]; then
     echo "*** Creating DMG package"
     source ~/.profile
     cd ${HOME}/project/package
-    jhbuild run ./build_1.sh debug
-    jhbuild run ./build_2.sh
+    jhbuild run ./build_app.sh debug
+    jhbuild run ./build_dmg.sh
 else
     echo "*** Skipping building DMG"
 fi
