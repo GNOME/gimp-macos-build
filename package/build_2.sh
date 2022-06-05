@@ -8,6 +8,12 @@ then
   exit 2
 fi
 
+if [ -z "$1" ]; then
+  ARCH="x86_64"
+else
+  ARCH="$1"
+fi
+
 #  target directory
 PACKAGE_DIR="${HOME}/gimp299-osx-app"
 
@@ -38,14 +44,14 @@ fi
 echo "Building DMG"
 if [ -z "${CIRCLECI}" ]
 then
-  DMGNAME="gimp-${GIMP_VERSION}-x86_64.dmg"
+  DMGNAME="gimp-${GIMP_VERSION}-${ARCH}.dmg"
 else
-  DMGNAME="gimp-${GIMP_VERSION}-x86_64-b${CIRCLE_BUILD_NUM}-${CIRCLE_BRANCH////-}.dmg"
+  DMGNAME="gimp-${GIMP_VERSION}-${ARCH}-b${CIRCLE_BUILD_NUM}-${CIRCLE_BRANCH////-}.dmg"
 fi
 
 mkdir -p /tmp/artifacts/
 rm -f /tmp/tmp.dmg
-rm -f "/tmp/artifacts/gimp-${GIMP_VERSION}-x86_64.dmg"
+rm -f "/tmp/artifacts/gimp-${GIMP_VERSION}-${ARCH}.dmg"
 
 cd create-dmg
 
