@@ -189,13 +189,32 @@ jobs:
       # - run:
       #     name: Cleanup
       #     command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
+      - run:
+          name: Setup gtk-mac-bundler
+          command: |
+            if [ ! -d "$HOME/Source/gtk-mac-bundler" ]
+            then
+              cd ~/Source
+              git clone https://gitlab.gnome.org/lukaso/gtk-mac-bundler
+              cd gtk-mac-bundler
+              make install
+              cd ~
+            fi
+      - run:
+          name: Bundling
+          command: |
+            source ~/.profile
+            cd ${HOME}/project/package
+
+            # run script
+            jhbuild run ./build_1.sh debug
       - persist_to_workspace:
           # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
           # taken to be the root directory of the workspace.
-          root: ~/gtk
+          root: ~
           # Must be relative path from root
           paths:
-            - inst
+            - gimp299-osx-app
 
   package-gimp:
     macos:
@@ -205,34 +224,22 @@ jobs:
         - setup
         - build-env
         - run:
-            name: Setup gtk-mac-bundler
-            command: |
-              if [ ! -d "$HOME/Source/gtk-mac-bundler" ]
-              then
-                cd ~/Source
-                git clone https://gitlab.gnome.org/lukaso/gtk-mac-bundler
-                cd gtk-mac-bundler
-                make install
-                cd ~
-              fi
-        - run:
             name: Importing signing certificate
             command: |
               mkdir ${HOME}/codesign && cd ${HOME}/codesign
               echo "$osx_crt" | base64 -D > gnome.pfx
               curl 'https://developer.apple.com/certificationauthority/AppleWWDRCA.cer' > apple.cer
-              security delete-keychain signchain || true
               security create-keychain -p "" signchain
               security set-keychain-settings signchain
               security unlock-keychain -u signchain
               security list-keychains  -s "${HOME}/Library/Keychains/signchain-db" "${HOME}/Library/Keychains/login.keychain-db"
               security import apple.cer -k signchain  -T /usr/bin/codesign
               security import gnome.pfx  -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
-              security set-key-partition-list -S apple-tool:,apple: -s -k "" signchain
+              security set-key-partition-list -S apple-tool:,apple: -k "" signchain
               rm -rf ${HOME}/codesign
         - attach_workspace:
             # Must be absolute path or relative path from working_directory
-            at: ~/gtk
+            at: ~
         - run:
             name: Creating DMG package
             command: |
@@ -245,7 +252,7 @@ jobs:
               sudo sqlite3 "/Users/distiller/Library/Application Support/com.apple.TCC/TCC.db" "$tcc_service_appleevents"
 
               # run script
-              jhbuild run ./build.sh debug
+              jhbuild run ./build_2.sh
         - run:
             name:  Notarizing DMG package
             command: |
