@@ -109,7 +109,10 @@ if _jhb is None:
 
 #  Set up a particular target and SDK: For default operation, set the
 # architecture and SDK for the native machine:
-setup_sdk("10.12","x86_64")
+if 'GIMP_ARM64' in os.environ:
+    setup_sdk("11.3","arm64")
+else:
+    setup_sdk("10.12","x86_64")
 
 # enable optimization or debugging
 if 'GIMP_DEBUG' in os.environ:
