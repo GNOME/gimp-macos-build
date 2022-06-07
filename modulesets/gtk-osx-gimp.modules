@@ -153,11 +153,10 @@
 
   <meson id="babl">
     <branch repo="gimp"
-      version="0.1.90"
-      module="babl/0.1/babl-0.1.90.tar.xz"
-      hash="sha256:6e2ebb636f37581588e3d02499b3d2f69f9ac73e34a262f42911d7f5906a9243">
-      <!-- fixed on master, so remove on next version bump -->
-      <patch file="babl-0.1.90-static-inline.patch" strip="1"/>
+      version="0.1.92"
+      module="babl/0.1/babl-0.1.92.tar.xz"
+      hash="sha256:f667735028944b6375ad18f160a64ceb93f5c7dccaa9d8751de359777488a2c1">
+      <patch file="babl-exports.patch" strip="1"/>
     </branch>
     <dependencies>
       <dep package="lcms"/>
