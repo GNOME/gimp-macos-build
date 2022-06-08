@@ -85,7 +85,7 @@
     </dependencies>
   </autotools>
 
-  <autotools id="libnsgif" supports-non-srcdir-builds="no">
+  <autotools id="libnsgif" autogen-sh="autoreconf" supports-non-srcdir-builds="no">
     <branch version="0.2.1" module="lukaso/libnsgif-autotools/tarball/master" checkoutdir="libnsgif-0.2.1"
 	    repo="github-tarball"/>
   </autotools>
