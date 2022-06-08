@@ -95,13 +95,14 @@
       <dep package='flex'/>
     </dependencies>
   </autotools>
-  
-  <!-- As of 9 May 2020 Flex hasn't had an update since November 2015. -->
+
   <autotools id="flex" autogen-sh="configure">
-    <branch module="flex/flex-2.6.0.tar.xz" version="2.6.0"
-            repo="sourceforge" />
+    <branch module="westes/flex/releases/download/v2.6.4/flex-2.6.4.tar.gz" version="2.6.4"
+            repo="github-tarball">
+      <patch file="flex-2.6.4-libtool-configure-big_sur.patch" strip="1"/>
+    </branch>
   </autotools>
-  
+
   <autotools id="expat" autogen-sh="configure">
     <branch module="expat/expat-2.2.9.tar.bz2" version="2.2.9"
             repo="sourceforge"/>
