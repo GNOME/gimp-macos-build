@@ -1,0 +1,13 @@
+diff --git a/meson.build b/meson.build
+index 3406e82..a599222 100644
+--- a/meson.build	
++++ b/meson.build
+@@ -7,6 +7,8 @@ project('gtk-doc', 'c',
+ gnome = import('gnome')
+ python = import('python') # Meson new Python module https://mesonbuild.com/Python-module.html
+ 
++# Do not find the embedded python which is not suitable
++meson.override_find_program('python3', files(['/Library/Frameworks/Python.framework/Versions/3.9/bin/python3.9'])[0])
+ python3 = python.find_installation('python3')
+ 
+ version = meson.project_version()

@@ -12,8 +12,6 @@
               href="http://www.ijg.org/files/"/>
   <repository type="tarball" name="libtiff"
 	      href="http://download.osgeo.org/"/>
-  <repository type="tarball" name="fontconfig"
-	      href="http://www.freedesktop.org/software/fontconfig/release/"/>
   <repository type="tarball" name="icon-theme"
 	      href="http://icon-theme.freedesktop.org/releases/"/>
   <repository type="tarball" name="xmlsoft.org"
@@ -122,18 +120,19 @@
     </dependencies>
   </autotools>
 
-  <autotools id="gtk-doc" autogen-sh="configure">
-    <branch version="1.32" module="gtk-doc/1.32/gtk-doc-1.32.tar.xz"
-            hash="sha256:de0ef034fb17cb21ab0c635ec730d19746bce52984a6706e7bbec6fb5e0b907c"/>
+  <meson id="gtk-doc" mesonargs="-Dyelp_manual=false -Dtests=false -Dpython.platlibdir=lib -Dpython.purelibdir=lib">
+    <branch version="1.33.2" module="gtk-doc/1.33/gtk-doc-1.33.2.tar.xz"
+            hash="sha256:cc1b709a20eb030a278a1f9842a362e00402b7f834ae1df4c1998a723152bf43"/>
+      <!-- Patch has been applied upstream -->
+      <patch file="gtk-doc-1.33.2-find-system-python.patch" strip="1"/>
     <dependencies>
       <dep package="libxml2"/>
       <dep package="libxslt"/>
       <dep package="itstool"/>
-    </dependencies>
-    <after>
       <dep package="python3"/>
-    </after>
-  </autotools>
+      <dep package="pygments"/>
+    </dependencies>
+  </meson>
 
   <autotools id="icu" autogen-sh="source/configure" autogenargs="--enable-rpath"
              makeargs='CFLAGS="$CFLAGS -DU_CHARSET_IS_UTF8=1 -DU_USING_ICU_NAMESPACE=0"'>
@@ -172,16 +171,6 @@
     </branch>
     <dependencies>
       <dep package="zlib"/>
-    </dependencies>
-  </autotools>
-
-  <autotools id="fontconfig" autogen-sh="autoreconf"
-             autogenargs="ac_cv_func_mkostemp=no --disable-docs '--with-add-fonts=/System/Library/Fonts,/Library/Fonts,~/Library/Fonts'">
-    <!-- The ac_cv_func_mkostemp flag above is to deal with a known break in backward-compat when using the 10.12 SDK versus a deployment target < 10.12 -->
-    <branch repo="fontconfig" version="2.13.1" module="fontconfig-2.13.1.tar.bz2">
-    </branch>
-    <dependencies>
-      <dep package="freetype"/>
     </dependencies>
   </autotools>
 

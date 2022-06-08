@@ -6,6 +6,8 @@
               href="https://download.gnome.org/sources/"/>
   <repository type="tarball" name="sourceforge"
               href="http://downloads.sourceforge.net/sourceforge/"/>
+  <repository type="tarball" name="savannah"
+              href="https://download.savannah.gnu.org/releases/"/>
   <repository type="tarball" name="cairographics"
               href="https://www.cairographics.org/releases/"/>
   <repository type="tarball" name="cairographics-temp"
@@ -14,6 +16,8 @@
               href="https://ftp.gnu.org/gnu/"/>
   <repository type="tarball" name="freedesktop"
               href="ftp://ftp.freedesktop.org/pub/"/>
+  <repository type="tarball" name="fontconfig"
+	            href="http://www.freedesktop.org/software/fontconfig/release/"/>
   <repository type="git" name="github" href="https://git@github.com/"/>
   <repository type="tarball" name="github-tarball" href="https://github.com/"/>
   <repository type="system" name="system"/>

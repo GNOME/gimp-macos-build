@@ -4,7 +4,7 @@
 <moduleset>
   <repository type="tarball" name="ftp.gnome.org" default="yes"
               href="http://ftp.gnome.org/pub/GNOME/sources/"/>
-
+  <repository type="tarball" name="ftp.gnu.org" href="https://ftp.gnu.org/gnu/"/>
   <repository type="tarball" name="ftp.gtk.org"
               href="https://ftp.gtk.org/pub/"/>
   <repository type="tarball" name="hadess"
@@ -12,6 +12,8 @@
 
   <repository type="tarball" name="sourceforge"
               href="http://downloads.sourceforge.net/sourceforge/"/>
+  <repository type="tarball" name="graphviz"
+              href="https://gitlab.com/graphviz/graphviz/-/archive/"/>
   <repository type="git" name="github.com" href="https://git@github.com/"/>
   <repository type="tarball" name="github-tarball" href="https://github.com/"/>
   <repository type="tarball" name="dbus.freedesktop.org"
@@ -30,14 +32,10 @@
             hash="sha256:af3c104607b9fe597b05c9a0b4ebd7bf7aa3562ae598f5b05e1f9428da76de10">
     </branch>
     <dependencies>
-      <dep package="devhelp"/>
-      <dep package="shared-mime-info"/>
-      <dep package="gossip"/>
-      <dep package="vala"/>
-      <dep package="glade3"/>
+      <dep package="pango"/>
       <dep package="librsvg"/>
     </dependencies>
-  </metamodule>
+  </cmake>
 
 <!-- Libglade's functions are now part of Gtk+ with different names and
 Libglade itself is deprecated. This is the last release. -->
