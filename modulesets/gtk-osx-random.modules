@@ -9,7 +9,8 @@
               href="https://ftp.gtk.org/pub/"/>
   <repository type="tarball" name="hadess"
               href="http://freedesktop.org/~hadess/"/>
-
+  <repository type="tarball" name="shared-mime-info"
+              href="https://gitlab.freedesktop.org/xdg/shared-mime-info/-/archive/"/>
   <repository type="tarball" name="sourceforge"
               href="http://downloads.sourceforge.net/sourceforge/"/>
   <repository type="tarball" name="graphviz"
@@ -165,16 +166,14 @@ Libglade itself is deprecated. This is the last release. -->
     <branch module="lcms/lcms2-2.12.tar.gz" version="2.12" repo="sourceforge" />
   </autotools>
 
-  <autotools id="shared-mime-info"  autogen-sh="configure"
-             autogenargs="--disable-default-make-check ac_cv_func_fdatasync=no"
-             supports-non-srcdir-builds="no" >
-    <branch module="shared-mime-info-1.9.tar.xz" version="1.9"
-            repo="hadess">
-    </branch>
+  <meson id="shared-mime-info" supports-non-srcdir-builds="no" >
+    <branch module="2.2/shared-mime-info-2.2.tar.bz2"
+            repo="shared-mime-info" version="2.2"
+            hash="sha256:418c480019d9865f67f922dfb88de00e9f38bf971205d55cdffab50432919e61"/>
     <dependencies>
       <dep package="glib"/>
     </dependencies>
-  </autotools>
+  </meson>
 
   <autotools id="gsettings-desktop-schemas" autogen-sh="configure"
              autogenargs="--enable-introspection=yes">
