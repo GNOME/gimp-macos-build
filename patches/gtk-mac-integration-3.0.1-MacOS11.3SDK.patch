@@ -1,0 +1,13 @@
+diff --git a/src/Makefile copy.am b/src/Makefile.am
+index f1a2847..70f5118 100644
+--- a/src/Makefile copy.am	
++++ b/src/Makefile.am
+@@ -46,7 +46,7 @@ libgtkmacintegration_gtk2_la_SOURCES = $(SOURCES)
+ libgtkmacintegration_gtk2_la_CFLAGS = $(GTK2_CFLAGS) -xobjective-c
+ libgtkmacintegration_gtk2_la_OBJCFLAGS = $(GTK2_CFLAGS)
+ libgtkmacintegration_gtk2_la_LIBADD = $(GTK2_LIBS) -lobjc
+-libgtkmacintegration_gtk2_la_LDFLAGS = -framework Carbon -framework ApplicationServices -version-info $(GTK_MAC_INTEGRATION_LT_VERSION)
++libgtkmacintegration_gtk2_la_LDFLAGS = -framework Carbon -framework Cocoa -framework ApplicationServices -version-info $(GTK_MAC_INTEGRATION_LT_VERSION)
+ endif
+ 
+ integration_includedir = $(includedir)/gtkmacintegration
