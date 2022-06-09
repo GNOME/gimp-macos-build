@@ -269,6 +269,8 @@
       <patch file="gimp_issue_5989_bigsur_performance_gtk_2.patch" strip="1"/>
       <!-- GIMP Issue 2731 - Tool Options DND window obscures Mac menu bar -->
       <patch file="gtk+-2.24.33-bug-2731-dnd.patch" strip="1"/>
+      <!-- Build for M1 Mac arm64 -->
+      <patch file="gtk+-2.24.33-MacOS11.3SDK.patch" strip="1"/>
    </branch>
     <dependencies>
       <dep package="glib"/>
