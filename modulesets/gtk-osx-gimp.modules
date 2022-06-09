@@ -241,7 +241,8 @@
 
   <autotools id="libheif"
     supports-non-srcdir-builds="no"
-    autogen-template="%(srcdir)s/%(autogen-sh)s --prefix %(prefix)s %(autogenargs)s &amp;&amp; %(srcdir)s/configure --prefix %(prefix)s  %(autogenargs)s">
+    autogen-template="%(srcdir)s/%(autogen-sh)s --prefix %(prefix)s %(autogenargs)s &amp;&amp; %(srcdir)s/configure --prefix %(prefix)s  %(autogenargs)s"
+    autogenargs="--disable-go">
     <branch module="strukturag/libheif/releases/download/v1.12.0/libheif-1.12.0.tar.gz"
       version="1.12.0"
       hash="sha256:e1ac2abb354fdc8ccdca71363ebad7503ad731c84022cf460837f0839e171718"
