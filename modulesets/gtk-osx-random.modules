@@ -26,6 +26,8 @@
               href="https://fossies.org/linux/misc/"/>
   <repository type="tarball" name="paguire" href="https://releases.pagure.org/"/>
   <repository type="tarball" name="pcre" href="https://ftp.pcre.org/pub/"/>
+  <repository type="tarball" name="iso-codes"
+      	      href="http://salsa.debian.org/iso-codes-team/iso-codes/-/archive/"/>
 
    <cmake id="graphviz">
     <branch module="4.0.0/graphviz-4.0.0.tar.bz2" version="4.0.0"
@@ -52,12 +54,14 @@ Libglade itself is deprecated. This is the last release. -->
   </autotools>
 
   <autotools id="vala" autogen-sh="configure">
-    <branch repo="ftp.gnome.org" version="0.36.1"
-            module="vala/0.36/vala-0.36.1.tar.xz"
-            hash="sha256:13f4a3f99d983bf76e8d9dd736021ecc95f53ec1f9582423aa4b4be87455aa07"/>
+    <branch repo="ftp.gnome.org" version="0.52.0"
+            module="vala/0.52/vala-0.52.0.tar.xz"
+            hash="sha256:1de26310db465aca525679d3b5a3c1d8db2e067c4cbc0e5ddd015cd938bac68b"/>
+    <dependencies>
+      <dep package="graphviz"/>
+    </dependencies>
     <after>
       <dep package="meta-gtk-osx-bootstrap"/>
-      <dep package="meta-gtk-osx-gtk3"/>
       <dep package="meta-gtk-osx-core"/>
     </after>
   </autotools>
@@ -299,6 +303,12 @@ Libglade itself is deprecated. This is the last release. -->
       <dep package="libffi"/>
       <dep package="bdw-gc"/>
     </dependencies>
+  </autotools>
+
+  <!-- Iso-codes >= 3.68 requires Python3, a dependency too far. -->
+  <autotools id="iso-codes" autogen-sh="configure">
+    <branch checkoutdir="iso-codes-iso-codes-3.67-080f941e075fef791b22feae659e8a510f57fe2c" module="iso-codes-3.67/iso-codes-3.67.tar.bz2" version="3.67"
+	    repo="iso-codes"/>
   </autotools>
 
 </moduleset>
