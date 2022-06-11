@@ -4,13 +4,13 @@
 <moduleset>
 
   <repository type="tarball" name="ftp.gnome.org" default="yes"
-              href="http://ftp.gnome.org/pub/GNOME/sources/"/>
+              href="https://ftp.gnome.org/pub/GNOME/sources/"/>
   <repository type="tarball" name="cairographics.org"
-              href="http://cairographics.org/releases/"/>
+              href="https://cairographics.org/releases/"/>
   <repository type="tarball" name="python"
               href="https://www.python.org/ftp/python/"/>
   <repository type="tarball" name="oracle"
-	      href="http://download.oracle.com/"/>
+	      href="https://download.oracle.com/"/>
   <repository type="tarball" name="pymodules"
               href="https://pypi.python.org/packages/"/>
   <repository type="tarball" name="github-tarball"

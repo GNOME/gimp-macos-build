@@ -4,16 +4,16 @@
   <repository type="tarball" name="ftp.gnu.org"
               href="https://ftp.gnu.org/gnu/"/>
   <repository type="tarball" name="pkgconfig"
-              href="http://pkgconfig.freedesktop.org/releases/"/>
+              href="https://pkgconfig.freedesktop.org/releases/"/>
   <repository type="tarball" name="sourceforge"
-              href="http://downloads.sourceforge.net/sourceforge/"/>
+              href="https://downloads.sourceforge.net/sourceforge/"/>
   <repository type="tarball" name="tukaani.org"
-              href="http://tukaani.org/"/>
+              href="https://tukaani.org/"/>
   <repository type="tarball" name="cmake"
               href="https://cmake.org/files/"/>
-  <repository type="tarball" name="cpan" href="http://search.cpan.org/CPAN/" />
+  <repository type="tarball" name="cpan" href="https://search.cpan.org/CPAN/" />
   <repository type="tarball" name="intltool"
-              href="http://launchpad.net/intltool/trunk/"/>
+              href="https://launchpad.net/intltool/trunk/"/>
   <repository type="tarball" name="github-tarball" href="https://github.com/"/>
   <repository type="git" name="github" href="https://git@github.com/"/>
 

@@ -2,15 +2,15 @@
 <!DOCTYPE moduleset SYSTEM "moduleset.dtd">
 <?xml-stylesheet type="text/xsl" href="moduleset.xsl"?>
 <moduleset>
-  <repository type="tarball" name="ftp.gnome.org" default="yes" href="http://ftp.gnome.org/pub/GNOME/sources/"/>
+  <repository type="tarball" name="ftp.gnome.org" default="yes" href="https://ftp.gnome.org/pub/GNOME/sources/"/>
   <repository type="tarball" name="gimp" href="https://download.gimp.org/pub/"/>
   <repository type="git" name="git.gnome.org" href="https://gitlab.gnome.org/GNOME"/>
   <repository type="git" name="git-jtojnar" href="https://gitlab.gnome.org/jtojnar/"/>
   <repository type="tarball" name="poppler.freedesktop.org" href="https://poppler.freedesktop.org/"/>
   <repository type="tarball" name="videolan" href="https://downloads.videolan.org/pub/videolan/x265/"/>
   <repository type="tarball" name="github-tarball" href="https://github.com/"/>
-  <repository type="tarball" name="sourceforge" href="http://downloads.sourceforge.net/sourceforge/"/>
-  <repository type="tarball" name="savannah" href="http://download.savannah.nongnu.org/releases/"/>
+  <repository type="tarball" name="sourceforge" href="https://downloads.sourceforge.net/sourceforge/"/>
+  <repository type="tarball" name="savannah" href="https://download.savannah.nongnu.org/releases/"/>
   <repository type="tarball" name="nasm" href="https://www.nasm.us/pub/nasm/releasebuilds/"/>
   <repository type="tarball" name="mirrorservice-ossp"
 	      href="https://www.mirrorservice.org/sites/ftp.ossp.org/pkg/lib/"/>

@@ -2,7 +2,7 @@
 <!DOCTYPE moduleset SYSTEM "moduleset.dtd">
 <?xml-stylesheet type="text/xsl" href="moduleset.xsl"?>
 <moduleset>
-  <repository type="tarball" name="fftw.org" href="http://www.fftw.org/" default="yes"/>
+  <repository type="tarball" name="fftw.org" href="https://www.fftw.org/" default="yes"/>
   <repository type="tarball" name="ftp.gnu.org" href="https://ftp.gnu.org/gnu/"/>
   <repository type="tarball" name="heasarc.gsfc.nasa.gov" href="https://heasarc.gsfc.nasa.gov/FTP/software/"/>
   <repository type="tarball" name="github.com" href="https://github.com/"/>
