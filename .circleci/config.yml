@@ -45,7 +45,7 @@ commands:
     steps:
         - restore_cache:
             keys:
-              - 1-jhbuild-v3-v4
+              - 1-jhbuild-v3-v5
               - 1-jhbuild-v3-
         - run:
             name: Setup JHBuild
@@ -63,7 +63,7 @@ commands:
               - ~/.new_local
               - ~/gtk
               - ~/.config
-            key: 1-jhbuild-v3-v4
+            key: 1-jhbuild-v3-v5
 
   get-cached-data:
     steps:
