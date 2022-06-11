@@ -46,7 +46,7 @@ commands:
     steps:
         - restore_cache:
             keys:
-              - jhbreak2-jhbuild-v2-10-v1
+              - jhbreak2-jhbuild-v2-10-v2
               - jhbreak2-jhbuild-v2-10-
         - run:
             name: Setup JHBuild
@@ -68,7 +68,7 @@ commands:
               - ~/.new_local
               - ~/gtk
               - ~/.config
-            key: jhbreak2-jhbuild-v2-10-v1
+            key: jhbreak2-jhbuild-v2-10-v2
 
   get-cached-data:
     steps:
