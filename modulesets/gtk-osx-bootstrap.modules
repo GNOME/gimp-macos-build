@@ -69,7 +69,9 @@
              autogenargs='--libdir="$JHBUILD_LIBDIR" --with-python'>
     <branch version="2.9.11" module="libxml2-2.9.11.tar.gz"
             hash="sha256:886f696d5d5b45d780b2880645edf9e0c62a4fd6841b853e824ada4e02b4d331"
-	    repo="xmlsoft.org"/>
+	          repo="xmlsoft.org">
+      <patch file="libxml2-dynamic_lookup-11.patch" strip="1"/>
+    </branch>
     <after>
       <dep package="python3"/>
       <dep package="python2"/>
