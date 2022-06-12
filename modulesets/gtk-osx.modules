@@ -23,9 +23,8 @@
   <repository type="git" name="github" href="https://git@github.com/"/>
   <repository type="tarball" name="github-tarball" href="https://github.com/"/>
   <repository type="system" name="system"/>
-  <repository type="git" name="lukaso.git.gnome.org"
-              href="https://gitlab.gnome.org/lukaso/"/>
-
+  <repository type="git" name="gtk.git"
+              href="https://gitlab.gnome.org/GNOME/"/>
 
   <!-- This module set works a bit differently than for example the
        GNOME ones do. It's split up in seperate pieces:
@@ -279,22 +278,8 @@
 
   <!-- gtk3 is in maintenance mode with 3.24 the final release series. -->
   <meson id="gtk+-3.0" mesonargs="-Dtests=false">
-    <!-- <branch module="gtk.git" revision="gtk-3-24-dev" repo="lukaso.git.gnome.org"/> -->
-    <branch module="gtk+/3.24/gtk+-3.24.31.tar.xz" version="3.24.31"
-            hash="sha256:423c3e7fdb4c459ee889e35fd4d71fd2623562541c1041b11c07e5ad1ff10bf9">
-      <!-- Unbelievably, there is a file missing from this tarball -->
-      <patch file="gtk+-3.24.31-add-missing-file.patch" strip="1"/>
-      <!-- This patch catches up to cae257c9 on gtk-3-24 branch -->
-      <patch file="gtk+-3.24.31-post-commits.patch" strip="1"/>
-      <!-- This patch is in MR https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/4305 -->
-      <patch file="gtk+-3.24.31-fix-offscreen-windows.patch" strip="1"/>
-      <!-- Use cairo_image_surfaces for most drawing. Once
-           https://gitlab.gnome.org/GNOME/gtk/-/issues/3714 is closed, this can be removed -->
-      <patch file="gtk-3.24.31-use-cairo-surface-for-drawing.patch" strip="1"/>
-      <patch file="gtk3-gdk-in-Quartz-send-expose-events-for-individual-dama.patch" strip="1"/>
-      <patch file="gtk3-gdk-do-not-draw-contents-outside-the-rect-passed-by-.patch" strip="1"/>
-      <patch file="gtk+-3.24.31-bad-screen.patch" strip="1"/>
-    </branch>
+    <branch repo="gtk.git" module="gtk.git" branch="gtk-3-24"
+            tag="09dd73feeb8acce7d562c1f3d263db991caeacac"/>
     <dependencies>
       <dep package="glib"/>
       <dep package="pango"/>
