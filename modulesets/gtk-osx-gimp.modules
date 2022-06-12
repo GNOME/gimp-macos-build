@@ -88,9 +88,8 @@
   <autotools id="gimp" autogen-sh="autogen.sh" autogenargs="--without-x --with-build-id=org.gimp.GIMP_official --with-revision=0">
     <branch module="gimp.git"
             revision="gimp-2-10"
+            tag="GIMP_2_10_32"
             repo="git.gnome.org"/>
-      <!-- fix wrong position on the printing dialog on macOS.  -->
-      <!-- <patch file="https://gitlab.gnome.org/GNOME/gimp/merge_requests/205.patch" strip="1"/> -->
     <after>
       <dep package="meta-gtk-osx-bootstrap"/>
       <dep package="meta-gtk-osx-core"/>
