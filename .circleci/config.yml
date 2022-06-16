@@ -91,6 +91,7 @@ jobs:
   build-env:
     macos:
         xcode: "13.1.0"
+        resource_class: macos.x86.medium.gen2
 
     steps:
         - setup
@@ -99,6 +100,7 @@ jobs:
   bootstrap:
     macos:
         xcode: "13.1.0"
+        resource_class: macos.x86.medium.gen2
 
     steps:
         - setup
@@ -119,6 +121,7 @@ jobs:
   dependencies-part1:
     macos:
         xcode: "13.1.0"
+        resource_class: macos.x86.medium.gen2
 
     steps:
         - setup
@@ -140,6 +143,7 @@ jobs:
   dependencies-part2:
     macos:
         xcode: "13.1.0"
+        resource_class: macos.x86.medium.gen2
 
     steps:
         - setup
@@ -162,6 +166,7 @@ jobs:
   dependencies-babl-gegl:
     macos:
         xcode: "13.1.0"
+        resource_class: macos.x86.medium.gen2
 
     steps:
         - setup
@@ -174,6 +179,7 @@ jobs:
   build-gimp-2-10-and-package:
     macos:
         xcode: "13.1.0"
+        resource_class: macos.x86.medium.gen2
 
     steps:
         - setup
