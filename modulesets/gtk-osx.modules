@@ -113,7 +113,7 @@
        then build harfbuzz without cairo because cairo requires
        harfbuzz. -->
   <meson id="freetype-no-harfbuzz" mesonargs="-Dbzip2=disabled -Dharfbuzz=disabled">
-    <branch module="freetype/freetype-2.11.1.tar.gz" version="2.11.1"
+    <branch module="freetype/freetype-2.12.1.tar.gz" version="2.12.1"
             repo="savannah"/>
     <dependencies>
       <dep package="zlib"/>
@@ -133,7 +133,7 @@
   </meson>
 
   <meson id="freetype" mesonargs="-Dbzip2=disabled">
-    <branch module="freetype/freetype-2.11.1.tar.gz" version="2.11.1"
+    <branch module="freetype/freetype-2.12.1.tar.gz" version="2.12.1"
             repo="savannah"/>
     <dependencies>
       <dep package="harfbuzz-no-cairo"/>
