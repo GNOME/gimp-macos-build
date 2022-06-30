@@ -31,8 +31,8 @@
             hash="sha256:80bf925f571da436b35210886cf79f6eb5fa5d6c571316b73568343451f77a19"
             /> -->
   <autotools id="python3" autogenargs="--enable-shared" autogen-sh="configure">
-    <branch repo="python" module="3.9.12/Python-3.9.12.tar.xz" version="3.9.12"
-            hash="sha256:2cd94b20670e4159c6d9ab57f91dbf255b97d8c1a1451d1c35f4ec1968adf971"
+    <branch repo="python" module="3.9.13/Python-3.9.13.tar.xz" version="3.9.13"
+            hash="sha256:125b0c598f1e15d2aa65406e83f792df7d171cdf38c16803b149994316a3080f"
             />
     <dependencies>
       <dep package='readline'/>
