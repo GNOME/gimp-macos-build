@@ -36,33 +36,17 @@
   </autotools>
 
   <!-- Rudely demands TeX to build documentation -->
-  <!-- libnettle 3.7 doesn't have arm64 assembler support and the support that's added in master is for arm-64-neutron that's incompatible with Apple Silicon. -->
-  <if condition-set="arm64">
-    <autotools id="libnettle" autogen-sh="configure"
-               autogenargs="--disable-documentation --disable-assembler">
-      <branch repo="ftp.gnu.org" version="3.7.3"
-              module="nettle/nettle-3.7.3.tar.gz"
-              hash="sha256:661f5eb03f048a3b924c3a8ad2515d4068e40f67e774e8a26827658007e3bcf0">
-      </branch>
-      <dependencies>
-        <dep package="gmp"/>
-        <dep package="openssl"/>
-      </dependencies>
-    </autotools>
-  </if>
-  <if condition-unset="arm64">
-    <autotools id="libnettle" autogen-sh="configure"
-               autogenargs="--disable-documentation">
-      <branch repo="ftp.gnu.org" version="3.7.3"
-              module="nettle/nettle-3.7.3.tar.gz"
-              hash="sha256:661f5eb03f048a3b924c3a8ad2515d4068e40f67e774e8a26827658007e3bcf0">
-      </branch>
-      <dependencies>
-        <dep package="gmp"/>
-        <dep package="openssl"/>
-      </dependencies>
-    </autotools>
-  </if>
+  <autotools id="nettle" autogen-sh="configure"
+              autogenargs="--disable-documentation">
+    <branch repo="ftp.gnu.org" version="3.8"
+            module="nettle/nettle-3.8.tar.gz"
+            hash="sha256:7576c68481c198f644b08c160d1a4850ba9449e308069455b5213319f234e8e6">
+    </branch>
+    <dependencies>
+      <dep package="gmp"/>
+      <dep package="openssl"/>
+    </dependencies>
+  </autotools>
 
   <autotools id="libtasn1" autogen-sh="configure">
     <branch repo="ftp.gnu.org" version="4.17.0"
@@ -99,7 +83,7 @@
         <patch file="gnutls-3.7.4-patch-lib-accelerated-aarch64-Makefile.am.patch" strip="1"/>
       </branch>
       <dependencies>
-        <dep package="libnettle"/>
+        <dep package="nettle"/>
         <dep package="libtasn1"/>
         <dep package="libbrotli"/>
         <dep package="zlib"/>
