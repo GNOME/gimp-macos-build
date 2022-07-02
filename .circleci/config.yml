@@ -127,7 +127,7 @@ jobs:
         - run:
             name: Build GIMP dependencies part 1 (without gegl/babl)
             command: |
-              source ~/.profile && jhbuild build suitesparse lcms libunistring gmp libnettle libtasn1 gnutls libjpeg readline python2 glib-networking openjpeg  gtk-mac-integration-gtk2 poppler poppler-data
+              source ~/.profile && jhbuild build suitesparse lcms libunistring gmp nettle libtasn1 gnutls libjpeg readline python2 glib-networking openjpeg  gtk-mac-integration-gtk2 poppler poppler-data
               source ~/.profile && jhbuild build json-glib p2tc exiv2 gexiv2 ilmbase openexr libwebp libcroco librsvg-24 json-c
         - run:
             name: Cleanup

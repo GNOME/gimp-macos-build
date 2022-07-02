@@ -204,7 +204,7 @@ echo "*** Cleanup"
 find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
 
 echo "*** Build GIMP dependencies part 1 (without gegl/babl)"
-source ~/.profile && jhbuild build suitesparse lcms libunistring gmp libnettle libtasn1 gnutls libjpeg readline python2 glib-networking openjpeg  gtk-mac-integration-gtk2 poppler poppler-data
+source ~/.profile && jhbuild build suitesparse lcms libunistring gmp nettle libtasn1 gnutls libjpeg readline python2 glib-networking openjpeg  gtk-mac-integration-gtk2 poppler poppler-data
 source ~/.profile && jhbuild build json-glib p2tc exiv2 gexiv2 ilmbase openexr libwebp libcroco librsvg-24 json-c
 echo "*** Cleanup"
 find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
