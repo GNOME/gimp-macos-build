@@ -5,6 +5,7 @@
   <repository type="tarball" name="ftp.gnome.org" default="yes" href="https://ftp.gnome.org/pub/GNOME/sources/"/>
   <repository type="tarball" name="gimp" href="https://download.gimp.org/pub/"/>
   <repository type="git" name="git.gnome.org" href="https://gitlab.gnome.org/GNOME"/>
+  <repository type="git" name="lukaso.git.gnome.org" href="https://gitlab.gnome.org/lukaso"/>
   <repository type="git" name="git-jtojnar" href="https://gitlab.gnome.org/jtojnar/"/>
   <repository type="tarball" name="poppler.freedesktop.org" href="https://poppler.freedesktop.org/"/>
   <repository type="tarball" name="videolan" href="https://downloads.videolan.org/pub/videolan/x265/"/>
@@ -68,8 +69,8 @@
   <!-- tag="git sha" is also allowed -->
   <meson id="gimp299" mesonargs="-Dbuild-id=org.gimp.GIMP_official -Drevision=0">
     <branch module="gimp.git"
-            revision="master"
-            repo="git.gnome.org"/>
+            revision="remove-rate-limit"
+            repo="lukaso.git.gnome.org"/>
     <after>
       <dep package="meta-gtk-osx-bootstrap"/>
       <dep package="meta-gtk-osx-gtk3"/>
