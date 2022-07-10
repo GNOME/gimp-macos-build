@@ -71,7 +71,7 @@ brew update
 
 patch -p1 < ~/project/patches/homebrew-support-setting-os.patch
 
-brew tap --force-auto-update lukaso/homebrew-gimp https://gitlab.gnome.org/lukaso/homebrew-gimp.git
+brew tap --force-auto-update infrastructure/homebrew-gimp https://gitlab.gnome.org/Infrastructure/gimp-macos-build.git
 
 # for some reason doesn't auto install. Appears to be related to a source installation
 # requiring a source installation that then requires subversion.
