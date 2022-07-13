@@ -57,7 +57,7 @@ class Gimp3 < Formula
   depends_on "openexr"
   depends_on "openjpeg"
   depends_on "pango"
-  depends_on "poppler"
+  depends_on "poppler-slim"
   depends_on "py3cairo"
   depends_on "pygobject3"
   depends_on "python@3.9"
