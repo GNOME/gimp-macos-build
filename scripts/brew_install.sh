@@ -28,21 +28,34 @@ PREFIX=$HOME/homebrew
 
 if [ ! -d "$PREFIX" ]
 then
-  mkdir -p $PREFIX && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
+  mkdir -p $PREFIX && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C "${PREFIX}"
 fi
 
-echo 'export MACOSX_DEPLOYMENT_TARGET=11.3' > $PREFIX/.profile
-echo 'export HOMEBREW_MACOS_VERSION=11.3' > $PREFIX/.profile
-
-echo "*** Setup 11.3 SDK"
-
-pushd /Library/Developer/CommandLineTools/SDKs
-if [ ! -d "MacOSX11.3.sdk" ]
-then
-    sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz' | sudo tar -xzf -
+if [ "$build_arm64" = true ] ; then
+    echo "*** Setup 11.3 SDK"
+    cd /Library/Developer/CommandLineTools/SDKs
+    if [ ! -d "MacOSX11.3.sdk" ]
+    then
+        sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz' | sudo tar -xzf -
+    fi
+    echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk' > $PREFIX/.profile
+    echo 'export MACOSX_DEPLOYMENT_TARGET=11.3' >> $PREFIX/.profile
+    echo 'export HOMEBREW_MACOS_VERSION=11.3' >> $PREFIX/.profile
+    echo 'export GIMP_ARM64=true' >> $PREFIX/.profile
+else
+    echo "*** Setup 10.12 SDK"
+    cd /Library/Developer/CommandLineTools/SDKs
+    if [ ! -d "MacOSX10.12.sdk" ]
+    then
+        sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX10.12.sdk.tar.xz' | sudo tar -xzf -
+    fi
+    echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.12.sdk' > $PREFIX/.profile
+    echo 'export MACOSX_DEPLOYMENT_TARGET=10.12' >> $PREFIX/.profile
+    echo 'export HOMEBREW_MACOS_VERSION=10.12' >> $PREFIX/.profile
+    # Removes /usr/include being added to CFLAGS on 10.12 (no idea why)
+    # Needed in order to build `poppler` and `poppler-slim`
+    echo 'export PKG_CONFIG_SYSTEM_INCLUDE_PATH=/usr/include' >> $PREFIX/.profile
 fi
-popd
-echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk' >> $PREFIX/.profile
 
 # remove existing brew from path
 if BREWLOC=$(which brew); then
@@ -73,6 +86,16 @@ patch -p1 < ~/project/patches/homebrew-support-setting-os.patch
 
 brew tap --force-auto-update infrastructure/homebrew-gimp https://gitlab.gnome.org/Infrastructure/gimp-macos-build.git
 
+# probably not needed. Will have to test full install
+#ensure it has the right system path
+# brew reinstall pkg-config
+
+# saves some hassle with repos if git secrets is configured
+brew install -s git-secrets
+
 # for some reason doesn't auto install. Appears to be related to a source installation
 # requiring a source installation that then requires subversion.
-brew install -s subversion
+# Won't build under 10.12
+HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install subversion
+HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install doxygen
+

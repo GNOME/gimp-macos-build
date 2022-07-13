@@ -15,3 +15,17 @@ index cbe08846a..da398631a 100644
 +  fi
    # Don't change this from Mac OS X to match what macOS itself does in Safari on 10.12
    HOMEBREW_OS_USER_AGENT_VERSION="Mac OS X ${HOMEBREW_MACOS_VERSION}"
+
+diff --git a/Library/Homebrew/os/mac.rb b/Library/Homebrew/os/mac.rb
+index 5f422450e..2f0294d9c 100644
+--- a/Library/Homebrew/os/mac.rb
++++ b/Library/Homebrew/os/mac.rb
+@@ -88,8 +88,6 @@ module OS
+       if MacOS::CLT.installed?
+         # If there's no CLT SDK, return false
+         return false unless MacOS::CLT.provides_sdk?
+-        # If the CLT is installed and headers are provided by the system, return false
+-        return false unless MacOS::CLT.separate_header_package?
+       end
+
+       true
