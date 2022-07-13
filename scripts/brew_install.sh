@@ -86,6 +86,8 @@ patch -p1 < ~/project/patches/homebrew-support-setting-os.patch
 
 brew tap --force-auto-update infrastructure/homebrew-gimp https://gitlab.gnome.org/Infrastructure/gimp-macos-build.git
 
+~/project/scripts/brew_set_tap_branch.sh
+
 # probably not needed. Will have to test full install
 #ensure it has the right system path
 # brew reinstall pkg-config
