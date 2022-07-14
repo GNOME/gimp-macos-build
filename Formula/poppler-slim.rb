@@ -82,14 +82,11 @@ class PopplerSlim < Formula
       [
         "#{lib}/libpoppler-cpp.dylib",
         "#{lib}/libpoppler-glib.dylib",
-        "#{lib}/libpoppler-qt#{Formula["qt"].version.major}.dylib",
         *Dir["#{bin}/*"],
       ].each do |f|
-        if File.exist?(f)
           macho = MachO.open(f)
           macho.change_dylib("@rpath/#{libpoppler}", "#{opt_lib}/#{libpoppler}")
           macho.write!
-        end
       end
     end
   end

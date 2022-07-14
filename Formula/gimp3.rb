@@ -66,6 +66,9 @@ class Gimp3 < Formula
   depends_on "x265"
   depends_on "xmlto"
 
+  # May not fix anything, but keep it for now
+  patch :DATA
+
   def install
     ### Temporary Fix ###
     # Temporary fix for a meson bug
@@ -110,3 +113,51 @@ class Gimp3 < Formula
     system "./test"
   end
 end
+
+__END__
+diff --git a/meson.build b/meson.build
+index f29e9eacd8..63a81d9190 100644
+--- a/meson.build
++++ b/meson.build
+@@ -794,10 +794,8 @@ conf.set('HAVE_WEBKIT', get_option('webkit-unmaintained'))
+
+ poppler_minver = '0.69.0'
+ poppler_data_minver = '0.4.9'
+-poppler = [
+-  dependency('poppler-glib', version: '>='+poppler_minver),
+-  dependency('poppler-data', version: '>='+poppler_data_minver),
+-]
++poppler_glib = dependency('poppler-glib', version: '>='+poppler_minver)
++poppler_data = dependency('poppler-data', version: '>='+poppler_data_minver)
+
+ cairopdf_minver = '1.12.2'
+ cairopdf = dependency('cairo-pdf', version: '>='+cairopdf_minver,
+diff --git a/plug-ins/common/meson.build b/plug-ins/common/meson.build
+index a2e50069ab..1907d3629c 100644
+--- a/plug-ins/common/meson.build
++++ b/plug-ins/common/meson.build
+@@ -36,14 +36,14 @@ common_plugins_list = [
+   { 'name': 'file-gif-save', },
+   { 'name': 'file-gih', },
+   { 'name': 'file-glob',
+-    'deps': [ gtk3, gegl, gdk_pixbuf, cairo,  ],
++    'deps': [ gtk3, gegl, gdk_pixbuf, cairo, poppler_glib, poppler_data, ],
+   },
+   { 'name': 'file-header', },
+   { 'name': 'file-html-table', },
+   { 'name': 'file-pat', },
+   { 'name': 'file-pcx', },
+   { 'name': 'file-pdf-load',
+-    'deps': [ gtk3, gegl, gdk_pixbuf, poppler ],
++    'deps': [ gtk3, gegl, gdk_pixbuf, poppler_glib, poppler_data, ],
+   },
+   { 'name': 'file-pix', },
+   { 'name': 'file-png',
+@@ -124,7 +124,7 @@ endif
+
+ if cairopdf.found()
+   common_plugins_list += { 'name': 'file-pdf-save',
+-    'deps': [ gtk3, gegl, gdk_pixbuf, poppler, cairo, cairopdf ],
++    'deps': [ gtk3, gegl, gdk_pixbuf, poppler_glib, poppler_data, cairo, cairopdf ],
+   }
+ endif
