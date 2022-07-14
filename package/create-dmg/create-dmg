@@ -11,6 +11,9 @@ CDMG_VERSION='1.1.0'
 # (This will be set up by code later in the script.)
 CDMG_SUPPORT_DIR=""
 
+OS_FULL_VERSION="$(sw_vers | sed -n 2p | cut -d : -f 2 | tr -d '[:space:]' | cut -c1-)"
+OS_MAJOR_VERSION="$(echo $OS_FULL_VERSION | cut -d . -f 1)"
+OS_MINOR_VERSION="$(echo $OS_FULL_VERSION | cut -d . -f 2)"
 WINX=10
 WINY=60
 WINW=500
@@ -280,7 +283,12 @@ function blocks_to_megabytes() {
 
 function get_size() {
 	# Get block size in disk
-	bytes_size=$(du -s "$1" | sed -e 's/	.*//g')
+	if [[ $OS_MAJOR_VERSION -ge 12 ]]; then
+		bytes_size=$(du -B 512 -s "$1")
+	else
+		bytes_size=$(du -s "$1")
+	fi
+	bytes_size=$(echo $bytes_size | sed -e 's/	.*//g')
 	echo $(blocks_to_megabytes $bytes_size)
 }
 
