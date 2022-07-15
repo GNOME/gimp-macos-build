@@ -27,5 +27,7 @@ set -e;
 
 PREFIX=$HOME/homebrew
 
+source ${PREFIX}/.profile
+
 brew uninstall gimp3 || true
 brew install -s gimp3
