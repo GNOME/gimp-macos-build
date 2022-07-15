@@ -41,7 +41,7 @@ then
     pushd "${PREFIX}/Library/Taps/infrastructure/homebrew-gimp"
     git stash
     git co $CURRENT_BRANCH
-    git stash pop
+    git stash pop || true
     popd
   else
     echo "ERROR: cannot switch to current branch as tap does not exist"

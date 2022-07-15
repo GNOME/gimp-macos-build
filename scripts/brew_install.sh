@@ -93,11 +93,16 @@ brew tap --force-auto-update infrastructure/homebrew-gimp https://gitlab.gnome.o
 # brew reinstall pkg-config
 
 # saves some hassle with repos if git secrets is configured
+echo "***Installing git-secrets"
 brew install -s git-secrets
 
 # for some reason doesn't auto install. Appears to be related to a source installation
 # requiring a source installation that then requires subversion.
 # Won't build under 10.12
+echo "***Installing subversion"
+brew install --only-dependencies -s subversion
 HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install subversion
+echo "***Installing doxygen"
+brew install --only-dependencies -s doxygen
 HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install doxygen
 
