@@ -31,6 +31,14 @@ then
   mkdir -p $PREFIX && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C "${PREFIX}"
 fi
 
+if [[ $(uname -m) == 'arm64' ]]; then
+  build_arm64=true
+  echo "*** Build: arm64"
+else
+  build_arm64=false
+  echo "*** Build: x86_64"
+fi
+
 if [ "$build_arm64" = true ] ; then
     echo "*** Setup 11.3 SDK"
     cd /Library/Developer/CommandLineTools/SDKs
