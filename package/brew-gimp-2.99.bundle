@@ -18,8 +18,8 @@
          app. If you leave out the path, the current directory is
          used. Note the usage of an environment variable here again.
     -->
-    <prefix name="gimp-cellar">${env:GIMP_CELLAR}</prefix>
-    <prefix name="icu">${env:JHBUILD_PREFIX}/Cellar/icu4c/70.1</prefix>
+    <!-- <prefix name="gimp-cellar">${env:GIMP_CELLAR}</prefix>
+    <prefix name="icu">${env:JHBUILD_PREFIX}/Cellar/icu4c/70.1</prefix> -->
 
     <destination overwrite="yes">${env:HOME}/brew-gimp299-osx-app</destination>
     <image>
@@ -54,7 +54,8 @@
   </binary>
   <!-- gimp additional binaries -->
   <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-console-2.99</binary>
-  <binary dest="${bundle}/Contents/MacOS">${prefix:gimp-cellar}/libexec/gimp-debug-tool-2.99</binary>
+  <!-- <binary dest="${bundle}/Contents/MacOS">${prefix:gimp-cellar}/libexec/gimp-debug-tool-2.99</binary> -->
+  <binary dest="${bundle}/Contents/MacOS">${env:GIMP_CELLAR}/libexec/gimp-debug-tool-2.99</binary>
   <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimptool-2.99</binary>
 
   <!-- Copy in Info.plist -->

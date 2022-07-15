@@ -25,6 +25,10 @@ cat info-2.99.plist.tmpl | sed "s|%VERSION%|${GIMP_VERSION}|g" > info-2.99.plist
 
 echo "Copying charset.alias"
 cp -f "/usr/lib/charset.alias" "${PREFIX}/lib/"
+
+echo "Brew link keg-only formulas"
+brew link --force icu4c
+
 echo "Creating bundle"
 $GTK_MAC_BUNDLER brew-gimp-2.99.bundle
 echo "Done creating bundle"
