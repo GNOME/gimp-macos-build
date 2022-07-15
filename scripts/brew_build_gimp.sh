@@ -30,4 +30,4 @@ PREFIX=$HOME/homebrew
 source ${PREFIX}/.profile
 
 brew uninstall gimp3 || true
-brew install -s gimp3
+brew install -s gimp3 || ~/project/scripts/brew_set_tap_branch.sh || brew install -s gimp3
