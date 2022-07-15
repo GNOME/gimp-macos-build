@@ -128,6 +128,17 @@ cp xdg-email ${PACKAGE_DIR}/GIMP-2.99.app/Contents/MacOS
 echo "Creating pyc files"
 python3.9 -m compileall -q ${PACKAGE_DIR}/GIMP-2.99.app
 
+echo "Fix adhoc signing (M1 Macs)"
+
+for file in $FILES
+do
+   error_message=$(/usr/bin/codesign -v "$file" 2>&1)
+   if [[ "${error_message}" == *"invalid signature"* ]]
+   then
+     /usr/bin/codesign --sign - --force --preserve-metadata=entitlements,requirements,flags,runtime "$file"
+   fi
+done
+
 echo "Signing libs"
 
 if [ -n "${codesign_subject}" ]
