@@ -38,6 +38,9 @@ BASEDIR=$(dirname "$0")
 #  target directory
 PACKAGE_DIR="${HOME}/brew-gimp299-osx-app"
 
+echo "Remove files in Cellar dir as they are duplicate"
+rm -rf ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/Cellar
+
 echo "Removing pathnames from the libraries and binaries"
 # fix permission for some libs
 find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources -name '*.dylib' -type f | xargs chmod 755
@@ -50,13 +53,19 @@ FILES=$(
 
 OLDPATH="${PREFIX}/"
 
+# Cellar/babl/0.1.92
+CELLAR_SUFFIX="Cellar/[-_+a-zA-Z0-9]+/[\.0-9]+/"
+CELLAR="${OLDPATH}${CELLAR_SUFFIX}"
+
 for file in $FILES
 do
-  install_name_tool -id "@rpath/$(basename $file)" $file
+  id_path=$(echo "$file" | sed -E "s|${PACKAGE_DIR}/GIMP-2.99.app/Contents/(Resources\|MacOS)/||")
+  echo "@rpath/"$id_path $file
+  install_name_tool -id "@rpath/"$id_path $file
   otool -L $file \
-   | grep "\t$OLDPATH" \
-   | sed "s|${OLDPATH}||" \
-   | awk -v fname="$file" -v old_path="$OLDPATH" '{print "install_name_tool -change "old_path $1" @rpath/"$1" "fname}' \
+   | grep -E "\t${CELLAR}" \
+   | awk -v fname="$file" -v cellar="${CELLAR}" \
+     '{start=$1; sub(cellar, "", $1); print "install_name_tool -change "start" @rpath/"$1" "fname}' \
    | bash
 done
 
@@ -64,7 +73,7 @@ echo "remove @rpath from the libraries"
 find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources -mindepth 1 -maxdepth 1 -perm +111 -type f \
    | xargs file \
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
-   | xargs -n1 install_name_tool -delete_rpath ${HOME}/gtk/inst/lib
+   | xargs -n1 install_name_tool -delete_rpath ${PREFIX}
 
 echo "adding @rpath to the binaries (incl special ghostscript 9.56 fix)"
 find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/MacOS/ -type f -perm +111 \
