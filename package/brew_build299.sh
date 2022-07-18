@@ -43,7 +43,7 @@ rm -rf ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/Cellar
 
 echo "Removing pathnames from the libraries and binaries"
 # fix permission for some libs
-find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources -name '*.dylib' -type f | xargs chmod 755
+find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources \( -name '*.dylib' -o -name '*.so' \) -type f | xargs chmod 755
 # getting list of the files to fix
 FILES=$(
   find ${PACKAGE_DIR}/GIMP-2.99.app -perm +111 -type f \
@@ -53,8 +53,9 @@ FILES=$(
 
 OLDPATH="${PREFIX}/"
 
-# Cellar/babl/0.1.92_5/
-CELLAR_SUFFIX="Cellar/([-_+a-zA-Z0-9]+)/[._0-9]+/"
+# Cellar/babl+something@3.9/0.1.92_5/
+# This regex is very fiddly, because of + and @ symbols and multiple regex engines
+CELLAR_SUFFIX="Cellar/([@+-_a-zA-Z0-9]+)/[._0-9]+/"
 CELLAR="${OLDPATH}${CELLAR_SUFFIX}"
 
 for file in $FILES
@@ -81,9 +82,9 @@ find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources -mindepth 1 -maxdepth 1 -p
    | xargs -n1 install_name_tool -delete_rpath ${PREFIX}
 
 echo "adding @rpath to the binaries (incl special ghostscript 9.56 fix)"
-find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/MacOS/ -type f -perm +111 \
+find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/MacOS -type f -perm +111 \
    | xargs file \
-   | grep ' Mach-O '|awk -F ':' '{print $1}' \
+   | grep ' Mach-O ' |awk -F ':' '{print $1}' \
    | xargs -n1 install_name_tool -add_rpath @executable_path/../Resources/ -change libgs.dylib.9.56 @rpath/libgs.dylib.9.56
 
 echo "adding @rpath to the plugins (incl special ghostscript 9.56 fix)"
