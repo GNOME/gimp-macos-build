@@ -30,6 +30,13 @@ echo "Brew link keg-only formulas"
 brew link --force icu4c
 
 echo "Creating bundle"
+if [[ -d ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/Frameworks/Python.framework/Versions/3.9/Resources/Python.app/Contents/Resources/share ]]
+then
+  echo "******got heree"
+  exit
+  # Causes trouble for the bundler
+  rm ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/Frameworks/Python.framework/Versions/3.9/Resources/Python.app/Contents/Resources/share
+fi
 $GTK_MAC_BUNDLER brew-gimp-2.99.bundle
 echo "Done creating bundle"
 
@@ -193,8 +200,8 @@ echo "Creating pyc files"
 python3.9 -m compileall -q ${PACKAGE_DIR}/GIMP-2.99.app
 
 echo "Symlink python resources"
-ln -s ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/Frameworks/Python.framework/Versions/3.9/Resources/Python.app/Contents/Resources/share \
-  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share
+ln -s ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share \
+  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/Frameworks/Python.framework/Versions/3.9/Resources/Python.app/Contents/Resources/share
 
 echo "Fix adhoc signing (M1 Macs)"
 for file in $FILES
