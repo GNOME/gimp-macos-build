@@ -41,6 +41,10 @@ PACKAGE_DIR="${HOME}/brew-gimp299-osx-app"
 echo "Remove files in Cellar dir as they are duplicate"
 rm -rf ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/Cellar
 
+echo "Copy python files"
+rm -rf "${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/Frameworks/"
+cp -r "${PREFIX}/Frameworks" "${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/"
+
 echo "Removing pathnames from the libraries and binaries"
 # fix permission for some libs
 find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources \( -name '*.dylib' -o -name '*.so' \) -type f | xargs chmod 755
@@ -57,12 +61,17 @@ OLDPATH="${PREFIX}/"
 # This regex is very fiddly, because of + and @ symbols and multiple regex engines
 CELLAR_SUFFIX="Cellar/([@+-_a-zA-Z0-9]+)/[._0-9]+/"
 CELLAR="${OLDPATH}${CELLAR_SUFFIX}"
+FRAMEWORKS="${OLDPATH}Cellar/.*/Frameworks/"
 
 for file in $FILES
 do
   id_path=$(echo "$file" | sed -E "s|${PACKAGE_DIR}/GIMP-2.99.app/Contents/(Resources\|MacOS)/||")
-  echo "@rpath/"$id_path $file
   install_name_tool -id "@rpath/"$id_path $file
+  otool -L $file \
+   | grep -E "\t$FRAMEWORKS" \
+   | gawk -v fname="$file" -v frameworks="${FRAMEWORKS}" \
+     '{print "install_name_tool -change "$1" @rpath/Frameworks/"gensub(frameworks, "\\1", "1", $1)" "fname}' \
+   | bash
   otool -L $file \
    | grep -E "\t${CELLAR}" \
    | gawk -v fname="$file" -v cellar="${CELLAR}" \
@@ -76,7 +85,7 @@ do
 done
 
 echo "remove @rpath from the libraries"
-find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources -mindepth 1 -maxdepth 1 -perm +111 -type f \
+find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources -mindepth 1 -perm +111 -type f \
    | xargs file \
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
    | xargs -n1 install_name_tool -delete_rpath ${PREFIX}
@@ -93,6 +102,12 @@ find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/plug-ins/ -p
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
    | xargs -n1 install_name_tool -add_rpath @executable_path/../../../../../ -change libgs.dylib.9.56 @rpath/libgs.dylib.9.56
 
+echo "adding @rpath to python app"
+install_name_tool -add_rpath @executable_path/../../../../../../../../ \
+  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/Frameworks/Python.framework/Versions/3.9/Resources/Python.app/Contents/MacOS/Python
+install_name_tool -add_rpath @executable_path/../../../../ \
+  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/Frameworks/Python.framework/Versions/3.9/Python
+
 echo "removing build path from the .gir files"
 find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/gir-1.0/*.gir \
    -exec sed -i '' "s|${OLDPATH}||g" {} +
@@ -102,8 +117,42 @@ find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/gir-1.0/*.gir \
    -exec sed -i '' "s|@rpath/||g" {} +
 
 echo "adding @rpath to the .gir files"
-find ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/gir-1.0/*.gir \
-   -exec sed -i '' 's|[a-z0-9/\._-]*.dylib|@rpath/&|g' {} +
+SEDDIR="${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/gir-1.0/"
+sed -i '' 's|\(libappstream-glib.8.dylib\)|@rpath/opt/appstream-glib/lib/\1|g' ${SEDDIR}/AppStreamGlib-1.0.gir
+sed -i '' 's|\(libatk-1.0.0.dylib\)|@rpath/opt/atk/lib/\1|g' ${SEDDIR}/Atk-1.0.gir
+sed -i '' 's|\(libbabl-0.1.0.dylib\)|@rpath/opt/babl/lib/\1|g' ${SEDDIR}/Babl-0.1.gir
+sed -i '' 's|\(libgexiv2.2.dylib\)|@rpath/opt/gexiv2/lib/\1|g' ${SEDDIR}/GExiv2-0.10.gir
+sed -i '' 's|\(libgirepository-1.0.1.dylib\)|@rpath/opt/gobject-introspection/lib/\1|g' ${SEDDIR}/GIRepository-2.0.gir
+sed -i '' 's|/Users/lukasoberhuber/homebrew/\(opt/glib/lib/libgobject-2.0.0.dylib\)|@rpath/\1|g' ${SEDDIR}/GL-1.0.gir
+sed -i '' 's|/Users/lukasoberhuber/homebrew/\(opt/glib/lib/libglib-2.0.0.dylib\)|@rpath/\1|g' ${SEDDIR}/GLib-2.0.gir
+sed -i '' 's|/Users/lukasoberhuber/homebrew/\(opt/glib/lib/libgmodule-2.0.0.dylib\)|@rpath/\1|g' ${SEDDIR}/GModule-2.0.gir
+sed -i '' 's|\(/Users/lukasoberhuber/homebrew/\(opt/glib/lib/libgobject-2.0.0.dylib\)\)|@rpath/\1|g' ${SEDDIR}/GObject-2.0.gir
+sed -i '' 's|\(libgdk-3.0.dylib\)|@rpath/opt/gtk+3-fixed/lib/\1|g' ${SEDDIR}/Gdk-3.0.gir
+sed -i '' 's|\(libgdk_pixbuf-2.0.0.dylib\)|@rpath/opt/gdk-pixbuf/lib/\1|g' ${SEDDIR}/GdkPixbuf-2.0.gir
+sed -i '' 's|\(libgdk_pixbuf-2.0.0.dylib\)|@rpath/opt/gdk-pixbuf/lib/\1|g' ${SEDDIR}/GdkPixdata-2.0.gir
+sed -i '' 's|\(libgegl-0.4.0.dylib\)|@rpath/opt/gegl-full/lib/\1|g' ${SEDDIR}/Gegl-0.4.gir
+sed -i '' 's|\(libgimp-3.0.0.dylib\)|@rpath/opt/gimp3/lib/\1|g' ${SEDDIR}/Gimp-3.0.gir
+sed -i '' 's|\(libgimpbase-3.0.0.dylib\)|@rpath/opt/gimp3/lib/\1|g' ${SEDDIR}/Gimp-3.0.gir
+sed -i '' 's|\(libgimpcolor-3.0.0.dylib\)|@rpath/opt/gimp3/lib/\1|g' ${SEDDIR}/Gimp-3.0.gir
+sed -i '' 's|\(libgimpconfig-3.0.0.dylib\)|@rpath/opt/gimp3/lib/\1|g' ${SEDDIR}/Gimp-3.0.gir
+sed -i '' 's|\(libgimpmath-3.0.0.dylib\)|@rpath/opt/gimp3/lib/\1|g' ${SEDDIR}/Gimp-3.0.gir
+sed -i '' 's|\(libgimpmodule-3.0.0.dylib\)|@rpath/opt/gimp3/lib/\1|g' ${SEDDIR}/Gimp-3.0.gir
+sed -i '' 's|\(libgimpui-3.0.0.dylib\)|@rpath/opt/gimp3/lib/\1|g' ${SEDDIR}/GimpUi-3.0.gir
+sed -i '' 's|\(libgimpwidgets-3.0.0.dylib\)|@rpath/opt/gimp3/lib/\1|g' ${SEDDIR}/GimpUi-3.0.gir
+sed -i '' 's|/Users/lukasoberhuber/homebrew/\(opt/glib/lib/libgio-2.0.0.dylib\)|@rpath/\1|g' ${SEDDIR}/Gio-2.0.gir
+sed -i '' 's|\(libgtk-3.0.dylib\)|@rpath/opt/gtk+3-fixed/lib/\1|g' ${SEDDIR}/Gtk-3.0.gir
+sed -i '' 's|\Users/lukasoberhuber/homebrew/Cellar/\(gtk-mac-integration-full\)/3.0.1\(/lib/libgtkmacintegration-gtk3.4.dylib\)|@rpath/opt/\1\2|g' ${SEDDIR}/GtkosxApplication-1.0.gir
+sed -i '' 's|\(libharfbuzz-gobject.0.dylib\)|@rpath/lib/\1|g' ${SEDDIR}/HarfBuzz-0.0.gir
+sed -i '' 's|\(libjson-glib-1.0.0.dylib\)|@rpath/opt/json-glib/lib/\1|g' ${SEDDIR}/Json-1.0.gir
+sed -i '' 's|\(libpango-1.0.0.dylib\)|@rpath/opt/pango/lib/\1|g' ${SEDDIR}/Pango-1.0.gir
+sed -i '' 's|\(libpangocairo-1.0.0.dylib\)|@rpath/opt/pango/lib/\1|g' ${SEDDIR}/PangoCairo-1.0.gir
+sed -i '' 's|\(libpangoft2-1.0.0.dylib\)|@rpath/opt/pango/lib/\1|g' ${SEDDIR}/PangoFT2-1.0.gir
+sed -i '' 's|\(libpangoft2-1.0.0.dylib\)|@rpath/opt/pango/lib/\1|g' ${SEDDIR}/PangoFc-1.0.gir
+sed -i '' 's|\(libpangoft2-1.0.0.dylib\)|@rpath/opt/pango/lib/\1|g' ${SEDDIR}/PangoOT-1.0.gir
+sed -i '' 's|\(libpoppler-glib.8.dylib\)|@rpath/opt/poppler-slim/lib/\1|g' ${SEDDIR}/Poppler-0.18.gir
+sed -i '' 's|\(libpoppler.122.dylib\)|@rpath/opt/poppler-slim/lib/\1|g' ${SEDDIR}/Poppler-0.18.gir
+sed -i '' 's|/Users/lukasoberhuber/homebrew/Cellar/\(librsvg\)/2.54.4\(/lib/librsvg-2.2.dylib\)|@rpath/opt/\1\2|g' ${SEDDIR}/Rsvg-2.0.gir
+sed -i '' 's|\(libcairo-gobject.2.dylib\)|@rpath/opt/cairo/lib/\1|g' ${SEDDIR}/cairo-1.0.gir
 
 echo "generating .typelib files with @rpath"
 find ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/gir-1.0/*.gir | while IFS= read -r pathname; do
@@ -143,8 +192,11 @@ cp xdg-email ${PACKAGE_DIR}/GIMP-2.99.app/Contents/MacOS
 echo "Creating pyc files"
 python3.9 -m compileall -q ${PACKAGE_DIR}/GIMP-2.99.app
 
-echo "Fix adhoc signing (M1 Macs)"
+echo "Symlink python resources"
+ln -s ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/Frameworks/Python.framework/Versions/3.9/Resources/Python.app/Contents/Resources/share \
+  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share
 
+echo "Fix adhoc signing (M1 Macs)"
 for file in $FILES
 do
    error_message=$(/usr/bin/codesign -v "$file" 2>&1)

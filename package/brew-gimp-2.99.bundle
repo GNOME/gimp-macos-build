@@ -68,12 +68,10 @@
   <binary>
     ${prefix}/lib/libgegl-sc-0.4.dylib
   </binary>
-  <!-- We have to pull in the python modules, which are mixed python
-       and loadable modules.  -->
-
-  <binary recurse="True">
-    ${prefix}/lib/python3.9/*.so
+  <binary>
+    ${prefix}/lib/libharfbuzz-gobject.0.dylib
   </binary>
+
   <binary>
     ${prefix}/lib/gio/modules
   </binary>
@@ -81,15 +79,13 @@
     ${prefix}/lib/python3.9/*.py
   </data>
 
-<!-- Might not be needed -->
-  <!-- <data>
-    ${prefix}/lib/python3.9/config-3.9-darwin/
-  </data> -->
-
-<!-- Might not be needed -->
-  <!-- <data>
-    ${prefix}/include/python3.9/pyconfig.h
-  </data> -->
+  <!-- These are used to copy in dependencies, in reality the whole dir struct needs to be copied in -->
+  <binary recurse="True">
+    ${prefix}/Frameworks/*
+  </binary>
+  <binary recurse="True">
+    ${prefix}/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-packages/*.so
+  </binary>
 
   <!-- Name of main gimp binary -->
   <main-binary>${prefix}/bin/gimp-2.99</main-binary>
