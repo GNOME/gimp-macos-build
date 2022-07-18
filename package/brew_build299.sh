@@ -53,8 +53,8 @@ FILES=$(
 
 OLDPATH="${PREFIX}/"
 
-# Cellar/babl/0.1.92
-CELLAR_SUFFIX="Cellar/[-_+a-zA-Z0-9]+/[\.0-9]+/"
+# Cellar/babl/0.1.92_5/
+CELLAR_SUFFIX="Cellar/([-_+a-zA-Z0-9]+)/[._0-9]+/"
 CELLAR="${OLDPATH}${CELLAR_SUFFIX}"
 
 for file in $FILES
@@ -64,8 +64,13 @@ do
   install_name_tool -id "@rpath/"$id_path $file
   otool -L $file \
    | grep -E "\t${CELLAR}" \
-   | awk -v fname="$file" -v cellar="${CELLAR}" \
-     '{start=$1; sub(cellar, "", $1); print "install_name_tool -change "start" @rpath/"$1" "fname}' \
+   | gawk -v fname="$file" -v cellar="${CELLAR}" \
+     '{print "install_name_tool -change "$1" @rpath/"gensub(cellar, "opt/\\1/", "1", $1)" "fname}' \
+   | bash
+  otool -L $file \
+   | grep "\t$OLDPATH" \
+   | sed "s|${OLDPATH}||" \
+   | awk -v fname="$file" -v old_path="$OLDPATH" '{print "install_name_tool -change "old_path $1" @rpath/"$1" "fname}' \
    | bash
 done
 
@@ -85,7 +90,7 @@ echo "adding @rpath to the plugins (incl special ghostscript 9.56 fix)"
 find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/plug-ins/ -perm +111 -type f \
    | xargs file \
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
-   | xargs -n1 install_name_tool -add_rpath @executable_path/../../../../ -change libgs.dylib.9.56 @rpath/libgs.dylib.9.56
+   | xargs -n1 install_name_tool -add_rpath @executable_path/../../../../../ -change libgs.dylib.9.56 @rpath/libgs.dylib.9.56
 
 echo "removing build path from the .gir files"
 find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/gir-1.0/*.gir \
