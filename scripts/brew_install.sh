@@ -114,4 +114,7 @@ HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install doxygen
 
 brew update
 
+# Required for building package/DMG
+brew install gawk
+
 ~/project/scripts/brew_set_tap_branch.sh
