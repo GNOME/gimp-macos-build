@@ -83,7 +83,6 @@ class Gimp3 < Formula
 
     mkdir "build" do
       system "meson", "--prefix=#{prefix}",
-                      "-Dvala-plugins=disabled",
                       "--libdir=#{lib}",
                       "-Dbuild-id=org.gimp.GIMP_official",
                       "-Drevision=0",
