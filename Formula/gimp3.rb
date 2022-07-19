@@ -31,6 +31,7 @@ class Gimp3 < Formula
   depends_on "ghostscript"
   depends_on "glib"
   depends_on "glib-networking"
+  depends_on "glib-utils"
   depends_on "gtk+3-fixed"
   depends_on "gtk-doc"
   depends_on "gtk-mac-integration-full"
@@ -161,3 +162,21 @@ index a2e50069ab..1907d3629c 100644
 +    'deps': [ gtk3, gegl, gdk_pixbuf, poppler_glib, poppler_data, cairo, cairopdf ],
    }
  endif
+
+ diff --git a/app/main.c b/app/main.c
+ index 2a0c41e23c..e6eaf3808d 100644
+ --- a/app/main.c
+ +++ b/app/main.c
+ @@ -400,12 +400,6 @@ gimp_macos_setenv (const char * progname)
+        tmp = g_strdup_printf ("%s/etc/fonts", res_dir);
+        g_setenv ("FONTCONFIG_PATH", tmp, TRUE);
+        g_free (tmp);
+ -      tmp = g_strdup_printf ("%s", res_dir);
+ -      g_setenv ("PYTHONHOME", tmp, TRUE);
+ -      g_free (tmp);
+ -      tmp = g_strdup_printf ("%s/lib/python3.9", res_dir);
+ -      g_setenv ("PYTHONPATH", tmp, TRUE);
+ -      g_free (tmp);
+        tmp = g_strdup_printf ("%s/lib/gio/modules", res_dir);
+        g_setenv ("GIO_MODULE_DIR", tmp, TRUE);
+        g_free (tmp);
