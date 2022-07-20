@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #####################################################################
- # brew_build_gimp.sh: builds gimp once dependecies have been       #
- #                     installed. Prereq, install dependencies      #
+ # brew_build_dmg.sh: Builds gimp3 dmg                              #
  #                                                                  #
  # Copyright 2022 Lukas Oberhuber <lukaso@gmail.com>                #
  #                                                                  #
@@ -25,9 +24,20 @@
 
 set -e;
 
-PREFIX=$HOME/homebrew
+if [[ $(uname -m) == 'arm64' ]]; then
+  build_arm64=true
+  echo "*** Build: arm64"
+  PREFIX=$HOME/homebrew
+else
+  build_arm64=false
+  echo "*** Build: x86_64"
+  PREFIX=$HOME/homebrew_x86_64
+fi
 
 source ${PREFIX}/.profile
 
-brew uninstall gimp3 || true
-brew install -s gimp3 || ~/project/scripts/brew_set_tap_branch.sh || brew install -s gimp3
+PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+
+pushd $PROJECT_DIR/package
+./brew_build299.sh debug
+popd

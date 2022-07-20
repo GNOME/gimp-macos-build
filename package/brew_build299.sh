@@ -2,12 +2,19 @@
 
 # set -e
 
-# if [ -z "${JHBUILD_LIBDIR}" ]
-# then
-#   echo "JHBUILD_LIBDIR undefined. Are you running inside jhbuild?"
-#   exit 2
-# fi
-PREFIX=$HOME/homebrew
+if [[ $(uname -m) == 'arm64' ]]; then
+  build_arm64=true
+  echo "*** Build: arm64"
+  PREFIX=$HOME/homebrew
+  #  target directory
+  export PACKAGE_DIR="${HOME}/brew-gimp299-osx-app"
+else
+  build_arm64=false
+  echo "*** Build: x86_64"
+  PREFIX=$HOME/homebrew_x86_64
+  #  target directory
+  export PACKAGE_DIR="${HOME}/brew-gimp299-osx-app-x86_64"
+fi
 export JHBUILD_PREFIX=${PREFIX}
 GTK_MAC_BUNDLER=${HOME}/.local/bin/gtk-mac-bundler
 
@@ -30,20 +37,10 @@ echo "Brew link keg-only formulas"
 brew link --force icu4c
 
 echo "Creating bundle"
-if [[ -d ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/Frameworks/Python.framework/Versions/3.9/Resources/Python.app/Contents/Resources/share ]]
-then
-  echo "******got heree"
-  exit
-  # Causes trouble for the bundler
-  rm ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/Frameworks/Python.framework/Versions/3.9/Resources/Python.app/Contents/Resources/share
-fi
 $GTK_MAC_BUNDLER brew-gimp-2.99.bundle
 echo "Done creating bundle"
 
 BASEDIR=$(dirname "$0")
-
-#  target directory
-PACKAGE_DIR="${HOME}/brew-gimp299-osx-app"
 
 echo "Remove files in Cellar dir as they are duplicate"
 rm -rf ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/Cellar
@@ -198,10 +195,6 @@ cp xdg-email ${PACKAGE_DIR}/GIMP-2.99.app/Contents/MacOS
 
 echo "Creating pyc files"
 python3.9 -m compileall -q ${PACKAGE_DIR}/GIMP-2.99.app
-
-echo "Symlink python resources"
-ln -s ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share \
-  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/Frameworks/Python.framework/Versions/3.9/Resources/Python.app/Contents/Resources/share
 
 echo "Fix adhoc signing (M1 Macs)"
 for file in $FILES

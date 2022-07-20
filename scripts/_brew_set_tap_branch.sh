@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #####################################################################
- # brew_build_dmg.sh: Builds gimp3 dmg                              #
+ # brew_set_tap_branch.sh: during development, sets homebrew-gimp   #
+ #                         branch to the current branch             #
  #                                                                  #
  # Copyright 2022 Lukas Oberhuber <lukaso@gmail.com>                #
  #                                                                  #
@@ -24,10 +25,35 @@
 
 set -e;
 
-PREFIX=$HOME/homebrew
+if [[ $(uname -m) == 'arm64' ]]; then
+  build_arm64=true
+  echo "*** Build: arm64"
+  PREFIX=$HOME/homebrew
+else
+  build_arm64=false
+  echo "*** Build: x86_64"
+  PREFIX=$HOME/homebrew_x86_64
+fi
 
-source ${PREFIX}/.profile
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-pushd ~/project/package
-./brew_build299.sh debug
+pushd $SCRIPT_DIR
+CURRENT_BRANCH=$(git branch --show-current)
 popd
+
+TAP_LOCATION="${PREFIX}/Library/Taps/infrastructure/homebrew-gimp"
+
+if [ "$CURRENT_BRANCH" != "master" ]
+then
+  if [ -d "${TAP_LOCATION}" ]
+  then
+    pushd "${PREFIX}/Library/Taps/infrastructure/homebrew-gimp"
+    git stash
+    git co $CURRENT_BRANCH
+    git stash pop || true
+    popd
+  else
+    echo "ERROR: cannot switch to current branch as tap does not exist"
+    exit 1
+  fi
+fi

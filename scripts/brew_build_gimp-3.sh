@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #####################################################################
- # macports_uninstall.sh: uninstalls homebrew                       #
+ # brew_build_gimp.sh: builds gimp once dependecies have been       #
+ #                     installed. Prereq, install dependencies      #
  #                                                                  #
  # Copyright 2022 Lukas Oberhuber <lukaso@gmail.com>                #
  #                                                                  #
@@ -24,6 +25,19 @@
 
 set -e;
 
-PREFIX=$HOME/homebrew
-rm -rf $PREFIX
-rm -rf $HOME/Library/Caches/Homebrew
+if [[ $(uname -m) == 'arm64' ]]; then
+  build_arm64=true
+  echo "*** Build: arm64"
+  PREFIX=$HOME/homebrew
+else
+  build_arm64=false
+  echo "*** Build: x86_64"
+  PREFIX=$HOME/homebrew_x86_64
+fi
+
+PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+
+source ${PREFIX}/.profile
+
+brew uninstall gimp3 2>/dev/null || true
+brew install -s gimp3 || $PROJECT_DIR/scripts/_brew_set_tap_branch.sh || brew install -s gimp3

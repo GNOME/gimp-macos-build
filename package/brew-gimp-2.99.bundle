@@ -17,7 +17,7 @@
          app. If you leave out the path, the current directory is
          used. Note the usage of an environment variable here again.
     -->
-    <destination overwrite="yes">${env:HOME}/brew-gimp299-osx-app</destination>
+    <destination overwrite="yes">${env:PACKAGE_DIR}</destination>
     <image>
       <!-- Not implemented yet (DMG image). -->
     </image>

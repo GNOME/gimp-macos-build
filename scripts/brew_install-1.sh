@@ -24,19 +24,21 @@
 
 set -e;
 
-PREFIX=$HOME/homebrew
+if [[ $(uname -m) == 'arm64' ]]; then
+  build_arm64=true
+  echo "*** Build: arm64"
+  PREFIX=$HOME/homebrew
+else
+  build_arm64=false
+  echo "*** Build: x86_64"
+  PREFIX=$HOME/homebrew_x86_64
+fi
+
+PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 if [ ! -d "$PREFIX" ]
 then
   mkdir -p $PREFIX && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C "${PREFIX}"
-fi
-
-if [[ $(uname -m) == 'arm64' ]]; then
-  build_arm64=true
-  echo "*** Build: arm64"
-else
-  build_arm64=false
-  echo "*** Build: x86_64"
 fi
 
 if [ "$build_arm64" = true ] ; then
@@ -81,7 +83,7 @@ if BREWLOC=$(which brew); then
 fi
 
 # Add new brew to path
-echo "export PATH='$HOME/homebrew/bin:$HOME/homebrew/sbin:$PATH'" >> $PREFIX/.profile
+echo "export PATH='$PREFIX/bin:$PREFIX/sbin:$PATH'" >> $PREFIX/.profile
 echo 'unset HOMEBREW_PREFIX' >> $PREFIX/.profile
 echo 'unset HOMEBREW_CELLAR' >> $PREFIX/.profile
 echo 'unset HOMEBREW_REPOSITORY' >> $PREFIX/.profile
@@ -90,7 +92,7 @@ cd $PREFIX
 source .profile
 brew update
 
-patch -p1 < ~/project/patches/homebrew-support-setting-os.patch
+patch -p1 < $PROJECT_DIR/patches/homebrew-support-setting-os.patch || true
 
 brew tap --force-auto-update infrastructure/homebrew-gimp https://gitlab.gnome.org/Infrastructure/gimp-macos-build.git
 
@@ -105,16 +107,19 @@ brew install -s git-secrets
 # for some reason doesn't auto install. Appears to be related to a source installation
 # requiring a source installation that then requires subversion.
 # Won't build under 10.12
-echo "***Installing subversion"
+echo "***Installing subversion (for netpbm)"
 brew install --only-dependencies -s subversion
 HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install subversion
-echo "***Installing doxygen"
-brew install --only-dependencies -s doxygen
-HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install doxygen
+echo "***Installing python@3.10 (for building in general)"
+brew install --only-dependencies -s python@3.10
+HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install python@3.10
+# echo "***Installing doxygen (for ?)"
+# brew install --only-dependencies -s doxygen
+# HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install doxygen
 
 brew update
 
 # Required for building package/DMG
 brew install gawk
 
-~/project/scripts/brew_set_tap_branch.sh
+$PROJECT_DIR/scripts/_brew_set_tap_branch.sh
