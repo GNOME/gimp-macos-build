@@ -1,8 +1,8 @@
 class GeglFull < Formula
   desc "Graph based image processing framework"
   homepage "https://www.gegl.org/"
-  url "https://download.gimp.org/pub/gegl/0.4/gegl-0.4.36.tar.xz"
-  sha256 "6fd58a0cdcc7702258adaeffb573a389228ae8f0eff47578efda2309b61b2ca6"
+  url "https://download.gimp.org/pub/gegl/0.4/gegl-0.4.38.tar.xz"
+  sha256 "e4a33c8430a5042fba8439b595348e71870f0d95fbf885ff553f9020c1bed750"
   license all_of: ["LGPL-3.0-or-later", "GPL-3.0-or-later", "BSD-3-Clause", "MIT"]
   head "https://gitlab.gnome.org/GNOME/gegl.git", branch: "master"
 
@@ -11,7 +11,7 @@ class GeglFull < Formula
     regex(/href=.*?gegl[._-]v?(\d+(?:\.\d+)+)\.t/i)
   end
 
-  depends_on "glib" => :build
+  depends_on "glib-utils" => :build
   depends_on "gobject-introspection" => :build
   depends_on "meson" => :build
   depends_on "ninja" => :build
@@ -21,13 +21,10 @@ class GeglFull < Formula
   depends_on "cairo"
   depends_on "gettext"
   depends_on "glib"
+  depends_on "jasper"
   depends_on "jpeg"
   depends_on "json-glib"
   depends_on "libpng"
-
-  on_linux do
-    depends_on "cairo"
-  end
 
   conflicts_with "coreutils", because: "both install `gcut` binaries"
 
