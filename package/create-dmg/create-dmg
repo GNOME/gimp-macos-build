@@ -45,11 +45,10 @@ function hdiutil-detach-retry() {
 		hdiutil detach "$1"
 		exit_code=$?
 		(( exit_code ==  0 )) && break            # nothing goes wrong
-		(( exit_code != 16 )) && exit $exit_code  # exit with the original exit code
 		# The above statement returns 1 if test failed (exit_code == 16).
 		#   It can make the code in the {do... done} block to be executed
 	do
-		(( unmounting_attempts == MAXIMUM_UNMOUNTING_ATTEMPTS )) && exit 16  # patience exhausted, exit with code EBUSY
+		(( unmounting_attempts == MAXIMUM_UNMOUNTING_ATTEMPTS )) && exit $exit_code  # patience exhausted, exit with code EBUSY
 		echo "Wait a moment..."
 		sleep $(( 1 * (2 ** unmounting_attempts) ))
 	done
