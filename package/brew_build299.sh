@@ -22,7 +22,7 @@ printf "Determining GIMP version: "
 
 $(cd ${PREFIX}/bin/ && ln -sf gimp-2.99 gimp)
 
-GIMP_VERSION="$(gimp-2.99 --version | sed 's|GNU Image Manipulation Program version ||')"
+GIMP_VERSION="$(~/gtk/inst/bin/gimp-2.99 --version 2>/dev/null | grep 'GNU Image Manipulation Program version' | sed 's|GNU Image Manipulation Program version ||')"
 # for gtk-mac-bundler
 export GIMP_CELLAR="${PREFIX}/Cellar/gimp3/${GIMP_VERSION}"
 
