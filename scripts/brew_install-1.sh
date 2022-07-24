@@ -53,15 +53,15 @@ if [ "$build_arm64" = true ] ; then
     echo 'export HOMEBREW_MACOS_VERSION=11.3' >> $PREFIX/.profile
     echo 'export GIMP_ARM64=true' >> $PREFIX/.profile
 else
-    echo "*** Setup 10.12 SDK"
+    echo "*** Setup 10.13 SDK"
     cd /Library/Developer/CommandLineTools/SDKs
-    if [ ! -d "MacOSX10.12.sdk" ]
+    if [ ! -d "MacOSX10.13.sdk" ]
     then
-        sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX10.12.sdk.tar.xz' | sudo tar -xzf -
+        sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX10.13.sdk.tar.xz' | sudo tar -xzf -
     fi
-    echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.12.sdk' > $PREFIX/.profile
-    echo 'export MACOSX_DEPLOYMENT_TARGET=10.12' >> $PREFIX/.profile
-    echo 'export HOMEBREW_MACOS_VERSION=10.12' >> $PREFIX/.profile
+    echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.13.sdk' > $PREFIX/.profile
+    echo 'export MACOSX_DEPLOYMENT_TARGET=10.13' >> $PREFIX/.profile
+    echo 'export HOMEBREW_MACOS_VERSION=10.13' >> $PREFIX/.profile
     # Removes /usr/include being added to CFLAGS on 10.12 (no idea why)
     # Needed in order to build `poppler` and `poppler-slim`
     echo 'export PKG_CONFIG_SYSTEM_INCLUDE_PATH=/usr/include' >> $PREFIX/.profile
