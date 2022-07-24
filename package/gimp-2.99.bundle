@@ -91,6 +91,8 @@
   <binary recurse="True">${prefix}/lib/gimp/2.99/plug-ins/*</binary>
   <!-- Copy in gimp modules -->
   <binary>${prefix}/lib/gimp/2.99/modules/*.so</binary>
+  <!-- Copy in gimp extensions -->
+  <binary recurse="True">${prefix}/lib/gimp/2.99/extensions/*</binary>
   <!-- Copy in gimp python modules -->
   <!-- <binary>${prefix}/lib/gimp/2.99/python/*.so</binary> -->
   <!-- <data>${prefix}/lib/gimp/2.99/python/*.py</data> -->
