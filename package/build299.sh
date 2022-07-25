@@ -67,6 +67,12 @@ find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/plug-ins/ -p
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
    | xargs -n1 install_name_tool -add_rpath @executable_path/../../../../ -change libgs.dylib.9.56 @rpath/libgs.dylib.9.56
 
+echo "adding @rpath to the extensions (incl special ghostscript 9.56 fix)"
+find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/extensions/ -perm +111 -type f \
+   | xargs file \
+   | grep ' Mach-O '|awk -F ':' '{print $1}' \
+   | xargs -n1 install_name_tool -add_rpath @executable_path/../../../../ -change libgs.dylib.9.56 @rpath/libgs.dylib.9.56
+
 echo "removing build path from the .gir files"
 find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/share/gir-1.0/*.gir \
    -exec sed -i '' "s|${OLDPATH}||g" {} +
