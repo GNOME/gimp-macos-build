@@ -40,4 +40,4 @@ PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 source ${PREFIX}/.profile
 
 brew uninstall gimp3 2>/dev/null || true
-brew install -s gimp3 || $PROJECT_DIR/scripts/_brew_set_tap_branch.sh || brew install -s gimp3
+brew install -s gimp3 || ($PROJECT_DIR/scripts/_brew_set_tap_branch.sh && brew install -s gimp3)
