@@ -11,5 +11,6 @@ fi
 pushd ${PREFIX}/Library/Taps/homebrew/homebrew-core
 git remote add lukaso git@github.com:lukaso/homebrew-core.git
 git fetch lukaso
-git cherry-pick fa4bec6 61074f9
+# https://github.com/Homebrew/homebrew-core/pull/105614
+git cherry-pick bdfcd5ec34a74ca20e0d30e109164d7d585ee951
 popd
