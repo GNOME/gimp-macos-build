@@ -1,7 +1,7 @@
 class Gimp3 < Formula
   desc "Gnu Image Processing Program"
   homepage "https://www.gimp.org/"
-  url "https://gitlab.gnome.org/lukaso/gimp.git",
+  url "https://gitlab.gnome.org/GNOME/gimp.git",
       # tag:      "5.5.1",
       # revision: "fa2835b2e60d60c924fc722a330524a378446a7d"
       branch: "master"
@@ -58,7 +58,7 @@ class Gimp3 < Formula
   depends_on "openexr"
   depends_on "openjpeg"
   depends_on "pango"
-  depends_on "poppler-slim"
+  depends_on "poppler"
   depends_on "py3cairo"
   depends_on "pygobject3"
   depends_on "python@3.9"
@@ -115,67 +115,83 @@ class Gimp3 < Formula
 end
 
 __END__
-diff --git a/meson.build b/meson.build
-index f29e9eacd8..63a81d9190 100644
---- a/meson.build
-+++ b/meson.build
-@@ -794,10 +794,8 @@ conf.set('HAVE_WEBKIT', get_option('webkit-unmaintained'))
+diff --git a/app/main.c b/app/main.c
+index 2a0c41e23c..cd1f360264 100644
+--- a/app/main.c
++++ b/app/main.c
+@@ -340,6 +340,7 @@ gimp_macos_setenv (const char * progname)
+       gchar *res_dir;
+       size_t path_len;
+       struct stat sb;
++      gboolean need_pythonhome = TRUE;
 
- poppler_minver = '0.69.0'
- poppler_data_minver = '0.4.9'
--poppler = [
--  dependency('poppler-glib', version: '>='+poppler_minver),
--  dependency('poppler-data', version: '>='+poppler_data_minver),
--]
-+poppler_glib = dependency('poppler-glib', version: '>='+poppler_minver)
-+poppler_data = dependency('poppler-data', version: '>='+poppler_data_minver)
+       app_dir = g_path_get_dirname (resolved_path);
+       tmp = g_strdup_printf ("%s/../Resources", app_dir);
+@@ -371,6 +372,15 @@ gimp_macos_setenv (const char * progname)
+             }
+         }
 
- cairopdf_minver = '1.12.2'
- cairopdf = dependency('cairo-pdf', version: '>='+cairopdf_minver,
-diff --git a/plug-ins/common/meson.build b/plug-ins/common/meson.build
-index a2e50069ab..1907d3629c 100644
---- a/plug-ins/common/meson.build
-+++ b/plug-ins/common/meson.build
-@@ -36,14 +36,14 @@ common_plugins_list = [
-   { 'name': 'file-gif-save', },
-   { 'name': 'file-gih', },
-   { 'name': 'file-glob',
--    'deps': [ gtk3, gegl, gdk_pixbuf, cairo,  ],
-+    'deps': [ gtk3, gegl, gdk_pixbuf, cairo, poppler_glib, poppler_data, ],
-   },
-   { 'name': 'file-header', },
-   { 'name': 'file-html-table', },
-   { 'name': 'file-pat', },
-   { 'name': 'file-pcx', },
-   { 'name': 'file-pdf-load',
--    'deps': [ gtk3, gegl, gdk_pixbuf, poppler ],
-+    'deps': [ gtk3, gegl, gdk_pixbuf, poppler_glib, poppler_data, ],
-   },
-   { 'name': 'file-pix', },
-   { 'name': 'file-png',
-@@ -124,7 +124,7 @@ endif
-
- if cairopdf.found()
-   common_plugins_list += { 'name': 'file-pdf-save',
--    'deps': [ gtk3, gegl, gdk_pixbuf, poppler, cairo, cairopdf ],
-+    'deps': [ gtk3, gegl, gdk_pixbuf, poppler_glib, poppler_data, cairo, cairopdf ],
-   }
- endif
-
- diff --git a/app/main.c b/app/main.c
- index 2a0c41e23c..e6eaf3808d 100644
- --- a/app/main.c
- +++ b/app/main.c
- @@ -400,12 +400,6 @@ gimp_macos_setenv (const char * progname)
-        tmp = g_strdup_printf ("%s/etc/fonts", res_dir);
-        g_setenv ("FONTCONFIG_PATH", tmp, TRUE);
-        g_free (tmp);
- -      tmp = g_strdup_printf ("%s", res_dir);
- -      g_setenv ("PYTHONHOME", tmp, TRUE);
- -      g_free (tmp);
- -      tmp = g_strdup_printf ("%s/lib/python3.9", res_dir);
- -      g_setenv ("PYTHONPATH", tmp, TRUE);
- -      g_free (tmp);
-        tmp = g_strdup_printf ("%s/lib/gio/modules", res_dir);
-        g_setenv ("GIO_MODULE_DIR", tmp, TRUE);
-        g_free (tmp);
++      /* Detect we were built in homebrew for MacOS */
++      tmp = g_strdup_printf ("%s/Frameworks/Python.framework", res_dir);
++      if (tmp && !stat (tmp, &sb) && S_ISDIR (sb.st_mode))
++        {
++          g_print ("GIMP was built with homebrew\n");
++          need_pythonhome = FALSE;
++        }
++      g_free (tmp);
++
+       path_len = strlen (g_getenv ("PATH") ? g_getenv ("PATH") : "") + strlen (app_dir) + 2;
+       path = g_try_malloc (path_len);
+       if (path == NULL)
+@@ -400,9 +410,12 @@ gimp_macos_setenv (const char * progname)
+       tmp = g_strdup_printf ("%s/etc/fonts", res_dir);
+       g_setenv ("FONTCONFIG_PATH", tmp, TRUE);
+       g_free (tmp);
+-      tmp = g_strdup_printf ("%s", res_dir);
+-      g_setenv ("PYTHONHOME", tmp, TRUE);
+-      g_free (tmp);
++      if (need_pythonhome)
++        {
++          tmp = g_strdup_printf ("%s", res_dir);
++          g_setenv ("PYTHONHOME", tmp, TRUE);
++          g_free (tmp);
++        }
+       tmp = g_strdup_printf ("%s/lib/python3.9", res_dir);
+       g_setenv ("PYTHONPATH", tmp, TRUE);
+       g_free (tmp);
+diff --git a/libgimpbase/gimpenv.c b/libgimpbase/gimpenv.c
+index 00e16bf7b9..e7fe2cd220 100644
+--- a/libgimpbase/gimpenv.c
++++ b/libgimpbase/gimpenv.c
+@@ -441,6 +441,31 @@ gimp_installation_directory (void)
+         g_free (tmp2);
+         g_free (tmp3);
+       }
++    else if (strstr(basepath, "Cellar"))
++      {
++        /*  we are running from a Python.framework bundle built in homebrew
++         *  during the build phase
++         */
++
++        gchar *fulldir = g_strdup (basepath);
++        gchar *lastdir = g_path_get_basename (fulldir);
++        gchar *tmp_fulldir;
++
++        while (strcmp (lastdir, "Cellar"))
++          {
++            tmp_fulldir = g_path_get_dirname (fulldir);
++
++            g_free (lastdir);
++            g_free (fulldir);
++
++            fulldir = tmp_fulldir;
++            lastdir = g_path_get_basename (fulldir);
++          }
++        toplevel = g_path_get_dirname (fulldir);
++
++        g_free (fulldir);
++        g_free (lastdir);
++      }
+     else
+       {
+         /*  if none of the above match, we assume that we are really in a bundle  */
