@@ -109,7 +109,8 @@ brew install -s git-secrets
 # Won't build under 10.12
 echo "***Installing subversion (for netpbm)"
 brew install --only-dependencies -s subversion
-HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install subversion
+# was struggling to build on x86_64 until adding `--debug`
+HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install --debug subversion
 echo "***Installing python@3.10 (for building in general)"
 brew install --only-dependencies -s python@3.10
 HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install python@3.10
