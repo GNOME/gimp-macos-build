@@ -49,6 +49,14 @@ echo "Copy python files"
 rm -rf "${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/Frameworks/"
 cp -r "${PREFIX}/Frameworks" "${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/"
 
+echo "Link 'Resources' into python framework 'Resources'"
+for resources in etc gimp.icns lib opt share xcf.icns ;
+do
+ln -s "${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/${resources}" \
+      "${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/Frameworks/Python.framework/Versions/3.9/Resources/Python.app/Contents/Resources/" \
+      || true
+done
+
 echo "Removing pathnames from the libraries and binaries"
 # fix permission for some libs
 find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources \( -name '*.dylib' -o -name '*.so' \) -type f | xargs chmod 755
@@ -102,6 +110,12 @@ find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/MacOS -type f -perm +111 \
 
 echo "adding @rpath to the plugins (incl special ghostscript 9.56 fix)"
 find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/plug-ins/ -perm +111 -type f \
+   | xargs file \
+   | grep ' Mach-O '|awk -F ':' '{print $1}' \
+   | xargs -n1 install_name_tool -add_rpath @executable_path/../../../../../ -change libgs.dylib.9.56 @rpath/libgs.dylib.9.56
+
+echo "adding @rpath to the extensions (incl special ghostscript 9.56 fix)"
+find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/extensions/ -perm +111 -type f \
    | xargs file \
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
    | xargs -n1 install_name_tool -add_rpath @executable_path/../../../../../ -change libgs.dylib.9.56 @rpath/libgs.dylib.9.56
