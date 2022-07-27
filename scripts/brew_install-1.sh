@@ -117,6 +117,8 @@ HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install python@3.10
 # echo "***Installing doxygen (for ?)"
 # brew install --only-dependencies -s doxygen
 # HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install doxygen
+brew install --only-dependencies -s rust
+HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install rust
 
 brew update
 
