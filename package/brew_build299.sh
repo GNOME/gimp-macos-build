@@ -69,9 +69,8 @@ FILES=$(
 
 OLDPATH="${PREFIX}/"
 
-# Cellar/babl+something@3.9/0.1.92_5/
-# This regex is very fiddly, because of + and @ symbols and multiple regex engines
-CELLAR_SUFFIX="Cellar/([@+-_a-zA-Z0-9]+)/[._0-9]+/"
+# Cellar/babl+something@3.9/0.1.92_5p/
+CELLAR_SUFFIX="Cellar/([^/]+)/[^/]+/"
 CELLAR="${OLDPATH}${CELLAR_SUFFIX}"
 FRAMEWORKS="${OLDPATH}Cellar/.*/Frameworks/"
 
