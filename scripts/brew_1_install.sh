@@ -88,41 +88,44 @@ echo 'unset HOMEBREW_PREFIX' >> $PREFIX/.profile
 echo 'unset HOMEBREW_CELLAR' >> $PREFIX/.profile
 echo 'unset HOMEBREW_REPOSITORY' >> $PREFIX/.profile
 
-cd $PREFIX
-source .profile
+source $PREFIX/.profile
+
+${PROJECT_DIR}/scripts/_brew_ensure_patched.sh
 brew update
-
-patch -p1 < $PROJECT_DIR/patches/homebrew-support-setting-os.patch || true
-
-brew tap --force-auto-update infrastructure/homebrew-gimp https://gitlab.gnome.org/Infrastructure/gimp-macos-build.git
-
-# probably not needed. Will have to test full install
-#ensure it has the right system path
-# brew reinstall pkg-config
 
 # saves some hassle with repos if git secrets is configured
 echo "***Installing git-secrets"
 brew install -s git-secrets
 
+brew install --only-dependencies -s subversion
+brew install --only-dependencies -s python@3.10
+brew install --only-dependencies -s rust
+brew install --only-dependencies -s curl
+
 # for some reason doesn't auto install. Appears to be related to a source installation
 # requiring a source installation that then requires subversion.
 # Won't build under 10.12
 echo "***Installing subversion (for netpbm)"
-brew install --only-dependencies -s subversion
 # was struggling to build on x86_64 until adding `--debug`
 HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install --debug subversion
 echo "***Installing python@3.10 (for building in general)"
-brew install --only-dependencies -s python@3.10
 HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install python@3.10
 # echo "***Installing doxygen (for ?)"
 # brew install --only-dependencies -s doxygen
 # HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install doxygen
-brew install --only-dependencies -s rust
+echo "***Installing rust (won't build on 10.13)"
 HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install rust
+echo "curl causes all kinds of problems on build (subversion, llibmng)"
+HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install unistring
+HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install curl
+brew link --force curl
+
 
 brew update
 
 # Required for building package/DMG
 brew install gawk
 
-$PROJECT_DIR/scripts/_brew_set_tap_branch.sh
+${PROJECT_DIR}/scripts/_brew_set_tap_branch.sh
+${PROJECT_DIR}/scripts/_brew_fixup_prs_not_merged.sh
+
