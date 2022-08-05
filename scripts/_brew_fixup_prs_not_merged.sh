@@ -23,7 +23,4 @@ git cherry-pick 5f6eda4a0fc468e92c49f20c0b48fb85a37ad9b6
 # poppler
 # https://github.com/Homebrew/homebrew-core/pull/106665
 git cherry-pick 0129523ec1026a9f8ba0a22c393db03055360bef
-# atk
-# https://github.com/Homebrew/homebrew-core/pull/106660
-git cherry-pick 9121f552e86072631729c27e6b6aac8c59a5c5fa
 popd
