@@ -44,4 +44,4 @@ ${PROJECT_DIR}/scripts/_brew_fixup_prs_not_merged.sh
 $PROJECT_DIR/scripts/_brew_set_tap_branch.sh
 
 brew uninstall gimp3 2>/dev/null || true
-brew install -s gimp3
+brew install -s --debug-symbols gimp3
