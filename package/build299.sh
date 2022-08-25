@@ -94,6 +94,11 @@ done
 echo "fixing pixmap cache"
 sed -i.old 's|@executable_path/../Resources/lib/||' \
     ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache
+# Works around gdk-pixbuf loader bug for release builds only https://gitlab.gnome.org/GNOME/gdk-pixbuf/-/issues/217
+mkdir -p "${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/plug-ins/Resources/lib"
+pushd ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/plug-ins/Resources/lib
+  ln -s ../../../../../gdk-pixbuf-2.0 gdk-pixbuf-2.0
+popd
 
 echo "fixing IMM cache"
 sed -i.old 's|@executable_path/../Resources/lib/||' \
@@ -110,10 +115,10 @@ fi
 echo "create missing links. should we use wrappers instead?"
 
 pushd ${PACKAGE_DIR}/GIMP-2.99.app/Contents/MacOS
- ln -s gimp-console-2.99 gimp-console
- ln -s gimp-debug-tool-2.99 gimp-debug-tool
- ln -s python3.9 python
- ln -s python3.9 python3
+  ln -s gimp-console-2.99 gimp-console
+  ln -s gimp-debug-tool-2.99 gimp-debug-tool
+  ln -s python3.9 python
+  ln -s python3.9 python3
 popd
 
 echo "copy xdg-email wrapper to the package"

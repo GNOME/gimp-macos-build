@@ -203,7 +203,6 @@ jobs:
         - run:
             name: Importing signing certificate
             command: |
-              set +e
               mkdir ${HOME}/codesign && cd ${HOME}/codesign
               echo "$osx_crt" | base64 -D > gnome.pfx
               curl 'https://developer.apple.com/certificationauthority/AppleWWDRCA.cer' > apple.cer
@@ -215,7 +214,6 @@ jobs:
               security import gnome.pfx  -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
               security set-key-partition-list -S apple-tool:,apple: -k "" signchain
               rm -rf ${HOME}/codesign
-              exit 0
         - run:
             name: Creating DMG package
             command: |
@@ -232,11 +230,9 @@ jobs:
         - run:
             name:  Notarizing DMG package
             command: |
-              set +e
               source ~/.profile
               cd ${HOME}/project/package
               jhbuild run ./notarize.sh
-              exit 0
         - store_artifacts:
             path: /tmp/artifacts
             destination: builds

@@ -69,7 +69,6 @@
   <meson id="gimp299" mesonargs="-Dbuild-id=org.gimp.GIMP_official -Drevision=0">
     <branch module="gimp.git"
             revision="master"
-            tag="GIMP_2_99_12"
             repo="git.gnome.org"/>
     <after>
       <dep package="meta-gtk-osx-bootstrap"/>
