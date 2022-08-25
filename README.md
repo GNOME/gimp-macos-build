@@ -146,15 +146,17 @@ framework. Probably could be a small Python plugin as [there is a module](https:
 - `master`: latest GIMP release and build
 - `gimp-2-10`: latest GIMP 2.10 release and build
 
-## How to build locally (quick and dirty and might not work) ##
+## How to build locally (beta) ##
 
-For a script that builds locally, a quick and dirty way to get all the commands is to run:
+### Apple Silicon (M1, arm64) Support ###
 
-`brew install yq`
+The local build script supports building on Apple Silicon on an M1/2 mac. The script will autodetect the architecture and build accordingly.
 
-(remember that you are using `homebrew` here which won't be availabe during build time)
+Additionally, the x86_64 build will also work if built from a shell
+running in Rosetta (for example by running `arch -x86_64 zsh`).
 
-and then
+### Instructions ###
+From your `$HOME` directory:
 
 ```sh
 git clone https://gitlab.gnome.org/Infrastructure/gimp-macos-build.git project
@@ -178,42 +180,55 @@ git checkout gimp-2-10
 Then
 
 ```sh
-yq e '.jobs.[].steps[].run.command | select(length!=0)' .circleci/config.yml > ~/build_gimp.sh
-cd ~
-chmod +x build_gimp.sh
+scripts/build_gimp3.sh
 ```
 
-**Important** Now review the `build_gimp.sh` script and make sure you are comfortable with all
-the commands. And as you go, you may want to comment things out. For example, the code signing
-and notarization commands are not necessary. To understand the context, you can look at
-`.circleci/config.yml` and see what the parts are for.
+**Note** This script should set up everything for you in order to build. And then will execute the build.
+The script has a number of helpful options for building which can be found by running:
 
-To run it of course:
+```sh
+scripts/build_gimp3.sh --help
+```
 
-`./build_gimp.sh`
+The results will be found in:
+
+```sh
+~/gtk/inst
+```
+
+With the `Gimp` executable in:
+
+```sh
+~/gtk/inst/bin/gimp
+```
+
+Additionally the script will create a staged version of the app in:
+
+```sh
+~/gimp299-osx-app
+```
+
+Which can be run with:
+
+```sh
+~/gimp299-osx-app/GIMP-2.99.app/Contents/MacOS/gimp
+```
+
+Finally, the script will create a DMG file which is the "installer".
 
 ## Debug info ##
 
-By default, the executable will be built with debug symbols but optimizations, which make
-debugging difficult. If you would like unoptimized code to be able to use the `lldb`
-debugger to go through step by step, set:
+By default, the executable will be built with debug symbols. This is currently set in `build_gimp3.sh`.
 
-```
-$ export GIMP_DEBUG="true"
-```
-
-or if you followed the above local build instructions
-
-```
-GIMP_DEBUG="true" ./build_gimp.sh
-```
+If you want to build with optimizations (which is how the release is built) you will need to remove
+the `GIMP_DEBUG="true"` statement from the script.
 
 ## Swap local build ##
 
 A tool to swap local builds is available. This allows local devs to have multiple versions
-of gimp running at the same time.
+of gimp building side by side.
 
-This tool can be called at the top of a local build file using:
+This tool can be called before running a local build file using:
 
 ```
 project/swap-local-build.sh --gimp210
@@ -225,8 +240,8 @@ or
 project/swap-local-build.sh --gimp299
 ```
 
-Other options are available. This tool will only be available once the setup script has been
-run once as it is within the `project` directory.
+Other options are available. This tool will only be available once you have cloned the 
+`gimp-macos-build` repo as it is within the `project` directory.
 
 ## Apple tools ##
 
