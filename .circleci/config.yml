@@ -48,7 +48,7 @@ commands:
             name: Setup JHBuild
             command: |
               cd $HOME
-              mkdir -p ~/.config && cp ~/project/jhbuildrc-gtk-osx-gimp-2.99 ~/.config/jhbuildrc-custom
+              mkdir -p ~/.config && cp ~/project/jhbuildrc-gtk-osx-gimp ~/.config/jhbuildrc-custom
               echo 'export PATH="$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' >> ~/.profile
               echo 'export ARCHFLAGS="-arch x86_64"' >> ~/.profile
               source ~/.profile
@@ -167,7 +167,7 @@ jobs:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
 
-  build-gimp-2-99-and-package:
+  build-gimp-and-package:
     macos:
         xcode: "13.3.0"
         resource_class: macos.x86.medium.gen2
@@ -182,7 +182,7 @@ jobs:
             # not using --check flag
             command: |
               source ~/.profile
-              jhbuild build gimp299
+              jhbuild build gimp
         # - run:
         #     name: Building GIMP help (en) from git
         #     command: source ~/.profile && ALL_LINGUAS=en jhbuild build gimp-help-git
@@ -226,7 +226,7 @@ jobs:
               sudo sqlite3 "/Users/distiller/Library/Application Support/com.apple.TCC/TCC.db" "$tcc_service_appleevents"
 
               # run script
-              jhbuild run ./build299.sh debug
+              jhbuild run ./build.sh debug
         - run:
             name:  Notarizing DMG package
             command: |
@@ -254,6 +254,6 @@ workflows:
       - dependencies-babl-gegl:
           requires:
             - dependencies-part2
-      - build-gimp-2-99-and-package:
+      - build-gimp-and-package:
           requires:
             - dependencies-babl-gegl

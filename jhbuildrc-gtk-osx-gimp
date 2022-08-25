@@ -187,7 +187,7 @@ module_extra_env["cairo"] = { 'LDFLAGS': os.environ['LDFLAGS'] +
                                         " -L/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib" }
 
 # force embedded python 3.9 for gimp so system python and build python not detected
-module_extra_env['gimp299'] = { "PYTHON": "python3.9" }
+module_extra_env['gimp'] = { "PYTHON": "python3.9" }
 
 class _cmd_bootstrap_gtk_osx_gimp(jhbuild.commands.base.cmd_build):
     doc = 'Build buildsystem tools not provided by MacOS.'

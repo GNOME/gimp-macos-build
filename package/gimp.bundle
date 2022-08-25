@@ -56,7 +56,7 @@
   <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-script-fu-interpreter-3.0</binary>
 
   <!-- Copy in Info.plist -->
-  <plist>${project}/info-2.99.plist</plist>
+  <plist>${project}/info.plist</plist>
   <!-- Gtk+ is required by python modules which aren't searched for
        dependencies, so we have to pull it in explicitly. It will
        bring Pango and Cairo with it. Note the use of ${gtkversion},

@@ -38,13 +38,13 @@ At a minimum, you will need to install:
 
 - Install Python 3 (Rust is pre-installed) as they are required for the GIMP dependencies.
 - Set up macOS 10.12 SDK. This is needed to ensure that GIMP can run on macOS 10.12+. See [this article](https://smallhacks.wordpress.com/2018/11/11/how-to-support-old-osx-version-with-a-recent-xcode/) for the details.
-- Set up JHBuild with a custom `~/.config/jhbuildrc-custom` file (see https://github.com/GNOME/gimp-macos-build/blob/master/jhbuildrc-gtk-osx-gimp-2.99). As part of the setup, it is running `bootstrap-gtk-osx-gimp` JHBuild command to compile required modules to run JHBuild. JHBuild is using Python3 venv to run.
+- Set up JHBuild with a custom `~/.config/jhbuildrc-custom` file (see https://github.com/GNOME/gimp-macos-build/blob/master/jhbuildrc-gtk-osx-gimp). As part of the setup, it is running `bootstrap-gtk-osx-gimp` JHBuild command to compile required modules to run JHBuild. JHBuild is using Python3 venv to run.
 - Install [fork of the gtk-mac-bundler](https://github.com/lukaso/gtk-mac-bundler) - the tool which helps to create macOS application bundles for the GTK apps. This will hopefully shift to official [gtk-mac-bundler](https://github.com/GNOME/gtk-mac-bundler)
 - Install all gtk-osx, gimp and WebKit dependencies using JHBuild
 - Build WebKit v1. This step could be avoided as it takes a lot of time, this is a soft dependency.
 - Build GIMP and gimp-help (from git).
 - Import signing certificate/key from the environment variables
-- Launch `build99.sh` which does (among other things):
+- Launch `build.sh` which does (among other things):
   - Build package using `gtk-mac-bundler`
   - Use `install_name_tool` to fix all library paths to make package relocatable.
   - generate debug symbols
@@ -123,8 +123,7 @@ The following are aspects of the caching:
   then Gegl/Babl, then Dependencies Part 2, then dependencies Part 1, and so on. This is required to pass
   intermediate artifacts between steps of the build.
 - The keys for reloading the cache are tested and loaded in order. Each key is tested, and if found, loaded. If it is not found, the algorithm goes to the next key. Circleci then drops the suffix (after the '-') and tries to load those keys (if they are listed in the keys)
-- When new information is layered onto the cache, the tail end of the cache keys should be iterated. So `break5-gimpv3-cacheiter7` should be changed to `break5-gimpv3-cacheiter8`. This will keep using the cache, but allow new changes to be saved. (Done automatically.)
-- When the build has to be redone from scratch, because a dependency has changed, then the first part of the cache key changes. This then means no cache is found and everything goes from scratch. Here the key goes from `break5-gimpv3-cacheiter7` to `break6-gimpv3-cacheiter1` (the `break` part matters, the `cacheiter` part doesn't). Done automatically.
+- The build script manages swapping out cache keys automatically. See `config.yml` for details.
 
 ## Other related links
 
@@ -143,8 +142,8 @@ framework. Probably could be a small Python plugin as [there is a module](https:
 
 ## Branches
 
-- `master`: latest GIMP release and build
-- `gimp-2-10`: latest GIMP 2.10 release and build
+- `master`: latest GIMP release and build (development)
+- `gimp-2-10`: latest GIMP 2.10 release and build (stable)
 
 ## How to build locally (beta) ##
 
@@ -180,14 +179,14 @@ git checkout gimp-2-10
 Then
 
 ```sh
-scripts/build_gimp3.sh
+scripts/build_gimp.sh
 ```
 
 **Note** This script should set up everything for you in order to build. And then will execute the build.
 The script has a number of helpful options for building which can be found by running:
 
 ```sh
-scripts/build_gimp3.sh --help
+scripts/build_gimp.sh --help
 ```
 
 The results will be found in:
@@ -211,14 +210,14 @@ Additionally the script will create a staged version of the app in:
 Which can be run with:
 
 ```sh
-~/gimp299-osx-app/GIMP-2.99.app/Contents/MacOS/gimp
+~/gimp299-osx-app/GIMP.app/Contents/MacOS/gimp
 ```
 
 Finally, the script will create a DMG file which is the "installer".
 
 ## Debug info ##
 
-By default, the executable will be built with debug symbols. This is currently set in `build_gimp3.sh`.
+By default, the executable will be built with debug symbols. This is currently set in `build_gimp.sh`.
 
 If you want to build with optimizations (which is how the release is built) you will need to remove
 the `GIMP_DEBUG="true"` statement from the script.
@@ -240,7 +239,7 @@ or
 project/swap-local-build.sh --gimp299
 ```
 
-Other options are available. This tool will only be available once you have cloned the 
+Other options are available. This tool will only be available once you have cloned the
 `gimp-macos-build` repo as it is within the `project` directory.
 
 ## Apple tools ##

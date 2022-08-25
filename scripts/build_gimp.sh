@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #####################################################################
- # build_gimp3.sh: builds gimp on a local mac                       #
+ # build_gimp.sh: builds gimp on a local mac                       #
  #                                                                  #
  # Copyright 2022 Lukas Oberhuber <lukaso@gmail.com>                #
  #                                                                  #
@@ -29,7 +29,7 @@ function pure_version() {
 }
 
 function version() {
-	echo "build_gimp3.sh $(pure_version)"
+	echo "build_gimp.sh $(pure_version)"
 }
 
 function usage() {
@@ -139,7 +139,7 @@ fi
 
 echo "*** Setup JHBuild"
 cd $HOME
-mkdir -p ~/.config && cp ~/project/jhbuildrc-gtk-osx-gimp-2.99 ~/.config/jhbuildrc-custom
+mkdir -p ~/.config && cp ~/project/jhbuildrc-gtk-osx-gimp ~/.config/jhbuildrc-custom
 echo 'export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' >> ~/.profile
 echo 'export GIMP_DEBUG=true' >> ~/.profile
 source ~/.profile
@@ -233,7 +233,7 @@ echo "*** Build GIMP"
 # XXX `make check` is not working reliably under circle ci, so we are
 # not using --check flag
 source ~/.profile
-jhbuild build gimp299
+jhbuild build gimp
 
 # echo "Building GIMP help (en) from git"
 # # source ~/.profile && ALL_LINGUAS=en jhbuild build gimp-help-git
@@ -257,7 +257,7 @@ if [ -z "${NO_DMG}" ]; then
     echo "*** Creating DMG package"
     source ~/.profile
     cd ${HOME}/project/package
-    jhbuild run ./build299.sh debug
+    jhbuild run ./build.sh debug
 else
     echo "*** Skipping building DMG"
 fi
