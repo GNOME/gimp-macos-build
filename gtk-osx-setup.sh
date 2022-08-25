@@ -96,13 +96,13 @@ fi
 #doesn't include a usable libpython for libxml2 to link against.
 
 export PYTHON_CONFIGURE_OPTS="--enable-shared"
-export PYENV_VERSION=3.10.0
+export PYENV_VERSION=3.10.5
 $PYENV install $PYENV_VERSION --skip-existing
 PIP="$PYENV_ROOT/shims/pip"
 $PIP install --upgrade --user pip
 
 # Install pipenv
-$PIP install --upgrade --user pipenv==2020.11.15
+$PIP install --upgrade --user pipenv #==2020.11.15
 PIPENV="$PYTHONUSERBASE/bin/pipenv"
 export WORKON_HOME=$DEVPREFIX/share/virtualenvs
 
@@ -118,7 +118,7 @@ else #Get the latest if it's already installed
 fi
 
 # Install Ninja
-NINJA=`which ninja`
+NINJA=$(which ninja)
 if test ! -x "$NINJA" -a ! -x "$DEVPREFIX/bin/ninja"; then
     curl -kLs https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-mac.zip -o "$DEVPREFIX/ninja-mac.zip"
     unzip -d "$DEVPREFIX/bin" "$DEVPREFIX/ninja-mac.zip"
@@ -126,9 +126,9 @@ if test ! -x "$NINJA" -a ! -x "$DEVPREFIX/bin/ninja"; then
 fi
 
 #Install Rust (required for librsvg, which gtk needs to render its icons.)
-RUSTUP=`which rustup`
+RUSTUP=$(which rustup)
 if test -x "$RUSTUP"; then
-    case `dirname "$RUSTUP"` in
+    case $(dirname "$RUSTUP") in
         "$DEVPREFIX"*)
             DEFAULT_CARGO_HOME=$(dirname $(dirname "$RUSTUP"))
             envvar CARGO_HOME "$DEFAULT_CARGO_HOME"
@@ -155,8 +155,6 @@ if test ! -d "$DEVPREFIX/etc" ; then
     mkdir -p "$DEVPREFIX/etc"
 fi
 
-# Meson has to be locked until gobject-introspection > 1.70.0
-# https://gitlab.gnome.org/GNOME/gobject-introspection/-/merge_requests/305
 PYENV_MINOR_VERSION=$(echo $PYENV_VERSION | cut -d . -f 1,2)
 cat  <<EOF > "$DEVPREFIX/etc/Pipfile"
 [[source]]
@@ -168,7 +166,7 @@ name = "pypi.python.org"
 pygments = "*"
 gi-docgen = "*"
 docutils = "*"
-meson = {version=">=0.60.3,<0.61.0"}
+meson = {version=">0.61.0"}
 
 [scripts]
 jhbuild = "$DEVPREFIX/libexec/run_jhbuild.py"

@@ -281,7 +281,7 @@
   <!-- gtk3 is in maintenance mode with 3.24 the final release series. -->
   <meson id="gtk+-3.0" mesonargs="-Dtests=false">
     <branch repo="gtk.git" module="gtk.git" branch="gtk-3-24"
-            tag="09dd73feeb8acce7d562c1f3d263db991caeacac"/>
+            tag="4a93875bbbc931cc4f19718940546200c12293d4"/>
     <dependencies>
       <dep package="glib"/>
       <dep package="pango"/>
