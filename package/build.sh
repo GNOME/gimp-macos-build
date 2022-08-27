@@ -146,6 +146,8 @@ then
     --options runtime \
     --entitlements ${HOME}/project/package/gimp-hardening.entitlements \
     ${PACKAGE_DIR}/GIMP.app
+  echo "Verifying app is correctly signed"
+  spctl -a -v ${PACKAGE_DIR}/GIMP.app
 fi
 
 echo "Building DMG"
