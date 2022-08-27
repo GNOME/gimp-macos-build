@@ -108,6 +108,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
+              - ~/.cache
             key: v{{ checksum "CACHE_BREAK" }}-bootstrapv3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part1:
@@ -130,6 +131,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
+              - ~/.cache
             key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part2:
@@ -152,6 +154,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
+              - ~/.cache
             key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-{{ checksum "CACHE_ITER" }}
 
   dependencies-babl-gegl:
@@ -192,6 +195,7 @@ jobs:
         - save_cache:
             paths:
               - ~/gtk
+              - ~/.cache
             key: v{{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
         - run:
             name: Setup gtk-mac-bundler
