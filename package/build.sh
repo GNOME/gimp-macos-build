@@ -167,7 +167,7 @@ cd create-dmg
   --background "../gimp-dmg.png" \
   --window-pos 1 1 \
   --icon "GIMP.app" 190 360 \
-  --window-size 640 480 \
+  --window-size 640 535 \
   --icon-size 110 \
   --icon "Applications" 110 110 \
   --hide-extension "Applications" \
