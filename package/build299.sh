@@ -97,7 +97,7 @@ sed -i.old 's|@executable_path/../Resources/lib/||' \
 # Works around gdk-pixbuf loader bug for release builds only https://gitlab.gnome.org/GNOME/gdk-pixbuf/-/issues/217
 mkdir -p "${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/plug-ins/Resources/lib"
 pushd ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/gimp/2.99/plug-ins/Resources/lib
-  ln -s ../../../../../gdk-pixbuf-2.0 gdk-pixbuf-2.0
+  cp -r ../../../../../gdk-pixbuf-2.0 gdk-pixbuf-2.0
 popd
 
 echo "fixing IMM cache"
