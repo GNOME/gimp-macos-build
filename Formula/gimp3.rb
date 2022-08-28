@@ -5,7 +5,7 @@ class Gimp3 < Formula
       # tag:      "5.5.1",
       # revision: "fa2835b2e60d60c924fc722a330524a378446a7d"
       branch: "master"
-  version "2.99.11"
+  version "2.99.13"
   license all_of: ["LGPL-3.0-or-later", "CC-BY-SA-3.0", "CC-BY-SA-4.0"]
 
   # livecheck do
