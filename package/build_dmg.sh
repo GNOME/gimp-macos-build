@@ -17,8 +17,8 @@ fi
 #  target directory
 PACKAGE_DIR="${HOME}/gimp299-osx-app"
 
-GIMP_VERSION="$(cat ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/.version)"
-rm ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/.version
+GIMP_VERSION="$(cat ${PACKAGE_DIR}/GIMP.app/Contents/Resources/.version)"
+rm ${PACKAGE_DIR}/GIMP.app/Contents/Resources/.version
 
 echo "Gimp version: ${GIMP_VERSION}"
 echo "Signing libs"
@@ -26,7 +26,7 @@ echo "Signing libs"
 if [ -n "${codesign_subject}" ]
 then
   echo "Signing libraries and plugins"
-  find  ${PACKAGE_DIR}/GIMP-2.99.app/Contents/Resources/lib/ -type f -perm +111 \
+  find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/ -type f -perm +111 \
      | xargs file \
      | grep ' Mach-O '|awk -F ':' '{print $1}' \
      | xargs /usr/bin/codesign -s "${codesign_subject}" \
@@ -38,7 +38,7 @@ then
     --deep \
     --options runtime \
     --entitlements ${HOME}/project/package/gimp-hardening.entitlements \
-    ${PACKAGE_DIR}/GIMP-2.99.app
+    ${PACKAGE_DIR}/GIMP.app
 fi
 
 echo "Building DMG"
@@ -60,7 +60,7 @@ cd create-dmg
   --volname "GIMP 2.99 Install" \
   --background "../gimp-dmg.png" \
   --window-pos 1 1 \
-  --icon "GIMP-2.99.app" 190 360 \
+  --icon "GIMP.app" 190 360 \
   --window-size 640 480 \
   --icon-size 110 \
   --icon "Applications" 110 110 \
