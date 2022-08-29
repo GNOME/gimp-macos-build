@@ -31,7 +31,6 @@ class Gimp3 < Formula
   depends_on "ghostscript"
   depends_on "glib"
   depends_on "glib-networking"
-  depends_on "glib-utils"
   depends_on "gtk+3-fixed"
   depends_on "gtk-doc"
   depends_on "gtk-mac-integration-full"
@@ -68,16 +67,6 @@ class Gimp3 < Formula
   depends_on "xmlto"
 
   def install
-    ### Temporary Fix ###
-    # Temporary fix for a meson bug
-    # Upstream appears to still be deciding on a permanent fix
-    # See: https://gitlab.gnome.org/GNOME/gegl/-/issues/214
-    # inreplace "subprojects/poly2tri-c/meson.build",
-    #   "libpoly2tri_c = static_library('poly2tri-c',",
-    #   "libpoly2tri_c = static_library('poly2tri-c', 'EMPTYFILE.c',"
-    # touch "subprojects/poly2tri-c/EMPTYFILE.c"
-    ### END Temporary Fix ###
-
     mkdir "build" do
       system "meson", "--prefix=#{prefix}",
                       "--libdir=#{lib}",
@@ -90,23 +79,6 @@ class Gimp3 < Formula
   end
 
   test do
-    (testpath/"test.c").write <<~EOS
-      #include <gegl.h>
-      gint main(gint argc, gchar **argv) {
-        gegl_init(&argc, &argv);
-        GeglNode *gegl = gegl_node_new ();
-        gegl_exit();
-        return 0;
-      }
-    EOS
-    system ENV.cc,
-           "-I#{Formula["babl"].opt_include}/babl-0.1",
-           "-I#{Formula["glib"].opt_include}/glib-2.0",
-           "-I#{Formula["glib"].opt_lib}/glib-2.0/include",
-           "-L#{Formula["glib"].opt_lib}", "-lgobject-2.0", "-lglib-2.0",
-           testpath/"test.c",
-           "-I#{include}/gegl-0.4", "-L#{lib}", "-lgegl-0.4",
-           "-o", testpath/"test"
-    system "./test"
+    assert_match "GNU Image Manipulation Program version", shell_output("#{bin}/gimp --version")
   end
 end

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #####################################################################
- # macports_install_packages.sh: installs gimp dependencies         #
+ # brew_build_gimp.sh: builds gimp once dependecies have been       #
+ #                     installed. Prereq, install dependencies      #
  #                                                                  #
  # Copyright 2022 Lukas Oberhuber <lukaso@gmail.com>                #
  #                                                                  #
@@ -24,37 +25,22 @@
 
 set -e;
 
-PREFIX=$HOME/homebrew
+if [[ $(uname -m) == 'arm64' ]]; then
+  build_arm64=true
+  echo "*** Build: arm64"
+  PREFIX=$HOME/homebrew
+else
+  build_arm64=false
+  echo "*** Build: x86_64"
+  PREFIX=$HOME/homebrew_x86_64
+fi
 
-source $PREFIX/.profile
+PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-echo $SDKROOT
-echo $MACOSX_DEPLOYMENT_TARGET
-echo $PATH
-which brew
+source ${PREFIX}/.profile
 
-brew install pkg-config
-brew install -s icu4c
-brew link --force icu4c
-brew install -s libpng libjpeg libtiff gtk-doc
-brew install -s openjpeg ilmbase json-c libde265 nasm x265
-brew link --force ilmbase
-brew install -s xmlto py3cairo pygobject3
-brew install -s gtk+3 gtk-mac-integration adwaita-icon-theme
-brew install -s libarchive libyaml
-brew link --force libarchive
-brew install -s lcms2 glib-networking poppler fontconfig libmypaint libheif \
-  aalib webp shared-mime-info iso-codes librsvg
-brew install -s mypaint-brushes # Needs a formula, see https://github.com/macports/macports-ports/blob/master/graphics/mypaint-brushes/Portfile
-# # left out webkit dependencies
-brew install -s svn
-brew install -s gexiv2 libwmf openexr libmng ghostscript
-brew install -s appstream-glib
-brew install -s babl gegl
+${PROJECT_DIR}/scripts/_brew_ensure_patched.sh
+${PROJECT_DIR}/scripts/_brew_fixup_prs_not_merged.sh
+$PROJECT_DIR/scripts/_brew_set_tap_branch.sh
 
-# Things we need to make sure are not there because the compile breaks
-brew uninstall vala || true
-brew uninstall --ignore-dependencies gtk+ || true
-
-# brew install SuiteSparse_AMD SuiteSparse_CAMD SuiteSparse_CCOLAMD SuiteSparse_COLAMD SuiteSparse_CHOLMOD \
-#   # SuiteSparse_UMFPACK metis
+brew install -s --debug-symbols $1
