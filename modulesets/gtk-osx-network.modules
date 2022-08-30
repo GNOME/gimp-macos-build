@@ -13,18 +13,8 @@
   <repository name='gnupg.org' type='tarball' href="https://gnupg.org/ftp/" />
   <repository name="webm" type="tarball"
               href="http://downloads.webmproject.org/releases/"/>
-  <repository name="webkit.org" type="tarball"
-              href="http://www.webkitgtk.org/releases/"/>
   <repository type="tarball" name="github-tarball" href="https://github.com/"/>
   <repository type="tarball" name="zlib" href="https://www.zlib.net/"/>
-
-  <!-- Builds latest stable version of WebKitGTK for GTK 3.x -->
-  <metamodule id="meta-gtk-osx-webkit-gtk3">
-    <dependencies>
-      <dep package="meta-gtk-osx-gtk3"/>
-      <dep package="webkit2gtk3"/>
-    </dependencies>
-  </metamodule>
 
   <!-- of the many arguments such as prefix and libdir that jhbuild might pass
   to configure, openssl only understands prefix, and only with =. -->
