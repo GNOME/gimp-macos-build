@@ -155,8 +155,6 @@ if test ! -d "$DEVPREFIX/etc" ; then
     mkdir -p "$DEVPREFIX/etc"
 fi
 
-# Meson has to be locked until gobject-introspection > 1.70.0
-# https://gitlab.gnome.org/GNOME/gobject-introspection/-/merge_requests/305
 PYENV_MINOR_VERSION=$(echo $PYENV_VERSION | cut -d . -f 1,2)
 cat  <<EOF > "$DEVPREFIX/etc/Pipfile"
 [[source]]
@@ -167,7 +165,7 @@ verify_ssl = true
 pygments = "*"
 gi-docgen = "*"
 docutils = "*"
-meson = {version=">=0.60.3,<0.61.0"}
+meson = {version=">0.61.0"}
 
 [scripts]
 jhbuild = "$DEVPREFIX/libexec/run_jhbuild.py"
