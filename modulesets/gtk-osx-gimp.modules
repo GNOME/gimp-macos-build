@@ -5,6 +5,7 @@
   <repository type="tarball" name="ftp.gnome.org" default="yes" href="http://ftp.gnome.org/pub/GNOME/sources/"/>
   <repository type="tarball" name="gimp" href="https://download.gimp.org/pub/"/>
   <repository type="git" name="git.gnome.org" href="https://gitlab.gnome.org/GNOME"/>
+  <repository type="git" name="lukaso.gnome.org" href="https://gitlab.gnome.org/lukaso"/>
   <repository type="git" name="git-jtojnar" href="https://gitlab.gnome.org/jtojnar/"/>
   <repository type="tarball" name="poppler.freedesktop.org" href="https://poppler.freedesktop.org/"/>
   <repository type="tarball" name="videolan" href="https://downloads.videolan.org/pub/videolan/x265/"/>
@@ -85,10 +86,11 @@
 
   <!-- For releases, the tag option should be added to the branch item -->
   <!-- tag="GIMP_2_10_34" -->
+  <!-- revision="branch_name" -->
   <autotools id="gimp" autogen-sh="autogen.sh" autogenargs="--without-x --with-build-id=org.gimp.GIMP_official --with-revision=0">
     <branch module="gimp.git"
-            revision="gimp-2-10"
-            repo="git.gnome.org"/>
+            revision="wip/lukaso/gimp-2-10-fix-map-object"
+            repo="lukaso.gnome.org"/>
     <after>
       <dep package="meta-gtk-osx-bootstrap"/>
       <dep package="meta-gtk-osx-core"/>
