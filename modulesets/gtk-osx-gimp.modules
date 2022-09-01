@@ -80,6 +80,7 @@
       <dep package="openexr"/>
       <dep package="libmng"/>
       <dep package="ghostscript"/>
+      <dep package="libcurl"/>
     </dependencies>
   </metamodule>
 

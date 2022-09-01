@@ -15,6 +15,7 @@
               href="http://downloads.webmproject.org/releases/"/>
   <repository type="tarball" name="github-tarball" href="https://github.com/"/>
   <repository type="tarball" name="zlib" href="https://www.zlib.net/"/>
+  <repository type="tarball" name="curl" href="https://curl.se/download/"/>
 
   <!-- of the many arguments such as prefix and libdir that jhbuild might pass
   to configure, openssl only understands prefix, and only with =. -->
@@ -108,7 +109,7 @@
       <dep package="libgcrypt"/>
     </dependencies>
   </autotools>
-  
+
   <meson id="libsecret" mesonargs="-Dvapi=disabled -Dgtk_doc=disabled">
     <branch version="0.20.4"
             module="libsecret/0.20/libsecret-0.20.4.tar.xz"
@@ -130,7 +131,7 @@
       <dep package="glib"/>
     </dependencies>
   </meson>
-  
+
   <autotools id="gnome-keyring"
              autogenargs="--disable-pam --without-root-certs">
     <branch module="gnome-keyring/40/gnome-keyring-40.0.tar.xz"
@@ -142,17 +143,24 @@
     </dependencies>
   </autotools>
 
-  <meson id="glib-networking" mesonargs="-Dopenssl=enabled">
-    <branch module="glib-networking/2.68/glib-networking-2.68.0.tar.xz"
-            version="2.68.0"
-            hash="sha256:0b235e85ad26b3c0d12255d0963c460e5a639c4722f78e2a03e969e224b29f6e"/>
+  <meson id="glib-networking">
+    <branch module="glib-networking/2.72/glib-networking-2.72.2.tar.xz"
+            version="2.72.2"
+            hash="sha256:cd2a084c7bb91d78e849fb55d40e472f6d8f6862cddc9f12c39149359ba18268"/>
     <dependencies>
-      <if condition-unset="pre-Mavericks">
-        <dep package="gnutls"/>
-      </if>
+      <dep package="gnutls"/>
       <dep package="glib"/>
     </dependencies>
   </meson>
+
+  <autotools id="libcurl" autogen-sh='configure' autogenargs="--with-gnutls">
+    <branch repo="curl" version="7.84.0"
+            module="curl-7.84.0.tar.bz2"
+            hash="sha256:702fb26e73190a3bd77071aa146f507b9817cc4dfce218d2ab87f00cd3bc059d"/>
+    <dependencies>
+      <dep package="gnutls"/>
+    </dependencies>
+  </autotools>
 
   <autotools id="libpsl" autogen-sh='configure'>
     <branch repo="github-tarball" version="0.21.0"
