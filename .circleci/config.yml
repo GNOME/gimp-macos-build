@@ -184,7 +184,6 @@ jobs:
     steps:
         - setup
         - build-env
-        - get-cached-data
         - run:
             name: Build GIMP
             # XXX `make check` is not working reliably under circle ci, so we are
