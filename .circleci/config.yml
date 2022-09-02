@@ -71,14 +71,14 @@ commands:
     steps:
         - restore_cache:
             keys:
-              - v{{ checksum "CACHE_BREAK" }}-gimp-2.10-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt2-2.10-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt1-2.10-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-bootstrap-2.10-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp-2.10-
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt2-2.10-
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt1-2.10-
-              - v{{ checksum "CACHE_BREAK" }}-bootstrap-2.10-
+              - vv{{ checksum "CACHE_BREAK" }}-gimp-2.10-{{ checksum "CACHE_ITER" }}
+              - vv{{ checksum "CACHE_BREAK" }}-gimp-depspt2-2.10-{{ checksum "CACHE_ITER" }}
+              - vv{{ checksum "CACHE_BREAK" }}-gimp-depspt1-2.10-{{ checksum "CACHE_ITER" }}
+              - vv{{ checksum "CACHE_BREAK" }}-bootstrap-2.10-{{ checksum "CACHE_ITER" }}
+              - vv{{ checksum "CACHE_BREAK" }}-gimp-2.10-
+              - vv{{ checksum "CACHE_BREAK" }}-gimp-depspt2-2.10-
+              - vv{{ checksum "CACHE_BREAK" }}-gimp-depspt1-2.10-
+              - vv{{ checksum "CACHE_BREAK" }}-bootstrap-2.10-
 
 # -------------------------
 #        JOBS
@@ -114,7 +114,7 @@ jobs:
             paths:
               - ~/gtk
               - ~/.cache
-            key: v{{ checksum "CACHE_BREAK" }}-bootstrap-2.10-{{ checksum "CACHE_ITER" }}
+            key: vv{{ checksum "CACHE_BREAK" }}-bootstrap-2.10-{{ checksum "CACHE_ITER" }}
 
   dependencies-part1:
     macos:
@@ -137,7 +137,7 @@ jobs:
             paths:
               - ~/gtk
               - ~/.cache
-            key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt1-2.10-{{ checksum "CACHE_ITER" }}
+            key: vv{{ checksum "CACHE_BREAK" }}-gimp-depspt1-2.10-{{ checksum "CACHE_ITER" }}
 
   dependencies-part2:
     macos:
@@ -161,7 +161,7 @@ jobs:
             paths:
               - ~/gtk
               - ~/.cache
-            key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt2-2.10-{{ checksum "CACHE_ITER" }}
+            key: vv{{ checksum "CACHE_BREAK" }}-gimp-depspt2-2.10-{{ checksum "CACHE_ITER" }}
 
   dependencies-babl-gegl:
     macos:
@@ -184,6 +184,7 @@ jobs:
     steps:
         - setup
         - build-env
+        - get-cached-data
         - run:
             name: Build GIMP
             # XXX `make check` is not working reliably under circle ci, so we are
@@ -201,7 +202,7 @@ jobs:
             paths:
               - ~/gtk
               - ~/.cache
-            key: v{{ checksum "CACHE_BREAK" }}-gimp-2.10-{{ checksum "CACHE_ITER" }}
+            key: vv{{ checksum "CACHE_BREAK" }}-gimp-2.10-{{ checksum "CACHE_ITER" }}
         - run:
             name: Setup gtk-mac-bundler
             command: |
