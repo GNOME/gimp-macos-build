@@ -130,7 +130,7 @@
       <dep package="glib"/>
     </dependencies>
   </meson>
-  
+
   <autotools id="gnome-keyring"
              autogenargs="--disable-pam --without-root-certs">
     <branch module="gnome-keyring/40/gnome-keyring-40.0.tar.xz"
@@ -143,9 +143,9 @@
   </autotools>
 
   <meson id="glib-networking" mesonargs="-Dopenssl=enabled">
-    <branch module="glib-networking/2.68/glib-networking-2.68.0.tar.xz"
-            version="2.68.0"
-            hash="sha256:0b235e85ad26b3c0d12255d0963c460e5a639c4722f78e2a03e969e224b29f6e"/>
+    <branch module="glib-networking/2.72/glib-networking-2.72.2.tar.xz"
+            version="2.72.2"
+            hash="sha256:cd2a084c7bb91d78e849fb55d40e472f6d8f6862cddc9f12c39149359ba18268"/>
     <dependencies>
       <if condition-unset="pre-Mavericks">
         <dep package="gnutls"/>
