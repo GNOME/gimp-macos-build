@@ -13,162 +13,123 @@ commands:
             name: Avoid hosts unknown for gitlab.gnome.org
             command: mkdir -p ~/.ssh/ && echo -e "Host gitlab.gnome.org\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
         - run:
-            name: Setup Python3
+            name: Install special brew
             command: |
-              cd ~/
-              brew install wget
-              wget -c 'https://www.python.org/ftp/python/3.9.13/python-3.9.13-macos11.pkg' -O python-3.9.13-macosx11.pkg
-              sudo installer -pkg python-3.9.13-macosx11.pkg -target /
-        - run:
-            name: Setup 10.12 SDK
-            command: |
-              cd /Library/Developer/CommandLineTools/SDKs
-              sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.12.sdk.tar.xz' | sudo tar -xzf -
-              echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.12.sdk' > ~/.profile
-              echo 'export MACOSX_DEPLOYMENT_TARGET=10.12' >> ~/.profile
-              echo 'export PYENV_PYTHON_VERSION=3.10.0' >> ~/.profile
+              cd project
+              if [ ! -d "~/homebrew_x86_64" ]
+              then
+                scripts/brew_1_install.sh
+              fi
         - run:
             name: checksums for caching
             command: |
-              echo $(find ./patches -type f -exec md5 {} \; | md5 | cut -d' ' -f1)  >> CACHE_BREAK
-              echo $(find ./modulesets -type f -exec md5 {} \; | md5 | cut -d' ' -f1)  >> CACHE_ITER
+              # echo $(find ./patches -type f -exec md5 {} \; | md5 | cut -d' ' -f1)  >> CACHE_BREAK
+              # echo $(find ./modulesets -type f -exec md5 {} \; | md5 | cut -d' ' -f1)  >> CACHE_ITER
+              echo "break" >> CACHE_BREAK
+              echo "iter" >> CACHE_ITER
               cat CACHE_BREAK
               cat CACHE_ITER
-        - run:
-            name: coreutils for realpath (for jpeg-xl)
-            command: brew install coreutils
-
-  build-env:
-    steps:
-        - restore_cache:
-            keys:
-              - 1-jhbuild-v3-v5
-              - 1-jhbuild-v3-
-        - run:
-            name: Setup JHBuild
-            command: |
-              cd $HOME
-              mkdir -p ~/.config && cp ~/project/jhbuildrc-gtk-osx-gimp ~/.config/jhbuildrc-custom
-              echo 'export PATH="$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' >> ~/.profile
-              echo 'export ARCHFLAGS="-arch x86_64"' >> ~/.profile
-              source ~/.profile
-              PIPENV_YES=1 ~/project/gtk-osx-setup.sh
-              $HOME/.new_local/bin/jhbuild bootstrap-gtk-osx-gimp
-              cat ~/.profile
-        - save_cache:
-            paths:
-              - ~/.new_local
-              - ~/gtk
-              - ~/.config
-            key: 1-jhbuild-v3-v5
 
   get-cached-data:
     steps:
         - restore_cache:
             keys:
-              - v{{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-bootstrapv3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimpv3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-
-              - v{{ checksum "CACHE_BREAK" }}-bootstrapv3-
+              - brew{{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
+              - brew{{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-{{ checksum "CACHE_ITER" }}
+              - brew{{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-{{ checksum "CACHE_ITER" }}
+              - brew{{ checksum "CACHE_BREAK" }}-bootstrapv3-{{ checksum "CACHE_ITER" }}
+              - brew{{ checksum "CACHE_BREAK" }}-gimpv3-
+              - brew{{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-
+              - brew{{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-
+              - brew{{ checksum "CACHE_BREAK" }}-bootstrapv3-
 
 # -------------------------
 #        JOBS
 # -------------------------
 jobs:
 
-  build-env:
-    macos:
-        xcode: "13.3.0"
-        resource_class: macos.x86.medium.gen2
+  # build-env:
+  #   macos:
+  #       xcode: "13.3.0"
+  #       resource_class: macos.x86.medium.gen2
 
-    steps:
-        - setup
-        - build-env
+  #   steps:
+  #       - setup
+  #       - build-env
 
-  bootstrap:
-    macos:
-        xcode: "13.3.0"
-        resource_class: macos.x86.medium.gen2
+  # bootstrap:
+  #   macos:
+  #       xcode: "13.3.0"
+  #       resource_class: macos.x86.medium.gen2
 
-    steps:
-        - setup
-        - build-env
-        - get-cached-data
-        - run:
-            name: Bootstrap
-            command: |
-              source ~/.profile && jhbuild build icu libnsgif meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-gtk3
-        - run:
-            name: Cleanup
-            command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
-        - save_cache:
-            paths:
-              - ~/gtk
-              - ~/.cache
-            key: v{{ checksum "CACHE_BREAK" }}-bootstrapv3-{{ checksum "CACHE_ITER" }}
+  #   steps:
+  #       - setup
+  #       - get-cached-data
+  #       - run:
+  #           name: Bootstrap
+  #           command: |
+  #             source ~/.profile && jhbuild build icu libnsgif meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-gtk3
+  #       - run:
+  #           name: Cleanup
+  #           command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
+  #       - save_cache:
+  #           paths:
+  #             - ~/homebrew_x86_64
+  #           key: brew{{ checksum "CACHE_BREAK" }}-bootstrapv3-{{ checksum "CACHE_ITER" }}
 
-  dependencies-part1:
-    macos:
-        xcode: "13.3.0"
-        resource_class: macos.x86.medium.gen2
+  # dependencies-part1:
+  #   macos:
+  #       xcode: "13.3.0"
+  #       resource_class: macos.x86.medium.gen2
 
-    steps:
-        - setup
-        - build-env
-        - get-cached-data
-        - run:
-            name: Build GIMP dependencies part 1 (without gegl/babl)
-            command: |
-              source ~/.profile && jhbuild build openjpeg ilmbase json-c libde265 nasm x265
-              source ~/.profile && jhbuild build frodo-getopt xmlto pycairo pygobject3 gtk-mac-integration-python libarchive libyaml uuid
-        - run:
-            name: Cleanup
-            command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
-        - save_cache:
-            paths:
-              - ~/gtk
-              - ~/.cache
-            key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-{{ checksum "CACHE_ITER" }}
+  #   steps:
+  #       - setup
+  #       - get-cached-data
+  #       - run:
+  #           name: Build GIMP dependencies part 1 (without gegl/babl)
+  #           command: |
+  #             source ~/.profile && jhbuild build openjpeg ilmbase json-c libde265 nasm x265
+  #             source ~/.profile && jhbuild build frodo-getopt xmlto pycairo pygobject3 gtk-mac-integration-python libarchive libyaml uuid
+  #       - run:
+  #           name: Cleanup
+  #           command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
+  #       - save_cache:
+  #           paths:
+  #             - ~/homebrew_x86_64
+  #           key: brew{{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-{{ checksum "CACHE_ITER" }}
 
-  dependencies-part2:
-    macos:
-        xcode: "13.3.0"
-        resource_class: macos.x86.medium.gen2
+  # dependencies-part2:
+  #   macos:
+  #       xcode: "13.3.0"
+  #       resource_class: macos.x86.medium.gen2
 
-    steps:
-        - setup
-        - build-env
-        - get-cached-data
-        - run:
-            name: Build GIMP dependencies part 2
-            command: |
-              source ~/.profile && jhbuild build gimp-common-deps appstream-glib
-              source ~/.profile && jhbuild build python3
-        - run:
-            name: Cleanup
-            command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
-        - save_cache:
-            paths:
-              - ~/gtk
-              - ~/.cache
-            key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-{{ checksum "CACHE_ITER" }}
+  #   steps:
+  #       - setup
+  #       - get-cached-data
+  #       - run:
+  #           name: Build GIMP dependencies part 2
+  #           command: |
+  #             source ~/.profile && jhbuild build gimp-common-deps appstream-glib
+  #             source ~/.profile && jhbuild build python3
+  #       - run:
+  #           name: Cleanup
+  #           command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
+  #       - save_cache:
+  #           paths:
+  #             - ~/homebrew_x86_64
+  #           key: brew{{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-{{ checksum "CACHE_ITER" }}
 
-  dependencies-babl-gegl:
-    macos:
-        xcode: "13.3.0"
-        resource_class: macos.x86.medium.gen2
+  # dependencies-babl-gegl:
+  #   macos:
+  #       xcode: "13.3.0"
+  #       resource_class: macos.x86.medium.gen2
 
-    steps:
-        - setup
-        - build-env
-        - get-cached-data
-        - run:
-            name: Build and test babl/gegl
-            command: source ~/.profile && jhbuild build --check babl gegl
+  #   steps:
+  #       - setup
+  #       - get-cached-data
+  #       - run:
+  #           name: Build and test babl/gegl
+  #           command: source ~/.profile && jhbuild build --check babl gegl
 
   build-gimp-and-package:
     macos:
@@ -177,15 +138,14 @@ jobs:
 
     steps:
         - setup
-        - build-env
         - get-cached-data
         - run:
             name: Build GIMP
             # XXX `make check` is not working reliably under circle ci, so we are
             # not using --check flag
             command: |
-              source ~/.profile
-              jhbuild build gimp
+              cd ~/project
+              scripts/brew_3_build.sh
         # - run:
         #     name: Building GIMP help (en) from git
         #     command: source ~/.profile && ALL_LINGUAS=en jhbuild build gimp-help-git
@@ -194,9 +154,8 @@ jobs:
         #     command: find  ~/gtk/source -type d -mindepth 1 -maxdepth 1 | xargs -I% rm -rf %/*
         - save_cache:
             paths:
-              - ~/gtk
-              - ~/.cache
-            key: v{{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
+              - ~/homebrew_x86_64
+            key: brew{{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
         - run:
             name: Setup gtk-mac-bundler
             command: |
@@ -245,19 +204,19 @@ workflows:
   version: 2
   build-different-versions:
     jobs:
-      - build-env
-      - bootstrap:
-          requires:
-            - build-env
-      - dependencies-part1:
-          requires:
-            - bootstrap
-      - dependencies-part2:
-          requires:
-            - dependencies-part1
-      - dependencies-babl-gegl:
-          requires:
-            - dependencies-part2
-      - build-gimp-and-package:
-          requires:
-            - dependencies-babl-gegl
+      # - build-env
+      # - bootstrap:
+      #     requires:
+      #       - build-env
+      # - dependencies-part1:
+      #     requires:
+      #       - bootstrap
+      # - dependencies-part2:
+      #     requires:
+      #       - dependencies-part1
+      # - dependencies-babl-gegl:
+      #     requires:
+      #       - dependencies-part2
+      - build-gimp-and-package
+          # requires:
+          #   - dependencies-babl-gegl
