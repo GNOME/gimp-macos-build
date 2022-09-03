@@ -15,7 +15,7 @@ commands:
         - run:
             name: Install special brew
             command: |
-              cd project
+              cd ~/project
               if [ ! -d "~/homebrew_x86_64" ]
               then
                 scripts/brew_1_install.sh
