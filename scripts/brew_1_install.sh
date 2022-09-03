@@ -22,8 +22,6 @@
  # Boston, MA  02110-1301,  USA       gnu@gnu.org                   #
  ####################################################################
 
-set -e;
-
 if [[ $(uname -m) == 'arm64' ]]; then
   build_arm64=true
   echo "*** Build: arm64"
@@ -41,31 +39,25 @@ then
   mkdir -p $PREFIX && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C "${PREFIX}"
 fi
 
+echo '# Homebrew build profile - auto generated, do not modify' > $PREFIX/.profile
+
 if [ "$build_arm64" = true ] ; then
-    echo "*** Setup 11.3 SDK"
-    cd /Library/Developer/CommandLineTools/SDKs
-    if [ ! -d "MacOSX11.3.sdk" ]
-    then
-        sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz' | sudo tar -xzf -
-    fi
-    echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk' > $PREFIX/.profile
-    echo 'export MACOSX_DEPLOYMENT_TARGET=11.3' >> $PREFIX/.profile
-    echo 'export HOMEBREW_MACOS_VERSION=11.3' >> $PREFIX/.profile
+    sdk=11.3
     echo 'export GIMP_ARM64=true' >> $PREFIX/.profile
 else
-    echo "*** Setup 10.13 SDK"
-    cd /Library/Developer/CommandLineTools/SDKs
-    if [ ! -d "MacOSX10.13.sdk" ]
-    then
-        sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX10.13.sdk.tar.xz' | sudo tar -xzf -
-    fi
-    echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.13.sdk' > $PREFIX/.profile
-    echo 'export MACOSX_DEPLOYMENT_TARGET=10.13' >> $PREFIX/.profile
-    echo 'export HOMEBREW_MACOS_VERSION=10.13' >> $PREFIX/.profile
-    # Removes /usr/include being added to CFLAGS on 10.12 (no idea why)
-    # Needed in order to build `poppler` and `poppler-slim`
-    echo 'export PKG_CONFIG_SYSTEM_INCLUDE_PATH=/usr/include' >> $PREFIX/.profile
+    sdk=10.14
 fi
+
+echo "*** Setup ${sdk} SDK"
+echo "NOTE: Admin password require to install SDK"
+cd /Library/Developer/CommandLineTools/SDKs
+if [ ! -d "MacOSX${sdk}.sdk" ]
+then
+    sudo curl -L "https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX${sdk}.sdk.tar.xz" | sudo tar -xzf -
+fi
+echo "export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX${sdk}.sdk" >> $PREFIX/.profile
+echo "export MACOSX_DEPLOYMENT_TARGET=${sdk}" >> $PREFIX/.profile
+echo "export HOMEBREW_MACOS_VERSION=${sdk}" >> $PREFIX/.profile
 
 # remove existing brew from path
 if BREWLOC=$(which brew); then
@@ -100,6 +92,9 @@ brew install -s git-secrets
 brew install --only-dependencies -s subversion
 brew install --only-dependencies -s python@3.10
 brew install --only-dependencies -s rust
+
+echo "curl causes all kinds of problems on build (subversion, llibmng)"
+HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install libunistring
 brew install --only-dependencies -s curl
 
 # for some reason doesn't auto install. Appears to be related to a source installation
@@ -107,19 +102,17 @@ brew install --only-dependencies -s curl
 # Won't build under 10.12
 echo "***Installing subversion (for netpbm)"
 # was struggling to build on x86_64 until adding `--debug`
-HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install --debug subversion
+brew install --debug subversion
 echo "***Installing python@3.10 (for building in general)"
-HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install python@3.10
-# echo "***Installing doxygen (for ?)"
-# brew install --only-dependencies -s doxygen
-# HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install doxygen
-echo "***Installing rust (won't build on 10.13)"
-HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install rust
-echo "curl causes all kinds of problems on build (subversion, llibmng)"
-HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install unistring
-HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install curl
-brew link --force curl
+brew install python@3.10
 
+# How to disable setting of SDK
+# HOMEBREW_MACOS_VERSION= MACOSX_DEPLOYMENT_TARGET= brew install doxygen
+
+echo "***Installing rust (won't build on 10.13)"
+brew install rust
+brew install curl
+brew link --force curl
 
 brew update
 
@@ -128,4 +121,3 @@ brew install gawk
 
 ${PROJECT_DIR}/scripts/_brew_set_tap_branch.sh
 ${PROJECT_DIR}/scripts/_brew_fixup_prs_not_merged.sh
-
