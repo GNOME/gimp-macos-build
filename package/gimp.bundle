@@ -51,7 +51,7 @@
   </binary>
   <!-- gimp additional binaries -->
   <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-console-2.99</binary>
-  <binary dest="${bundle}/Contents/MacOS">${prefix}/libexec/gimp-debug-tool-2.99</binary>
+  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-debug-tool-2.99</binary>
   <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimptool-2.99</binary>
   <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-script-fu-interpreter-3.0</binary>
 

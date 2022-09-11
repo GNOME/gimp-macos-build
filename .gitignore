@@ -3,3 +3,5 @@ tmp-jhbuild-revision
 !*.patch
 .DS_Store
 info*.plist
+
+modulesets/gtk-osx-gimp.modules
