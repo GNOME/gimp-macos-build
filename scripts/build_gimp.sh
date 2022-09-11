@@ -134,7 +134,7 @@ else
     echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.12.sdk' > ~/.profile
     echo 'export MACOSX_DEPLOYMENT_TARGET=10.12' >> ~/.profile
     echo 'export ARCHFLAGS="-arch x86_64"' >> ~/.profile
-    echo 'export PYENV_PYTHON_VERSION=3.10.0' >> ~/.profile
+    echo 'export PYENV_PYTHON_VERSION=3.10.5' >> ~/.profile
 fi
 
 echo "*** Setup JHBuild"
