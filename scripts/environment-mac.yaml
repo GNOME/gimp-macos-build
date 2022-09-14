@@ -1,0 +1,86 @@
+name: gimp_build
+channels:
+  - pytorch
+  - conda-forge
+  - anaconda
+
+dependencies:
+  - python==3.10.5
+  - pip==22.2.2
+ 
+  # pytorch left unpinned
+  - pytorch
+  - torchvision
+
+  # I suggest to keep the other deps sorted for convenience.
+  # To determine what the latest versions should be, run:
+  #
+  # ```shell
+  # sed -E 's/ldm/ldm-updated/;20,99s/- ([^=]+)==.+/- \1/' environment-mac.yaml > environment-mac-updated.yml
+  # CONDA_SUBDIR=osx-arm64 conda env create -f environment-mac-updated.yml && conda list -n ldm-updated | awk ' {print "  - " $1 "==" $2;} '
+  # ```
+  - albumentations==1.2.1
+  - glib
+  - glib-tools
+  - gobject-introspection
+  - meson
+  - ninja
+  - pkg-config
+  - aalib
+  - adwaita-icon-theme
+  - appstream-glib
+  - babl
+  - cairo
+  - fontconfig
+  - gegl
+  - gettext
+  - gexiv2
+  - ghostscript
+  - glib
+  - glib-networking
+  - gtk3
+  - gtk-doc
+  - gtk-mac-integration
+  - harfbuzz
+  - icu
+  - ilmbase
+  - iso-codes
+  - jpeg
+  - json-c
+  - json-glib
+  - lcms2
+  - libarchive
+  - libde265
+  - libheif
+  - libmng
+  - libmypaint
+  - libpng
+  - librsvg
+  - libtiff
+  - libwebp
+  - libwmf
+  - mypaint-brushes
+  - nasm
+  - openexr
+  - openjpeg
+  - pango
+  - poppler
+  - pycairo
+  - pygobject
+  - shared-mime-info
+  - x265
+  - xmlto
+  - yaml
+  - pip:
+    - opencv-python==4.6.0
+    - realesrgan==0.2.5.0
+    - test-tube==0.7.5
+    - transformers==4.21.2
+    - torch-fidelity==0.3.0
+    - -e git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers
+    - -e git+https://github.com/openai/CLIP.git@main#egg=clip
+    - -e git+https://github.com/Birch-san/k-diffusion.git@mps#egg=k_diffusion
+    - -e git+https://github.com/lstein/GFPGAN@fix-dark-cast-images#egg=gfpgan
+    - -e .
+variables:
+  PYTORCH_ENABLE_MPS_FALLBACK: 1
