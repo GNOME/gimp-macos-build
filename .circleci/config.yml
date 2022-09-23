@@ -104,7 +104,7 @@ jobs:
         - setup
         - build-env
 
-  bootstrap:
+  build-and-package:
     macos:
         xcode: "13.3.0"
         resource_class: macos.x86.medium.gen2
@@ -125,16 +125,6 @@ jobs:
               - ~/gtk
               - ~/.cache
             key: v{{ checksum "CACHE_BREAK" }}-bootstrapv3-{{ checksum "CACHE_ITER" }}
-
-  dependencies-part1:
-    macos:
-        xcode: "13.3.0"
-        resource_class: macos.x86.medium.gen2
-
-    steps:
-        - setup
-        - build-env
-        - get-cached-data
         - run:
             name: Build GIMP dependencies part 1 (without gegl/babl)
             command: |
@@ -148,16 +138,6 @@ jobs:
               - ~/gtk
               - ~/.cache
             key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-{{ checksum "CACHE_ITER" }}
-
-  dependencies-part2:
-    macos:
-        xcode: "13.3.0"
-        resource_class: macos.x86.medium.gen2
-
-    steps:
-        - setup
-        - build-env
-        - get-cached-data
         - run:
             name: Build GIMP dependencies part 2
             command: |
@@ -171,29 +151,9 @@ jobs:
               - ~/gtk
               - ~/.cache
             key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-{{ checksum "CACHE_ITER" }}
-
-  dependencies-babl-gegl:
-    macos:
-        xcode: "13.3.0"
-        resource_class: macos.x86.medium.gen2
-
-    steps:
-        - setup
-        - build-env
-        - get-cached-data
         - run:
             name: Build and test babl/gegl
             command: source ~/.profile && jhbuild build --check babl gegl
-
-  build-gimp-and-package:
-    macos:
-        xcode: "13.3.0"
-        resource_class: macos.x86.medium.gen2
-
-    steps:
-        - setup
-        - build-env
-        - get-cached-data
         - run:
             name: Build GIMP
             # XXX `make check` is not working reliably under circle ci, so we are
@@ -261,18 +221,6 @@ workflows:
   build-different-versions:
     jobs:
       - build-env
-      - bootstrap:
+      - build-and-package:
           requires:
             - build-env
-      - dependencies-part1:
-          requires:
-            - bootstrap
-      - dependencies-part2:
-          requires:
-            - dependencies-part1
-      - dependencies-babl-gegl:
-          requires:
-            - dependencies-part2
-      - build-gimp-and-package:
-          requires:
-            - dependencies-babl-gegl
