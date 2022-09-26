@@ -47,6 +47,7 @@ portindex
 popd
 
 # required by poppler. Not sure why it is not installed when poppler is installed
+$dosudo port clean boost176
 $dosudo port -v -N install boost176
 $dosudo port clean gimp3
 sup_port $dosudo port -k -N install gimp3 +debug
