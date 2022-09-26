@@ -132,38 +132,113 @@ source ~/.profile
 export PATH=$PREFIX/bin:$PATH
 
 if [ ! -z "${PART1}" ]; then
+  # Have to clean every port because sub-ports get gummed up when they fail to
+  # build/install. It would require detecting failure (obscure long error like
+  # this): Error: See /opt/local/var/macports/logs/_opt_local_var_macports_sources_rsync.macports.org_macports_release_tarballs_ports_devel_dbus/dbus/main.log for details.
+  $dosudo port clean python310
   port_install python310
   $dosudo port select --set python python310
   $dosudo port select --set python3 python310
-  port_install icu
-  port_install openjpeg ilmbase json-c libde265 nasm x265
-  port_install util-linux xmlto py-cairo py-gobject3
-  port_install gtk-osx-application-gtk3
-  port_install libarchive libyaml
-  port_install lcms2 glib-networking poppler -boost poppler-data fontconfig libmypaint mypaint-brushes1 libheif \
-    aalib webp shared-mime-info iso-codes librsvg gexiv2 libwmf openexr libmng ghostscript
+  $dosudo port clean \
+                icu \
+                openjpeg \
+                ilmbase \
+                json-c \
+                libde265 \
+                nasm \
+                x265 \
+                util-linux \
+                xmlto \
+                py-cairo \
+                py-gobject3 \
+                gtk-osx-application-gtk3 \
+                libarchive \
+                libyaml \
+                lcms2 \
+                glib-networking \
+                poppler -boost \
+                poppler-data \
+                fontconfig \
+                libmypaint \
+                mypaint-brushes1 \
+                libheif \
+                aalib \
+                webp \
+                shared-mime-info \
+                iso-codes \
+                librsvg \
+                gexiv2 \
+                libwmf \
+                openexr \
+                libmng \
+                ghostscript
+  port_install  icu \
+                openjpeg \
+                ilmbase \
+                json-c \
+                libde265 \
+                nasm \
+                x265 \
+                util-linux \
+                xmlto \
+                py-cairo \
+                py-gobject3 \
+                gtk-osx-application-gtk3 \
+                libarchive \
+                libyaml \
+                lcms2 \
+                glib-networking \
+                poppler -boost \
+                poppler-data \
+                fontconfig \
+                libmypaint \
+                mypaint-brushes1 \
+                libheif \
+                aalib \
+                webp \
+                shared-mime-info \
+                iso-codes \
+                librsvg \
+                gexiv2 \
+                libwmf \
+                openexr \
+                libmng \
+                ghostscript
 fi
 
 if [ ! -z "${PART2}" ]; then
+  $dosudo port clean          rust \
+                              llvm-15
   # Must be verbose because otherwise times out on circle ci
-  $dosudo port -v -N install rust
-  $dosudo port -v -N install llvm-15
+  $dosudo port -v -N install  rust \
+                              llvm-15
 fi
 
 if [ ! -z "${PART3}" ]; then
+  $dosudo port clean         clang-15
   $dosudo port -v -N install clang-15
 
   echo "gcc12 being installed before gegl and gjs (via mozjs91)"
   $dosudo sed -i -e 's/buildfromsource always/buildfromsource never/g' /opt/local/etc/macports/macports.conf
+  $dosudo port clean gcc12
   port_install gcc12
   $dosudo sed -i -e 's/buildfromsource never/buildfromsource always/g' /opt/local/etc/macports/macports.conf
 
-  port_install gjs
-  port_install adwaita-icon-theme
-  port_install babl
-  port_install gegl +vala
+  $dosudo port clean dbus
+  port_install -f dbus
+  $dosudo port clean \
+                gjs \
+                adwaita-icon-theme \
+                babl \
+                gegl +vala
+  port_install  gjs \
+                adwaita-icon-theme \
+                babl \
+                gegl +vala
   # 10.12 requires git to be installed, and perl doesn't build
+  port_install p5.34-io-compress-brotli build.jobs=1
   if [ $circleci ]; then
+    $dosudo port clean git
     port_install git -perl5_34
   fi
 

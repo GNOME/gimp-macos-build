@@ -2,17 +2,16 @@
 
 # set -e
 
+PREFIX=/opt/local
 if [[ $(uname -m) == 'arm64' ]]; then
   build_arm64=true
   echo "*** Build: arm64"
-  PREFIX=/opt/local
   #  target directory
   export PACKAGE_DIR="${HOME}/macports-gimp299-osx-app"
   export arch="arm64"
 else
   build_arm64=false
   echo "*** Build: x86_64"
-  PREFIX=$HOME/homebrew_x86_64
   #  target directory
   export PACKAGE_DIR="${HOME}/macports-gimp299-osx-app-x86_64"
   export arch="x86_64"
