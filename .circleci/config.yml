@@ -223,10 +223,12 @@ jobs:
 
               # run script
               scripts/macports3_build_dmg.sh
+            no_output_timeout: 20m
         - run:
             name:  Notarizing DMG package
             command: |
               package/notarize.sh
+            no_output_timeout: 20m
         - store_artifacts:
             path: /tmp/artifacts
             destination: builds
