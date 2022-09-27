@@ -112,7 +112,6 @@
   <!-- Needs to be updated to not have absolute build paths -->
   <data>${prefix}/etc/xml/catalog</data>
   <data>${prefix}/share/xml/docbook</data>
-  <data>${prefix}/var/macports/distfiles/docbook-xsl</data>
   <!-- locale (TODO: trim) -->
   <data>${prefix}/share/locale</data>
   <data>${prefix}/lib/charset.alias</data>
