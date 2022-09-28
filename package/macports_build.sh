@@ -69,23 +69,123 @@ do
    | bash
 done
 
+# Long list of -change are due to not building gcc from source
+# due to a bug. See https://trac.macports.org/ticket/65573
 echo "adding @rpath to the binaries (incl special ghostscript 9.56 fix)"
 find  ${PACKAGE_DIR}/GIMP.app/Contents/MacOS -type f -perm +111 \
    | xargs file \
    | grep ' Mach-O ' |awk -F ':' '{print $1}' \
-   | xargs -n1 install_name_tool -add_rpath @executable_path/../Resources/ -change libgs.dylib.9.56 @rpath/libgs.dylib.9.56
+   | xargs -n1 install_name_tool -add_rpath @executable_path/../Resources/ \
+       -change @rpath/libgfortran.5.dylib @rpath/lib/libgcc/libgfortran.5.dylib \
+       -change @rpath/libgfortran.dylib   @rpath/lib/libgcc/libgfortran.dylib \
+       -change @rpath/libquadmath.0.dylib @rpath/lib/libgcc/libquadmath.0.dylib \
+       -change @rpath/libquadmath.dylib   @rpath/lib/libgcc/libquadmath.dylib \
+       -change @rpath/libstdc++.6.dylib   @rpath/lib/libgcc/libstdc++.6.dylib \
+       -change @rpath/libstdc++.dylib     @rpath/lib/libgcc/libstdc++.dylib \
+       -change @rpath/libgcc_s.1.1.dylib  @rpath/lib/libgcc/libgcc_s.1.1.dylib \
+       -change @rpath//libasan.8.dylib    @rpath/lib/libgcc/libasan.8.dylib \
+       -change @rpath/libasan.dylib       @rpath/lib/libgcc/libasan.dylib \
+       -change @rpath/libatomic.1.dylib   @rpath/lib/libgcc/libatomic.1.dylib \
+       -change @rpath/libatomic.dylib     @rpath/lib/libgcc/libatomic.dylib \
+       -change @rpath/libgcc_s.1.dylib    @rpath/lib/libgcc/libgcc_s.1.dylib \
+       -change @rpath/libgcc_s.dylib      @rpath/lib/libgcc/libgcc_s.dylib \
+       -change @rpath/libgomp.1.dylib     @rpath/lib/libgcc/libgomp.1.dylib \
+       -change @rpath/libgomp.dylib       @rpath/lib/libgcc/libgomp.dylib \
+       -change @rpath/libitm.1.dylib      @rpath/lib/libgcc/libitm.1.dylib \
+       -change @rpath/libitm.dylib        @rpath/lib/libgcc/libitm.dylib \
+       -change @rpath/libobjc-gnu.4.dylib @rpath/lib/libgcc/libobjc-gnu.4.dylib \
+       -change @rpath/libobjc-gnu.dylib   @rpath/lib/libgcc/libobjc-gnu.dylib \
+       -change @rpath/libssp.0.dylib      @rpath/lib/libgcc/libssp.0.dylib \
+       -change @rpath/libssp.dylib        @rpath/lib/libgcc/libssp.dylib \
+       -change @rpath/libubsan.1.dylib    @rpath/lib/libgcc/libubsan.1.dylib \
+       -change @rpath/libubsan.dylib      @rpath/lib/libgcc/libubsan.dylib
 
 echo "adding @rpath to the plugins (incl special ghostscript 9.56 fix)"
 find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/2.99/plug-ins/ -perm +111 -type f \
    | xargs file \
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
-   | xargs -n1 install_name_tool -add_rpath @executable_path/../../../../../ -change libgs.dylib.9.56 @rpath/libgs.dylib.9.56
+   | xargs -n1 install_name_tool -add_rpath @executable_path/../../../../../ \
+       -change @rpath/libgfortran.5.dylib @rpath/lib/libgcc/libgfortran.5.dylib \
+       -change @rpath/libgfortran.dylib   @rpath/lib/libgcc/libgfortran.dylib \
+       -change @rpath/libquadmath.0.dylib @rpath/lib/libgcc/libquadmath.0.dylib \
+       -change @rpath/libquadmath.dylib   @rpath/lib/libgcc/libquadmath.dylib \
+       -change @rpath/libstdc++.6.dylib   @rpath/lib/libgcc/libstdc++.6.dylib \
+       -change @rpath/libstdc++.dylib     @rpath/lib/libgcc/libstdc++.dylib \
+       -change @rpath/libgcc_s.1.1.dylib  @rpath/lib/libgcc/libgcc_s.1.1.dylib \
+       -change @rpath//libasan.8.dylib    @rpath/lib/libgcc/libasan.8.dylib \
+       -change @rpath/libasan.dylib       @rpath/lib/libgcc/libasan.dylib \
+       -change @rpath/libatomic.1.dylib   @rpath/lib/libgcc/libatomic.1.dylib \
+       -change @rpath/libatomic.dylib     @rpath/lib/libgcc/libatomic.dylib \
+       -change @rpath/libgcc_s.1.dylib    @rpath/lib/libgcc/libgcc_s.1.dylib \
+       -change @rpath/libgcc_s.dylib      @rpath/lib/libgcc/libgcc_s.dylib \
+       -change @rpath/libgomp.1.dylib     @rpath/lib/libgcc/libgomp.1.dylib \
+       -change @rpath/libgomp.dylib       @rpath/lib/libgcc/libgomp.dylib \
+       -change @rpath/libitm.1.dylib      @rpath/lib/libgcc/libitm.1.dylib \
+       -change @rpath/libitm.dylib        @rpath/lib/libgcc/libitm.dylib \
+       -change @rpath/libobjc-gnu.4.dylib @rpath/lib/libgcc/libobjc-gnu.4.dylib \
+       -change @rpath/libobjc-gnu.dylib   @rpath/lib/libgcc/libobjc-gnu.dylib \
+       -change @rpath/libssp.0.dylib      @rpath/lib/libgcc/libssp.0.dylib \
+       -change @rpath/libssp.dylib        @rpath/lib/libgcc/libssp.dylib \
+       -change @rpath/libubsan.1.dylib    @rpath/lib/libgcc/libubsan.1.dylib \
+       -change @rpath/libubsan.dylib      @rpath/lib/libgcc/libubsan.dylib
 
 echo "adding @rpath to the extensions (incl special ghostscript 9.56 fix)"
 find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/2.99/extensions/ -perm +111 -type f \
    | xargs file \
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
-   | xargs -n1 install_name_tool -add_rpath @executable_path/../../../../../ -change libgs.dylib.9.56 @rpath/libgs.dylib.9.56
+   | xargs -n1 install_name_tool -add_rpath @executable_path/../../../../../ \
+       -change @rpath/libgfortran.5.dylib @rpath/lib/libgcc/libgfortran.5.dylib \
+       -change @rpath/libgfortran.dylib   @rpath/lib/libgcc/libgfortran.dylib \
+       -change @rpath/libquadmath.0.dylib @rpath/lib/libgcc/libquadmath.0.dylib \
+       -change @rpath/libquadmath.dylib   @rpath/lib/libgcc/libquadmath.dylib \
+       -change @rpath/libstdc++.6.dylib   @rpath/lib/libgcc/libstdc++.6.dylib \
+       -change @rpath/libstdc++.dylib     @rpath/lib/libgcc/libstdc++.dylib \
+       -change @rpath/libgcc_s.1.1.dylib  @rpath/lib/libgcc/libgcc_s.1.1.dylib \
+       -change @rpath//libasan.8.dylib    @rpath/lib/libgcc/libasan.8.dylib \
+       -change @rpath/libasan.dylib       @rpath/lib/libgcc/libasan.dylib \
+       -change @rpath/libatomic.1.dylib   @rpath/lib/libgcc/libatomic.1.dylib \
+       -change @rpath/libatomic.dylib     @rpath/lib/libgcc/libatomic.dylib \
+       -change @rpath/libgcc_s.1.dylib    @rpath/lib/libgcc/libgcc_s.1.dylib \
+       -change @rpath/libgcc_s.dylib      @rpath/lib/libgcc/libgcc_s.dylib \
+       -change @rpath/libgomp.1.dylib     @rpath/lib/libgcc/libgomp.1.dylib \
+       -change @rpath/libgomp.dylib       @rpath/lib/libgcc/libgomp.dylib \
+       -change @rpath/libitm.1.dylib      @rpath/lib/libgcc/libitm.1.dylib \
+       -change @rpath/libitm.dylib        @rpath/lib/libgcc/libitm.dylib \
+       -change @rpath/libobjc-gnu.4.dylib @rpath/lib/libgcc/libobjc-gnu.4.dylib \
+       -change @rpath/libobjc-gnu.dylib   @rpath/lib/libgcc/libobjc-gnu.dylib \
+       -change @rpath/libssp.0.dylib      @rpath/lib/libgcc/libssp.0.dylib \
+       -change @rpath/libssp.dylib        @rpath/lib/libgcc/libssp.dylib \
+       -change @rpath/libubsan.1.dylib    @rpath/lib/libgcc/libubsan.1.dylib \
+       -change @rpath/libubsan.dylib      @rpath/lib/libgcc/libubsan.dylib
+
+echo "adding @rpath to libgcc dylibs"
+find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/ -perm +111 -type f \
+   | xargs file \
+   | grep ' Mach-O '|awk -F ':' '{print $1}' \
+   | xargs -n1 install_name_tool \
+       -change @rpath/libgfortran.5.dylib @rpath/lib/libgcc/libgfortran.5.dylib \
+       -change @rpath/libgfortran.dylib   @rpath/lib/libgcc/libgfortran.dylib \
+       -change @rpath/libquadmath.0.dylib @rpath/lib/libgcc/libquadmath.0.dylib \
+       -change @rpath/libquadmath.dylib   @rpath/lib/libgcc/libquadmath.dylib \
+       -change @rpath/libstdc++.6.dylib   @rpath/lib/libgcc/libstdc++.6.dylib \
+       -change @rpath/libstdc++.dylib     @rpath/lib/libgcc/libstdc++.dylib \
+       -change @rpath/libgcc_s.1.1.dylib  @rpath/lib/libgcc/libgcc_s.1.1.dylib \
+       -change @rpath//libasan.8.dylib    @rpath/lib/libgcc/libasan.8.dylib \
+       -change @rpath/libasan.dylib       @rpath/lib/libgcc/libasan.dylib \
+       -change @rpath/libatomic.1.dylib   @rpath/lib/libgcc/libatomic.1.dylib \
+       -change @rpath/libatomic.dylib     @rpath/lib/libgcc/libatomic.dylib \
+       -change @rpath/libgcc_s.1.dylib    @rpath/lib/libgcc/libgcc_s.1.dylib \
+       -change @rpath/libgcc_s.dylib      @rpath/lib/libgcc/libgcc_s.dylib \
+       -change @rpath/libgomp.1.dylib     @rpath/lib/libgcc/libgomp.1.dylib \
+       -change @rpath/libgomp.dylib       @rpath/lib/libgcc/libgomp.dylib \
+       -change @rpath/libitm.1.dylib      @rpath/lib/libgcc/libitm.1.dylib \
+       -change @rpath/libitm.dylib        @rpath/lib/libgcc/libitm.dylib \
+       -change @rpath/libobjc-gnu.4.dylib @rpath/lib/libgcc/libobjc-gnu.4.dylib \
+       -change @rpath/libobjc-gnu.dylib   @rpath/lib/libgcc/libobjc-gnu.dylib \
+       -change @rpath/libssp.0.dylib      @rpath/lib/libgcc/libssp.0.dylib \
+       -change @rpath/libssp.dylib        @rpath/lib/libgcc/libssp.dylib \
+       -change @rpath/libubsan.1.dylib    @rpath/lib/libgcc/libubsan.1.dylib \
+       -change @rpath/libubsan.dylib      @rpath/lib/libgcc/libubsan.dylib
 
 echo "adding @rpath to python app"
 install_name_tool -add_rpath @loader_path/../../../../../../../../../ \
