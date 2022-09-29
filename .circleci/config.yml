@@ -33,9 +33,10 @@ commands:
         #       popd
         - run:
             name: checksums for caching
+            # Triggering cache changes should be done in the directories below
             command: |
-              echo $(find ./ports/cache_break -type f -exec md5 {} \; | md5 | cut -d' ' -f1)  >> CACHE_BREAK
-              echo $(find ./scripts -type f -exec md5 {} \; | md5 | cut -d' ' -f1)  >> CACHE_ITER
+              find ./ports/cache_break -type f -exec md5 {} \; | md5 | cut -d' ' -f1 > CACHE_BREAK
+              find ./ports ./scripts -mindepth 1 -maxdepth 3 -type f -exec md5 {} \; | md5 | cut -d' ' -f1 > CACHE_ITER
               cat CACHE_BREAK
               cat CACHE_ITER
 
