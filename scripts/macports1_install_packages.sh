@@ -235,8 +235,6 @@ if [ ! -z "${PART3}" ]; then
                 adwaita-icon-theme \
                 babl \
                 gegl +vala
-  # 10.12 requires git to be installed, and perl doesn't build
-  port_install p5.34-io-compress-brotli build.jobs=1
   if [ $circleci ]; then
     $dosudo port clean git
     port_install git -perl5_34
