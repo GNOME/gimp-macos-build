@@ -131,6 +131,26 @@ PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 source ~/.profile
 export PATH=$PREFIX/bin:$PATH
 
+echo "**** Debugging info ****"
+echo "**** installed ports ****"
+port installed
+echo ""
+echo ""
+echo "**** Configuration ****"
+echo ">> macports.conf"
+cat ${PREFIX}/etc/macports/macports.conf
+echo ""
+echo ""
+echo ">> sources.conf"
+cat ${PREFIX}/etc/macports/variants.conf
+echo ""
+echo ""
+echo ">> variants.conf"
+cat ${PREFIX}/etc/macports/sources.conf
+echo ""
+echo ""
+echo "**** End Debugging info ****"
+
 if [ ! -z "${PART1}" ]; then
   # Have to clean every port because sub-ports get gummed up when they fail to
   # build/install. It would require detecting failure (obscure long error like
