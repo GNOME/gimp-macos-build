@@ -5,46 +5,31 @@ could help with local development as well.
 
 ## Build process description
 
-To build GIMP/macOS we are using this repo, which contains a fork of relevant parts
-of the [gtk-osx](https://gitlab.gnome.org/GNOME/gtk-osx) project (`gimp` branch).
-Fork adds modules related to GIMP and some gimp-specific patches to GTK.
-Currently build is done using CircleCI.
+To build GIMP/macOS we are using this repo.
 
 Because CircleCI is not supporting gitlab [yet] there is a [GitHub
 mirror](https://github.com/GNOME/gimp-macos-build) of this repository.
 To get access to the Circle-CI build administration, packagers need to
-ask admin access to this Github repository.
+ask for admin access to this Github repository.
 
-## Before you start
-
-The GTK and GIMP build processes on macOS are very fragile. If you have any other build system (brew, MacPorts) installed – the local build instructions provide some support (taking `Homebrew` off `PATH`. Try to remove or isolate them from the JHBuild environment as much as you can.
-
-The main reason for this: everything that Gimp needs must be packaged in the executable bundle or be part
-of the MacOS SDK that is being called.
-
-Some people were able to get working builds in the VirtualBox VM, others in a VMWare Fusion VM. Another approach could
-be to create a separate user on your Mac.
-
-In any case, the build process on Circle CI or the local version (see below) sets up most things from scratch.
-
-## Prerequisites for local build (Draft) ##
+# Prerequisites for local build (Draft) ##
 
 At a minimum, you will need to install:
 
-- XCode Command Line Tools
-- [Rust](https://www.rust-lang.org/tools/install) (don't use `Homebrew` or `MacPorts`).
+- XCode Command Line Tools or XCode
 
 ## Steps in the CircleCI [config.yml](https://gitlab.gnome.org/Infrastructure/gimp-macos-build/blob/master/.circleci/config.yml) are:
+
+**NOTE** This section is out of date. Needs to be updated.
 
 - Install Python 3 (Rust is pre-installed) as they are required for the GIMP dependencies.
 - Set up macOS 10.12 SDK. This is needed to ensure that GIMP can run on macOS 10.12+. See [this article](https://smallhacks.wordpress.com/2018/11/11/how-to-support-old-osx-version-with-a-recent-xcode/) for the details.
 - Set up JHBuild with a custom `~/.config/jhbuildrc-custom` file (see https://github.com/GNOME/gimp-macos-build/blob/master/jhbuildrc-gtk-osx-gimp). As part of the setup, it is running `bootstrap-gtk-osx-gimp` JHBuild command to compile required modules to run JHBuild. JHBuild is using Python3 venv to run.
 - Install [fork of the gtk-mac-bundler](https://github.com/lukaso/gtk-mac-bundler) - the tool which helps to create macOS application bundles for the GTK apps. This will hopefully shift to official [gtk-mac-bundler](https://github.com/GNOME/gtk-mac-bundler)
 - Install all gtk-osx, gimp and WebKit dependencies using JHBuild
-- Build WebKit v1. This step could be avoided as it takes a lot of time, this is a soft dependency.
-- Build GIMP and gimp-help (from git).
+- Build GIMP.
 - Import signing certificate/key from the environment variables
-- Launch `build.sh` which does (among other things):
+- Launch `macports_build.sh` which does (among other things):
   - Build package using `gtk-mac-bundler`
   - Use `install_name_tool` to fix all library paths to make package relocatable.
   - generate debug symbols
@@ -59,54 +44,38 @@ At a minimum, you will need to install:
 
 ## Managing the Circle CI build ##
 
-The Circle CI build and its interaction with JHBuild create some specific issues that a packager needs to be aware of.
+The Circle CI build creates some specific issues that a packager needs to be aware of.
 
 ### Circle CI Issues that have been worked around ###
 
 #### Build timelimit ####
 
-Build jobs have a strict time limit of 1 hour. As soon as a job takes longer, it is canceled.
+Build jobs have a strict time limit of 3 hours. As soon as a job takes longer, it is canceled.
 
-Due to this, and the fact that the build as a whole takes much more than an hour, creative measures
+Due to this, and the fact that a full build takes much more than 3 hours, creative measures
 have had to be taken.
 
-**Note** Additionally, There is a hard limit on the length of a single build step. If a step takes longer than an hour it simply
-can't be build in Circle CI. For this reason, support for Webkit has had to be dropped.
+#### Length of build ####
 
-#### JHBuild not detecting changes ####
+A full build (including all dependencies) takes more than 3 hours, meaning it is very
+expensive to rebuild from scratch on every commit.
 
-Because of JHBuild's architecture, certain changes to packages it is building, are not detected at build time. This means that the build can become out of date and a full cache-break build will have to be undertaken.
-
-Examples of things that JHBuild does not detect:
-
-- A new patch file being added or removed (they are stored in directory `patches`)
-- Changes to environment variables (such a `CFLAGS`) (are typically declared in `.circleci/config.yml`)
-- Changes to the build command (set out in `.circleci/config.yml`)
-
-Examples of things that JHBuild does detect:
-
-- A new URL/version of a package
-- New commits on a git based repo
-- Changes in a dependency
-
-### Fixes for these problems ###
+### Fixes for problems ###
 
 In order to fix the above problems, the following has been done:
 
-- **Timeouts** The build has been split into multiple jobs, each of which can take up to an hour.
+- **Timeouts** The build has been split into multiple jobs, each of which can take up to 3 hours.
   Before each job the build environment is stood up. Additionally the cache is loaded to provide
   the results of the previous jobs (build steps) as well as previous builds. This takes about 5 minutes
   to set up for each job.
-- **JHBuild cannot detect certain changes** The full cache is broken by changing the first part of the
-  cache key [see below for caching principles] whenever a change to the patch files (`patches` directory)
-  occurs. This is done automatically.
-- **cache is not updated when changes to build occur** Even though JHBuild detects the build change,
-  the CircleCI caching mechanism needs to be alerted to save an update version of the cache. This is
-  done whenever a change to `modulesets` or `.circleci/config.yml` occurs. It is done by changing the
-  last part of the cache key. This is done automatically.
-
-**Note** These changes only relate to the build steps, not to setting up the build environment. If
-changes are required, the cache keys will have to be modified for the build step, manually.
+- **Length of build** The full cache is broken by changing the first part of the
+  cache key [see below for caching principles] whenever the file `./ports/cache_break` is changed.
+  This will trigger a full build of everthing from scratch and will take north of 3 hours to complete.
+  Recommended only in extreme circumstances.
+- **caching** The cache is saved on every build step, due to the need for any changes to pass to
+  the next build step. This can take from 5 to 30 minutes as the full cache weighs in at a
+  whopping 6.8GB. This is way above the recommended limit of Circle CI but is unavoidable due to
+  the build time limits.
 
 ### Caching to get around build timelimit ###
 
@@ -115,89 +84,17 @@ results of each job is cached. This uses CircleCI's caching mechanism.
 
 The following are aspects of the caching:
 
-- The JHBuild cache and the rest of the build cache are managed separately
-- The cache is only saved when a new cache key is used, so by default, nothing new that happens in a build
-  is saved until the cache key is changed
 - They keys are arranged in an onion shape. Meaning the most specific cache is hit first, but with the broadest
-  number of items cached. This means the full build up to and including Gimp. Narrower keys don't include Gimp,
-  then Gegl/Babl, then Dependencies Part 2, then dependencies Part 1, and so on. This is required to pass
+  number of items cached. This means the full build up to and including GiMP. Narrower keys don't include GIMP,
+  then Dependencies Part 3, then Dependencies Part 2, then dependencies Part 1, and so on. This is required to pass
   intermediate artifacts between steps of the build.
 - The keys for reloading the cache are tested and loaded in order. Each key is tested, and if found, loaded. If it is not found, the algorithm goes to the next key. Circleci then drops the suffix (after the '-') and tries to load those keys (if they are listed in the keys)
 - The build script manages swapping out cache keys automatically. See `config.yml` for details.
 
-## Managing the Circle CI build ##
-
-The Circle CI build and its interaction with JHBuild create some specific issues that a packager needs to be aware of.
-
-### Circle CI Issues that have been worked around ###
-
-#### Build timelimit ####
-
-Build jobs have a strict time limit of 1 hour. As soon as a job takes longer, it is canceled.
-
-Due to this, and the fact that the build as a whole takes much more than an hour, creative measures
-have had to be taken.
-
-**Note** Additionally, There is a hard limit on the length of a single build step. If a step takes longer than an hour it simply
-can't be build in Circle CI. For this reason, support for Webkit has had to be dropped.
-
-#### JHBuild not detecting changes ####
-
-Because of JHBuild's architecture, certain changes to packages it is building, are not detected at build time. This means that the build can become out of date and a full cache-break build will have to be undertaken.
-
-Examples of things that JHBuild does not detect:
-
-- A new patch file being added or removed (they are stored in directory `patches`)
-- Changes to environment variables (such a `CFLAGS`) (are typically declared in `.circleci/config.yml`)
-- Changes to the build command (set out in `.circleci/config.yml`)
-
-Examples of things that JHBuild does detect:
-
-- A new URL/version of a package
-- New commits on a git based repo
-- Changes in a dependency
-
-### Fixes for these problems ###
-
-In order to fix the above problems, the following has been done:
-
-- **Timeouts** The build has been split into multiple jobs, each of which can take up to an hour.
-  Before each job the build environment is stood up. Additionally the cache is loaded to provide
-  the results of the previous jobs (build steps) as well as previous builds. This takes about 5 minutes
-  to set up for each job.
-- **JHBuild cannot detect certain changes** The full cache is broken by changing the first part of the
-  cache key [see below for caching principles] whenever a change to the patch files (`patches` directory)
-  occurs. This is done automatically.
-- **cache is not updated when changes to build occur** Even though JHBuild detects the build change,
-  the CircleCI caching mechanism needs to be alerted to save an update version of the cache. This is
-  done whenever a change to `modulesets` or `.circleci/config.yml` occurs. It is done by changing the
-  last part of the cache key. This is done automatically.
-
-**Note** These changes only relate to the build steps, not to setting up the build environment. If
-changes are required, the cache keys will have to be modified for the build step, manually.
-
-### Caching to get around build timelimit ###
-
-In order to speed up builds, and to be able to pass intermediate artifacts between build jobs, the
-results of each job is cached. This uses CircleCI's caching mechanism.
-
-The following are aspects of the caching:
-
-- The JHBuild cache and the rest of the build cache are managed separately
-- The cache is only saved when a new cache key is used, so by default, nothing new that happens in a build
-  is saved until the cache key is changed
-- They keys are arranged in an onion shape. Meaning the most specific cache is hit first, but with the broadest
-  number of items cached. This means the full build up to and including Gimp. Narrower keys don't include Gimp,
-  then Gegl/Babl, then Dependencies Part 2, then dependencies Part 1, and so on. This is required to pass
-  intermediate artifacts between steps of the build.
-- The keys for reloading the cache are tested and loaded in order. Each key is tested, and if found, loaded. If it is not found, the algorithm goes to the next key. Circleci then drops the suffix (after the '-') and tries to load those keys (if they are listed in the keys)
-- When new information is layered onto the cache, the tail end of the cache keys should be iterated. So `break5-gimpv3-cacheiter7` should be changed to `break5-gimpv3-cacheiter8`. This will keep using the cache, but allow new changes to be saved. (Done automatically.)
-- When the build has to be redone from scratch, because a dependency has changed, then the first part of the cache key changes. This then means no cache is found and everything goes from scratch. Here the key goes from `break5-gimpv3-cacheiter7` to `break6-gimpv3-cacheiter1` (the `break` part matters, the `cacheiter` part doesn't). Done automatically.
-
 ## Other related links
 
- - [Gtk-OSX](https://gitlab.gnome.org/GNOME/gtk-osx/) project to simplify building MacOS application bundles for Gtk+-based applications
- - [gimp-plugins-collection](https://github.com/aferrero2707/gimp-plugins-collection) - GMIC, LiquidRescale, NUFraw, PhFGimp and ResynthesizerPlugin GIMP plugin builds, including macOS version
+ - [gimp-plugins-collection](https://github.com/aferrero2707/gimp-plugins-collection) - GMIC, LiquidRescale, NUFraw, PhFGimp and ResynthesizerPlugin GIMP plugin builds, including macOS version. If these are not signed
+   they will need to be modified by removing the apple quarantine (and requires admin rights)
  - CircleCI [gimp-macos-build project](https://circleci.com/gh/GNOME/gimp-macos-build)
  - How this repo uses [JHBuild and Gtk-OSX](README_JHBUILD_GTK_OSX.md)
 
@@ -216,11 +113,17 @@ framework. Probably could be a small Python plugin as [there is a module](https:
 
 ## How to build locally (beta) ##
 
+- See `./scripts/README.md`
+
+Developing GIMP (or dependencies) locally still needs to be refined as the Macports
+environment is not that amenable to that workflow.
+
 ### Apple Silicon (M1, arm64) Support ###
 
-The local build script supports building on Apple Silicon on an M1/2 mac. The script will autodetect the architecture and build accordingly.
+The local build script supports building on Apple Silicon on an M1/2 mac as well as Intel macs. The script
+will autodetect the architecture and build accordingly.
 
-Additionally, the x86_64 build will also work if built from a shell
+Additionally, the x86_64 build will also work on Apple Silicon if built from a shell
 running in Rosetta (for example by running `arch -x86_64 zsh`).
 
 ### Instructions ###
@@ -245,36 +148,27 @@ Or for 2.10.28 (although there are tags for specific releases so go to that if d
 git checkout gimp-2-10
 ```
 
-Then
+Then follow instructions in `scripts/README.md`
+
+The `Gimp` executable will be in:
 
 ```sh
-scripts/build_gimp.sh
-```
-
-**Note** This script should set up everything for you in order to build. And then will execute the build.
-The script has a number of helpful options for building which can be found by running:
-
-```sh
-scripts/build_gimp.sh --help
-```
-
-The results will be found in:
-
-```sh
-~/gtk/inst
-```
-
-With the `Gimp` executable in:
-
-```sh
-~/gtk/inst/bin/gimp
+/opt/local/bin/gimp
 ```
 
 Additionally the script will create a staged version of the app in:
 
 ```sh
-~/gimp299-osx-app
+~/macports-gimp299-osx-app
 ```
+
+or 
+
+```sh
+~/macports-gimp299-osx-app-x86_64
+```
+
+depending on architecture.
 
 Which can be run with:
 
@@ -282,34 +176,17 @@ Which can be run with:
 ~/gimp299-osx-app/GIMP.app/Contents/MacOS/gimp
 ```
 
+or
+
+```sh
+~/gimp299-osx-app-x86_64/GIMP.app/Contents/MacOS/gimp
+```
+
 Finally, the script will create a DMG file which is the "installer".
 
 ## Debug info ##
 
-By default, the executable will be built with debug symbols. This is currently set in `build_gimp.sh`.
-
-If you want to build with optimizations (which is how the release is built) you will need to remove
-the `GIMP_DEBUG="true"` statement from the script.
-
-## Swap local build ##
-
-A tool to swap local builds is available. This allows local devs to have multiple versions
-of gimp building side by side.
-
-This tool can be called before running a local build file using:
-
-```
-project/swap-local-build.sh --gimp210
-```
-
-or
-
-```
-project/swap-local-build.sh --gimp299
-```
-
-Other options are available. This tool will only be available once you have cloned the
-`gimp-macos-build` repo as it is within the `project` directory.
+By default, the executable will be built with debug symbols.
 
 ## Apple tools ##
 
@@ -328,8 +205,3 @@ https://firefox-source-docs.mozilla.org/contributing/debugging/debugging_on_maco
 
 One change you need to make. In the scheme, add an "Argument Passed on Launch" and set it
 to `--`.
-
-## Appendix ##
-
-The build used to depend on this [fork](https://gitlab.gnome.org/samm-git/gtk-osx/tree/gimp) of
-[gtk-osx](https://gitlab.gnome.org/GNOME/gtk-osx) project (`gimp` branch).
