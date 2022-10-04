@@ -7,40 +7,24 @@ commands:
 
   setup:
     steps:
-        # for local builds, this needs to be checked out to `~/project`
-        - checkout
-        - run:
-            name: Avoid hosts unknown for gitlab.gnome.org
-            command: mkdir -p ~/.ssh/ && echo -e "Host gitlab.gnome.org\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
-        - run:
-            name: checksums for caching
-            # Triggering cache changes should be done in the directories below
-            command: |
-              find ./ports/cache_break -type f -exec md5 {} \; | md5 | cut -d' ' -f1 > CACHE_BREAK
-              # find ./ports ./scripts -mindepth 1 -maxdepth 3 -type f -exec md5 {} \; | md5 | cut -d' ' -f1 > CACHE_ITER
-              date +%s > CACHE_ITER
-              cat CACHE_BREAK
-              cat CACHE_ITER
+      # for local builds, this needs to be checked out to `~/project`
+      - checkout
+      - run:
+          name: Avoid hosts unknown for gitlab.gnome.org
+          command: mkdir -p ~/.ssh/ && echo -e "Host gitlab.gnome.org\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
 
-  got-cache-so-skip-job:
+  cache-break:
     steps:
-        - restore_cache:
-            keys:
-              - got_cache{{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
-              - got_cache{{ checksum "CACHE_BREAK" }}-gimpv3-
-        - run:
-            command: |
-              if [ -f ~/got_cache/cache_check ]; then
-                echo "**skipping job"
-                circleci-agent step halt
-              fi
-
-  got-cache:
-    steps:
-        - restore_cache:
-            keys:
-              - got_cache{{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
-              - got_cache{{ checksum "CACHE_BREAK" }}-gimpv3-
+      - run:
+          name: should cache break
+          # Triggering cache changes should be done in the directories below
+          command: |
+            cache_break=$(md5 ports/cache_break)
+            if [ ! -e "${HOME}/CACHE_BREAK" ] || [ "${cache_break}" != "$(cat "${HOME}/CACHE_BREAK")" ]; then
+              echo "Cache break"
+              echo "${cache_break}" > "${HOME}/CACHE_BREAK"
+              # scripts/macports_uninstall.sh --formulas-only
+            fi
 
   setup-macports:
     steps:
@@ -65,230 +49,137 @@ commands:
         #               gtk-osx-gimp.modules.tmpl > gtk-osx-gimp.modules
         #       popd
 
-  get-cached-data:
-    steps:
-        - run:
-            command: |
-              # get around permissions problems restoring
-              sudo chown -R "$USER":staff /opt/local
-        - restore_cache:
-            keys:
-              - v{{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt5v3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt4v3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt3v3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimpv3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt5v3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt4v3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt3v3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-
-        - run:
-            command: |
-              sudo chown -R root:wheel /opt/local
-
-  pre-cache-store:
-    steps:
-      - run:
-          command: |
-            mkdir -p ~/got_cache
-            if [ ! -f ~/got_cache/cache_check ]; then
-              echo "we got cache" > ~/got_cache/cache_check
-            fi
-            echo "**saving that we have cache"
-      - save_cache:
-          paths:
-            - ~/got_cache
-          key: got_cache{{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
-
 # -------------------------
 #        JOBS
 # -------------------------
 jobs:
 
   dependencies-part1:
-    macos:
-        xcode: "13.3.0"
-        resource_class: macos.x86.medium.gen2
+    machine: true
+    resource_class: gnome/gimp
 
     steps:
-        - setup
-        - got-cache-so-skip-job
-        - setup-macports
-        - get-cached-data
-        - run:
-            name: Build GIMP dependencies part 1
-            command: |
-              scripts/macports1_install_packages.sh --circleci --part1
-            no_output_timeout: 30m
-        - save_cache:
-            paths:
-              - /opt/local
-              - /Applications/MacPorts
-            key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-{{ checksum "CACHE_ITER" }}
+      - setup
+      - cache-break
+      - setup-macports
+      - run:
+          name: Build GIMP dependencies part 1
+          command: |
+            scripts/macports1_install_packages.sh --circleci --part1
+          no_output_timeout: 30m
 
   dependencies-part2:
-    macos:
-        xcode: "13.3.0"
-        resource_class: macos.x86.medium.gen2
+    machine: true
+    resource_class: gnome/gimp
 
     steps:
-        - setup
-        - got-cache-so-skip-job
-        - setup-macports
-        - get-cached-data
-        - run:
-            name: Build GIMP dependencies part 2
-            command: |
-              scripts/macports1_install_packages.sh --circleci --part2
-            no_output_timeout: 30m
-        - save_cache:
-            paths:
-              - /opt/local
-              - /Applications/MacPorts
-            key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-{{ checksum "CACHE_ITER" }}
+      - setup
+      - setup-macports
+      - run:
+          name: Build GIMP dependencies part 2
+          command: |
+            scripts/macports1_install_packages.sh --circleci --part2
+          no_output_timeout: 30m
 
   dependencies-part3:
-    macos:
-        xcode: "13.3.0"
-        resource_class: macos.x86.medium.gen2
+    machine: true
+    resource_class: gnome/gimp
 
     steps:
-        - setup
-        - got-cache-so-skip-job
-        - setup-macports
-        - get-cached-data
-        - run:
-            name: Build GIMP dependencies part 3
-            command: |
-              scripts/macports1_install_packages.sh --circleci --part3
-            no_output_timeout: 30m
-        - save_cache:
-            paths:
-              - /opt/local
-              - /Applications/MacPorts
-            key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt3v3-{{ checksum "CACHE_ITER" }}
+      - setup
+      - setup-macports
+      - run:
+          name: Build GIMP dependencies part 3
+          command: |
+            scripts/macports1_install_packages.sh --circleci --part3
+          no_output_timeout: 30m
 
   dependencies-part4:
-    macos:
-        xcode: "13.3.0"
-        resource_class: macos.x86.medium.gen2
+    machine: true
+    resource_class: gnome/gimp
 
     steps:
-        - setup
-        - got-cache-so-skip-job
-        - setup-macports
-        - get-cached-data
-        - run:
-            name: Build GIMP dependencies part 4
-            command: |
-              scripts/macports1_install_packages.sh --circleci --part4
-            no_output_timeout: 30m
-        - save_cache:
-            paths:
-              - /opt/local
-              - /Applications/MacPorts
-            key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt4v3-{{ checksum "CACHE_ITER" }}
+      - setup
+      - setup-macports
+      - run:
+          name: Build GIMP dependencies part 4
+          command: |
+            scripts/macports1_install_packages.sh --circleci --part4
+          no_output_timeout: 30m
 
   dependencies-part5:
-    macos:
-        xcode: "13.3.0"
-        resource_class: macos.x86.medium.gen2
+    machine: true
+    resource_class: gnome/gimp
 
     steps:
-        - setup
-        - got-cache-so-skip-job
-        - setup-macports
-        - get-cached-data
-        - run:
-            name: Build GIMP dependencies part 5
-            command: |
-              scripts/macports1_install_packages.sh --circleci --part5
-            no_output_timeout: 30m
-        - save_cache:
-            paths:
-              - /opt/local
-              - /Applications/MacPorts
-            key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt5v3-{{ checksum "CACHE_ITER" }}
+      - setup
+      - setup-macports
+      - run:
+          name: Build GIMP dependencies part 5
+          command: |
+            scripts/macports1_install_packages.sh --circleci --part5
+          no_output_timeout: 30m
 
   build-gimp-and-package:
-    macos:
-        xcode: "13.3.0"
-        resource_class: macos.x86.medium.gen2
+    machine: true
+    resource_class: gnome/gimp
 
     steps:
-        - setup
-        - got-cache
-        - setup-macports
-        - get-cached-data
-        - run:
-            name: Build GIMP dependencies part 1
-            command: |
-              # if not cache then build deps in split parts
-              if [ -f ~/got_cache/cache_check ]; then
-                echo "**got cache, building all packages"
-                scripts/macports1_install_packages.sh --circleci
-              fi
-            no_output_timeout: 30m
-        - run:
-            name: Build GIMP
-            # XXX `make check` is not working reliably under circle ci, so we are
-            # not using --check flag
-            command: |
-              scripts/macports2_install_gimp.sh circleci
-        - save_cache:
-            paths:
-              - /opt/local
-              - /Applications/MacPorts
-            key: v{{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
-        - pre-cache-store
-        - run:
-            name: Setup gtk-mac-bundler
-            command: |
+      - setup
+      - setup-macports
+      - run:
+          name: Build GIMP
+          # XXX `make check` is not working reliably under circle ci, so we are
+          # not using --check flag
+          command: |
+            scripts/macports2_install_gimp.sh circleci
+      - run:
+          name: Setup gtk-mac-bundler
+          command: |
+            if [ ! -d ~/Source/gtk-mac-bundler ]; then
               mkdir -p ~/Source
               cd ~/Source
               git clone https://gitlab.gnome.org/lukaso/gtk-mac-bundler
               cd gtk-mac-bundler
               make install
-        - run:
-            name: Importing signing certificate
-            command: |
-              mkdir ${HOME}/codesign && cd ${HOME}/codesign
-              echo "$osx_crt" | base64 -D > gnome.pfx
-              curl 'https://developer.apple.com/certificationauthority/AppleWWDRCA.cer' > apple.cer
-              security create-keychain -p "" signchain
-              security set-keychain-settings signchain
-              security unlock-keychain -u signchain
-              security list-keychains  -s "${HOME}/Library/Keychains/signchain-db" "${HOME}/Library/Keychains/login.keychain-db"
-              security import apple.cer -k signchain  -T /usr/bin/codesign
-              security import gnome.pfx  -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
-              security set-key-partition-list -S apple-tool:,apple: -k "" signchain
-              rm -rf ${HOME}/codesign
-        - run:
-            name: Creating DMG package
-            command: |
-              # Authorize applescript on circle ci build
-              epochdate=$(($(date +'%s * 1000 + %-N / 1000000')))
-              tcc_service_appleevents="replace into access (service,client,client_type,auth_value,auth_reason,auth_version,indirect_object_identifier_type,indirect_object_identifier,flags,last_modified) values (\"kTCCServiceAppleEvents\",\"/usr/sbin/sshd\",1,2,4,1,0,\"com.apple.finder\",0,$epochdate);"
-              sudo sqlite3 "/Users/distiller/Library/Application Support/com.apple.TCC/TCC.db" "$tcc_service_appleevents"
-
-              # run script
-              scripts/macports3_build_dmg.sh
-            no_output_timeout: 20m
-        - run:
-            name:  Notarizing DMG package
-            command: |
-              package/notarize.sh
-            no_output_timeout: 20m
-        - store_artifacts:
-            path: /tmp/artifacts
-            destination: builds
+            fi
+      - run:
+          name: Importing signing certificate
+          command: |
+            mkdir ${HOME}/codesign && cd ${HOME}/codesign
+            echo "$osx_crt" | base64 -D > gnome.pfx
+            curl 'https://developer.apple.com/certificationauthority/AppleWWDRCA.cer' > apple.cer
+            if [ -f "${HOME}/Library/Keychains/signchain-db" ]; then
+              security delete-keychain signchain
+            fi
+            security create-keychain -p "" signchain
+            security set-keychain-settings signchain
+            security unlock-keychain -u signchain
+            security list-keychains  -s "${HOME}/Library/Keychains/signchain-db" "${HOME}/Library/Keychains/login.keychain-db"
+            security import apple.cer -k signchain  -T /usr/bin/codesign
+            security import gnome.pfx  -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
+            security set-key-partition-list -S apple-tool:,apple: -k "" signchain
+            rm -rf ${HOME}/codesign
+      - run:
+          name: Creating DMG package
+          command: |
+            scripts/macports3_build_dmg.sh
+          no_output_timeout: 20m
+      - run:
+          name:  Notarizing DMG package
+          command: |
+            package/notarize.sh
+            if [ -f "${HOME}/Library/Keychains/signchain-db" ]; then
+              security delete-keychain signchain
+            fi
+          no_output_timeout: 20m
+      - store_artifacts:
+          path: /tmp/artifacts
+          destination: builds
 
 workflows:
   version: 2
-  build-different-versions:
+  build-arm64:
     jobs:
       - dependencies-part1
       - dependencies-part2:

@@ -25,13 +25,60 @@
 source ~/.profile
 export PATH=$PREFIX/bin:$PATH
 
-if ! which port &> /dev/null; then
+
+function pure_version() {
+	echo '0.1'
+}
+
+function version() {
+	echo "macports_uninstall.sh $(pure_version)"
+}
+
+function usage() {
+    version
+    echo ""
+    echo "Uninstalls MacPorts (or just formulas)."
+    echo "Usage:  $(basename "$0") [--formulas-only] [--version] [--help]"
+    echo ""
+    echo "Options:"
+    echo "  --formulas-only"
+    echo "      only uninstall formulas, not macports itself. Needed for CI where deleting users requires"
+    echo "      accepting a dialog box."
+    echo "  --version         show tool version number"
+    echo "  -h, --help        display this help"
+    exit 0
+}
+
+formulasonly=''
+
+while test "${1:0:1}" = "-"; do
+	case $1 in
+	--formulas-only)
+		formulasonly="true"
+		shift;;
+	-h | --help)
+		usage;;
+	--version)
+		version; exit 0;;
+	-*)
+		echo "Unknown option $1. Run with --help for help."
+		exit 1;;
+	esac
+done
+
+if which port &> /dev/null; then
+  echo "Uninstalling formulas"
   $dosudo port -fp uninstall installed || true
 fi
 
-if [ -z ${dosudo} ]; then
-  if [ ! -z ${PREFIX+x} ]; then
-    rm -rf $PREFIX
+if [ -n "$formulasonly" ]; then
+  exit 0
+fi
+
+echo "Uninstalling MacPorts"
+if [ -z "${dosudo}" ]; then
+  if [ -n "${PREFIX+x}" ]; then
+    rm -rf "$PREFIX"
   fi
 else
   $dosudo dscl . -delete /Users/macports
@@ -41,9 +88,9 @@ else
       /opt/local \
       /Applications/DarwinPorts \
       /Applications/MacPorts \
-      /Library/LaunchDaemons/org.macports.* \
-      /Library/Receipts/DarwinPorts*.pkg \
-      /Library/Receipts/MacPorts*.pkg \
+      '/Library/LaunchDaemons/org.macports.*' \
+      '/Library/Receipts/DarwinPorts*.pkg' \
+      '/Library/Receipts/MacPorts*.pkg' \
       /Library/StartupItems/DarwinPortsStartup \
       /Library/Tcl/darwinports1.0 \
       /Library/Tcl/macports1.0 \
