@@ -3,6 +3,8 @@
 This repository contains files related to GIMP/macOS build using CircleCI and some tips that
 could help with local development as well.
 
+[![CircleCI](https://circleci.com/gh/GNOME/gimp-macos-build.svg?style=svg)](https://circleci.com/gh/GNOME/gimp-macos-build)
+
 ## Build process description
 
 To build GIMP/macOS we are using this repo.
@@ -205,3 +207,11 @@ https://firefox-source-docs.mozilla.org/contributing/debugging/debugging_on_maco
 
 One change you need to make. In the scheme, add an "Argument Passed on Launch" and set it
 to `--`.
+
+## Our partners ##
+
+These companies generously support the development of GIMP on MacOS.
+
+[CircleCI](https://circleci.com/)
+
+![MacStadium](https://uploads-ssl.webflow.com/5ac3c046c82724970fc60918/5c019d917bba312af7553b49_MacStadium-developerlogo.png)
