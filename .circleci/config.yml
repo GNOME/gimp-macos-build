@@ -48,6 +48,7 @@ commands:
             name: Install macports
             command: |
               scripts/macports0_install.sh
+            no_output_timeout: 30m
         # - run:
         #     name: Gimp version (default `master`)
         #     command: |
