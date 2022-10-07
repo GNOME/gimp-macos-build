@@ -26,11 +26,13 @@ set -e;
 
 source ~/.profile
 
-if [[ $(uname -m) == 'arm64' ]]; then
+if [ -n "$GIMP_ARM64" ]; then
   build_arm64=true
+  build_type=arm64
   echo "*** Build: arm64"
 else
   build_arm64=false
+  build_type=x86_64
   echo "*** Build: x86_64"
 fi
 
@@ -39,5 +41,5 @@ export PATH=$PREFIX/bin:$PATH
 PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 pushd $PROJECT_DIR/package
-./macports_build.sh debug
+./macports_build_dmg.sh ${build_type}
 popd

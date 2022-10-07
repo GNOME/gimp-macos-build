@@ -9,7 +9,8 @@ Circle CI.
 macports0_install.sh
 macports1_install_packages.sh
 macports2_install_gimp.sh
-macporst3_build_dmg.sh
+macports3_build_app.sh
+macports3_build_dmg.sh
 ```
 
 If you need to start over from scratch, run:
