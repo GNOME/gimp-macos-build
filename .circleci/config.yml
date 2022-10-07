@@ -5,7 +5,7 @@ version: 2.1
 # -------------------------
 commands:
 
-  setup:
+  setup-arm64:
     steps:
       # for local builds, this needs to be checked out to `~/project`
       - checkout
@@ -13,7 +13,7 @@ commands:
           name: Avoid hosts unknown for gitlab.gnome.org
           command: mkdir -p ~/.ssh/ && echo -e "Host gitlab.gnome.org\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
 
-  cache-break:
+  cache-break-arm64:
     steps:
       - run:
           name: should cache break
@@ -26,7 +26,7 @@ commands:
               # scripts/macports_uninstall.sh --formulas-only
             fi
 
-  setup-macports:
+  setup-macports-arm64:
     steps:
         - run:
             name: Install macports
@@ -54,7 +54,7 @@ commands:
 # -------------------------
 jobs:
 
-  dependencies-part1:
+  dependencies-part1-arm64:
     machine: true
     resource_class: gnome/gimp
 
@@ -68,7 +68,7 @@ jobs:
             scripts/macports1_install_packages.sh --circleci --part1
           no_output_timeout: 30m
 
-  dependencies-part2:
+  dependencies-part2-arm64:
     machine: true
     resource_class: gnome/gimp
 
@@ -81,7 +81,7 @@ jobs:
             scripts/macports1_install_packages.sh --circleci --part2
           no_output_timeout: 30m
 
-  dependencies-part3:
+  dependencies-part3-arm64:
     machine: true
     resource_class: gnome/gimp
 
@@ -94,7 +94,7 @@ jobs:
             scripts/macports1_install_packages.sh --circleci --part3
           no_output_timeout: 30m
 
-  dependencies-part4:
+  dependencies-part4-arm64:
     machine: true
     resource_class: gnome/gimp
 
@@ -107,7 +107,7 @@ jobs:
             scripts/macports1_install_packages.sh --circleci --part4
           no_output_timeout: 30m
 
-  dependencies-part5:
+  dependencies-part5-arm64:
     machine: true
     resource_class: gnome/gimp
 
@@ -120,7 +120,7 @@ jobs:
             scripts/macports1_install_packages.sh --circleci --part5
           no_output_timeout: 30m
 
-  build-gimp-and-package:
+  build-gimp-arm64:
     machine: true
     resource_class: gnome/gimp
 
@@ -144,14 +144,32 @@ jobs:
               make install
             fi
       - run:
+          name: Creating DMG package
+          command: |
+            scripts/macports3_build_app.sh
+          no_output_timeout: 20m
+      - persist_to_workspace:
+          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
+          # taken to be the root directory of the workspace.
+          root: "~"
+          # Must be relative path from root
+          paths:
+            - macports-gimp299-osx-app
+            - macports-gimp299-osx-app-x86_64
+            - .profile
+
+  package-gimp-arm64:
+    macos:
+      xcode: "13.3.0"
+
+    steps:
+      - setup
+      - run:
           name: Importing signing certificate
           command: |
             mkdir ${HOME}/codesign && cd ${HOME}/codesign
             echo "$osx_crt" | base64 -D > gnome.pfx
             curl 'https://developer.apple.com/certificationauthority/AppleWWDRCA.cer' > apple.cer
-            if [ -f "${HOME}/Library/Keychains/signchain-db" ]; then
-              security delete-keychain signchain
-            fi
             security create-keychain -p "" signchain
             security set-keychain-settings signchain
             security unlock-keychain -u signchain
@@ -160,18 +178,27 @@ jobs:
             security import gnome.pfx  -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
             security set-key-partition-list -S apple-tool:,apple: -k "" signchain
             rm -rf ${HOME}/codesign
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: "~"
       - run:
           name: Creating DMG package
           command: |
-            scripts/macports3_build_dmg.sh
+            source ~/.profile
+            cd ${HOME}/project
+
+            # Authorize applescript on circle ci build
+            epochdate=$(($(date +'%s * 1000 + %-N / 1000000')))
+            tcc_service_appleevents="replace into access (service,client,client_type,auth_value,auth_reason,auth_version,indirect_object_identifier_type,indirect_object_identifier,flags,last_modified) values (\"kTCCServiceAppleEvents\",\"/usr/sbin/sshd\",1,2,4,1,0,\"com.apple.finder\",0,$epochdate);"
+            sudo sqlite3 "/Users/distiller/Library/Application Support/com.apple.TCC/TCC.db" "$tcc_service_appleevents"
+
+            # run script
+            scripts/macports4_build_dmg.sh
           no_output_timeout: 20m
       - run:
           name:  Notarizing DMG package
           command: |
             package/notarize.sh
-            if [ -f "${HOME}/Library/Keychains/signchain-db" ]; then
-              security delete-keychain signchain
-            fi
           no_output_timeout: 20m
       - store_artifacts:
           path: /tmp/artifacts
@@ -181,19 +208,22 @@ workflows:
   version: 2
   build-arm64:
     jobs:
-      - dependencies-part1
-      - dependencies-part2:
+      - dependencies-part1-arm64
+      - dependencies-part2-arm64:
           requires:
-            - dependencies-part1
-      - dependencies-part3:
+            - dependencies-part1-arm64
+      - dependencies-part3-arm64:
           requires:
-            - dependencies-part2
-      # - dependencies-part4:
+            - dependencies-part2-arm64
+      # - dependencies-part4-arm64:
       #     requires:
-      #       - dependencies-part3
-      # - dependencies-part5:
+      #       - dependencies-part3-arm64
+      # - dependencies-part5-arm64:
       #     requires:
-      #       - dependencies-part4
-      - build-gimp-and-package:
+      #       - dependencies-part4-arm64
+      - build-gimp-arm64:
           requires:
-            - dependencies-part3
+            - dependencies-part3-arm64
+      - package-gimp-arm64:
+          requires:
+            - build-gimp-arm64
