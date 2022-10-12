@@ -77,7 +77,7 @@ if ! which port &> /dev/null; then
     echo 'macosx_deployment_target 10.12' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
     echo 'macosx_sdk_version 10.12' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
   fi
-  echo '-x11 +no_x11 +quartz +python310 -python27 +no_gnome -gnome -gfortran' | $dosudo tee -a ${PREFIX}/etc/macports/variants.conf
+  echo '-x11 +no_x11 +quartz +python27 +no_gnome -gnome -gfortran' | $dosudo tee -a ${PREFIX}/etc/macports/variants.conf
   printf "file://${PROJECT_DIR}/ports\n$(cat ${PREFIX}/etc/macports/sources.conf)" > /tmp/macports_install_sources.txt
   $dosudo mv /tmp/macports_install_sources.txt ${PREFIX}/etc/macports/sources.conf
 
@@ -107,5 +107,8 @@ fi
 
 source ~/.profile
 
-$dosudo port -v selfupdate
+pushd ~/project/ports
+$dosudo portindex
+popd
 
+$dosudo port -v selfupdate || true

@@ -7,13 +7,13 @@ if [[ $(uname -m) == 'arm64' ]]; then
   build_arm64=true
   echo "*** Build: arm64"
   #  target directory
-  export PACKAGE_DIR="${HOME}/macports-gimp299-osx-app"
+  export PACKAGE_DIR="${HOME}/macports-gimp210-osx-app"
   export arch="arm64"
 else
   build_arm64=false
   echo "*** Build: x86_64"
   #  target directory
-  export PACKAGE_DIR="${HOME}/macports-gimp299-osx-app-x86_64"
+  export PACKAGE_DIR="${HOME}/macports-gimp210-osx-app-x86_64"
   export arch="x86_64"
 fi
 export JHBUILD_PREFIX=${PREFIX}
@@ -41,11 +41,10 @@ echo "$GIMP_VERSION" > ${PACKAGE_DIR}/GIMP.app/Contents/Resources/.version
 BASEDIR=$(dirname "$0")
 
 echo "Link 'Resources' into python framework 'Resources'"
-pushd "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/3.10/Resources/Python.app/Contents/Resources/"
+pushd "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/Resources/"
   for resources in etc gimp.icns lib share xcf.icns ;
   do
-ln -s "../../../../../../../../../${resources}" \
-      "${resources}"
+    ln -s "../../../../../../../../../${resources}" "${resources}"
   done
 popd
 
@@ -74,7 +73,7 @@ done
 
 # Long list of -change are due to not building gcc from source
 # due to a bug. See https://trac.macports.org/ticket/65573
-echo "adding @rpath to the binaries (incl special ghostscript 9.56 fix)"
+echo "adding @rpath to the binaries (incl libgcc fix)"
 find  ${PACKAGE_DIR}/GIMP.app/Contents/MacOS -type f -perm +111 \
    | xargs file \
    | grep ' Mach-O ' |awk -F ':' '{print $1}' \
@@ -103,37 +102,8 @@ find  ${PACKAGE_DIR}/GIMP.app/Contents/MacOS -type f -perm +111 \
        -change @rpath/libubsan.1.dylib    @rpath/lib/libgcc/libubsan.1.dylib \
        -change @rpath/libubsan.dylib      @rpath/lib/libgcc/libubsan.dylib
 
-echo "adding @rpath to the plugins (incl special ghostscript 9.56 fix)"
-find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/2.99/plug-ins/ -perm +111 -type f \
-   | xargs file \
-   | grep ' Mach-O '|awk -F ':' '{print $1}' \
-   | xargs -n1 install_name_tool -add_rpath @executable_path/../../../../../ \
-       -change @rpath/libgfortran.5.dylib @rpath/lib/libgcc/libgfortran.5.dylib \
-       -change @rpath/libgfortran.dylib   @rpath/lib/libgcc/libgfortran.dylib \
-       -change @rpath/libquadmath.0.dylib @rpath/lib/libgcc/libquadmath.0.dylib \
-       -change @rpath/libquadmath.dylib   @rpath/lib/libgcc/libquadmath.dylib \
-       -change @rpath/libstdc++.6.dylib   @rpath/lib/libgcc/libstdc++.6.dylib \
-       -change @rpath/libstdc++.dylib     @rpath/lib/libgcc/libstdc++.dylib \
-       -change @rpath/libgcc_s.1.1.dylib  @rpath/lib/libgcc/libgcc_s.1.1.dylib \
-       -change @rpath//libasan.8.dylib    @rpath/lib/libgcc/libasan.8.dylib \
-       -change @rpath/libasan.dylib       @rpath/lib/libgcc/libasan.dylib \
-       -change @rpath/libatomic.1.dylib   @rpath/lib/libgcc/libatomic.1.dylib \
-       -change @rpath/libatomic.dylib     @rpath/lib/libgcc/libatomic.dylib \
-       -change @rpath/libgcc_s.1.dylib    @rpath/lib/libgcc/libgcc_s.1.dylib \
-       -change @rpath/libgcc_s.dylib      @rpath/lib/libgcc/libgcc_s.dylib \
-       -change @rpath/libgomp.1.dylib     @rpath/lib/libgcc/libgomp.1.dylib \
-       -change @rpath/libgomp.dylib       @rpath/lib/libgcc/libgomp.dylib \
-       -change @rpath/libitm.1.dylib      @rpath/lib/libgcc/libitm.1.dylib \
-       -change @rpath/libitm.dylib        @rpath/lib/libgcc/libitm.dylib \
-       -change @rpath/libobjc-gnu.4.dylib @rpath/lib/libgcc/libobjc-gnu.4.dylib \
-       -change @rpath/libobjc-gnu.dylib   @rpath/lib/libgcc/libobjc-gnu.dylib \
-       -change @rpath/libssp.0.dylib      @rpath/lib/libgcc/libssp.0.dylib \
-       -change @rpath/libssp.dylib        @rpath/lib/libgcc/libssp.dylib \
-       -change @rpath/libubsan.1.dylib    @rpath/lib/libgcc/libubsan.1.dylib \
-       -change @rpath/libubsan.dylib      @rpath/lib/libgcc/libubsan.dylib
-
-echo "adding @rpath to the extensions (incl special ghostscript 9.56 fix)"
-find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/2.99/extensions/ -perm +111 -type f \
+echo "adding @rpath to the plugins (incl libgcc fix)"
+find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/2.0/plug-ins/ -perm +111 -type f \
    | xargs file \
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
    | xargs -n1 install_name_tool -add_rpath @executable_path/../../../../../ \
@@ -192,9 +162,9 @@ find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/ -perm +111 -type f \
 
 echo "adding @rpath to python app"
 install_name_tool -add_rpath @loader_path/../../../../../../../../../ \
-  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/3.10/Resources/Python.app/Contents/MacOS/Python
+  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python
 install_name_tool -add_rpath @loader_path/../../../../../ \
-  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/3.10/Python
+  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/2.7/Python
 
 echo "removing build path from the .gir files"
 find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/share/gir-1.0/*.gir \
@@ -218,14 +188,14 @@ echo "fixing pixmap cache"
 sed -i.old 's|@executable_path/../Resources/||' \
     ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache
 # Works around gdk-pixbuf loader bug for release builds only https://gitlab.gnome.org/GNOME/gdk-pixbuf/-/issues/217
-mkdir -p "${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/2.99/plug-ins/Resources/lib"
-pushd ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/2.99/plug-ins/Resources/lib
+mkdir -p "${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/2.0/plug-ins/Resources/lib"
+pushd ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/2.0/plug-ins/Resources/lib
   ln -s ../../../../../gdk-pixbuf-2.0 gdk-pixbuf-2.0
 popd
 
 echo "fixing IMM cache"
 sed -i.old 's|@executable_path/../Resources/||' \
-    ${PACKAGE_DIR}/GIMP.app/Contents/Resources/etc/gtk-3.0/gtk.immodules
+    ${PACKAGE_DIR}/GIMP.app/Contents/Resources/etc/gtk-2.0/gtk.immodules
 
 if [[ "$1" == "debug" ]]; then
   echo "Generating debug symbols"
@@ -238,10 +208,10 @@ fi
 echo "create missing links. should we use wrappers instead?"
 
 pushd ${PACKAGE_DIR}/GIMP.app/Contents/MacOS
-  ln -s gimp-console-2.99 gimp-console
-  ln -s gimp-debug-tool-2.99 gimp-debug-tool
-  ln -s python3.10 python
-  ln -s python3.10 python3
+  ln -s gimp-console-2.10 gimp-console
+  ln -s gimp-debug-tool-2.0 gimp-debug-tool
+  ln -s python2.7 python
+  ln -s python2.7 python2
 popd
 
 echo "copy xdg-email wrapper to the package"
@@ -249,7 +219,7 @@ mkdir -p ${PACKAGE_DIR}/GIMP.app/Contents/MacOS
 cp xdg-email ${PACKAGE_DIR}/GIMP.app/Contents/MacOS
 
 echo "Creating pyc files"
-python3.10 -m compileall -q ${PACKAGE_DIR}/GIMP.app
+python2.7 -m compileall -q ${PACKAGE_DIR}/GIMP.app
 
 echo "Fix adhoc signing (M1 Macs)"
 for file in $FILES

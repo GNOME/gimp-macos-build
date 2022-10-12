@@ -13,13 +13,13 @@ if [[ "$ARCH" == 'arm64' ]]; then
   build_arm64=true
   echo "*** Build: arm64"
   #  target directory
-  export PACKAGE_DIR="${HOME}/macports-gimp299-osx-app"
+  export PACKAGE_DIR="${HOME}/macports-gimp210-osx-app"
   export arch="arm64"
 else
   build_arm64=false
   echo "*** Build: x86_64"
   #  target directory
-  export PACKAGE_DIR="${HOME}/macports-gimp299-osx-app-x86_64"
+  export PACKAGE_DIR="${HOME}/macports-gimp210-osx-app-x86_64"
   export arch="x86_64"
 fi
 
@@ -45,25 +45,25 @@ then
      | xargs /usr/bin/codesign -s "${codesign_subject}" \
          --options runtime \
          --entitlements ${HOME}/project/package/gimp-hardening.entitlements
-  find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/3.10/lib -type f -perm +111 \
+  find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/2.7/lib -type f -perm +111 \
      | xargs file \
      | grep ' Mach-O '|awk -F ':' '{print $1}' \
      | xargs /usr/bin/codesign -s "${codesign_subject}" \
          --options runtime \
          --entitlements ${HOME}/project/package/gimp-hardening.entitlements
-  find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/3.10/Resources -type f -perm +111 \
+  find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/2.7/Resources -type f -perm +111 \
      | xargs file \
      | grep ' Mach-O '|awk -F ':' '{print $1}' \
      | xargs /usr/bin/codesign -s "${codesign_subject}" \
          --options runtime \
          --entitlements ${HOME}/project/package/gimp-hardening.entitlements
-  find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/3.10/bin -type f -perm +111 \
+  find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/2.7/bin -type f -perm +111 \
      | xargs file \
      | grep ' Mach-O '|awk -F ':' '{print $1}' \
      | xargs /usr/bin/codesign -s "${codesign_subject}" \
          --options runtime \
          --entitlements ${HOME}/project/package/gimp-hardening.entitlements
-  find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/3.10/Python -type f -perm +111 \
+  find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/2.7/Python -type f -perm +111 \
      | xargs file \
      | grep ' Mach-O '|awk -F ':' '{print $1}' \
      | xargs /usr/bin/codesign -s "${codesign_subject}" \
@@ -93,7 +93,7 @@ rm -f "/tmp/artifacts/gimp-${GIMP_VERSION}-${arch}.dmg"
 cd create-dmg
 
 ./create-dmg \
-  --volname "GIMP 2.99 Install" \
+  --volname "GIMP 2.10 Install" \
   --background "../gimp-dmg.png" \
   --window-pos 1 1 \
   --icon "GIMP.app" 190 360 \

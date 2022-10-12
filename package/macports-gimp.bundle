@@ -39,23 +39,30 @@
     <!-- <runtime copy="yes">/usr/bin/python</runtime -->
     <!-- Indicate the active gtk version to use. This is needed only
          for gtk+-3.0 projects. -->
-    <gtk>gtk+-3.0</gtk>
+    <gtk>gtk+-2.0</gtk>
   </meta>
   <!-- We need to pack our own Python to avoid compatibility problems. -->
   <binary dest="${bundle}/Contents/MacOS">
-    ${prefix}/bin/python3.10
+    ${prefix}/bin/python2.7
   </binary>
   <binary dest="${bundle}/Contents/MacOS">
     ${prefix}/bin/gegl
   </binary>
   <!-- gimp additional binaries -->
-  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-console-2.99</binary>
-  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-debug-tool-2.99</binary>
-  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimptool-2.99</binary>
-  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-script-fu-interpreter-3.0</binary>
+  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-console-2.10</binary>
+  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-debug-tool-2.0</binary>
+  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimptool-2.0</binary>
 
   <!-- Copy in Info.plist -->
   <plist>${project}/info.plist</plist>
+  <!-- Gtk+ is required by python modules which aren't searched for
+       dependencies, so we have to pull it in explicitly. It will
+       bring Pango and Cairo with it. Note the use of ${gtkversion},
+       which expands to either 2.0 or 3.0, depending on which value of
+       gtk is specified.-->
+  <binary>
+    ${prefix}/lib/libgtk-quartz-${gtkversion}.0.dylib
+  </binary>
   <binary>
     ${prefix}/lib/libgegl-sc-0.4.dylib
   </binary>
@@ -69,16 +76,20 @@
 
   <!-- These are used to copy in dependencies, in reality the whole dir struct needs to be copied in -->
   <binary recurse="True">
-    ${prefix}/Library/Frameworks/Python.framework/Versions/3.10/*
+    ${prefix}/Library/Frameworks/Python.framework/Versions/2.7/*
   </binary>
   <!-- Name of main gimp binary -->
-  <main-binary>${prefix}/bin/gimp-2.99</main-binary>
+  <main-binary>${prefix}/bin/gimp-2.10</main-binary>
   <!-- Copy in gimp plugins -->
-  <binary recurse="True">${prefix}/lib/gimp/2.99/plug-ins/*</binary>
+  <binary recurse="True">${prefix}/lib/gimp/2.0/plug-ins/*</binary>
   <!-- Copy in gimp modules -->
-  <binary>${prefix}/lib/gimp/2.99/modules/*.so</binary>
-  <!-- Copy in gimp extensions -->
-  <binary recurse="True">${prefix}/lib/gimp/2.99/extensions/*</binary>
+  <binary>${prefix}/lib/gimp/2.0/modules/*.so</binary>
+  <!-- Copy in gimp python modules -->
+  <binary>${prefix}/lib/gimp/2.0/python/*.so</binary>
+  <data>${prefix}/lib/gimp/2.0/python/*.py</data>
+  <!-- Copy in GTK+ modules -->
+  <binary>${prefix}/lib/${gtkdir}/modules/*.so</binary>
+  <binary>${prefix}/lib/gimp/2.0/modules/*.so</binary>
   <!-- Copy in babl modules -->
   <binary>${prefix}/lib/babl-0.1/*.dylib</binary>
   <!-- Copy in gegl modules -->
@@ -86,32 +97,36 @@
   <data>${prefix}/lib/gegl-0.4/*.json</data>
   <!-- Copy in fortran and others -->
   <binary>${prefix}/lib/libgcc/*.dylib</binary>
+  <!-- Copy in GTK+ themeing engines -->
+  <binary>${prefix}/lib/${gtkdir}/${pkg:${gtk}:gtk_binary_version}/engines/*.so</binary>
   <!-- Copy in GTK+ printer backends -->
   <binary>${prefix}/lib/${gtkdir}/${pkg:${gtk}:gtk_binary_version}/printbackends/*.so</binary>
   <!-- Copy in GTK+ immodules -->
   <binary>${prefix}/lib/${gtkdir}/${pkg:${gtk}:gtk_binary_version}/immodules/*.so</binary>
-  <binary>${prefix}/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.so</binary>
+  <!-- Starting with 2.24, gdk-pixbuf installs into its own directory. -->
+  <binary>${prefix}/lib/gdk-pixbuf-2.0/${pkg:${gtk}:gtk_binary_version}/loaders/*.so</binary>
   <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gdk-pixbuf-query-loaders</binary>
-  <binary>${prefix}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache</binary>
+  <binary>${prefix}/lib/gdk-pixbuf-2.0/${pkg:${gtk}:gtk_binary_version}/loaders.cache</binary>
   <!-- Translation filenames-->
-  <translations name="gtk30">
+  <translations name="gtk20">
     ${prefix}/share/locale
   </translations>
-  <!-- GTK+3 data -->
-  <data>${prefix}/etc/gtk-3.0/*</data>
+  <!-- GTK+2 data -->
+  <data>${prefix}/etc/gtk-2.0/*</data>
   <!-- Fontconfig data; requires clean up -->
   <data>
     ${prefix}/etc/fonts
   </data>
   <!-- Gimp data -->
-  <data>${prefix}/etc/gimp/2.99/*</data>
+  <data>${prefix}/etc/gimp/2.0/*</data>
   <data dest="${bundle}/Contents/Resources/share/gimp">${prefix}/share/gimp</data>
   <!-- brushes -->
   <data>${prefix}/share/mypaint-data</data>
   <!-- XML data -->
   <!-- Needs to be updated to not have absolute build paths -->
   <data>${prefix}/etc/xml/catalog</data>
-  <data>${prefix}/share/xml/docbook</data>
+<!-- TODO -->
+  <!-- <data>${prefix}/share/xml/docbook</data> -->
   <!-- locale (TODO: trim) -->
   <data>${prefix}/share/locale</data>
   <data>${prefix}/lib/charset.alias</data>
@@ -129,7 +144,7 @@
   <binary>${prefix}/lib/girepository-1.0/*</binary>
   <data>${prefix}/share/gir-1.0/*</data>
   <!-- Interesting defaults -->
-  <!-- <data dest="${bundle}/Contents/Resources/etc/gimp/2.99/gimprc">
+  <!-- <data dest="${bundle}/Contents/Resources/etc/gimp/2.0/gimprc">
     ${project}/gimprc
   </data>
 -->
@@ -138,7 +153,7 @@
   <data dest="${bundle}/Contents/Resources">${project}/xcf.icns</data>
 
   <!-- Icon theme, both tango and hicolor are required? -->
-  <icon-theme icons="all">
-    Adwaita
+  <icon-theme icons="auto">
+    Tango
   </icon-theme>
 </app-bundle>

@@ -126,6 +126,11 @@ function port_install() {
   massage_output $dosudo port -N install "$@"
 }
 
+function port_clean_and_install() {
+  $dosudo port clean "$@"
+  port_install "$@"
+}
+
 PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 source ~/.profile
@@ -141,11 +146,11 @@ echo ">> macports.conf"
 cat ${PREFIX}/etc/macports/macports.conf
 echo ""
 echo ""
-echo ">> sources.conf"
+echo ">> variants.conf"
 cat ${PREFIX}/etc/macports/variants.conf
 echo ""
 echo ""
-echo ">> variants.conf"
+echo ">> sources.conf"
 cat ${PREFIX}/etc/macports/sources.conf
 echo ""
 echo ""
@@ -155,75 +160,53 @@ if [ ! -z "${PART1}" ]; then
   # Have to clean every port because sub-ports get gummed up when they fail to
   # build/install. It would require detecting failure (obscure long error like
   # this): Error: See /opt/local/var/macports/logs/_opt_local_var_macports_sources_rsync.macports.org_macports_release_tarballs_ports_devel_dbus/dbus/main.log for details.
-  $dosudo port clean python310
-  port_install python310
-  $dosudo port select --set python python310
-  $dosudo port select --set python3 python310
-  $dosudo port clean \
-                icu \
-                openjpeg \
-                ilmbase \
-                json-c \
-                libde265 \
-                nasm \
-                x265 \
-                util-linux \
-                xmlto \
-                py-cairo \
-                py-gobject3 \
-                gtk-osx-application-gtk3 \
-                libarchive \
-                libyaml \
-                lcms2 \
+  # $dosudo port clean python310
+  # port_install python310
+  # $dosudo port select --set python python310
+  # $dosudo port select --set python3 python310
+  port_clean_and_install p5.34-io-compress-brotli build.jobs=1
+
+  port_clean_and_install cmake -python27
+  port_clean_and_install \
+                aalib \
+                appstream-glib \
+                exiv2 \
+                gexiv2 \
+                ghostscript \
                 glib-networking \
+                gnutls \
+                gtk-osx-application-gtk2 \
+                gtk2 \
+                ilmbase \
+                iso-codes \
+                lcms2 \
+                libde265 \
+                libheif \
+                libjpeg-turbo \
+                libjxl \
+                libmng \
+                libmypaint \
+                libpsl \
+                libraw \
+                librsvg \
+                libtasn1 \
+                libunistring \
+                libwmf \
+                mypaint-brushes1 \
+                nasm \
+                nettle \
+                openexr \
+                openjpeg \
+                openssl \
+                poly2tri-c \
                 poppler -boost \
                 poppler-data \
-                fontconfig \
-                libmypaint \
-                mypaint-brushes1 \
-                libheif \
-                aalib \
-                webp \
+                python27 \
+                readline \
                 shared-mime-info \
-                iso-codes \
-                librsvg \
-                gexiv2 \
-                libwmf \
-                openexr \
-                libmng \
-                ghostscript
-  port_install  icu \
-                openjpeg \
-                ilmbase \
-                json-c \
-                libde265 \
-                nasm \
-                x265 \
-                util-linux \
-                xmlto \
-                py-cairo \
-                py-gobject3 \
-                gtk-osx-application-gtk3 \
-                libarchive \
-                libyaml \
-                lcms2 \
-                glib-networking \
-                poppler -boost \
-                poppler-data \
-                fontconfig \
-                libmypaint \
-                mypaint-brushes1 \
-                libheif \
-                aalib \
+                vala \
                 webp \
-                shared-mime-info \
-                iso-codes \
-                librsvg \
-                gexiv2 \
-                libwmf \
-                openexr \
-                libmng \
-                ghostscript
+                x265
 fi
 
 if [ ! -z "${PART2}" ]; then
@@ -235,8 +218,8 @@ if [ ! -z "${PART2}" ]; then
 fi
 
 if [ ! -z "${PART3}" ]; then
-  $dosudo port clean         clang-15
-  $dosudo port -v -N install clang-15
+  # $dosudo port clean         clang-15
+  # $dosudo port -v -N install clang-15
 
   echo "gcc12 being installed before gegl and gjs (via mozjs91)"
   $dosudo sed -i -e 's/buildfromsource always/buildfromsource never/g' /opt/local/etc/macports/macports.conf
@@ -244,14 +227,9 @@ if [ ! -z "${PART3}" ]; then
   port_install gcc12
   $dosudo sed -i -e 's/buildfromsource never/buildfromsource always/g' /opt/local/etc/macports/macports.conf
 
-  $dosudo port clean dbus
-  port_install -f dbus
-  $dosudo port clean \
-                gjs \
-                adwaita-icon-theme \
-                babl \
-                gegl +vala
-  port_install  gjs \
+  # $dosudo port clean dbus
+  # port_install -f dbus
+  port_clean_and_install \
                 adwaita-icon-theme \
                 babl \
                 gegl +vala

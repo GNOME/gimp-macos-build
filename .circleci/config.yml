@@ -20,7 +20,6 @@ commands:
             # Triggering cache changes should be done in the directories below
             command: |
               find ./ports/cache_break -type f -exec md5 {} \; | md5 | cut -d' ' -f1 > CACHE_BREAK
-              # find ./ports ./scripts -mindepth 1 -maxdepth 3 -type f -exec md5 {} \; | md5 | cut -d' ' -f1 > CACHE_ITER
               date +%s > CACHE_ITER
               cat CACHE_BREAK
               cat CACHE_ITER
@@ -42,8 +41,8 @@ commands:
     steps:
         - restore_cache:
             keys:
-              - got_cache{{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
-              - got_cache{{ checksum "CACHE_BREAK" }}-gimpv3-
+              - got_cache{{ checksum "CACHE_BREAK" }}-gimp210v3-{{ checksum "CACHE_ITER" }}
+              - got_cache{{ checksum "CACHE_BREAK" }}-gimp210v3-
         - run:
             command: |
               if [ -f ~/got_cache/cache_check ]; then
@@ -55,8 +54,8 @@ commands:
     steps:
         - restore_cache:
             keys:
-              - got_cache{{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
-              - got_cache{{ checksum "CACHE_BREAK" }}-gimpv3-
+              - got_cache{{ checksum "CACHE_BREAK" }}-gimp210v3-{{ checksum "CACHE_ITER" }}
+              - got_cache{{ checksum "CACHE_BREAK" }}-gimp210v3-
 
   setup-macports:
     steps:
@@ -89,18 +88,18 @@ commands:
               sudo chown -R "$USER":staff /opt/local
         - restore_cache:
             keys:
-              - v{{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt5v3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt4v3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt3v3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimpv3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt5v3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt4v3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt3v3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-
+              - v{{ checksum "CACHE_BREAK" }}-gimp210v3-{{ checksum "CACHE_ITER" }}
+              - v{{ checksum "CACHE_BREAK" }}-gimp210-depspt5v3-{{ checksum "CACHE_ITER" }}
+              - v{{ checksum "CACHE_BREAK" }}-gimp210-depspt4v3-{{ checksum "CACHE_ITER" }}
+              - v{{ checksum "CACHE_BREAK" }}-gimp210-depspt3v3-{{ checksum "CACHE_ITER" }}
+              - v{{ checksum "CACHE_BREAK" }}-gimp210-depspt2v3-{{ checksum "CACHE_ITER" }}
+              - v{{ checksum "CACHE_BREAK" }}-gimp210-depspt1v3-{{ checksum "CACHE_ITER" }}
+              - v{{ checksum "CACHE_BREAK" }}-gimp210v3-
+              - v{{ checksum "CACHE_BREAK" }}-gimp210-depspt5v3-
+              - v{{ checksum "CACHE_BREAK" }}-gimp210-depspt4v3-
+              - v{{ checksum "CACHE_BREAK" }}-gimp210-depspt3v3-
+              - v{{ checksum "CACHE_BREAK" }}-gimp210-depspt2v3-
+              - v{{ checksum "CACHE_BREAK" }}-gimp210-depspt1v3-
         - run:
             command: |
               sudo chown -R root:wheel /opt/local
@@ -117,7 +116,7 @@ commands:
       - save_cache:
           paths:
             - ~/got_cache
-          key: got_cache{{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
+          key: got_cache{{ checksum "CACHE_BREAK" }}-gimp210v3-{{ checksum "CACHE_ITER" }}
 
   setup-gtk-mac-bundler:
     steps:
@@ -260,8 +259,8 @@ jobs:
           root: "~"
           # Must be relative path from root
           paths:
-            - macports-gimp299-osx-app
-            - macports-gimp299-osx-app-x86_64
+            - macports-gimp210-osx-app
+            - macports-gimp210-osx-app-x86_64
             - .profile
 
   package-gimp-self:
@@ -317,7 +316,7 @@ jobs:
           paths:
             - /opt/local
             - /Applications/MacPorts
-          key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt1v3-{{ checksum "CACHE_ITER" }}
+          key: v{{ checksum "CACHE_BREAK" }}-gimp210-depspt1v3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part2-hosted:
     macos:
@@ -339,7 +338,7 @@ jobs:
           paths:
             - /opt/local
             - /Applications/MacPorts
-          key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt2v3-{{ checksum "CACHE_ITER" }}
+          key: v{{ checksum "CACHE_BREAK" }}-gimp210-depspt2v3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part3-hosted:
     macos:
@@ -361,7 +360,7 @@ jobs:
           paths:
             - /opt/local
             - /Applications/MacPorts
-          key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt3v3-{{ checksum "CACHE_ITER" }}
+          key: v{{ checksum "CACHE_BREAK" }}-gimp210-depspt3v3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part4-hosted:
     macos:
@@ -383,7 +382,7 @@ jobs:
           paths:
             - /opt/local
             - /Applications/MacPorts
-          key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt4v3-{{ checksum "CACHE_ITER" }}
+          key: v{{ checksum "CACHE_BREAK" }}-gimp210-depspt4v3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part5-hosted:
     macos:
@@ -405,7 +404,7 @@ jobs:
           paths:
             - /opt/local
             - /Applications/MacPorts
-          key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt5v3-{{ checksum "CACHE_ITER" }}
+          key: v{{ checksum "CACHE_BREAK" }}-gimp210-depspt5v3-{{ checksum "CACHE_ITER" }}
 
   build-gimp-and-package-hosted:
     macos:
@@ -437,7 +436,7 @@ jobs:
           paths:
             - /opt/local
             - /Applications/MacPorts
-          key: v{{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
+          key: v{{ checksum "CACHE_BREAK" }}-gimp210v3-{{ checksum "CACHE_ITER" }}
       - pre-cache-store-hosted
       - setup-gtk-mac-bundler
       - run:
@@ -463,27 +462,27 @@ jobs:
 
 workflows:
   version: 2
-  build-arm64:
-    jobs:
-      - dependencies-part1-self
-      - dependencies-part2-self:
-          requires:
-            - dependencies-part1-self
-      - dependencies-part3-self:
-          requires:
-            - dependencies-part2-self
-      # - dependencies-part4-self:
-      #     requires:
-      #       - dependencies-part3-self
-      # - dependencies-part5-self:
-      #     requires:
-      #       - dependencies-part4-self
-      - build-gimp-self:
-          requires:
-            - dependencies-part3-self
-      - package-gimp-self:
-          requires:
-            - build-gimp-self
+  # build-arm64:
+  #   jobs:
+  #     - dependencies-part1-self
+  #     - dependencies-part2-self:
+  #         requires:
+  #           - dependencies-part1-self
+  #     - dependencies-part3-self:
+  #         requires:
+  #           - dependencies-part2-self
+  #     # - dependencies-part4-self:
+  #     #     requires:
+  #     #       - dependencies-part3-self
+  #     # - dependencies-part5-self:
+  #     #     requires:
+  #     #       - dependencies-part4-self
+  #     - build-gimp-self:
+  #         requires:
+  #           - dependencies-part3-self
+  #     - package-gimp-self:
+  #         requires:
+  #           - build-gimp-self
 
   build-x86_64:
     jobs:
