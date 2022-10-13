@@ -107,5 +107,9 @@ fi
 
 source ~/.profile
 
-$dosudo port -v selfupdate
+pushd ~/project/ports
+$dosudo portindex
+popd
+
+$dosudo port -v selfupdate || true
 
