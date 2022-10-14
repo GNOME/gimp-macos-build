@@ -6,6 +6,8 @@ PortGroup           xcodeversion 1.0
 PortGroup           active_variants 1.1
 PortGroup           compiler_blacklist_versions 1.0
 PortGroup           legacysupport 1.1
+PortGroup           debug 1.0
+PortGroup           debugoptimized 1.0
 
 name                gtk3
 conflicts           gtk3-devel

@@ -138,13 +138,13 @@ cd project
 
 Then get the branch for the build you want to create a script for.
 
-For 2.99:
+For 2.99.xx:
 
 ```sh
 git checkout master
 ```
 
-Or for 2.10.28 (although there are tags for specific releases so go to that if desired)
+Or for 2.10.xx (although there are tags for specific releases so go to that if desired)
 
 ```sh
 git checkout gimp-2-10

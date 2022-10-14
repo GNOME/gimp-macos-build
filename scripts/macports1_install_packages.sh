@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #####################################################################
- # macports_install_packages.sh: installs gimp dependencies         #
+ # macports1_install_packages.sh: installs gimp dependencies         #
  #                                                                  #
  # Copyright 2022 Lukas Oberhuber <lukaso@gmail.com>                #
  #                                                                  #
@@ -29,7 +29,7 @@ function pure_version() {
 }
 
 function version() {
-	echo "macports_install_packages.sh $(pure_version)"
+	echo "macports1_install_packages.sh $(pure_version)"
 }
 
 function usage() {
@@ -43,8 +43,6 @@ function usage() {
     echo "For CI builds, can be split into steps to reduce run time for each"
     echo "step."
     echo "Options:"
-    echo "  --circleci"
-    echo "      settings for circleci instead of local"
     echo "  --part1"
     echo "      first part. Each part takes up to 3 hours on circleci"
     echo "  --part2"
@@ -60,7 +58,6 @@ function usage() {
     exit 0
 }
 
-circleci=''
 PART1="true"
 PART2="true"
 PART3="true"
@@ -69,9 +66,6 @@ PART5="true"
 
 while test "${1:0:1}" = "-"; do
 	case $1 in
-	--circleci)
-		circleci="true"
-		shift;;
 	--part1)
 		PART2=''
 		PART3=''
@@ -112,8 +106,13 @@ while test "${1:0:1}" = "-"; do
 	esac
 done
 
+PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+
+source ~/.profile
+export PATH=$PREFIX/bin:$PATH
+
 function massage_output() {
-	if [ $circleci ]; then
+	if [ -n "$circleci" ]; then
     # suppress progress bar
     "$@" | cat
     if [ "${PIPESTATUS[0]}" -ne 0 ]; then exit "${PIPESTATUS[0]}"; fi
@@ -126,10 +125,10 @@ function port_install() {
   massage_output $dosudo port -N install "$@"
 }
 
-PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-
-source ~/.profile
-export PATH=$PREFIX/bin:$PATH
+function port_clean_and_install() {
+  $dosudo port clean "$@"
+  port_install "$@"
+}
 
 echo "**** Debugging info ****"
 echo "**** installed ports ****"
@@ -141,11 +140,11 @@ echo ">> macports.conf"
 cat ${PREFIX}/etc/macports/macports.conf
 echo ""
 echo ""
-echo ">> sources.conf"
+echo ">> variants.conf"
 cat ${PREFIX}/etc/macports/variants.conf
 echo ""
 echo ""
-echo ">> variants.conf"
+echo ">> sources.conf"
 cat ${PREFIX}/etc/macports/sources.conf
 echo ""
 echo ""
@@ -155,44 +154,12 @@ if [ ! -z "${PART1}" ]; then
   # Have to clean every port because sub-ports get gummed up when they fail to
   # build/install. It would require detecting failure (obscure long error like
   # this): Error: See /opt/local/var/macports/logs/_opt_local_var_macports_sources_rsync.macports.org_macports_release_tarballs_ports_devel_dbus/dbus/main.log for details.
-  $dosudo port clean python310
-  port_install python310
+  port_clean_and_install python310
   $dosudo port select --set python python310
   $dosudo port select --set python3 python310
-  $dosudo port clean \
+  port_clean_and_install p5.34-io-compress-brotli build.jobs=1
+  port_clean_and_install \
                 icu \
-                openjpeg \
-                ilmbase \
-                json-c \
-                libde265 \
-                nasm \
-                x265 \
-                util-linux \
-                xmlto \
-                py-cairo \
-                py-gobject3 \
-                gtk-osx-application-gtk3 \
-                libarchive \
-                libyaml \
-                lcms2 \
-                glib-networking \
-                poppler -boost \
-                poppler-data \
-                fontconfig \
-                libmypaint \
-                mypaint-brushes1 \
-                libheif \
-                aalib \
-                webp \
-                shared-mime-info \
-                iso-codes \
-                librsvg \
-                gexiv2 \
-                libwmf \
-                openexr \
-                libmng \
-                ghostscript
-  port_install  icu \
                 openjpeg \
                 ilmbase \
                 json-c \
@@ -239,19 +206,18 @@ if [ ! -z "${PART3}" ]; then
   $dosudo port -v -N install clang-15
 
   echo "gcc12 being installed before gegl and gjs (via mozjs91)"
-  $dosudo sed -i -e 's/buildfromsource always/buildfromsource never/g' /opt/local/etc/macports/macports.conf
-  $dosudo port clean gcc12
-  port_install gcc12
-  $dosudo sed -i -e 's/buildfromsource never/buildfromsource always/g' /opt/local/etc/macports/macports.conf
+  # libomp can't handle +debug variant as prebuilt binary
+  $dosudo sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' /opt/local/etc/macports/macports.conf
+  port_clean_and_install libomp -debug \
+                         llvm-14 -debug \
+                         clang-14 -debug \
+                         gcc12
+  $dosudo sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' /opt/local/etc/macports/macports.conf
 
   $dosudo port clean dbus
   port_install -f dbus
-  $dosudo port clean \
+  port_clean_and_install \
                 gjs \
-                adwaita-icon-theme \
-                babl \
-                gegl +vala
-  port_install  gjs \
                 adwaita-icon-theme \
                 babl \
                 gegl +vala

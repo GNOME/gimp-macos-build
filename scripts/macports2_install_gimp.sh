@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #####################################################################
- # macports_install_packages.sh: installs gimp dependencies         #
+ # macports2_install_gimp.sh: installs gimp dependencies         #
  #                                                                  #
  # Copyright 2022 Lukas Oberhuber <lukaso@gmail.com>                #
  #                                                                  #
@@ -24,12 +24,17 @@
 
 set -e;
 
-if [ "$1" == "circleci" ]; then
-  circleci=true
+PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+
+source ~/.profile
+export PATH=$PREFIX/bin:$PATH
+
+if [ -z "$circleci" ]; then
+  local="+local"
 fi
 
 function sup_port() {
-	if [ $circleci ]; then
+	if [ -n "$circleci" ]; then
     "$@" | cat
     if [ "${PIPESTATUS[0]}" -ne 0 ]; then exit "${PIPESTATUS[0]}"; fi
   else
@@ -37,19 +42,11 @@ function sup_port() {
   fi
 }
 
-PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-
-source ~/.profile
-export PATH=$PREFIX/bin:$PATH
-
 pushd ~/project/ports
-sudo portindex
+$dosudo portindex
 popd
 
-# required by poppler. Not sure why it is not installed when poppler is installed
-$dosudo port clean boost176
-$dosudo port -v -N install boost176
 # Force new install of gimp so latest changes are pulled from gitlab
 $dosudo port uninstall gimp3
 $dosudo port clean gimp3
-sup_port $dosudo port -v -k -N install gimp3 +debug
+sup_port $dosudo port -v -k -N install gimp3 +vala ${local}

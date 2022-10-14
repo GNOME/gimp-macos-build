@@ -6,6 +6,7 @@ PortGroup           compiler_blacklist_versions 1.0
 PortGroup           meson 1.0
 PortGroup           legacysupport 1.0
 PortGroup           debug 1.0
+PortGroup           debugoptimized 1.0
 
 name                gimp3
 set my_name         gimp3
@@ -31,6 +32,11 @@ homepage            https://gimp.org/
 fetch.type          git
 git.url             https://gitlab.gnome.org/GNOME/gimp.git
 git.branch          origin/master
+
+variant local description {Build locally} {
+    git.url         file:////tmp/gimp-git
+    git.branch      master
+}
 
 # checksums           rmd160  d6e7de3f332594802226736d41228ffd13af251f \
 #                     sha256  e4a33c8430a5042fba8439b595348e71870f0d95fbf885ff553f9020c1bed750 \
