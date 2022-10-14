@@ -5,6 +5,7 @@ PortGroup           muniversal 1.0
 PortGroup           compiler_blacklist_versions 1.0
 PortGroup           meson 1.0
 PortGroup           legacysupport 1.0
+PortGroup           debug 1.0
 
 name                gimp3
 set my_name         gimp3
@@ -123,10 +124,6 @@ configure.args-append       -Dbuild-id=org.gimp.GIMP_official \
 #     depends_lib-delete path:lib/libluajit-5.1.2.dylib:luajit
 #     configure.args-append -Dlua=false
 # }
-
-variant debug description {Build with debug symbols} {
-    configure.optflags-append -g
-}
 
 # TODO
 # Adding --build=whatever doesn't work with meson. How do we do this?
