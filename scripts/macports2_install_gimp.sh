@@ -26,6 +26,10 @@ set -e;
 
 if [ "$1" == "circleci" ]; then
   circleci=true
+  debug="+debugoptimized"
+else
+  local="+local"
+  debug="+debug"
 fi
 
 function sup_port() {
@@ -49,4 +53,4 @@ popd
 # Force new install of gimp so latest changes are pulled from gitlab
 $dosudo port uninstall gimp210
 $dosudo port clean gimp210
-sup_port $dosudo port -v -k -N install gimp210 +debug +vala
+sup_port $dosudo port -v -k -N install gimp210 ${debug} +vala ${local}

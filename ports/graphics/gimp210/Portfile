@@ -3,6 +3,8 @@
 PortSystem          1.0
 PortGroup           compiler_blacklist_versions 1.0
 PortGroup           perl5 1.0
+PortGroup           debug 1.0
+PortGroup           debugoptimized 1.0
 
 name                gimp210
 set my_name         gimp210
@@ -171,10 +173,6 @@ configure.args-append \
                     --x-libraries=${prefix}/lib \
                     --disable-python \
                     ac_cv_path_PERL=${configure.perl}
-
-variant debug description {Build with debug symbols} {
-    configure.optflags-append -g
-}
 
 # keep empty GIMP font directory
 # silences warning message on startup:
