@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #####################################################################
- # macports_install_packages.sh: installs gimp dependencies         #
+ # macports1_install_packages.sh: installs gimp dependencies         #
  #                                                                  #
  # Copyright 2022 Lukas Oberhuber <lukaso@gmail.com>                #
  #                                                                  #
@@ -29,7 +29,7 @@ function pure_version() {
 }
 
 function version() {
-	echo "macports_install_packages.sh $(pure_version)"
+	echo "macports1_install_packages.sh $(pure_version)"
 }
 
 function usage() {
@@ -43,8 +43,6 @@ function usage() {
     echo "For CI builds, can be split into steps to reduce run time for each"
     echo "step."
     echo "Options:"
-    echo "  --circleci"
-    echo "      settings for circleci instead of local"
     echo "  --part1"
     echo "      first part. Each part takes up to 3 hours on circleci"
     echo "  --part2"
@@ -60,7 +58,6 @@ function usage() {
     exit 0
 }
 
-circleci=''
 PART1="true"
 PART2="true"
 PART3="true"
@@ -69,9 +66,6 @@ PART5="true"
 
 while test "${1:0:1}" = "-"; do
 	case $1 in
-	--circleci)
-		circleci="true"
-		shift;;
 	--part1)
 		PART2=''
 		PART3=''
@@ -112,8 +106,13 @@ while test "${1:0:1}" = "-"; do
 	esac
 done
 
+PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+
+source ~/.profile
+export PATH=$PREFIX/bin:$PATH
+
 function massage_output() {
-	if [ $circleci ]; then
+	if [ -n "$circleci" ]; then
     # suppress progress bar
     "$@" | cat
     if [ "${PIPESTATUS[0]}" -ne 0 ]; then exit "${PIPESTATUS[0]}"; fi
@@ -130,11 +129,6 @@ function port_clean_and_install() {
   $dosudo port clean "$@"
   port_install "$@"
 }
-
-PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-
-source ~/.profile
-export PATH=$PREFIX/bin:$PATH
 
 echo "**** Debugging info ****"
 echo "**** installed ports ****"
@@ -222,10 +216,13 @@ if [ ! -z "${PART3}" ]; then
   # $dosudo port -v -N install clang-15
 
   echo "gcc12 being installed before gegl and gjs (via mozjs91)"
-  $dosudo sed -i -e 's/buildfromsource always/buildfromsource never/g' /opt/local/etc/macports/macports.conf
-  $dosudo port clean gcc12
-  port_install gcc12
-  $dosudo sed -i -e 's/buildfromsource never/buildfromsource always/g' /opt/local/etc/macports/macports.conf
+  # libomp can't handle +debug variant as prebuilt binary
+  $dosudo sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' /opt/local/etc/macports/macports.conf
+  port_clean_and_install libomp -debug \
+                         llvm-14 -debug \
+                         clang-14 -debug \
+                         gcc12
+  $dosudo sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' /opt/local/etc/macports/macports.conf
 
   # $dosudo port clean dbus
   # port_install -f dbus

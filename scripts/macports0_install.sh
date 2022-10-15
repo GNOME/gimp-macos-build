@@ -34,17 +34,75 @@ else
   echo "*** Build: x86_64"
 fi
 
-if [ "$1" = "home-dir" ]; then
-  echo "**Installing MacPorts in home dir"
+function pure_version() {
+	echo '0.1'
+}
+
+function version() {
+	echo "macports0_install.sh $(pure_version)"
+}
+
+function usage() {
+    version
+    echo ""
+    echo "Builds macports."
+    echo "Usage:  $(basename $0) [options]"
+    echo ""
+    echo "Builds Gimp dependencies."
+    echo "Options:"
+    echo "  --circleci"
+    echo "      settings for circleci instead of local"
+    echo "  --homedirgimp2"
+    echo "      installs macports to a custom homedir macports-gimp2"
+    echo "  --homedirgimp3"
+    echo "      installs macports to a custom homedir macports-gimp3"
+    echo "  --version         show tool version number"
+    echo "  -h, --help        display this help"
+    exit 0
+}
+
+while test "${1:0:1}" = "-"; do
+	case $1 in
+	--circleci)
+		circleci="true"
+		shift;;
+	--homedirgimp2)
+		homedirgimp2="true"
+		shift;;
+	--homedirgimp3)
+		homedirgimp3="true"
+		shift;;
+	-h | --help)
+		usage;;
+	--version)
+		version; exit 0;;
+	-*)
+		echo "Unknown option $1. Run with --help for help."
+		exit 1;;
+	esac
+done
+
+if [ -n "$homedirgimp2" ]; then
+  echo "**Installing MacPorts in home dir macports-gimp2"
   home_dir=true
-  PREFIX=$HOME/macports
+  PREFIX=$HOME/macports-gimp2
+elif [ -n "$homedirgimp3" ]; then
+  echo "**Installing MacPorts in home dir macports-gimp3"
+  home_dir=true
+  PREFIX=$HOME/macports-gimp3
 else
   PREFIX=/opt/local
   dosudo=sudo
 fi
+
 export PATH=$PREFIX/bin:$PATH
 echo "export PREFIX=$PREFIX" > ~/.profile
 echo "export dosudo=$dosudo" >> ~/.profile
+
+if [ -n "$circleci" ]; then
+  echo "**Installing MacPorts for CircleCI"
+  echo "export circleci=\"true\"" >> ~/.profile
+fi
 
 if ! which port &> /dev/null; then
   echo "**install MacPorts"
@@ -69,20 +127,30 @@ if ! which port &> /dev/null; then
 
   popd
 
-  echo 'buildfromsource always' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
-  if [ "$build_arm64" = true ] ; then
-    echo 'macosx_deployment_target 11.0' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
-    echo 'macosx_sdk_version 11.3' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
-  else
-    echo 'macosx_deployment_target 10.12' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
-    echo 'macosx_sdk_version 10.12' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
-  fi
-  echo '-x11 +no_x11 +quartz +python27 +no_gnome -gnome -gfortran' | $dosudo tee -a ${PREFIX}/etc/macports/variants.conf
-  printf "file://${PROJECT_DIR}/ports\n$(cat ${PREFIX}/etc/macports/sources.conf)" > /tmp/macports_install_sources.txt
-  $dosudo mv /tmp/macports_install_sources.txt ${PREFIX}/etc/macports/sources.conf
-
   rm -rf $MACPORTS_INSTALLER
 fi
+
+echo "***Setting up MacPorts build defaults"
+# set default build options for macports
+if [ -n "$circleci" ]; then
+  debug="+debugoptimized"
+else
+  debug="+debug"
+fi
+
+$dosudo cp ${PREFIX}/etc/macports/macports.conf.default ${PREFIX}/etc/macports/macports.conf
+$dosudo cp ${PREFIX}/etc/macports/variants.conf.default ${PREFIX}/etc/macports/variants.conf
+
+echo 'buildfromsource always' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
+if [ "$build_arm64" = true ] ; then
+  echo 'macosx_deployment_target 11.0' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
+  echo 'macosx_sdk_version 11.3' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
+else
+  echo 'macosx_deployment_target 10.12' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
+  echo 'macosx_sdk_version 10.12' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
+fi
+echo "-x11 +no_x11 +quartz +python27 +no_gnome -gnome -gfortran ${debug}" | $dosudo tee -a ${PREFIX}/etc/macports/variants.conf
+printf "file://${PROJECT_DIR}/ports\n$(cat ${PREFIX}/etc/macports/sources.conf.default)\n" | $dosudo tee ${PREFIX}/etc/macports/sources.conf
 
 if [ "$build_arm64" = true ] ; then
     echo "*** Setup 11.3 SDK"

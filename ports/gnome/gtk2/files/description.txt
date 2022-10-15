@@ -1,0 +1,18 @@
+upstream bug https://bugzilla.gnome.org/show_bug.cgi?id=767091
+<patch file="gtk-gimp-dnd-bug767091.patch" strip="1"/>
+<!-- upstream bug: https://gitlab.gnome.org/GNOME/gtk/issues/529 -->
+<patch file="https://gitlab.gnome.org/GNOME/gtk/uploads/f0c19446b9cd1df467c4cc9050516d4b/0001-Bug-743717-Crashes-on-clipboard-operation-influence-.patch" strip="1"/>
+<!-- upstream bug: https://gitlab.gnome.org/GNOME/gtk/issues/580 -->
+<patch file="https://gitlab.gnome.org/GNOME/gtk/uploads/2a194d81de8e8346a81816870264b3bf/gdkimage.patch" strip="1"/>
+<!-- tablet fix - https://gitlab.gnome.org/GNOME/gtk/merge_requests/398 -->
+<patch file="https://gitlab.gnome.org/GNOME/gtk/merge_requests/398.patch" strip="1"/>
+<!-- ComboBox: make sure drop-down list is not narrower than its natural width -->
+<patch file="https://gitlab.gnome.org/GNOME/gimp/raw/gimp-2-10/build/patches/gtk+-2.24-gimp-issue-2828-0001.patch" strip="1"/>
+<!--  ComboBox: add "popup-style" style property -->
+<patch file="https://gitlab.gnome.org/GNOME/gimp/raw/gimp-2-10/build/patches/gtk+-2.24-gimp-issue-2828-0002.patch" strip="1"/>
+<!-- fix one missing include directive -->
+<patch file="DJM_gtk_quartzheader.patch" strip="1"/>
+<!-- GIMP Issue 2731 - Tool Options DND window obscures Mac menu bar -->
+<patch file="gtk+-2.24.33-bug-2731-dnd.patch" strip="1"/>
+<!-- Build for M1 Mac arm64 -->
+<patch file="gtk+-2.24.33-MacOS11.3SDK.patch" strip="1"/>
