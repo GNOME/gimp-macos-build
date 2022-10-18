@@ -3,7 +3,7 @@
 This repository contains files related to GIMP/macOS build using CircleCI and some tips that
 could help with local development as well.
 
-[![CircleCI](https://circleci.com/gh/GNOME/gimp-macos-build.svg?style=svg)](https://circleci.com/gh/GNOME/gimp-macos-build)
+[![CircleCI](https://circleci.com/gh/GNOME/gimp-macos-build/tree/gimp-2-10.svg?style=svg)](https://circleci.com/gh/GNOME/gimp-macos-build/?branch=gimp-2-10)
 
 ## Build process description
 
