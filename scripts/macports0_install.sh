@@ -113,12 +113,12 @@ if ! which port &> /dev/null; then
   pushd $MACPORTS_INSTALLER
 
   if [ -z ${home_dir+x} ]; then
-    curl -L -O https://github.com/macports/macports-base/releases/download/v2.7.2/MacPorts-2.7.2-12-Monterey.pkg
-    sudo installer -pkg MacPorts-2.7.2-12-Monterey.pkg -target /
+    curl -L -O https://github.com/macports/macports-base/releases/download/v2.8.0/MacPorts-2.8.0-12-Monterey.pkg
+    sudo installer -pkg MacPorts-2.8.0-12-Monterey.pkg -target /
   else
-    curl -L -O https://distfiles.macports.org/MacPorts/MacPorts-2.7.2.tar.bz2
-    tar xf MacPorts-2.7.2.tar.bz2
-    pushd MacPorts-2.7.2
+    curl -L -O https://github.com/macports/macports-base/releases/download/v2.8.0/MacPorts-2.8.0.tar.bz2
+    tar xf MacPorts-2.8.0.tar.bz2
+    pushd MacPorts-2.8.0
     ./configure --prefix=$PREFIX --with-applications-dir=$PREFIX/Applications --without-startupitems --with-install-user=${USER} --with-install-group=staff
     make
     make install

@@ -12,6 +12,9 @@ commands:
       - run:
           name: Avoid hosts unknown for gitlab.gnome.org
           command: mkdir -p ~/.ssh/ && echo -e "Host gitlab.gnome.org\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+      - run:
+          name: Avoid hosts unknown for github
+          command: mkdir -p ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
 
   cache-break-hosted:
     steps:
