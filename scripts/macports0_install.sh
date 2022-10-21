@@ -28,9 +28,11 @@ PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 if [[ $(uname -m) == 'arm64' ]]; then
   build_arm64=true
+  arch='arm64'
   echo "*** Build: arm64"
 else
   build_arm64=false
+  arch='x86_64'
   echo "*** Build: x86_64"
 fi
 
@@ -85,12 +87,11 @@ done
 if [ -n "$homedirgimp2" ]; then
   echo "**Installing MacPorts in home dir macports-gimp2"
   home_dir=true
-  PREFIX=$HOME/macports-gimp2
+  PREFIX="${HOME}/macports-gimp2-${arch}"
 elif [ -n "$homedirgimp3" ]; then
   echo "**Installing MacPorts in home dir macports-gimp3"
   home_dir=true
-  PREFIX=$HOME/macports
-  PREFIX=$HOME/macports-gimp3
+  PREFIX="${HOME}/macports-gimp3-${arch}"
 else
   PREFIX=/opt/local
   dosudo=sudo
@@ -105,7 +106,11 @@ if [ -n "$circleci" ]; then
   echo "export circleci=\"true\"" >> ~/.profile
 fi
 
-if ! which port &> /dev/null; then
+if [ ! -f "$PREFIX/bin/port" ]; then
+  FIRST_INSTALL=true
+fi
+
+if [ -n "$FIRST_INSTALL" ]; then
   echo "**install MacPorts"
 
   MACPORTS_INSTALLER=$HOME/macports_installer
@@ -175,6 +180,11 @@ else
 fi
 
 source ~/.profile
+
+if [ -n "$FIRST_INSTALL" ]; then
+  # must do before and after otherwise local portindex fails if this is the first time
+  $dosudo port -v selfupdate || true
+fi
 
 pushd ~/project/ports
 $dosudo portindex

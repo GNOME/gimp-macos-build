@@ -53,6 +53,11 @@ function usage() {
     echo "      currently a no op"
     echo "  --part5"
     echo "      currently a no op"
+    echo "  --only-package <package>"
+    echo "      only install named package. Most useful for testing"
+    echo "  --uninstall-package <package>"
+    echo "      uninstall named package. Useful if needed to clear things out."
+    echo "      This will force uninstall regardless of dependencies."
     echo "  --version         show tool version number"
     echo "  -h, --help        display this help"
     exit 0
@@ -96,6 +101,12 @@ while test "${1:0:1}" = "-"; do
 		PART3=''
 		PART4=''
 		shift;;
+  --only-package)
+    ONLY_PACKAGE=$2
+    shift 2;;
+  --uninstall-package)
+    UNINSTALL_PACKAGE=$2
+    shift 2;;
 	-h | --help)
 		usage;;
 	--version)
@@ -150,7 +161,17 @@ echo ""
 echo ""
 echo "**** End Debugging info ****"
 
-if [ ! -z "${PART1}" ]; then
+if [ -n "${ONLY_PACKAGE}" ]; then
+  port_clean_and_install "${ONLY_PACKAGE}"
+  exit 0
+fi
+
+if [ -n "${UNINSTALL_PACKAGE}" ]; then
+  $dosudo port -f uninstall "${UNINSTALL_PACKAGE}"
+  exit 0
+fi
+
+if [ -n "${PART1}" ]; then
   # Have to clean every port because sub-ports get gummed up when they fail to
   # build/install. It would require detecting failure (obscure long error like
   # this): Error: See /opt/local/var/macports/logs/_opt_local_var_macports_sources_rsync.macports.org_macports_release_tarballs_ports_devel_dbus/dbus/main.log for details.
@@ -193,7 +214,7 @@ if [ ! -z "${PART1}" ]; then
                 ghostscript
 fi
 
-if [ ! -z "${PART2}" ]; then
+if [ -n "${PART2}" ]; then
   $dosudo port clean          rust \
                               llvm-15
   # Must be verbose because otherwise times out on circle ci
@@ -201,7 +222,7 @@ if [ ! -z "${PART2}" ]; then
                               llvm-15
 fi
 
-if [ ! -z "${PART3}" ]; then
+if [ -n "${PART3}" ]; then
   $dosudo port clean         clang-15
   $dosudo port -v -N install clang-15
 
@@ -229,10 +250,10 @@ if [ ! -z "${PART3}" ]; then
   $dosudo port -v -N upgrade outdated
 fi
 
-if [ ! -z "${PART4}" ]; then
+if [ -n "${PART4}" ]; then
   echo "**** No op"
 fi
 
-if [ ! -z "${PART5}" ]; then
+if [ -n "${PART5}" ]; then
   echo "**** No op"
 fi
