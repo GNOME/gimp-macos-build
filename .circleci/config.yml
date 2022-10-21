@@ -470,27 +470,27 @@ jobs:
 
 workflows:
   version: 2
-  # build-arm64:
-  #   jobs:
-  #     - dependencies-part1-self
-  #     - dependencies-part2-self:
-  #         requires:
-  #           - dependencies-part1-self
-  #     - dependencies-part3-self:
-  #         requires:
-  #           - dependencies-part2-self
-  #     # - dependencies-part4-self:
-  #     #     requires:
-  #     #       - dependencies-part3-self
-  #     # - dependencies-part5-self:
-  #     #     requires:
-  #     #       - dependencies-part4-self
-  #     - build-gimp-self:
-  #         requires:
-  #           - dependencies-part3-self
-  #     - package-gimp-self:
-  #         requires:
-  #           - build-gimp-self
+  build-arm64:
+    jobs:
+      - dependencies-part1-self
+      - dependencies-part2-self:
+          requires:
+            - dependencies-part1-self
+      - dependencies-part3-self:
+          requires:
+            - dependencies-part2-self
+      # - dependencies-part4-self:
+      #     requires:
+      #       - dependencies-part3-self
+      # - dependencies-part5-self:
+      #     requires:
+      #       - dependencies-part4-self
+      - build-gimp-self:
+          requires:
+            - dependencies-part3-self
+      - package-gimp-self:
+          requires:
+            - build-gimp-self
 
   build-x86_64:
     jobs:
