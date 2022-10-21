@@ -431,82 +431,13 @@ jobs:
             # if not cache then build deps in split parts
             if [ -f ~/got_cache/cache_check ]; then
               echo "**got cache, building all packages"
-              scripts/macports1_install_packages.sh
+              scripts/macports1_install_packages.sh --only-package lzma
             fi
           no_output_timeout: 30m
-      - run:
-          name: Build GIMP
-          # XXX `make check` is not working reliably under circle ci, so we are
-          # not using --check flag
-          command: |
-            scripts/macports2_install_gimp.sh circleci
-      - save_cache:
-          paths:
-            - /opt/local
-            - /Applications/MacPorts
-          key: v{{ checksum "CACHE_BREAK" }}-gimpv3-{{ checksum "CACHE_ITER" }}
-      - pre-cache-store-hosted
-      - setup-gtk-mac-bundler
-      - run:
-          name: Build GIMP app
-          command: |
-            scripts/macports3_build_app.sh
-          no_output_timeout: 20m
-      - import-signing-cert
-      - authorize-applescript
-      - run:
-          name: Creating DMG package
-          command: |
-            scripts/macports4_build_dmg.sh
-          no_output_timeout: 20m
-      - run:
-          name:  Notarizing DMG package
-          command: |
-            package/notarize.sh
-          no_output_timeout: 20m
-      - store_artifacts:
-          path: /tmp/artifacts
-          destination: builds
 
 workflows:
   version: 2
-  build-arm64:
-    jobs:
-      - dependencies-part1-self
-      - dependencies-part2-self:
-          requires:
-            - dependencies-part1-self
-      - dependencies-part3-self:
-          requires:
-            - dependencies-part2-self
-      # - dependencies-part4-self:
-      #     requires:
-      #       - dependencies-part3-self
-      # - dependencies-part5-self:
-      #     requires:
-      #       - dependencies-part4-self
-      - build-gimp-self:
-          requires:
-            - dependencies-part3-self
-      - package-gimp-self:
-          requires:
-            - build-gimp-self
 
   build-x86_64:
     jobs:
-      - dependencies-part1-hosted
-      - dependencies-part2-hosted:
-          requires:
-            - dependencies-part1-hosted
-      - dependencies-part3-hosted:
-          requires:
-            - dependencies-part2-hosted
-      # - dependencies-part4-hosted:
-      #     requires:
-      #       - dependencies-part3-hosted
-      # - dependencies-part5-hosted:
-      #     requires:
-      #       - dependencies-part4-hosted
-      - build-gimp-and-package-hosted:
-          requires:
-            - dependencies-part3-hosted
+      - build-gimp-and-package-hosted
