@@ -47,6 +47,9 @@ $dosudo portindex
 popd
 
 # Force new install of gimp so latest changes are pulled from gitlab
+# deal with 'Error: Port gimp210 not found'
+$dosudo port uninstall gimp210 || true
+$dosudo port clean gimp210 || true
 $dosudo port uninstall gimp3
 $dosudo port clean gimp3
 sup_port $dosudo port -v -k -N install gimp3 +vala ${local}
