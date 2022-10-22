@@ -34,7 +34,7 @@ git.url             https://gitlab.gnome.org/GNOME/gimp.git
 git.branch          origin/master
 
 variant local description {Build locally} {
-    git.url         file:////tmp/gimp-git
+    git.url         file:///tmp/gimp-git
     git.branch      master
 }
 
