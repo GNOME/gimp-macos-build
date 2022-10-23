@@ -172,13 +172,21 @@ if [ -n "${UNINSTALL_PACKAGE}" ]; then
 fi
 
 if [ -n "${PART1}" ]; then
+  port_clean_and_install p5.34-io-compress-brotli build.jobs=1
+  $dosudo port clean          rust \
+                              llvm-15
+  # Must be verbose because otherwise times out on circle ci
+  $dosudo port -v -N install  rust \
+                              llvm-15
+fi
+
+if [ -n "${PART2}" ]; then
   # Have to clean every port because sub-ports get gummed up when they fail to
   # build/install. It would require detecting failure (obscure long error like
   # this): Error: See /opt/local/var/macports/logs/_opt_local_var_macports_sources_rsync.macports.org_macports_release_tarballs_ports_devel_dbus/dbus/main.log for details.
   port_clean_and_install python310
   $dosudo port select --set python python310
   $dosudo port select --set python3 python310
-  port_clean_and_install p5.34-io-compress-brotli build.jobs=1
   port_clean_and_install \
                 icu \
                 openjpeg \
@@ -212,14 +220,6 @@ if [ -n "${PART1}" ]; then
                 openexr \
                 libmng \
                 ghostscript
-fi
-
-if [ -n "${PART2}" ]; then
-  $dosudo port clean          rust \
-                              llvm-15
-  # Must be verbose because otherwise times out on circle ci
-  $dosudo port -v -N install  rust \
-                              llvm-15
 fi
 
 if [ -n "${PART3}" ]; then
