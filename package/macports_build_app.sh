@@ -41,10 +41,15 @@ echo "$GIMP_VERSION" > ${PACKAGE_DIR}/GIMP.app/Contents/Resources/.version
 BASEDIR=$(dirname "$0")
 
 echo "Link 'Resources' into python framework 'Resources'"
+if [ ! -d "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/3.10/Resources/Python.app/Contents/Resources" ]; then
+  # Avoids creating very awkward link in the wrong place
+  echo "***Error: Python framework not found"
+  exit 1
+fi
 pushd "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/3.10/Resources/Python.app/Contents/Resources/"
   for resources in etc gimp.icns lib share xcf.icns ;
   do
-ln -s "../../../../../../../../../${resources}" \
+    ln -s "../../../../../../../../../${resources}" \
       "${resources}"
   done
 popd
