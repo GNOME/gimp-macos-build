@@ -53,6 +53,8 @@
   <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-debug-tool-2.99</binary>
   <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimptool-2.99</binary>
   <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-script-fu-interpreter-3.0</binary>
+  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gjs-console</binary>
+  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gjs</binary>
 
   <!-- Copy in Info.plist -->
   <plist>${project}/info.plist</plist>
