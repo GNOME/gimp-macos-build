@@ -120,7 +120,7 @@ configure.pkg_config_path   ${python_framework}/lib/pkgconfig
 
 # disable vala extensions by default (currently broken)
 # enable with +vala variant for testing
-configure.args-append       -Dbuild-id=org.gimp.GIMP_official \
+configure.args-append       -Dbuild-id=org.gimp.GIMP_official.${build_arch} \
                             -Drevision=0 \
                             -Dvala-plugins=disabled \
                             -Dgi-docgen=disabled
