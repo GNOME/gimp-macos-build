@@ -10,9 +10,9 @@ PortGroup           debugoptimized 1.0
 
 name                gimp3
 set my_name         gimp3
-version             2.99.13
-revision            1
-epoch               1
+version             2.99.14
+revision            0
+epoch               0
 set branch          [join [lrange [split ${version} .] 0 1] .]
 license             {GPL-3+ LGPL-3+}
 categories          graphics
@@ -31,7 +31,7 @@ long_description    GIMP is a cross-platform image editor available for GNU/Linu
 homepage            https://gimp.org/
 fetch.type          git
 git.url             https://gitlab.gnome.org/GNOME/gimp.git
-git.branch          origin/master
+git.branch          GIMP_2_99_14
 
 variant local description {Build locally} {
     git.url         file:///Users/Shared/gimp-git
