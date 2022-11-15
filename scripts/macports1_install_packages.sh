@@ -134,7 +134,7 @@ function massage_output() {
 }
 
 function port_install() {
-  massage_output $dosudo port -N install "$@"
+  massage_output $dosudo port -k -N install "$@"
 }
 
 function port_clean_and_install() {
