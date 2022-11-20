@@ -33,6 +33,10 @@ sudo cp -f "/usr/lib/charset.alias" "${PREFIX}/lib/"
 
 echo "Creating bundle"
 $GTK_MAC_BUNDLER macports-gimp.bundle
+if [ ! -f ${PACKAGE_DIR}/GIMP.app/Contents/MacOS/gimp ]; then
+  echo "ERROR: Bundling failed, ${PACKAGE_DIR}/GIMP.app/Contents/MacOS/gimp not found"
+  exit 1
+fi
 echo "Done creating bundle"
 
 echo "Store GIMP version in bundle (for later use)"
