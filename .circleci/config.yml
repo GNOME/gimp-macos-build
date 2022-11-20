@@ -16,8 +16,10 @@ commands:
           name: Avoid hosts unknown for github
           command: mkdir -p ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
       - run:
-          name: Workaround gitlab bug https://gitlab.com/gitlab-org/gitlab/-/issues/9371
-          command: git config --global http.postBuffer 524288000
+          name: Workaround gitlab bug https://gitlab.com/gitlab-org/gitlab/-/issues/9371 which blocks gtk3
+          command: |
+            git config --global http.postBuffer 524288000
+            git config --global http.version HTTP/1.1
 
   cache-break-hosted:
     steps:

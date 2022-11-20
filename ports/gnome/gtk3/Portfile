@@ -13,7 +13,7 @@ name                gtk3
 conflicts           gtk3-devel
 set my_name         gtk3
 version             3.24.34
-revision            3
+revision            4
 epoch               1
 
 set proj_name       gtk+
@@ -52,6 +52,9 @@ depends_lib-append  port:mesa
 
 depends_run         port:shared-mime-info \
                     port:hicolor-icon-theme
+
+patchfiles-append   fix-some-ventura-mouse-problems.patch
+patch.pre_args      -p1
 
 # darwin 10 and earlier requires legacy support for O_CLOEXEC
 legacysupport.newest_darwin_requires_legacy 10
@@ -129,7 +132,7 @@ post-destroot {
     # avoid conflict with the gtk-update-icon-cache installed by gtk2
     move ${destroot}${prefix}/bin/gtk-update-icon-cache \
          ${destroot}${prefix}/bin/gtk-update-icon-cache-3.0
-    
+
     ui_debug "Creating gtk.immodules..."
     system "DYLD_LIBRARY_PATH=${destroot}${prefix}/lib \
         ${destroot}${prefix}/bin/gtk-query-immodules-3.0 \
