@@ -166,7 +166,7 @@ if {[vercmp $xcodeversion 4.3] < 0 && [string match "*macports*" ${configure.com
 }
 
 configure.args-append \
-                    --with-build-id=org.gimp.GIMP_official \
+                    --with-build-id=org.gimp.GIMP_official.${build_arch} \
                     --with-revision=0 \
                     --with-x \
                     --x-includes=${prefix}/include \
