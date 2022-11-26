@@ -8,8 +8,8 @@ PortGroup           debugoptimized 1.0
 
 name                gimp210
 set my_name         gimp210
-version             2.10.33
-# revision            1
+version             2.10.32
+revision            1
 # epoch               1
 license             GPL-3+
 categories          graphics
@@ -30,7 +30,9 @@ homepage            https://gimp.org/
 set branch          [join [lrange [split ${version} .] 0 1] .]
 fetch.type          git
 git.url             https://gitlab.gnome.org/GNOME/gimp.git
-git.branch          origin/gimp-2-10
+# For releases, use tag instead of branches.
+git.branch          GIMP_2_10_32
+#git.branch          origin/gimp-2-10
 
 variant local description {Build locally} {
     git.url         file:///Users/Shared/gimp-git
@@ -167,7 +169,7 @@ if {[vercmp $xcodeversion 4.3] < 0 && [string match "*macports*" ${configure.com
 
 configure.args-append \
                     --with-build-id=org.gimp.GIMP_official.${build_arch} \
-                    --with-revision=0 \
+                    --with-revision=${revision} \
                     --with-x \
                     --x-includes=${prefix}/include \
                     --x-libraries=${prefix}/lib \
