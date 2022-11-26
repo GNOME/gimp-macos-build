@@ -27,7 +27,7 @@ At a minimum, you will need to install:
 - Install Python 3 (Rust is pre-installed) as they are required for the GIMP dependencies.
 - Set up macOS 10.12 SDK. This is needed to ensure that GIMP can run on macOS 10.12+. See [this article](https://smallhacks.wordpress.com/2018/11/11/how-to-support-old-osx-version-with-a-recent-xcode/) for the details.
 - Set up JHBuild with a custom `~/.config/jhbuildrc-custom` file (see https://github.com/GNOME/gimp-macos-build/blob/master/jhbuildrc-gtk-osx-gimp). As part of the setup, it is running `bootstrap-gtk-osx-gimp` JHBuild command to compile required modules to run JHBuild. JHBuild is using Python3 venv to run.
-- Install [fork of the gtk-mac-bundler](https://github.com/lukaso/gtk-mac-bundler) - the tool which helps to create macOS application bundles for the GTK apps. This will hopefully shift to official [gtk-mac-bundler](https://github.com/GNOME/gtk-mac-bundler)
+- Install [fork of the gtk-mac-bundler](https://gitlab.gnome.org/lukaso/gtk-mac-bundler) - the tool which helps to create macOS application bundles for the GTK apps. This will hopefully shift to official [gtk-mac-bundler](https://github.com/GNOME/gtk-mac-bundler)
 - Install all gtk-osx, gimp and WebKit dependencies using JHBuild
 - Build GIMP.
 - Import signing certificate/key from the environment variables
