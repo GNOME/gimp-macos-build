@@ -129,6 +129,9 @@ Additionally, the x86_64 build will also work on Apple Silicon if built from a s
 running in Rosetta (for example by running `arch -x86_64 zsh`).
 
 ### Instructions ###
+
+If you run into issues with Homebrew versions of libraries being used instead of macports versions, it's easier to retry with Homebrew disabled somehow. (Just take care your login shell isn't a Homebrew shell.)
+
 From your `$HOME` directory:
 
 ```sh
@@ -144,9 +147,30 @@ For 2.99.xx:
 git checkout master
 ```
 
-Or for 2.10.xx (although there are tags for specific releases so go to that if desired)
+Or for 2.10.xx (although there are tags for specific releases so go to that if desired):
 
 ```sh
+git checkout gimp-2-10
+```
+
+Then goto `/Users/Shared/` and checkout GIMP itself into `gimp-git`:
+
+```sh
+cd /Users/Shared/
+sudo git clone https://gitlab.gnome.org/GNOME/gimp.git gimp-git
+```
+
+If building locally, get the branch for GIMP that matches the version you chose before:
+
+```sh
+cd gimp-git
+git checkout master
+```
+
+Or you could be using a different branch, e.g. 2.10.xx:
+
+```sh
+cd gimp-git
 git checkout gimp-2-10
 ```
 
@@ -184,7 +208,7 @@ or
 ~/gimp299-osx-app-x86_64/GIMP.app/Contents/MacOS/gimp
 ```
 
-Finally, the script will create a DMG file which is the "installer".
+Finally, the script will create a DMG file which is the "installer", in `/tmp/artifacts/`
 
 ## Debug info ##
 
