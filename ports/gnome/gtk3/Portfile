@@ -13,7 +13,7 @@ name                gtk3
 conflicts           gtk3-devel
 set my_name         gtk3
 version             3.24.34
-revision            4
+revision            5
 epoch               1
 
 set proj_name       gtk+
@@ -53,7 +53,7 @@ depends_lib-append  port:mesa
 depends_run         port:shared-mime-info \
                     port:hicolor-icon-theme
 
-patchfiles-append   fix-some-ventura-mouse-problems.patch
+patchfiles-append   workaround-ventura-mouse-tracking-MR5280.patch
 patch.pre_args      -p1
 
 # darwin 10 and earlier requires legacy support for O_CLOEXEC
