@@ -54,6 +54,7 @@ depends_run         port:shared-mime-info \
                     port:hicolor-icon-theme
 
 patchfiles-append   workaround-ventura-mouse-tracking-MR5280.patch
+patchfiles-append   restore-visual-output-10.13-and-earlier-MR5309.patch
 patch.pre_args      -p1
 
 # darwin 10 and earlier requires legacy support for O_CLOEXEC

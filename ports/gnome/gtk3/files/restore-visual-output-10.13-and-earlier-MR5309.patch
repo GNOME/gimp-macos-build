@@ -1,0 +1,39 @@
+From 5d91434f386f5e45073281fb31939e2a8dbf4c54 Mon Sep 17 00:00:00 2001
+From: John Ralls <jralls@ceridwen.us>
+Date: Thu, 8 Dec 2022 10:04:56 -0800
+Subject: [PATCH] [quartz] Set GdkQuartzView wantsLayer.
+
+Apparently wantsUpdateLayer by itself isn't sufficient.
+Also #ifdef wantsUpdateLayer for macOS X 10.8 and later; earlier
+versions don't provide it.
+
+Fixes #5393
+---
+ gdk/quartz/GdkQuartzView.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/gdk/quartz/GdkQuartzView.c b/gdk/quartz/GdkQuartzView.c
+index af28e37bea..16b5989fc7 100644
+--- a/gdk/quartz/GdkQuartzView.c
++++ b/gdk/quartz/GdkQuartzView.c
+@@ -326,10 +326,17 @@
+   [super viewWillDraw];
+ }
+ 
++#if MAC_OS_X_VERSION_MIN_REQUIRED >= 10900
+ -(BOOL)wantsUpdateLayer
+ {
+      return YES;
+ }
++#endif
++
++-(BOOL)wantsLayer
++{
++     return YES;
++}
+ 
+ static void
+ nsrect_from_cairo_rect (NSRect *nsrect, cairo_rectangle_int_t *rect)
+-- 
+GitLab
+
