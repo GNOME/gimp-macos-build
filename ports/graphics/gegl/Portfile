@@ -13,7 +13,7 @@ conflicts           gegl-devel
 set my_name         gegl
 version             0.4.40
 revision            0
-epoch               0
+epoch               1
 set branch          [join [lrange [split ${version} .] 0 1] .]
 license             {GPL-3+ LGPL-3+}
 categories          graphics
