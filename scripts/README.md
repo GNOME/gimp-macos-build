@@ -10,7 +10,7 @@ macports0_install.sh
 macports1_install_packages.sh
 macports2_install_gimp.sh
 macports3_build_app.sh
-macports3_build_dmg.sh
+macports4_build_dmg.sh
 ```
 
 If you need to start over from scratch, run:
@@ -18,6 +18,10 @@ If you need to start over from scratch, run:
 ```sh
 macports_uninstall.sh
 ```
+
+`macports4_build_dmg.sh` can fail because it needs to give permissions
+to access Finder in order to layout the DMG installer. However it should
+pop up a permissions dialog. Click Allow/OK and it sould be fine.
 
 ## Notarization and security ##
 
