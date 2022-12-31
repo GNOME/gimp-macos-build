@@ -257,6 +257,7 @@ if [ -n "${PART3}" ]; then
   fi
 
   $dosudo port -v -N upgrade outdated
+  $dosudo port uninstall inactive
 fi
 
 if [ -n "${PART4}" ]; then
