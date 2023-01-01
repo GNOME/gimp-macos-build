@@ -10,8 +10,8 @@ PortGroup           debugoptimized 1.0
 
 name                gimp3
 set my_name         gimp3
-version             2.99.14
-revision            1
+version             2.99.15
+revision            0
 # epoch must never be reduced. This was reduced for the 2.99.14 release
 # which was incorrect.
 epoch               1
@@ -34,8 +34,8 @@ homepage            https://gimp.org/
 fetch.type          git
 git.url             https://gitlab.gnome.org/GNOME/gimp.git
 # For releases, use tag instead of branches.
-git.branch          GIMP_2_99_14
-#git.branch          origin/master
+#git.branch          GIMP_2_99_14
+git.branch          origin/master
 
 variant local description {Build locally} {
     git.url         file:///Users/Shared/gimp-git
