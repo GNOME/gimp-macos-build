@@ -93,7 +93,6 @@ depends_lib-append \
                     port:libmng \
                     port:ghostscript \
                     port:gegl \
-                    port:gjs \
                     port:adwaita-icon-theme \
                     port:hicolor-icon-theme
 
