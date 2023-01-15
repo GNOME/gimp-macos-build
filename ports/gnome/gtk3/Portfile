@@ -6,14 +6,15 @@ PortGroup           xcodeversion 1.0
 PortGroup           active_variants 1.1
 PortGroup           compiler_blacklist_versions 1.0
 PortGroup           legacysupport 1.1
+PortGroup           meson 1.0
 PortGroup           debug 1.0
 PortGroup           debugoptimized 1.0
 
 name                gtk3
 conflicts           gtk3-devel
 set my_name         gtk3
-version             3.24.34
-revision            5
+version             3.24.36
+revision            0
 epoch               1
 
 set proj_name       gtk+
@@ -31,9 +32,18 @@ long_description    GTK+ is a highly usable, feature-rich toolkit for creating g
                     programming languages, such as C++, Python and C#, among others.
 
 homepage            http://www.gtk.org/
-fetch.type          git
-git.url             https://gitlab.gnome.org/GNOME/gtk.git
-git.branch          4a93875bbbc931cc4f19718940546200c12293d4
+# swap below for git based builds
+# fetch.type          git
+# git.url             https://gitlab.gnome.org/GNOME/gtk.git
+# git.branch          4a93875bbbc931cc4f19718940546200c12293d4
+distname            ${proj_name}-${version}
+dist_subdir         ${my_name}
+use_xz              yes
+master_sites        gnome:sources/${proj_name}/${branch}/
+
+checksums           rmd160  86096aff96681e085d15810e571aafa2cf6e5094 \
+                    sha256  27a6ef157743350c807ffea59baa1d70226dbede82a5e953ffd58ea6059fe691 \
+                    size    12540184
 
 minimum_xcodeversions {9 3.1}
 
@@ -53,16 +63,16 @@ depends_lib-append  port:mesa
 depends_run         port:shared-mime-info \
                     port:hicolor-icon-theme
 
-patchfiles-append   workaround-ventura-mouse-tracking-MR5280.patch
-patchfiles-append   restore-visual-output-10.13-and-earlier-MR5309.patch
-patch.pre_args      -p1
+# patchfiles-append   workaround-ventura-mouse-tracking-MR5280.patch
+# patchfiles-append   restore-visual-output-10.13-and-earlier-MR5309.patch
+# patch.pre_args      -p1
 
 # darwin 10 and earlier requires legacy support for O_CLOEXEC
 legacysupport.newest_darwin_requires_legacy 10
 
 # use autoreconf to deal with dependency tracking issues in configure
-use_autoreconf      yes
-autoreconf.cmd      ./autogen.sh
+# swap below for git based builds
+# autoreconf.cmd      ./autogen.sh
 
 # gtk3 +quartz uses instancetype which is not available
 # before approximately Xcode 4.6 (#49391)
@@ -76,20 +86,6 @@ if {[variant_isset quartz]} {
 }
 
 # gobject-introspection uses g-ir-scanner, which uses $CC from env
-
-if {${universal_possible} && [variant_isset universal]} {
-    foreach arch ${configure.universal_archs} {
-        lappend merger_build_args(${arch})  CC='${configure.cc} -arch ${arch}'
-        lappend merger_build_args(${arch})  CC_FOR_BUILD='${configure.cc} -arch ${arch}'
-        lappend merger_destroot_args(${arch})  CC='${configure.cc} -arch ${arch}'
-        lappend merger_destroot_args(${arch})  CC_FOR_BUILD='${configure.cc} -arch ${arch}'
-    }
-} else {
-    build.args-append       CC="${configure.cc} ${configure.cc_archflags}" \
-                            CC_FOR_BUILD="${configure.cc} ${configure.cc_archflags}"
-    destroot.args-append    CC="${configure.cc} ${configure.cc_archflags}" \
-                            CC_FOR_BUILD="${configure.cc} ${configure.cc_archflags}"
-}
 
 pre-configure {
     if {![variant_isset quartz] && ![variant_isset x11]} {
@@ -105,41 +101,17 @@ configure.cppflags-append \
 configure.cflags-append \
                     -fstrict-aliasing
 
-configure.args      --enable-static \
-                    --disable-glibtest \
-                    --enable-introspection \
-                    --disable-wayland-backend \
-                    --disable-schemas-compile \
-                    gio_can_sniff=yes
-autoreconf.args     --enable-static \
-                    --disable-glibtest \
-                    --enable-introspection \
-                    --disable-wayland-backend \
-                    --disable-schemas-compile \
-                    gio_can_sniff=yes
-
-build.args-append   V=1 \
-                    CPP_FOR_BUILD="${configure.cpp}"
+configure.args      -Ddemos=false \
+                    -Dexamples=false \
+                    -Dbuiltin_immodules=all
 
 test.run            yes
 test.target         check
 
 post-destroot {
-    set docdir ${prefix}/share/doc/${name}
-    xinstall -d ${destroot}${docdir}
-    xinstall -m 644 -W ${worksrcpath} AUTHORS COPYING HACKING NEWS README \
-        ${destroot}${docdir}
-
     # avoid conflict with the gtk-update-icon-cache installed by gtk2
     move ${destroot}${prefix}/bin/gtk-update-icon-cache \
          ${destroot}${prefix}/bin/gtk-update-icon-cache-3.0
-
-    ui_debug "Creating gtk.immodules..."
-    system "DYLD_LIBRARY_PATH=${destroot}${prefix}/lib \
-        ${destroot}${prefix}/bin/gtk-query-immodules-3.0 \
-        ${destroot}${prefix}/lib/gtk-3.0/3.0.0/immodules/*.so \
-        >${destroot}${prefix}/etc/gtk-3.0/gtk.immodules"
-    reinplace "s|${destroot}||" ${destroot}${prefix}/etc/gtk-3.0/gtk.immodules
 }
 
 platform darwin {
@@ -151,10 +123,6 @@ platform darwin {
         if {[variant_isset quartz] || ![variant_isset x11]} {
             configure.ldflags-append  -framework Cocoa -framework Carbon
         }
-
-        # https://trac.macports.org/ticket/63151
-        configure.args-append   --disable-dependency-tracking
-        autoreconf.args-append  --disable-dependency-tracking
     }
 
     if {${os.major} <= 10} {
@@ -162,11 +130,6 @@ platform darwin {
         if {[variant_isset quartz]} {
             patchfiles-append   patch-gdk_quartz_gdkcursor-quartz-10_6_compat.diff
         }
-    }
-    if {${os.major} <= 12} {
-        # requires cups 1.7
-        configure.args-append   --disable-cups
-        autoreconf.args-append  --disable-cups
     }
 }
 
@@ -248,9 +211,6 @@ if {${universal_possible} && [variant_isset universal]} {
 variant quartz conflicts x11 {
     require_active_variants path:lib/pkgconfig/cairo.pc:cairo quartz
     require_active_variants path:lib/pkgconfig/pango.pc:pango quartz
-
-    configure.args-append   --enable-quartz-backend
-    autoreconf.args-append  --enable-quartz-backend
 }
 
 variant x11 conflicts quartz {
@@ -266,14 +226,8 @@ variant x11 conflicts quartz {
                             port:xorg-libXfixes \
                             port:at-spi2-atk
 
-    configure.args-append   --enable-xinerama \
-                            --x-include=${prefix}/include \
-                            --x-lib=${prefix}/lib \
-                            --enable-x11-backend
-    autoreconf.args-append  --enable-xinerama \
-                            --x-include=${prefix}/include \
-                            --x-lib=${prefix}/lib \
-                            --enable-x11-backend
+    configure.args-append   -Dxinerama=yes \
+                            -Dx11_backend=true
 }
 
 if {![variant_isset quartz]} {
