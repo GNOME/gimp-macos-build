@@ -14,7 +14,7 @@ name                gtk3
 conflicts           gtk3-devel
 set my_name         gtk3
 version             3.24.36
-revision            0
+revision            1
 epoch               1
 
 set proj_name       gtk+
@@ -102,8 +102,7 @@ configure.cflags-append \
                     -fstrict-aliasing
 
 configure.args      -Ddemos=false \
-                    -Dexamples=false \
-                    -Dbuiltin_immodules=all
+                    -Dexamples=false
 
 test.run            yes
 test.target         check
@@ -112,6 +111,13 @@ post-destroot {
     # avoid conflict with the gtk-update-icon-cache installed by gtk2
     move ${destroot}${prefix}/bin/gtk-update-icon-cache \
          ${destroot}${prefix}/bin/gtk-update-icon-cache-3.0
+
+    ui_debug "Creating gtk.immodules..."
+    system "DYLD_LIBRARY_PATH=${destroot}${prefix}/lib \
+        ${destroot}${prefix}/bin/gtk-query-immodules-3.0 \
+        ${destroot}${prefix}/lib/gtk-3.0/3.0.0/immodules/*.so \
+        >${destroot}${prefix}/etc/gtk-3.0/gtk.immodules"
+    reinplace "s|${destroot}||" ${destroot}${prefix}/etc/gtk-3.0/gtk.immodules
 }
 
 platform darwin {
