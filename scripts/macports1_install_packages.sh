@@ -221,7 +221,8 @@ if [ -n "${PART2}" ]; then
                 libwmf \
                 openexr \
                 libmng \
-                ghostscript
+                ghostscript \
+                jdupes
 fi
 
 if [ -n "${PART3}" ]; then

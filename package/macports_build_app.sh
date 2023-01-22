@@ -260,6 +260,15 @@ cp xdg-email ${PACKAGE_DIR}/GIMP.app/Contents/MacOS
 echo "Creating pyc files"
 python3.10 -m compileall -q ${PACKAGE_DIR}/GIMP.app
 
+echo "trimming optimized pyc from macports"
+find ${PACKAGE_DIR}/GIMP.app -name '*opt-[12].pyc' -delete
+
+echo "trimming out unused gettext files"
+find -E ${PACKAGE_DIR}/GIMP.app -iregex '.*/(coreutils|git|gettext-tools|make)\.mo' -delete
+
+echo "symlinking all the dupes"
+jdupes -r -l ${PACKAGE_DIR}/GIMP.app
+
 echo "Fix adhoc signing (M1 Macs)"
 for file in $FILES
 do
