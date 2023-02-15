@@ -37,7 +37,7 @@ else
 fi
 
 function pure_version() {
-	echo '0.1'
+	echo '0.2'
 }
 
 function version() {
@@ -119,8 +119,29 @@ if [ -n "$FIRST_INSTALL" ]; then
   pushd $MACPORTS_INSTALLER
 
   if [ -z ${home_dir+x} ]; then
-    curl -L -O https://github.com/macports/macports-base/releases/download/v2.8.0/MacPorts-2.8.0-12-Monterey.pkg
-    sudo installer -pkg MacPorts-2.8.0-12-Monterey.pkg -target /
+    os_version=$(sw_vers -productVersion)
+    major_version=$(echo $os_version | awk -F '.' '{print $1}')
+    minor_version=$(echo $os_version | awk -F '.' '{print $2}')
+
+    if [[ $major_version -lt 11 ]]; then
+      version="$major_version.$minor_version"
+    else
+      version="$major_version"
+    fi
+
+    case $version in
+      10.12) friendly_name="Sierra" ;;
+      10.13) friendly_name="HighSierra" ;;
+      10.14) friendly_name="Mojave" ;;
+      10.15) friendly_name="Catalina" ;;
+      11) friendly_name="BigSur" ;;
+      12) friendly_name="Monterey" ;;
+      13) friendly_name="Ventura" ;;
+      *) friendly_name="Unknown" ;;
+    esac
+
+    curl -L -O https://github.com/macports/macports-base/releases/download/v2.8.1/MacPorts-2.8.1-${version}-${friendly_name}.pkg
+    sudo installer -pkg MacPorts-2.8.1-${version}-${friendly_name}.pkg -target /
   else
     curl -L -O https://github.com/macports/macports-base/releases/download/v2.8.0/MacPorts-2.8.0.tar.bz2
     tar xf MacPorts-2.8.0.tar.bz2
