@@ -42,7 +42,7 @@ commands:
             if [ ! -e "${HOME}/CACHE_BREAK" ] || [ "${cache_break}" != "$(cat "${HOME}/CACHE_BREAK")" ]; then
               echo "Cache break"
               echo "${cache_break}" > "${HOME}/CACHE_BREAK"
-              # scripts/macports_uninstall.sh --formulas-only
+              scripts/macports_uninstall.sh --formulas-only
             fi
 
   got-cache-so-skip-job-hosted:
