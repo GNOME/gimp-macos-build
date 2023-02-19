@@ -278,7 +278,7 @@ jobs:
 
   package-gimp-self:
     macos:
-      xcode: "13.3.0"
+      xcode: "14.2.0"
 
     steps:
       - setup
@@ -311,7 +311,7 @@ jobs:
 
   dependencies-part1-hosted:
     macos:
-      xcode: "13.3.0"
+      xcode: "14.2.0"
       resource_class: macos.x86.medium.gen2
 
     steps:
@@ -333,7 +333,7 @@ jobs:
 
   dependencies-part2-hosted:
     macos:
-      xcode: "13.3.0"
+      xcode: "14.2.0"
       resource_class: macos.x86.medium.gen2
 
     steps:
@@ -355,7 +355,7 @@ jobs:
 
   dependencies-part3-hosted:
     macos:
-      xcode: "13.3.0"
+      xcode: "14.2.0"
       resource_class: macos.x86.medium.gen2
 
     steps:
@@ -377,7 +377,7 @@ jobs:
 
   dependencies-part4-hosted:
     macos:
-      xcode: "13.3.0"
+      xcode: "14.2.0"
       resource_class: macos.x86.medium.gen2
 
     steps:
@@ -399,7 +399,7 @@ jobs:
 
   dependencies-part5-hosted:
     macos:
-      xcode: "13.3.0"
+      xcode: "14.2.0"
       resource_class: macos.x86.medium.gen2
 
     steps:
@@ -421,7 +421,7 @@ jobs:
 
   build-gimp-and-package-hosted:
     macos:
-      xcode: "13.3.0"
+      xcode: "14.2.0"
       resource_class: macos.x86.medium.gen2
 
     steps:

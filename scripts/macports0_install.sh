@@ -141,7 +141,7 @@ if [ -n "$FIRST_INSTALL" ]; then
     esac
 
     curl -L -O https://github.com/macports/macports-base/releases/download/v2.8.1/MacPorts-2.8.1-${version}-${friendly_name}.pkg
-    sudo installer -pkg MacPorts-2.8.1-${version}-${friendly_name}.pkg -target /
+    $dosudo installer -pkg MacPorts-2.8.1-${version}-${friendly_name}.pkg -target /
   else
     curl -L -O https://github.com/macports/macports-base/releases/download/v2.8.0/MacPorts-2.8.0.tar.bz2
     tar xf MacPorts-2.8.0.tar.bz2
