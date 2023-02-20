@@ -141,6 +141,10 @@ if [ -n "$FIRST_INSTALL" ]; then
     esac
 
     curl -L -O https://github.com/macports/macports-base/releases/download/v2.8.1/MacPorts-2.8.1-${version}-${friendly_name}.pkg
+    # Circleci self hosted runner breaks here if the user is not added to the sudoers file so that
+    # the sudo command can be used without a password.
+    # See: https://apple.stackexchange.com/questions/257813/enable-sudo-without-a-password-on-macos?newreg=2d4cdeb8e9354cc4bb1d5d06f5c623e6
+    # look at answer that begins "Better not to edit /etc/sudoers directly."
     $dosudo installer -pkg MacPorts-2.8.1-${version}-${friendly_name}.pkg -target /
   else
     curl -L -O https://github.com/macports/macports-base/releases/download/v2.8.0/MacPorts-2.8.0.tar.bz2
