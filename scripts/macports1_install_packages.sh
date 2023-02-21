@@ -173,6 +173,11 @@ if [ -n "${UNINSTALL_PACKAGE}" ]; then
 fi
 
 if [ -n "${PART1}" ]; then
+  echo "cmake-bootstrap being installed since won't build from source with 10.12 SDK"
+  $dosudo sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' /opt/local/etc/macports/macports.conf
+  port_clean_and_install cmake-bootstrap
+  $dosudo sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' /opt/local/etc/macports/macports.conf
+
   port_clean_and_install p5.34-io-compress-brotli build.jobs=1
   $dosudo port clean          rust \
                               llvm-15
