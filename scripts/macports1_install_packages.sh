@@ -173,7 +173,6 @@ if [ -n "${UNINSTALL_PACKAGE}" ]; then
 fi
 
 if [ -n "${PART1}" ]; then
-  $dosudo port uninstall -f libraw @0.21.1_0 || true # can be removed after 16/01/23
   port_clean_and_install p5.34-io-compress-brotli build.jobs=1
   $dosudo port clean          rust \
                               llvm-15
@@ -195,6 +194,7 @@ if [ -n "${PART2}" ]; then
                 aalib \
                 appstream-glib \
                 exiv2 \
+                git \
                 gexiv2 \
                 ghostscript \
                 glib-networking \
