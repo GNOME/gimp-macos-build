@@ -203,7 +203,6 @@ if [ -n "${PART2}" ]; then
   # port_install python310
   # $dosudo port select --set python python310
   # $dosudo port select --set python3 python310
-  port_clean_and_install cmake -python27
   port_clean_and_install \
                 aalib \
                 appstream-glib \
