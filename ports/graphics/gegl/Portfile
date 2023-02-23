@@ -11,7 +11,7 @@ PortGroup           debugoptimized 1.0
 name                gegl
 conflicts           gegl-devel
 set my_name         gegl
-version             0.4.40
+version             0.4.42
 revision            0
 epoch               1
 set branch          [join [lrange [split ${version} .] 0 1] .]

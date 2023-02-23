@@ -9,7 +9,7 @@ PortGroup           debugoptimized 1.0
 name                babl
 conflicts           babl-devel
 set my_name         babl
-version             0.1.98
+version             0.1.100
 revision            0
 license             LGPL-3+
 set branch          [join [lrange [split ${version} .] 0 1] .]
