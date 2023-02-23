@@ -69,6 +69,10 @@ done
 if which port &> /dev/null; then
   echo "Uninstalling formulas"
   $dosudo port -fp uninstall installed || true
+  # Left behind when uninstalling
+  $dosudo rm -rf /Library/LaunchDaemons/org.macports.rsyncd.plist
+  $dosudo rm -rf /Library/LaunchAgents/org.freedesktop.dbus-session.plist
+  $dosudo rm -rf /Library/LaunchDaemons/org.freedesktop.dbus-system.plist
 fi
 
 if [ -n "$formulasonly" ]; then

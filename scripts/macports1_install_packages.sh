@@ -173,7 +173,24 @@ if [ -n "${UNINSTALL_PACKAGE}" ]; then
 fi
 
 if [ -n "${PART1}" ]; then
-  $dosudo port uninstall -f libraw @0.21.1_0 || true # can be removed after 16/01/23
+  echo "force remove broken port - can be removed once all versions are on master and gimp-2-10"
+  $dosudo port -f uninstall openblas @0.3.21_2+gcc12+lapack || true
+  echo "build cmake dependencies in case they are needed for gimp"
+  port_clean_and_install  libcxx \
+                          curl \
+                          expat \
+                          zlib \
+                          bzip2 \
+                          libarchive \
+                          ncurses \
+                          libuv
+  echo "cmake-bootstrap being installed since won't build from source with 10.12 SDK"
+  $dosudo sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' /opt/local/etc/macports/macports.conf
+  port_clean_and_install cmake
+  $dosudo sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' /opt/local/etc/macports/macports.conf
+fi
+
+if [ -n "${PART2}" ]; then
   port_clean_and_install p5.34-io-compress-brotli build.jobs=1
   $dosudo port clean          rust \
                               llvm-15
@@ -182,7 +199,7 @@ if [ -n "${PART1}" ]; then
                               llvm-15
 fi
 
-if [ -n "${PART2}" ]; then
+if [ -n "${PART3}" ]; then
   # Have to clean every port because sub-ports get gummed up when they fail to
   # build/install. It would require detecting failure (obscure long error like
   # this): Error: See /opt/local/var/macports/logs/_opt_local_var_macports_sources_rsync.macports.org_macports_release_tarballs_ports_devel_dbus/dbus/main.log for details.
@@ -190,11 +207,11 @@ if [ -n "${PART2}" ]; then
   # port_install python310
   # $dosudo port select --set python python310
   # $dosudo port select --set python3 python310
-  port_clean_and_install cmake -python27
   port_clean_and_install \
                 aalib \
                 appstream-glib \
                 exiv2 \
+                git \
                 gexiv2 \
                 ghostscript \
                 glib-networking \
@@ -233,7 +250,7 @@ if [ -n "${PART2}" ]; then
                 x265
 fi
 
-if [ -n "${PART3}" ]; then
+if [ -n "${PART4}" ]; then
   $dosudo port clean         clang-15
   $dosudo port -v -N install clang-15
 
@@ -259,10 +276,6 @@ if [ -n "${PART3}" ]; then
 
   $dosudo port -v -N upgrade outdated
   $dosudo port uninstall inactive || true
-fi
-
-if [ -n "${PART4}" ]; then
-  echo "**** No op"
 fi
 
 if [ -n "${PART5}" ]; then
