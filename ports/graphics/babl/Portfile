@@ -9,7 +9,7 @@ PortGroup           debugoptimized 1.0
 name                babl
 conflicts           babl-devel
 set my_name         babl
-version             0.1.100
+version             0.1.102
 revision            0
 license             LGPL-3+
 set branch          [join [lrange [split ${version} .] 0 1] .]
@@ -27,9 +27,9 @@ dist_subdir         ${my_name}
 distname            ${my_name}-${version}
 use_xz              yes
 
-checksums           rmd160  74b191c8097e4e95fa6c25ce5ba4a07a4e9359b0 \
-                    sha256  a5e6e193676215d65d7cdfeaf1158a060b42a142a36f1ab076d1833212f9d2d4 \
-                    size    313808
+checksums           rmd160  a61220355cdd94218e34651e25bc5bb2129bc511 \
+                    sha256  a88bb28506575f95158c8c89df6e23686e50c8b9fea412bf49fe8b80002d84f0 \
+                    size    313872
 
 configure.args-append \
                     -Dwith-docs=false
