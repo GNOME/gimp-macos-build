@@ -11,7 +11,7 @@ PortGroup           debugoptimized 1.0
 name                gegl
 conflicts           gegl-devel
 set my_name         gegl
-version             0.4.40
+version             0.4.42
 revision            0
 epoch               1
 set branch          [join [lrange [split ${version} .] 0 1] .]
@@ -31,9 +31,9 @@ dist_subdir         ${my_name}
 distname            ${my_name}-${version}
 use_xz              yes
 
-checksums           rmd160  2a4ce9375b2f71322f42d12e443d5dbe56ab0c08 \
-                    sha256  cdde80d15a49dab9a614ef98f804c8ce6e4cfe1339a3c240c34f3fb45436b85d \
-                    size    5784744
+checksums           rmd160  5e186da28004b2e0f6789ff3f823c7bdef0b2403 \
+                    sha256  aba83a0cbaa6c56edc29ea22f2e8172950a53b96daa51592083d59222bdde02d \
+                    size    5787100
 
 depends_build-append \
                     port:pkgconfig \
