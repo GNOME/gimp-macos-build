@@ -35,11 +35,11 @@ fetch.type          git
 git.url             https://gitlab.gnome.org/GNOME/gimp.git
 # For releases, use tag instead of branches.
 #git.branch          GIMP_2_99_14
-git.branch          origin/master
+git.branch          origin/wip/Jehan/gactions
 
 variant local description {Build locally} {
     git.url         file:///Users/Shared/gimp-git
-    git.branch      master
+    git.branch      wip/Jehan/gactions
 }
 
 # checksums           rmd160  d6e7de3f332594802226736d41228ffd13af251f \
