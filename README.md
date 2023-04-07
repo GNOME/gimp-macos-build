@@ -1,4 +1,4 @@
-# Build GIMP/macOS inside CircleCI
+# Build GIMP/macOS inside CircleCI and MacStadium
 
 This repository contains files related to GIMP/macOS build using CircleCI and some tips that
 could help with local development as well.
@@ -13,6 +13,22 @@ Because CircleCI is not supporting gitlab [yet] there is a [GitHub
 mirror](https://github.com/GNOME/gimp-macos-build) of this repository.
 To get access to the Circle-CI build administration, packagers need to
 ask for admin access to this Github repository.
+
+Also, because CircleCI does not support arm64 builds (at this point we haven't ported to it), we are using MacStadium to build the arm64 builds.
+
+## Building
+
+See [scripts/README.md](scripts/README.md) for details on how to build locally and on CircleCI.
+
+**Note**: CircleCI is currently set up to build the `master` and `gimp-2-10` branchs on a nightly basis (and pulls the latest GIMP code from the same branches on the [GIMP repo](https://gitlab.gnome.org/GNOME/gimp). It also builds any branch of this repo that is pushed to.
+
+## Releases
+
+For releases, create a release branch, and go into the `/ports/gimp` directory and edit the `Portfile` to update the version number and set the correct release tag (there are examples which are commented out). Then push the branch to this repo and CircleCI will build it.
+
+When ready, the branch can be merged to `master` and the release can be tagged on this repo (use the same tag). That build will be the release build (in the Circle CI artifacts). There will be two builds, one for arm64 and one for x86_64.
+
+Once everything is fine with the release, create a new branch for going back to building the head release. Update the version appropriately in the `Portfile` and set to pulling the `master` branch of the GIMP repo. Once this is working properly, merge the new branch back to `master`.
 
 # Prerequisites for local build (Draft) ##
 

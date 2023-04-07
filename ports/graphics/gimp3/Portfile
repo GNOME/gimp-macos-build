@@ -125,7 +125,8 @@ configure.pkg_config_path   ${python_framework}/lib/pkgconfig
 # enable with +vala variant for testing
 configure.args-append       -Dbuild-id=org.gimp.GIMP_official.${build_arch} \
                             -Drevision=1 \
-                            -Dvala-plugins=disabled \
+                            -Dvala=disabled \
+                            -Djavascript=disabled \
                             -Dgi-docgen=disabled
 
 # at present, luajit does not build on PowerPC
