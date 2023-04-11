@@ -247,19 +247,20 @@ if [ -n "${PART4}" ]; then
   $dosudo port clean         clang-15
   $dosudo port -v -N install clang-15
 
-  echo "gcc12 being installed before gegl and gjs (via mozjs91)"
+  echo "gcc12 being installed before gegl"
   # libomp can't handle +debug variant as prebuilt binary
   $dosudo sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' /opt/local/etc/macports/macports.conf
   port_clean_and_install libomp -debug \
-                         llvm-14 -debug \
-                         clang-14 -debug \
-                         gcc12
+                         llvm-14 -debug
+  # clang 14 taking too long to build on circle ci
+  $dosudo port clean         clang-14
+  $dosudo port -v -N install clang-14 -debug
+  port_clean_and_install gcc12
   $dosudo sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' /opt/local/etc/macports/macports.conf
 
   $dosudo port clean dbus
   port_install -f dbus
   port_clean_and_install \
-                gjs \
                 adwaita-icon-theme \
                 babl \
                 gegl +vala
