@@ -248,6 +248,24 @@ https://firefox-source-docs.mozilla.org/contributing/debugging/debugging_on_maco
 One change you need to make. In the scheme, add an "Argument Passed on Launch" and set it
 to `--`.
 
+### Memory Leaks ###
+
+To get a memory leak report, you can use the `leaks` tool. It is part of the XCode command line tools.
+
+Run the following commands to get a leaks report for GIMP (you can leave it running, just don't quit gimp before running the `leaks` command):
+```sh
+export MallocStackLogging=1
+gimp
+```
+
+Do whatever you want to do in GIMP to create the leaks. Then, without quitting gimp, run the following command to get the leaks report:
+
+```sh
+leaks gimp > ~/Downloads/leaks-with-malloc-check.txt
+```
+
+This was pulled from https://developer.apple.com/library/archive/documentation/Performance/Conceptual/ManagingMemory/Articles/FindingLeaks.html
+
 ## Our partners ##
 
 These companies generously support the development of GIMP on MacOS.
