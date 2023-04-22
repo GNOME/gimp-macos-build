@@ -142,6 +142,11 @@ function port_clean_and_install() {
   port_install "$@"
 }
 
+# for xargs support
+export -f port_install
+export -f port_clean_and_install
+export -f massage_output
+
 echo "**** Debugging info ****"
 echo "**** installed ports ****"
 port installed
@@ -192,11 +197,14 @@ fi
 
 if [ -n "${PART2}" ]; then
   port_clean_and_install p5.34-io-compress-brotli build.jobs=1
-  $dosudo port clean          rust \
-                              llvm-15
+  port deps rust | awk '/Library Dependencies:/ {for (i=3; i<=NF; i++) print $i}' | tr ',' ' ' | xargs bash -i -c 'port_clean_and_install $@'
+  # Build only dependency, so don't care if backward compatible
+  $dosudo sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' /opt/local/etc/macports/macports.conf
+  port_clean_and_install rust
+  $dosudo sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' /opt/local/etc/macports/macports.conf
+  $dosudo port clean         llvm-15
   # Must be verbose because otherwise times out on circle ci
-  $dosudo port -v -N install  rust \
-                              llvm-15
+  $dosudo port -v -N install llvm-15
 fi
 
 if [ -n "${PART3}" ]; then
