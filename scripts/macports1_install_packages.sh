@@ -146,6 +146,7 @@ function port_clean_and_install() {
 export -f port_install
 export -f port_clean_and_install
 export -f massage_output
+export -f port
 
 echo "**** Debugging info ****"
 echo "**** installed ports ****"
