@@ -179,8 +179,6 @@ if [ -n "${UNINSTALL_PACKAGE}" ]; then
 fi
 
 if [ -n "${PART1}" ]; then
-  echo "force remove broken port - can be removed once all versions are on master and gimp-2-10"
-  $dosudo port -f uninstall openblas @0.3.21_2+gcc12+lapack || true
   echo "build cmake dependencies in case they are needed for gimp"
   port_clean_and_install  libcxx \
                           curl \
@@ -199,7 +197,8 @@ fi
 if [ -n "${PART2}" ]; then
   port_clean_and_install p5.34-io-compress-brotli build.jobs=1
   echo "about to build rust dependencies"
-  port deps rust | awk '/Library Dependencies:/ {for (i=3; i<=NF; i++) print $i}' | tr ',' ' ' | xargs bash -i -c 'port_clean_and_install $@'
+  rust_deps=$(port deps rust | awk '/Library Dependencies:/ {for (i=3; i<=NF; i++) print $i}' ORS=" " | tr ',' ' ')
+  port_clean_and_install $rust_deps
   # Build only dependency, so don't care if backward compatible
   echo "install rust"
   $dosudo sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' /opt/local/etc/macports/macports.conf
