@@ -8,8 +8,8 @@ PortGroup           debugoptimized 1.0
 
 name                gimp210
 set my_name         gimp210
-version             2.10.34
-revision            1
+version             2.10.35
+revision            0
 # epoch               1
 license             GPL-3+
 categories          graphics
@@ -31,8 +31,8 @@ set branch          [join [lrange [split ${version} .] 0 1] .]
 fetch.type          git
 git.url             https://gitlab.gnome.org/GNOME/gimp.git
 # For releases, use tag instead of branches.
-git.branch          GIMP_2_10_34
-# git.branch          origin/gimp-2-10
+# git.branch          GIMP_2_10_34
+git.branch          origin/gimp-2-10
 
 variant local description {Build locally} {
     git.url         file:///Users/Shared/gimp-git
