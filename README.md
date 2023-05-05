@@ -1,5 +1,9 @@
 # Build GIMP/macOS inside CircleCI
 
+| x86_64 Build Stats | arm64 Build Stats |
+| ----------- | ----------- |
+| <p align="center"><a href="https://app.circleci.com/insights/github/GNOME/gimp-macos-build/workflows/build-x86_64?branch=gimp-2-10"><img src="https://dl.circleci.com/insights-snapshot/gh/GNOME/gimp-macos-build/gimp-2-10/build-x86_64/badge.svg" alt="InsightsSnapshot" /></a></p> | <p align="center"><a href="https://dl.circleci.com/insights-snapshot/gh/GNOME/gimp-macos-build/gimp-2-10/build-arm64/badge.svg"><img src="https://dl.circleci.com/insights-snapshot/gh/GNOME/gimp-macos-build/gimp-2-10/build-arm64/badge.svg" alt="InsightsSnapshot" /></a></p> |
+
 This repository contains files related to GIMP/macOS build using CircleCI and some tips that
 could help with local development as well.
 
