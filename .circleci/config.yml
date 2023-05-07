@@ -285,6 +285,11 @@ jobs:
           name:  Notarizing DMG package
           command: |
             package/notarize.sh
+            # Checksum
+            echo "Calculating checksum"
+            DMGNAME=$(find /tmp/artifacts/ -name "gimp-2.*.dmg")
+            shasum -a 256 "${DMGNAME}" > "${DMGNAME}.sha256"
+            echo "Checksum: $(cat "${DMGNAME}.sha256")"
           no_output_timeout: 20m
       - store_artifacts:
           path: /tmp/artifacts
