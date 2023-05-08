@@ -192,8 +192,17 @@ fi
 
 if [ -n "${PART2}" ]; then
   port_clean_and_install p5.34-io-compress-brotli build.jobs=1
-  $dosudo port clean          rust \
-                              llvm-15
+  echo "about to build rust dependencies"
+  rust_deps=$(port deps rust | awk '/Library Dependencies:/ {for (i=3; i<=NF; i++) print $i}' ORS=" " | tr ',' ' ')
+  port_clean_and_install $rust_deps
+  # Build only dependency, so don't care if backward compatible
+  echo "install rust"
+  $dosudo sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' /opt/local/etc/macports/macports.conf
+  $dosudo port clean         rust
+  # Must be verbose because otherwise times out on circle ci
+  $dosudo port -v -N install rust
+  $dosudo sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' /opt/local/etc/macports/macports.conf
+  $dosudo port clean         llvm-15
   # Must be verbose because otherwise times out on circle ci
   $dosudo port -v -N install  rust \
                               llvm-15

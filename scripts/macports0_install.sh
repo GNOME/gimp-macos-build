@@ -106,7 +106,8 @@ if [ -n "$circleci" ]; then
   echo "export circleci=\"true\"" >> ~/.profile
 fi
 
-if [ ! -f "$PREFIX/bin/port" ]; then
+if ! id -u "macports" >/dev/null 2>&1 || [ ! -f "$PREFIX/bin/port" ]; then
+  # Must install MacPorts to get both user and command
   FIRST_INSTALL=true
 fi
 
