@@ -202,7 +202,9 @@ if [ -n "${PART2}" ]; then
   # Build only dependency, so don't care if backward compatible
   echo "install rust"
   $dosudo sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' /opt/local/etc/macports/macports.conf
-  port_clean_and_install rust
+  $dosudo port clean         rust
+  # Must be verbose because otherwise times out on circle ci
+  $dosudo port -v -N install rust
   $dosudo sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' /opt/local/etc/macports/macports.conf
   $dosudo port clean         llvm-15
   # Must be verbose because otherwise times out on circle ci
