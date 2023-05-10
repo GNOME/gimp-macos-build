@@ -25,7 +25,7 @@ else
   echo "Notarization failed with status: $NOT_STATUS. Showing log"
 fi
 
-xcrun notarytool log --apple-id ${notarization_login} --team-id ${notarization_teamid} --password ${notarization_password} $REQUEST_UUID
+xcrun notarytool log $REQUEST_UUID --apple-id ${notarization_login} --team-id ${notarization_teamid} --password ${notarization_password}
 
 if [[ "$NOT_STATUS" != Accepted* ]]; then
   exit 1
