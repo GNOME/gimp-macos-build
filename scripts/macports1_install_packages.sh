@@ -190,7 +190,9 @@ if [ -n "${PART1}" ]; then
                           libuv
   echo "cmake-bootstrap being installed since won't build from source with 10.12 SDK"
   $dosudo sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' /opt/local/etc/macports/macports.conf
-  port_clean_and_install cmake
+  $dosudo port uninstall     cmake || true
+  $dosudo port clean         cmake
+  $dosudo port -k -N install cmake -python310
   $dosudo sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' /opt/local/etc/macports/macports.conf
 fi
 
@@ -204,7 +206,7 @@ if [ -n "${PART2}" ]; then
   $dosudo sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' /opt/local/etc/macports/macports.conf
   $dosudo port clean         rust
   # Must be verbose because otherwise times out on circle ci
-  $dosudo port -v -N install rust
+  $dosudo port -v -N install rust -python310
   $dosudo sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' /opt/local/etc/macports/macports.conf
   $dosudo port clean         llvm-15
   # Must be verbose because otherwise times out on circle ci
@@ -262,9 +264,11 @@ if [ -n "${PART4}" ]; then
   echo "gcc12 being installed before gegl"
   # libomp can't handle +debug variant as prebuilt binary
   $dosudo sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' /opt/local/etc/macports/macports.conf
-  port_clean_and_install \
-                libomp -debug \
-                gcc12
+  $dosudo port clean         libomp
+  $dosudo port -k -N install libomp -debug
+  $dosudo port uninstall     gcc12 || true
+  $dosudo port clean         gcc12
+  $dosudo port -k -N install gcc12
   $dosudo sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' /opt/local/etc/macports/macports.conf
 
   $dosudo port clean dbus
