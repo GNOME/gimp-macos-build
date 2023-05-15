@@ -480,12 +480,12 @@ workflows:
       - dependencies-part4-self:
           requires:
             - dependencies-part3-self
-      # - dependencies-part5-self:
-      #     requires:
-      #       - dependencies-part4-self
-      - build-gimp-self:
+      - dependencies-part5-self:
           requires:
             - dependencies-part4-self
+      - build-gimp-self:
+          requires:
+            - dependencies-part5-self
       - package-gimp-self:
           requires:
             - build-gimp-self
@@ -502,9 +502,9 @@ workflows:
       - dependencies-part4-hosted:
           requires:
             - dependencies-part3-hosted
-      # - dependencies-part5-hosted:
-      #     requires:
-      #       - dependencies-part4-hosted
-      - build-gimp-and-package-hosted:
+      - dependencies-part5-hosted:
           requires:
             - dependencies-part4-hosted
+      - build-gimp-and-package-hosted:
+          requires:
+            - dependencies-part5-hosted

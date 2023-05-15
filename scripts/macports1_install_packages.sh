@@ -281,11 +281,9 @@ if [ -n "${PART4}" ]; then
     $dosudo port clean git
     port_install git -perl5_34
   fi
-
-  $dosudo port -v -N upgrade outdated
-  $dosudo port uninstall inactive || true
 fi
 
 if [ -n "${PART5}" ]; then
-  echo "**** No op"
+  $dosudo port -v -N upgrade outdated
+  $dosudo port uninstall inactive || true
 fi
