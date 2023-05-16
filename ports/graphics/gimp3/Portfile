@@ -6,7 +6,6 @@ PortGroup           compiler_blacklist_versions 1.0
 PortGroup           meson 1.0
 PortGroup           legacysupport 1.0
 PortGroup           debug 1.0
-PortGroup           debugoptimized 1.0
 
 name                gimp3
 set my_name         gimp3

@@ -179,6 +179,12 @@ if [ -n "${UNINSTALL_PACKAGE}" ]; then
 fi
 
 if [ -n "${PART1}" ]; then
+  # temporarily uninstall gegl, gimp3, libgcc12 (until all builds are fixed)
+  $dosudo port uninstall gimp3 || true
+  $dosudo port uninstall -f gegl || true
+  $dosudo port uninstall -f gcc12 || true
+  $dosudo port uninstall -f libgcc12 || true
+  $dosudo port uninstall -f appstream-glib || true
   echo "build cmake dependencies in case they are needed for gimp"
   port_clean_and_install  libcxx \
                           curl \
@@ -263,7 +269,9 @@ if [ -n "${PART4}" ]; then
   # libomp can't handle +debug variant as prebuilt binary
   $dosudo sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' /opt/local/etc/macports/macports.conf
   port_clean_and_install \
-                libomp -debug \
+                libomp -debug
+  $dosudo port -v -N install \
+                libgcc12 \
                 gcc12
   $dosudo sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' /opt/local/etc/macports/macports.conf
 
