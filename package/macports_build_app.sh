@@ -21,7 +21,7 @@ GTK_MAC_BUNDLER=${HOME}/.local/bin/gtk-mac-bundler
 
 printf "Determining GIMP version: "
 
-GIMP_VERSION="$(${PREFIX}/bin/gimp --version 2>/dev/null | grep 'GNU Image Manipulation Program version' | sed 's|GNU Image Manipulation Program version ||')"
+GIMP_VERSION="$(${PREFIX}/bin/gimp-2.99 --version 2>/dev/null | grep 'GNU Image Manipulation Program version' | sed 's|GNU Image Manipulation Program version ||')"
 # for gtk-mac-bundler
 
 echo "$GIMP_VERSION"
