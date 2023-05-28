@@ -185,6 +185,7 @@ if [ -n "${PART1}" ]; then
   $dosudo port uninstall -f gcc12 || true
   $dosudo port uninstall -f libgcc12 || true
   $dosudo port uninstall -f appstream-glib || true
+  $dosudo port clean appstream-glib || true
   echo "build cmake dependencies in case they are needed for gimp"
   port_clean_and_install  libcxx \
                           curl \
