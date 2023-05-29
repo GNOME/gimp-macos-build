@@ -2,7 +2,6 @@
 
 # set -e
 
-PREFIX=/opt/local
 if [[ $(uname -m) == 'arm64' ]]; then
   build_arm64=true
   echo "*** Build: arm64"
@@ -29,7 +28,11 @@ echo "$GIMP_VERSION"
 cat info.plist.tmpl | sed "s|%VERSION%|${GIMP_VERSION}|g" > info.plist
 
 echo "Copying charset.alias"
-sudo cp -f "/usr/lib/charset.alias" "${PREFIX}/lib/"
+if [ -w "${PREFIX}/lib/" ]; then
+  cp -f "/usr/lib/charset.alias" "${PREFIX}/lib/"
+else
+  sudo cp -f "/usr/lib/charset.alias" "${PREFIX}/lib/"
+fi
 
 echo "Creating bundle"
 $GTK_MAC_BUNDLER macports-gimp.bundle

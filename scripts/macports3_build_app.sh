@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #####################################################################
- # macports3_build_dmg.sh: Builds gimp3 dmg                         #
+ # macports3_build_dmg.sh: Builds gimp2 dmg                         #
  #                                                                  #
  # Copyright 2022 Lukas Oberhuber <lukaso@gmail.com>                #
  #                                                                  #
@@ -24,7 +24,7 @@
 
 set -e;
 
-source ~/.profile
+source ~/.profile-gimp2
 export PATH=$PREFIX/bin:$PATH
 
 PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
