@@ -24,7 +24,7 @@
 
 set -e;
 
-source ~/.profile-gimp2
+source ~/.profile-gimp3
 
 if [ -n "$GIMP_ARM64" ]; then
   build_arm64=true

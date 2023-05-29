@@ -24,7 +24,7 @@
 
 set -e;
 
-source ~/.profile-gimp2
+source ~/.profile-gimp3
 export PATH=$PREFIX/bin:$PATH
 
 PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"

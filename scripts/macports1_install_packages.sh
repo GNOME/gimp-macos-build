@@ -119,7 +119,7 @@ done
 
 PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-source ~/.profile-gimp2
+source ~/.profile-gimp3
 export PATH=$PREFIX/bin:$PATH
 
 function massage_output() {
@@ -173,10 +173,10 @@ if [ -n "${UNINSTALL_PACKAGE}" ]; then
 fi
 
 if [ -n "${PART1}" ]; then
-  # temporarily uninstall gegl, gimp210, libgcc12 (until all builds are fixed)
+  # temporarily uninstall gegl, gimp3, libgcc12 (until all builds are fixed)
   # All of these ports at some point failed to upgrade, build or otherwise cooperate
   # unless uninstalled, even when being built from scratch.
-  $dosudo port uninstall gimp210 || true
+  $dosudo port uninstall gimp3 || true
   $dosudo port uninstall -f gegl || true
   $dosudo port uninstall -f gcc12 || true
   $dosudo port uninstall -f libgcc12 || true

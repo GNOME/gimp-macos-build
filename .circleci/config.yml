@@ -39,18 +39,18 @@ commands:
           # Triggering cache changes should be done in the directories below
           command: |
             cache_break=$(md5 ports/cache_break)
-            if [ ! -e "${HOME}/CACHE_BREAK_GIMP2" ] || [ "${cache_break}" != "$(cat "${HOME}/CACHE_BREAK_GIMP2")" ]; then
+            if [ ! -e "${HOME}/CACHE_BREAK_GIMP3" ] || [ "${cache_break}" != "$(cat "${HOME}/CACHE_BREAK_GIMP3")" ]; then
               echo "Cache break"
-              echo "${cache_break}" > "${HOME}/CACHE_BREAK_GIMP2"
-              scripts/macports_uninstall.sh --homedirgimp2
+              echo "${cache_break}" > "${HOME}/CACHE_BREAK_GIMP3"
+              scripts/macports_uninstall.sh --homedirgimp3
             fi
 
   got-cache-so-skip-job-hosted:
     steps:
         - restore_cache:
             keys:
-              - got_cache{{ checksum "CACHE_BREAK" }}-gimp210vlocal3-{{ checksum "CACHE_ITER" }}
-              - got_cache{{ checksum "CACHE_BREAK" }}-gimp210vlocal3-
+              - got_cache{{ checksum "CACHE_BREAK" }}-gimpvlocal3-{{ checksum "CACHE_ITER" }}
+              - got_cache{{ checksum "CACHE_BREAK" }}-gimpvlocal3-
         - run:
             command: |
               if [ -f ~/got_cache/cache_check ]; then
@@ -62,32 +62,32 @@ commands:
     steps:
         - restore_cache:
             keys:
-              - got_cache{{ checksum "CACHE_BREAK" }}-gimp210vlocal3-{{ checksum "CACHE_ITER" }}
-              - got_cache{{ checksum "CACHE_BREAK" }}-gimp210vlocal3-
+              - got_cache{{ checksum "CACHE_BREAK" }}-gimpvlocal3-{{ checksum "CACHE_ITER" }}
+              - got_cache{{ checksum "CACHE_BREAK" }}-gimpvlocal3-
 
   get-cached-data-hosted:
     steps:
         - restore_cache:
             keys:
-              - v{{ checksum "CACHE_BREAK" }}-gimp210vlocal3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp210-depspt5vlocal3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp210-depspt4vlocal3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp210-depspt3vlocal3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp210-depspt2vlocal3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp210-depspt1vlocal3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp210vlocal3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp210-depspt5vlocal3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp210-depspt4vlocal3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp210-depspt3vlocal3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp210-depspt2vlocal3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp210-depspt1vlocal3-
+              - v{{ checksum "CACHE_BREAK" }}-gimpvlocal3-{{ checksum "CACHE_ITER" }}
+              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt5vlocal3-{{ checksum "CACHE_ITER" }}
+              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt4vlocal3-{{ checksum "CACHE_ITER" }}
+              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt3vlocal3-{{ checksum "CACHE_ITER" }}
+              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt2vlocal3-{{ checksum "CACHE_ITER" }}
+              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt1vlocal3-{{ checksum "CACHE_ITER" }}
+              - v{{ checksum "CACHE_BREAK" }}-gimpvlocal3-
+              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt5vlocal3-
+              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt4vlocal3-
+              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt3vlocal3-
+              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt2vlocal3-
+              - v{{ checksum "CACHE_BREAK" }}-gimp-depspt1vlocal3-
 
   setup-macports:
     steps:
         - run:
             name: Install macports
             command: |
-              scripts/macports0_install.sh --circleci --homedirgimp2
+              scripts/macports0_install.sh --circleci --homedirgimp3
             no_output_timeout: 30m
         # - run:
         #     name: Gimp version (default `master`)
@@ -117,7 +117,7 @@ commands:
       - save_cache:
           paths:
             - ~/got_cache
-          key: got_cache{{ checksum "CACHE_BREAK" }}-gimp210vlocal3-{{ checksum "CACHE_ITER" }}
+          key: got_cache{{ checksum "CACHE_BREAK" }}-gimpvlocal3-{{ checksum "CACHE_ITER" }}
 
   setup-gtk-mac-bundler:
     steps:
@@ -260,9 +260,9 @@ jobs:
           root: "~"
           # Must be relative path from root
           paths:
-            - macports-gimp210-osx-app
-            - macports-gimp210-osx-app-x86_64
-            - .profile-gimp2
+            - macports-gimp299-osx-app
+            - macports-gimp299-osx-app-x86_64
+            - .profile-gimp3
 
   package-gimp-self:
     macos:
@@ -278,7 +278,7 @@ jobs:
       - run:
           name: Creating DMG package
           command: |
-            source ~/.profile-gimp2
+            source ~/.profile-gimp3
             cd ${HOME}/project
 
             # run script
@@ -318,12 +318,12 @@ jobs:
             scripts/macports1_install_packages.sh --part1
           no_output_timeout: 30m
       - store_artifacts:
-          path: ~/macports-gimp2-x86_64/var/macports/logs
+          path: ~/macports-gimp3-x86_64/var/macports/logs
           when: "on_fail"
       - save_cache:
           paths:
-            - ~/macports-gimp2-x86_64/
-          key: v{{ checksum "CACHE_BREAK" }}-gimp210-depspt1vlocal3-{{ checksum "CACHE_ITER" }}
+            - ~/macports-gimp3-x86_64/
+          key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt1vlocal3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part2-hosted:
     macos:
@@ -342,12 +342,12 @@ jobs:
             scripts/macports1_install_packages.sh --part2
           no_output_timeout: 30m
       - store_artifacts:
-          path: ~/macports-gimp2-x86_64/var/macports/logs
+          path: ~/macports-gimp3-x86_64/var/macports/logs
           when: on_fail
       - save_cache:
           paths:
-            - ~/macports-gimp2-x86_64/
-          key: v{{ checksum "CACHE_BREAK" }}-gimp210-depspt2vlocal3-{{ checksum "CACHE_ITER" }}
+            - ~/macports-gimp3-x86_64/
+          key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt2vlocal3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part3-hosted:
     macos:
@@ -366,12 +366,12 @@ jobs:
             scripts/macports1_install_packages.sh --part3
           no_output_timeout: 30m
       - store_artifacts:
-          path: ~/macports-gimp2-x86_64/var/macports/logs
+          path: ~/macports-gimp3-x86_64/var/macports/logs
           when: on_fail
       - save_cache:
           paths:
-            - ~/macports-gimp2-x86_64/
-          key: v{{ checksum "CACHE_BREAK" }}-gimp210-depspt3vlocal3-{{ checksum "CACHE_ITER" }}
+            - ~/macports-gimp3-x86_64/
+          key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt3vlocal3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part4-hosted:
     macos:
@@ -390,12 +390,12 @@ jobs:
             scripts/macports1_install_packages.sh --part4
           no_output_timeout: 30m
       - store_artifacts:
-          path: ~/macports-gimp2-x86_64/var/macports/logs
+          path: ~/macports-gimp3-x86_64/var/macports/logs
           when: on_fail
       - save_cache:
           paths:
-            - ~/macports-gimp2-x86_64/
-          key: v{{ checksum "CACHE_BREAK" }}-gimp210-depspt4vlocal3-{{ checksum "CACHE_ITER" }}
+            - ~/macports-gimp3-x86_64/
+          key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt4vlocal3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part5-hosted:
     macos:
@@ -414,12 +414,12 @@ jobs:
             scripts/macports1_install_packages.sh --part5
           no_output_timeout: 30m
       - store_artifacts:
-          path: ~/macports-gimp2-x86_64/var/macports/logs
+          path: ~/macports-gimp3-x86_64/var/macports/logs
           when: on_fail
       - save_cache:
           paths:
-            - ~/macports-gimp2-x86_64/
-          key: v{{ checksum "CACHE_BREAK" }}-gimp210-depspt5vlocal3-{{ checksum "CACHE_ITER" }}
+            - ~/macports-gimp3-x86_64/
+          key: v{{ checksum "CACHE_BREAK" }}-gimp-depspt5vlocal3-{{ checksum "CACHE_ITER" }}
 
   build-gimp-and-package-hosted:
     macos:
@@ -448,12 +448,12 @@ jobs:
           command: |
             scripts/macports2_install_gimp.sh circleci
       - store_artifacts:
-          path: ~/macports-gimp2-x86_64/var/macports/logs
+          path: ~/macports-gimp3-x86_64/var/macports/logs
           when: on_fail
       - save_cache:
           paths:
-            - ~/macports-gimp2-x86_64/
-          key: v{{ checksum "CACHE_BREAK" }}-gimp210vlocal3-{{ checksum "CACHE_ITER" }}
+            - ~/macports-gimp3-x86_64/
+          key: v{{ checksum "CACHE_BREAK" }}-gimpvlocal3-{{ checksum "CACHE_ITER" }}
       - pre-cache-store-hosted
       - setup-gtk-mac-bundler
       - run:

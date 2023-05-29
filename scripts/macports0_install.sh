@@ -99,12 +99,12 @@ else
 fi
 
 export PATH=$PREFIX/bin:$PATH
-echo "export PREFIX=$PREFIX" > ~/.profile-gimp2
-echo "export dosudo=$dosudo" >> ~/.profile-gimp2
+echo "export PREFIX=$PREFIX" > ~/.profile-gimp3
+echo "export dosudo=$dosudo" >> ~/.profile-gimp3
 
 if [ -n "$circleci" ]; then
   echo "**Installing MacPorts for CircleCI"
-  echo "export circleci=\"true\"" >> ~/.profile-gimp2
+  echo "export circleci=\"true\"" >> ~/.profile-gimp3
 fi
 
 if ! id -u "macports" >/dev/null 2>&1 || [ ! -f "$PREFIX/bin/port" ]; then
@@ -195,9 +195,9 @@ if [ "$build_arm64" = true ] ; then
     then
         sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz' | sudo tar -xzf -
     fi
-    echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk' >> ~/.profile-gimp2
-    echo 'export MACOSX_DEPLOYMENT_TARGET=11.0' >> ~/.profile-gimp2
-    echo 'export GIMP_ARM64=true' >> ~/.profile-gimp2
+    echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk' >> ~/.profile-gimp3
+    echo 'export MACOSX_DEPLOYMENT_TARGET=11.0' >> ~/.profile-gimp3
+    echo 'export GIMP_ARM64=true' >> ~/.profile-gimp3
 else
     echo "*** Setup 10.12 SDK"
     cd /Library/Developer/CommandLineTools/SDKs
@@ -205,11 +205,11 @@ else
     then
         sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.12.sdk.tar.xz' | sudo tar -xzf -
     fi
-    echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.12.sdk' >> ~/.profile-gimp2
-    echo 'export MACOSX_DEPLOYMENT_TARGET=10.12' >> ~/.profile-gimp2
+    echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.12.sdk' >> ~/.profile-gimp3
+    echo 'export MACOSX_DEPLOYMENT_TARGET=10.12' >> ~/.profile-gimp3
 fi
 
-source ~/.profile-gimp2
+source ~/.profile-gimp3
 
 if [ -n "$FIRST_INSTALL" ]; then
   # must do before and after otherwise local portindex fails if this is the first time
