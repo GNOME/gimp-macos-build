@@ -4,7 +4,6 @@ PortSystem          1.0
 PortGroup           compiler_blacklist_versions 1.0
 PortGroup           perl5 1.0
 PortGroup           debug 1.0
-PortGroup           debugoptimized 1.0
 
 name                gimp210
 set my_name         gimp210

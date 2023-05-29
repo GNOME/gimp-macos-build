@@ -173,8 +173,14 @@ if [ -n "${UNINSTALL_PACKAGE}" ]; then
 fi
 
 if [ -n "${PART1}" ]; then
-  echo "force remove broken port - can be removed once all versions are on master and gimp-2-10"
-  $dosudo port -f uninstall openblas @0.3.21_2+gcc12+lapack || true
+  # temporarily uninstall gegl, gimp210, libgcc12 (until all builds are fixed)
+  $dosudo port uninstall gimp210 || true
+  $dosudo port uninstall -f gegl || true
+  $dosudo port uninstall -f gcc12 || true
+  $dosudo port uninstall -f libgcc12 || true
+  $dosudo port uninstall -f appstream-glib || true
+  $dosudo port clean appstream-glib || true
+
   echo "build cmake dependencies in case they are needed for gimp"
   port_clean_and_install  libcxx \
                           curl \
@@ -204,8 +210,7 @@ if [ -n "${PART2}" ]; then
   $dosudo sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' /opt/local/etc/macports/macports.conf
   $dosudo port clean         llvm-15
   # Must be verbose because otherwise times out on circle ci
-  $dosudo port -v -N install  rust \
-                              llvm-15
+  $dosudo port -v -N install llvm-15
 fi
 
 if [ -n "${PART3}" ]; then
@@ -227,7 +232,6 @@ if [ -n "${PART3}" ]; then
                 gnutls \
                 gtk-osx-application-gtk2 \
                 gtk2 \
-                ilmbase \
                 iso-codes \
                 lcms2 \
                 libde265 \
@@ -267,7 +271,13 @@ if [ -n "${PART4}" ]; then
   # libomp can't handle +debug variant as prebuilt binary
   $dosudo sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' /opt/local/etc/macports/macports.conf
   port_clean_and_install \
-                libomp -debug \
+                libomp -debug
+  $dosudo port uninstall -f libgcc12 || true
+  $dosudo port clean     libgcc12
+  $dosudo port uninstall -f gcc12 || true
+  $dosudo port clean     gcc12
+  $dosudo port -v -N install \
+                libgcc12 \
                 gcc12
   $dosudo sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' /opt/local/etc/macports/macports.conf
 
