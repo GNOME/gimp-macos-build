@@ -25,6 +25,7 @@
 set -e;
 
 PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+MACPORTS_VERSION=2.8.1
 
 if [[ $(uname -m) == 'arm64' ]]; then
   build_arm64=true
@@ -98,12 +99,12 @@ else
 fi
 
 export PATH=$PREFIX/bin:$PATH
-echo "export PREFIX=$PREFIX" > ~/.profile
-echo "export dosudo=$dosudo" >> ~/.profile
+echo "export PREFIX=$PREFIX" > ~/.profile-gimp3
+echo "export dosudo=$dosudo" >> ~/.profile-gimp3
 
 if [ -n "$circleci" ]; then
   echo "**Installing MacPorts for CircleCI"
-  echo "export circleci=\"true\"" >> ~/.profile
+  echo "export circleci=\"true\"" >> ~/.profile-gimp3
 fi
 
 if ! id -u "macports" >/dev/null 2>&1 || [ ! -f "$PREFIX/bin/port" ]; then
@@ -141,16 +142,16 @@ if [ -n "$FIRST_INSTALL" ]; then
       *) friendly_name="Unknown" ;;
     esac
 
-    curl -L -O https://github.com/macports/macports-base/releases/download/v2.8.1/MacPorts-2.8.1-${version}-${friendly_name}.pkg
+    curl -L -O https://github.com/macports/macports-base/releases/download/v${MACPORTS_VERSION}/MacPorts-${MACPORTS_VERSION}-${version}-${friendly_name}.pkg
     # Circleci self hosted runner breaks here if the user is not added to the sudoers file so that
     # the sudo command can be used without a password.
     # See: https://apple.stackexchange.com/questions/257813/enable-sudo-without-a-password-on-macos?newreg=2d4cdeb8e9354cc4bb1d5d06f5c623e6
     # look at answer that begins "Better not to edit /etc/sudoers directly."
-    $dosudo installer -pkg MacPorts-2.8.1-${version}-${friendly_name}.pkg -target /
+    $dosudo installer -pkg MacPorts-${MACPORTS_VERSION}-${version}-${friendly_name}.pkg -target /
   else
-    curl -L -O https://github.com/macports/macports-base/releases/download/v2.8.0/MacPorts-2.8.0.tar.bz2
-    tar xf MacPorts-2.8.0.tar.bz2
-    pushd MacPorts-2.8.0
+    curl -L -O https://github.com/macports/macports-base/releases/download/v${MACPORTS_VERSION}/MacPorts-${MACPORTS_VERSION}.tar.bz2
+    tar xf MacPorts-${MACPORTS_VERSION}.tar.bz2
+    pushd MacPorts-${MACPORTS_VERSION}
     ./configure --prefix=$PREFIX --with-applications-dir=$PREFIX/Applications --without-startupitems --with-install-user=${USER} --with-install-group=staff
     make
     make install
@@ -174,6 +175,9 @@ $dosudo cp ${PREFIX}/etc/macports/macports.conf.default ${PREFIX}/etc/macports/m
 $dosudo cp ${PREFIX}/etc/macports/variants.conf.default ${PREFIX}/etc/macports/variants.conf
 
 echo 'buildfromsource always' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
+echo 'startupitem_type none' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
+echo 'startupitem_install no' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
+echo 'startupitem_autostart no' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
 if [ "$build_arm64" = true ] ; then
   echo 'macosx_deployment_target 11.0' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
   echo 'macosx_sdk_version 11.3' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
@@ -181,7 +185,7 @@ else
   echo 'macosx_deployment_target 10.12' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
   echo 'macosx_sdk_version 10.12' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
 fi
-echo "-x11 +no_x11 +quartz +python27 +no_gnome -gnome -gfortran ${debug}" | $dosudo tee -a ${PREFIX}/etc/macports/variants.conf
+echo "-x11 +no_x11 +quartz -python27 +no_gnome -gnome -gfortran -openldap -pinentry_mac ${debug}" | $dosudo tee -a ${PREFIX}/etc/macports/variants.conf
 printf "file://${PROJECT_DIR}/ports\n$(cat ${PREFIX}/etc/macports/sources.conf.default)\n" | $dosudo tee ${PREFIX}/etc/macports/sources.conf
 
 if [ "$build_arm64" = true ] ; then
@@ -191,9 +195,9 @@ if [ "$build_arm64" = true ] ; then
     then
         sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz' | sudo tar -xzf -
     fi
-    echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk' >> ~/.profile
-    echo 'export MACOSX_DEPLOYMENT_TARGET=11.0' >> ~/.profile
-    echo 'export GIMP_ARM64=true' >> ~/.profile
+    echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk' >> ~/.profile-gimp3
+    echo 'export MACOSX_DEPLOYMENT_TARGET=11.0' >> ~/.profile-gimp3
+    echo 'export GIMP_ARM64=true' >> ~/.profile-gimp3
 else
     echo "*** Setup 10.12 SDK"
     cd /Library/Developer/CommandLineTools/SDKs
@@ -201,11 +205,11 @@ else
     then
         sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.12.sdk.tar.xz' | sudo tar -xzf -
     fi
-    echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.12.sdk' >> ~/.profile
-    echo 'export MACOSX_DEPLOYMENT_TARGET=10.12' >> ~/.profile
+    echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.12.sdk' >> ~/.profile-gimp3
+    echo 'export MACOSX_DEPLOYMENT_TARGET=10.12' >> ~/.profile-gimp3
 fi
 
-source ~/.profile
+source ~/.profile-gimp3
 
 if [ -n "$FIRST_INSTALL" ]; then
   # must do before and after otherwise local portindex fails if this is the first time
