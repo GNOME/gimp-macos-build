@@ -37,6 +37,16 @@ Once everything is fine with the release, create a new branch for going back to 
 At a minimum, you will need to install:
 
 - XCode Command Line Tools or XCode
+- Also `gtk-mac-bundler`:
+  ```sh
+  if [ ! -d ~/Source/gtk-mac-bundler ]; then
+    mkdir -p ~/Source
+    cd ~/Source
+    git clone https://gitlab.gnome.org/lukaso/gtk-mac-bundler
+    cd gtk-mac-bundler
+    make install
+  fi
+  ```
 
 ## (Out of date) Steps in the CircleCI [config.yml](https://gitlab.gnome.org/Infrastructure/gimp-macos-build/blob/master/.circleci/config.yml) are:
 
