@@ -179,15 +179,16 @@ if [ -n "${UNINSTALL_PACKAGE}" ]; then
 fi
 
 if [ -n "${PART1}" ]; then
+  # ** Reinstate these uninstalls if builds fail
   # temporarily uninstall gegl, gimp3, libgcc12 (until all builds are fixed)
   # All of these ports at some point failed to upgrade, build or otherwise cooperate
   # unless uninstalled, even when being built from scratch.
-  $dosudo port uninstall gimp3 || true
-  $dosudo port uninstall -f gegl || true
-  $dosudo port uninstall -f gcc12 || true
-  $dosudo port uninstall -f libgcc12 || true
-  $dosudo port uninstall -f appstream-glib || true
-  $dosudo port clean appstream-glib || true
+  # $dosudo port uninstall gimp3 || true
+  # $dosudo port uninstall -f gegl || true
+  # $dosudo port uninstall -f gcc12 || true
+  # $dosudo port uninstall -f libgcc12 || true
+  # $dosudo port uninstall -f appstream-glib || true
+  # $dosudo port clean appstream-glib || true
   echo "build cmake dependencies in case they are needed for gimp"
   port_clean_and_install  libcxx \
                           curl \
@@ -308,9 +309,9 @@ if [ -n "${PART4}" ]; then
     #    Continue? [y/N]:
     #    Too long with no output (exceeded 30m0s): context deadline exceeded"
     # * libgcc12 because it is a dependency of gcc12 and if not also uninstalled, gcc12 build sometimes fails
-    $dosudo port uninstall -f libgcc12 || true
+    # $dosudo port uninstall -f libgcc12 || true
     $dosudo port clean     libgcc12
-    $dosudo port uninstall -f gcc12 || true
+    # $dosudo port uninstall -f gcc12 || true
     $dosudo port clean     gcc12
     $dosudo port -v -N install \
                   libgcc12 \
