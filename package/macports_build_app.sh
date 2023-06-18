@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # set -e
 
@@ -53,7 +53,7 @@ if [ ! -d "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.
   echo "***Error: Python framework not found"
   exit 1
 fi
-pushd "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/3.10/Resources/Python.app/Contents/Resources/"
+pushd "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/3.10/Resources/Python.app/Contents/Resources/" || exit 1
   for resources in etc gimp.icns lib share xcf.icns ;
   do
     ln -s "../../../../../../../../../${resources}" \
@@ -63,7 +63,20 @@ popd
 
 echo "Removing pathnames from the libraries and binaries"
 # fix permission for some libs
-find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources \( -name '*.dylib' -o -name '*.so' \) -type f | xargs chmod 755
+find ${PACKAGE_DIR}/GIMP.app/Contents/Resources \( -name '*.dylib' -o -name '*.so' \) -type f | xargs chmod 755
+
+# Remove LC_RPATH from libraries. MacPorts adds an LC_RPATH statement to all `dylibs` and `so`` binaries, which should
+# not have them set.
+delete_rpaths() {
+  for rpath in $(otool -l "$1" | awk "/ path / { print \$2 }")
+  do
+    echo "Deleting LC_RPATH $rpath from file $1"
+    install_name_tool -delete_rpath "$rpath" "$1"
+  done
+}
+export -f delete_rpaths
+find ${PACKAGE_DIR}/GIMP.app/Contents/Resources \( -name "*.dylib" -o -name "*.so" \) -type f -exec bash -c 'delete_rpaths "$0"' {} \;
+
 # getting list of the files to fix
 FILES=$(
   find ${PACKAGE_DIR}/GIMP.app -perm +111 -type f \
@@ -231,7 +244,7 @@ sed -i.old 's|@executable_path/../Resources/||' \
     ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache
 # Works around gdk-pixbuf loader bug for release builds only https://gitlab.gnome.org/GNOME/gdk-pixbuf/-/issues/217
 mkdir -p "${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/2.99/plug-ins/Resources/lib"
-pushd ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/2.99/plug-ins/Resources/lib
+pushd ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/2.99/plug-ins/Resources/lib || exit 1
   ln -s ../../../../../gdk-pixbuf-2.0 gdk-pixbuf-2.0
 popd
 
@@ -249,7 +262,7 @@ fi
 
 echo "create missing links. should we use wrappers instead?"
 
-pushd ${PACKAGE_DIR}/GIMP.app/Contents/MacOS
+pushd ${PACKAGE_DIR}/GIMP.app/Contents/MacOS || exit 1
   ln -s gimp-console-2.99 gimp-console
   ln -s gimp-debug-tool-2.99 gimp-debug-tool
   ln -s python3.10 python
