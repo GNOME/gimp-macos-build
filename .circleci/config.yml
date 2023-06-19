@@ -260,8 +260,8 @@ jobs:
           root: "~"
           # Must be relative path from root
           paths:
-            - macports-gimp2-osx-app
-            - macports-gimp2-osx-app-x86_64
+            - macports-gimp210-osx-app
+            - macports-gimp210-osx-app-x86_64
             - .profile-gimp2
 
   package-gimp-self:
