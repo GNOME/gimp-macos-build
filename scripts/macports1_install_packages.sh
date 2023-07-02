@@ -261,7 +261,7 @@ if [ -n "${PART2}" ]; then
                 xmlto \
                 py-cairo \
                 py-gobject3 \
-                gtk-osx-application-gtk3 \
+                gtk3 \
                 libarchive \
                 libyaml \
                 lcms2 \
