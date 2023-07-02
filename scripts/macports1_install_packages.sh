@@ -198,12 +198,12 @@ if [ -n "${PART1}" ]; then
                           libarchive \
                           ncurses \
                           libuv
-  echo "cmake-bootstrap being installed since won't build from source with 10.12 SDK"
+  echo "cmake-bootstrap being installed since won't build from source with 10.13 SDK"
   $dosudo sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${PREFIX}/etc/macports/macports.conf
   $dosudo sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
   $dosudo sed -i -e 's/macosx_sdk_version/#macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
 (
-    # temporarily unset deployment targets since cmake does not build with 10.12 SDK
+    # temporarily unset deployment targets since cmake does not build with 10.13 SDK
     # and we don't really care since only used at build time
     # Can be removed once https://trac.macports.org/ticket/66953 is fixed
     unset MACOSX_DEPLOYMENT_TARGET

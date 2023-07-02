@@ -53,10 +53,8 @@ At a minimum, you will need to install:
 **NOTE** This section is out of date. Needs to be updated.
 
 - Install Python 3 (Rust is pre-installed) as they are required for the GIMP dependencies.
-- Set up macOS 10.12 SDK. This is needed to ensure that GIMP can run on macOS 10.12+. See [this article](https://smallhacks.wordpress.com/2018/11/11/how-to-support-old-osx-version-with-a-recent-xcode/) for the details.
-- Set up JHBuild with a custom `~/.config/jhbuildrc-custom` file (see https://github.com/GNOME/gimp-macos-build/blob/master/jhbuildrc-gtk-osx-gimp). As part of the setup, it is running `bootstrap-gtk-osx-gimp` JHBuild command to compile required modules to run JHBuild. JHBuild is using Python3 venv to run.
+- Set up macOS 10.13 SDK. This is needed to ensure that GIMP can run on macOS 10.13+. See [this article](https://smallhacks.wordpress.com/2018/11/11/how-to-support-old-osx-version-with-a-recent-xcode/) for the details.
 - Install [fork of the gtk-mac-bundler](https://gitlab.gnome.org/lukaso/gtk-mac-bundler) - the tool which helps to create macOS application bundles for the GTK apps. This will hopefully shift to official [gtk-mac-bundler](https://github.com/GNOME/gtk-mac-bundler)
-- Install all gtk-osx, gimp and WebKit dependencies using JHBuild
 - Build GIMP.
 - Import signing certificate/key from the environment variables
 - Launch `macports_build.sh` which does (among other things):
@@ -69,7 +67,7 @@ At a minimum, you will need to install:
   - copy in icons
   - Sign all binaries
   - Create a DMG package using [create-dmg](https://github.com/andreyvit/create-dmg) tool and sign it
-- Notarize package using Apple `altool` utility
+- Notarize package using Apple `notarytool` utility
 - Upload a DMG to the CircleCI build artifacts
 
 ## Managing the Circle CI build ##
@@ -87,7 +85,7 @@ The Circle CI build creates some specific issues that a packager needs to be awa
 
 ### MacPorts Problems ###
 
-- **Need to build for 10.12 on a modern OS** GIMP runs on macOS 10.12 and above. However, the MacPorts build environment is macOS 12 and up. MacPorts has to be configured to use the 10.12 SDK and to build for 10.12. This sometimes goes awry. Additionally, MacPorts is designed primarily to use packages that are built for the current OS. Since we are not in this situation, we have to build all runtime packages from source rather than using pre-built packages. This is more error prone and slow. Some packages are so slow to build and are only needed at compile time that we attempt to use pre-built packages for them (`rust`, `cmake` and `llvm` are the biggest ones). However, we have to first build their dependencies from source since those may well be needed at runtime.
+- **Need to build for 10.13 on a modern OS** GIMP runs on macOS 10.13 and above. However, the MacPorts build environment is macOS 12 and up. MacPorts has to be configured to use the 10.13 SDK and to build for 10.13. This sometimes goes awry. Additionally, MacPorts is designed primarily to use packages that are built for the current OS. Since we are not in this situation, we have to build all runtime packages from source rather than using pre-built packages. This is more error prone and slow. Some packages are so slow to build and are only needed at compile time that we attempt to use pre-built packages for them (`rust`, `cmake` and `llvm` are the biggest ones). However, we have to first build their dependencies from source since those may well be needed at runtime.
 - **Flaky package upgrades** MacPorts package upgrades rarely fail individually, but GIMP uses a lot of them and so failures occur frequently. These are usually rectified within a few days.
 - **Flaky self updates and upgrades** MacPorts self updates and package upgrades are also flaky. This is why each package is first cleaned and then installed. Additional issues can occur because we are building two different versions of GIMP so the packages sometimes don't overlap. The biggest issues seem to arise when a new Portfile can no longer uninstall a previous installation. Occasionally files have been left behind during uninstalls which cannot be overridden by the new install.
 - **MacPorts take a very generous view of dependencies** This means that many packages that are not needed for GIMP, are required in order for the build to complete. Examples are needing all major versions of `Python` and `Perl`. This increases build time but more significantly, increases what can go wrong in a build.

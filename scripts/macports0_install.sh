@@ -182,8 +182,8 @@ if [ "$build_arm64" = true ] ; then
   echo 'macosx_deployment_target 11.0' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
   echo 'macosx_sdk_version 11.3' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
 else
-  echo 'macosx_deployment_target 10.12' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
-  echo 'macosx_sdk_version 10.12' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
+  echo 'macosx_deployment_target 10.13' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
+  echo 'macosx_sdk_version 10.13' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
 fi
 echo "-x11 +no_x11 +quartz -python27 +no_gnome -gnome -gfortran -openldap -pinentry_mac ${debug}" | $dosudo tee -a ${PREFIX}/etc/macports/variants.conf
 printf "file://${PROJECT_DIR}/ports\n$(cat ${PREFIX}/etc/macports/sources.conf.default)\n" | $dosudo tee ${PREFIX}/etc/macports/sources.conf
@@ -199,14 +199,14 @@ if [ "$build_arm64" = true ] ; then
     echo 'export MACOSX_DEPLOYMENT_TARGET=11.0' >> ~/.profile-gimp3
     echo 'export GIMP_ARM64=true' >> ~/.profile-gimp3
 else
-    echo "*** Setup 10.12 SDK"
+    echo "*** Setup 10.13 SDK"
     cd /Library/Developer/CommandLineTools/SDKs
-    if [ ! -d "MacOSX10.12.sdk" ]
+    if [ ! -d "MacOSX10.13.sdk" ]
     then
-        sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.12.sdk.tar.xz' | sudo tar -xzf -
+        sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.13.sdk.tar.xz' | sudo tar -xzf -
     fi
-    echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.12.sdk' >> ~/.profile-gimp3
-    echo 'export MACOSX_DEPLOYMENT_TARGET=10.12' >> ~/.profile-gimp3
+    echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.13.sdk' >> ~/.profile-gimp3
+    echo 'export MACOSX_DEPLOYMENT_TARGET=10.13' >> ~/.profile-gimp3
 fi
 
 source ~/.profile-gimp3
