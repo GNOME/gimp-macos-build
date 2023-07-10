@@ -272,7 +272,7 @@ jobs:
       - run:
           name:  Notarizing DMG package
           command: |
-            # package/notarize.sh
+            package/notarize.sh
           no_output_timeout: 20m
       - run:
           name:  Checksum DMG package
@@ -456,7 +456,7 @@ jobs:
       - run:
           name:  Notarizing DMG package
           command: |
-            # package/notarize.sh
+            package/notarize.sh
           no_output_timeout: 20m
       - run:
           name:  Checksum DMG package

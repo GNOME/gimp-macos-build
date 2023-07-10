@@ -276,6 +276,20 @@ Sometimes it is necessary to edit or patch a package in MacPorts. There are a fe
 
 Here is how to make those kinds of changes to a package: https://trac.macports.org/wiki/howto/PatchLocal
 
+### Building locally when making changes to GIMP ###
+
+This is the command to build GIMP locally when making changes to GIMP itself.
+
+*Note*: any changes you make in the files under the `work` directory will be wiped out the next time you ask MacPorts to build GIMP. So, if you want to make changes to GIMP itself, once you have tested, copy them to a repo manually (or temporarily connect this repo to your remote).
+
+This command is for a `non-sudo` install of MacPorts. For the `sudo` version, the path will be `/opt/local/` as the prefix instead of `~/macports-gimp3-arm64/`.
+
+```sh
+cd "~/macports-gimp3-arm64/var/macports/build/_Users_lukasoberhuber_project_ports_graphics_gimp3/gimp3/work/build" && ~/macports-gimp3-arm64/bin/ninja -j10 -v && ~/macports-gimp3-arm64/bin/ninja install
+```
+
+```
+
 ## Our partners ##
 
 These companies generously support the development of GIMP on MacOS.
