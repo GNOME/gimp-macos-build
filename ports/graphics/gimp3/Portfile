@@ -9,7 +9,7 @@ PortGroup           debug 1.0
 
 name                gimp3
 set my_name         gimp3
-version             2.99.16
+version             2.99.17
 revision            0
 # epoch must never be reduced. This was reduced for the 2.99.14 release
 # which was incorrect.
@@ -33,17 +33,13 @@ homepage            https://gimp.org/
 fetch.type          git
 git.url             https://gitlab.gnome.org/GNOME/gimp.git
 # For releases, use tag instead of branches.
-git.branch          GIMP_2_99_16
-# git.branch          origin/master
+# git.branch          GIMP_2_99_16
+git.branch          origin/master
 
 variant local description {Build locally} {
     git.url         file:///Users/Shared/gimp-git
     git.branch      master
 }
-
-# checksums           rmd160  d6e7de3f332594802226736d41228ffd13af251f \
-#                     sha256  e4a33c8430a5042fba8439b595348e71870f0d95fbf885ff553f9020c1bed750 \
-#                     size    5722188
 
 depends_build-append \
                     port:pkgconfig

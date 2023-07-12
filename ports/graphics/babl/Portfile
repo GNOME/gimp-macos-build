@@ -8,7 +8,7 @@ PortGroup           debug 1.0
 name                babl
 conflicts           babl-devel
 set my_name         babl
-version             0.1.106
+version             0.1.107
 revision            0
 license             LGPL-3+
 set branch          [join [lrange [split ${version} .] 0 1] .]
@@ -24,18 +24,8 @@ homepage            http://gegl.org/babl
 fetch.type          git
 git.url             https://gitlab.gnome.org/GNOME/babl.git
 # For releases, use tag instead of branches.
-git.branch          BABL_0_1_106
-# git.branch          origin/master
-
-# Old: (remove after release of 0.1.108)
-# master_sites        gimp:${my_name}/${branch}/
-# dist_subdir         ${my_name}
-# distname            ${my_name}-${version}
-# use_xz              yes
-
-# checksums           rmd160  a85208f7a7b8943d19e135781f858fb93e6f7d1e \
-#                     sha256  d325135d3304f088c134cc620013acf035de2e5d125a50a2d91054e7377c415f \
-#                     size    315068
+# git.branch          BABL_0_1_106
+git.branch          origin/master
 
 configure.args-append \
                     -Dwith-docs=false
