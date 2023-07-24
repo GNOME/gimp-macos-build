@@ -24,14 +24,12 @@
 
 set -e;
 
+export VGIMP=3
+
 PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-source ~/.profile-gimp3
+source ~/.profile-gimp${VGIMP}
 export PATH=$PREFIX/bin:$PATH
-
-if [ -z "$circleci" ]; then
-  local="+local"
-fi
 
 function sup_port() {
 	if [ -n "$circleci" ]; then
@@ -53,4 +51,4 @@ $dosudo port -N uninstall installed and gimp210 || true
 $dosudo port clean gimp210 || true
 $dosudo port -N uninstall installed and gimp3 || true
 $dosudo port clean gimp3 || true
-sup_port $dosudo port -v -k -N install gimp3 +vala ${local}
+sup_port $dosudo port -v -k -N install gimp${VGIMP} +vala ${local}

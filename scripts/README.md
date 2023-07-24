@@ -23,6 +23,27 @@ macports_uninstall.sh
 to access Finder in order to layout the DMG installer. However it should
 pop up a permissions dialog. Click Allow/OK and it sould be fine.
 
+## Quick rebuild ##
+
+If you want to build and test locally, once you've used the scripts abovec, for a local build loop use the following scripts:
+
+```sh
+open_gimp.sh # Open Gimp in VS Code in the directory where the source is
+quick_build.sh # Build Gimp from that directory after having made code changes
+```
+
+```sh
+VGIMP=3
+```
+
+A runnable gimp will be built into the macports bin directory (e.g. `~/macports-gimp${VGIMP}-arm64/bin`).
+
+To `cd` to the gimp directory, run:
+
+```sh
+. cd_gimp.sh
+```
+
 ## Notarization and security ##
 
 These links have content around code signing and security entitlements.

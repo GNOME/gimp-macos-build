@@ -24,6 +24,8 @@
 
 set -e;
 
+export VGIMP=3
+
 function pure_version() {
 	echo '0.1'
 }
@@ -119,7 +121,7 @@ done
 
 PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-source ~/.profile-gimp3
+source ~/.profile-gimp${VGIMP}
 export PATH=$PREFIX/bin:$PATH
 
 function massage_output() {
@@ -190,10 +192,10 @@ if [ -n "${PART1}" ]; then
   # $dosudo port uninstall -f appstream-glib || true
   # $dosudo port clean appstream-glib || true
   # Can be removed once run once on master
-  $dosudo port uninstall clang-14 || true
-  $dosudo port uninstall llvm-14 || true
-  $dosudo port uninstall clang-15 || true
-  $dosudo port uninstall llvm-15 || true
+  # $dosudo port uninstall clang-14 || true
+  # $dosudo port uninstall llvm-14 || true
+  # $dosudo port uninstall clang-15 || true
+  # $dosudo port uninstall llvm-15 || true
   echo "build cmake dependencies in case they are needed for gimp"
   port_clean_and_install  libcxx \
                           curl \
@@ -340,7 +342,7 @@ if [ -n "${PART4}" ]; then
   echo "**** Outdated ports"
   port outdated
 
-  $dosudo port -v -N upgrade outdated
+  $dosudo port -v -N upgrade outdated || true
   $dosudo port uninstall inactive || true
 fi
 

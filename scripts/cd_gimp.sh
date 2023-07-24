@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #####################################################################
- # macports3_build_dmg.sh: Builds gimp dmg                         #
+ # cd_gimp.sh: goes to gimp source dir                              #
  #                                                                  #
- # Copyright 2022 Lukas Oberhuber <lukaso@gmail.com>                #
+ # Copyright 2023 Lukas Oberhuber <lukaso@gmail.com>                #
  #                                                                  #
  # This program is free software; you can redistribute it and/or    #
  # modify it under the terms of the GNU General Public License as   #
@@ -22,15 +22,7 @@
  # Boston, MA  02110-1301,  USA       gnu@gnu.org                   #
  ####################################################################
 
-set -e;
+ export VGIMP=3
 
-export VGIMP=3
-
-source ~/.profile-gimp${VGIMP}
-export PATH=$PREFIX/bin:$PATH
-
-PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-
-pushd $PROJECT_DIR/package
-./macports_build_app.sh debug
-popd
+echo "Usage: \`. scripts/open_gimp.sh\` otherwise does not change directory"
+cd ~/macports-gimp${VGIMP}-arm64/var/macports/build/_Users_$(whoami)_project_ports_graphics_gimp${VGIMP}/gimp${VGIMP}/work
