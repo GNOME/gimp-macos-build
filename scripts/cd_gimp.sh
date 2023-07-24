@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #####################################################################
- # macports2_install_gimp.sh: installs gimp dependencies         #
+ # cd_gimp.sh: goes to gimp source dir                              #
  #                                                                  #
- # Copyright 2022 Lukas Oberhuber <lukaso@gmail.com>                #
+ # Copyright 2023 Lukas Oberhuber <lukaso@gmail.com>                #
  #                                                                  #
  # This program is free software; you can redistribute it and/or    #
  # modify it under the terms of the GNU General Public License as   #
@@ -22,33 +22,7 @@
  # Boston, MA  02110-1301,  USA       gnu@gnu.org                   #
  ####################################################################
 
-set -e;
+ export VGIMP=3
 
-export VGIMP=3
-export VGIMPPORT=210
-
-PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
-
-source ~/.profile-gimp${VGIMP}
-export PATH=$PREFIX/bin:$PATH
-
-function sup_port() {
-	if [ -n "$circleci" ]; then
-    "$@" | cat
-    status="${PIPESTATUS[0]}"
-    if [ "${status}" -ne 0 ]; then exit "${status}"; fi
-  else
-    "$@"
-  fi
-}
-
-pushd ~/project/ports
-$dosudo portindex
-popd
-
-# Force new install of gimp so latest changes are pulled from gitlab
-$dosudo port -N uninstall installed and gimp210 || true
-$dosudo port clean gimp210 || true
-$dosudo port -N uninstall installed and gimp3 || true
-$dosudo port clean gimp3 || true
-sup_port $dosudo port -v -k -N install gimp${VGIMPPORT} +vala ${local}
+echo "Usage: \`. scripts/open_gimp.sh\` otherwise does not change directory"
+cd ~/macports-gimp${VGIMP}-arm64/var/macports/build/_Users_$(whoami)_project_ports_graphics_gimp${VGIMP}/gimp${VGIMP}/work

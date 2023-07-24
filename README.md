@@ -173,28 +173,13 @@ Or for 2.10.xx (although there are tags for specific releases so go to that if d
 git checkout gimp-2-10
 ```
 
-Then goto `/Users/Shared/` and checkout GIMP itself into `gimp-git`:
-
-```sh
-cd /Users/Shared/
-sudo git clone https://gitlab.gnome.org/GNOME/gimp.git gimp-git
-```
-
-If building locally, get the branch for GIMP that matches the version you chose before:
-
-```sh
-cd gimp-git
-git checkout master
-```
-
-Or you could be using a different branch, e.g. 2.10.xx:
-
-```sh
-cd gimp-git
-git checkout gimp-2-10
-```
-
 Then follow instructions in `scripts/README.md`
+
+So that you can use the commands below, set this:
+
+```sh
+export VGIMP=3
+```
 
 The `Gimp` executable will be in:
 
@@ -202,16 +187,22 @@ The `Gimp` executable will be in:
 /opt/local/bin/gimp
 ```
 
+or
+
+```sh
+~/macports-gimp${VGIMP}-arm64/bin/gimp
+```
+
 Additionally the script will create a staged version of the app in:
 
 ```sh
-~/macports-gimp299-osx-app
+~/macports-gimp${VGIMP}-osx-app
 ```
 
 or 
 
 ```sh
-~/macports-gimp299-osx-app-x86_64
+~/macports-gimp${VGIMP}-osx-app-x86_64
 ```
 
 depending on architecture.
@@ -219,13 +210,13 @@ depending on architecture.
 Which can be run with:
 
 ```sh
-~/gimp299-osx-app/GIMP.app/Contents/MacOS/gimp
+~/gimp${VGIMP}-osx-app/GIMP.app/Contents/MacOS/gimp
 ```
 
 or
 
 ```sh
-~/gimp299-osx-app-x86_64/GIMP.app/Contents/MacOS/gimp
+~/gimp${VGIMP}-osx-app-x86_64/GIMP.app/Contents/MacOS/gimp
 ```
 
 Finally, the script will create a DMG file which is the "installer", in `/tmp/artifacts/`
@@ -282,13 +273,9 @@ This is the command to build GIMP locally when making changes to GIMP itself.
 
 *Note*: any changes you make in the files under the `work` directory will be wiped out the next time you ask MacPorts to build GIMP. So, if you want to make changes to GIMP itself, once you have tested, copy them to a repo manually (or temporarily connect this repo to your remote).
 
-This command is for a `non-sudo` install of MacPorts. For the `sudo` version, the path will be `/opt/local/` as the prefix instead of `~/macports-gimp3-arm64/`.
+This command is for a `non-sudo` install of MacPorts. For the `sudo` version, the path will be `/opt/local/` as the prefix instead of `~/macports-gimp${VGIMP}-arm64/`.
 
-```sh
-cd "~/macports-gimp3-arm64/var/macports/build/_Users_lukasoberhuber_project_ports_graphics_gimp3/gimp3/work/build" && ~/macports-gimp3-arm64/bin/ninja -j10 -v && ~/macports-gimp3-arm64/bin/ninja install
-```
-
-```
+Got to [scripts/README.md](scripts/README.md) for more details on how to build locally and rapidly.
 
 ## Our partners ##
 

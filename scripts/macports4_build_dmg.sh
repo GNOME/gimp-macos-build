@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #####################################################################
- # macports3_build_dmg.sh: Builds gimp2 dmg                         #
+ # macports3_build_dmg.sh: Builds gimp dmg                          #
  #                                                                  #
  # Copyright 2022 Lukas Oberhuber <lukaso@gmail.com>                #
  #                                                                  #
@@ -24,7 +24,9 @@
 
 set -e;
 
-source ~/.profile-gimp3
+export VGIMP=3
+
+source ~/.profile-gimp${VGIMP}
 
 if [ -n "$GIMP_ARM64" ]; then
   build_arm64=true
