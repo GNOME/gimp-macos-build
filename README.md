@@ -178,7 +178,7 @@ Then follow instructions in `scripts/README.md`
 So that you can use the commands below, set this:
 
 ```sh
-export VGIMP=3
+export VGIMP=2
 ```
 
 The `Gimp` executable will be in:

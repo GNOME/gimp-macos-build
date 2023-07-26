@@ -24,7 +24,7 @@
 
 set -e;
 
-export VGIMP=3
+export VGIMP=2
 export VGIMPPORT=210
 
 PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"

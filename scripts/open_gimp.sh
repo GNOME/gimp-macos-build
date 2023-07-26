@@ -22,7 +22,7 @@
  # Boston, MA  02110-1301,  USA       gnu@gnu.org                   #
  ####################################################################
 
-export VGIMP=3
+export VGIMP=2
 
 if [[ $(uname -m) == 'arm64' ]]; then
   arch='arm64'

@@ -24,7 +24,7 @@
 
 set -e;
 
-export VGIMP=3
+export VGIMP=2
 
 function pure_version() {
 	echo '0.1'

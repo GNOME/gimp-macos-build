@@ -22,7 +22,7 @@
  # Boston, MA  02110-1301,  USA       gnu@gnu.org                   #
  ####################################################################
 
-export VGIMP=3
+export VGIMP=2
 
 pushd ~/macports-gimp${VGIMP}-arm64/var/macports/build/_Users_$(whoami)_project_ports_graphics_gimp${VGIMP}/gimp${VGIMP}/work/build
   ~/macports-gimp${VGIMP}-arm64/bin/ninja -j10 -v

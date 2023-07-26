@@ -24,7 +24,7 @@
 
 set -e;
 
-export VGIMP=3
+export VGIMP=2
 
 source ~/.profile-gimp${VGIMP}
 
