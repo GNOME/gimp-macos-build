@@ -8,7 +8,7 @@ PortGroup           debug 1.0
 name                babl
 conflicts           babl-devel
 set my_name         babl
-version             0.1.106
+version             0.1.107
 revision            0
 license             LGPL-3+
 set branch          [join [lrange [split ${version} .] 0 1] .]
@@ -24,8 +24,10 @@ homepage            http://gegl.org/babl
 fetch.type          git
 git.url             https://gitlab.gnome.org/GNOME/babl.git
 # For releases, use tag instead of branches.
-git.branch          BABL_0_1_106
-# git.branch          origin/master
+# Ensure `version` and `revision` are consistent when changing this.
+# For non release branches, `revision` should be 0.
+# git.branch          BABL_0_1_106
+git.branch          origin/master
 
 configure.args-append \
                     -Dwith-docs=false
