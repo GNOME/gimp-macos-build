@@ -9,8 +9,8 @@ PortGroup           debug 1.0
 
 name                gimp3
 set my_name         gimp3
-version             2.99.17
-revision            0
+version             2.99.16
+revision            2
 # epoch must never be reduced. This was reduced for the 2.99.14 release
 # which was incorrect.
 epoch               1
@@ -35,8 +35,8 @@ git.url             https://gitlab.gnome.org/GNOME/gimp.git
 # For releases, use tag instead of branches.
 # Ensure `version` and `revision` are consistent when changing this.
 # For non release branches, `revision` should be 0.
-# git.branch          GIMP_2_99_16
-git.branch          origin/master
+git.branch          GIMP_2_99_16
+# git.branch          origin/master
 
 depends_build-append \
                     port:pkgconfig
@@ -87,7 +87,8 @@ depends_lib-append \
                     port:adwaita-icon-theme \
                     port:hicolor-icon-theme
 
-patchfiles-append   pythonpath.patch
+patchfiles-append   pythonpath.patch \
+                    macos-Remove-DYLD_LIBRARY_PATH.patch
 patch.pre_args      -p1
 
 # Set preferred python version
