@@ -32,6 +32,8 @@ git.url             https://gitlab.gnome.org/GNOME/gimp.git
 # For releases, use tag instead of branches.
 # Ensure `version` and `revision` are consistent when changing this.
 # For non release branches, `revision` should be 0.
+
+# NOTE: don't forget `babl` and `gegl`
 # git.branch          GIMP_2_10_34
 git.branch          origin/gimp-2-10
 
