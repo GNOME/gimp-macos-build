@@ -8,8 +8,9 @@ PortGroup           debug 1.0
 name                babl
 conflicts           babl-devel
 set my_name         babl
-version             0.1.107
+version             0.1.106
 revision            0
+# revision            0
 license             LGPL-3+
 set branch          [join [lrange [split ${version} .] 0 1] .]
 categories          graphics
@@ -26,8 +27,8 @@ git.url             https://gitlab.gnome.org/GNOME/babl.git
 # For releases, use tag instead of branches.
 # Ensure `version` and `revision` are consistent when changing this.
 # For non release branches, `revision` should be 0.
-# git.branch          BABL_0_1_106
-git.branch          origin/master
+git.branch          BABL_0_1_106
+# git.branch          origin/master
 
 # Old: (remove after release of 0.1.108)
 # master_sites        gimp:${my_name}/${branch}/

@@ -7,8 +7,9 @@ PortGroup           debug 1.0
 
 name                gimp210
 set my_name         gimp210
-version             2.10.35
-revision            0
+version             2.10.34
+revision            3
+# revision            0
 # epoch               1
 license             GPL-3+
 categories          graphics
@@ -34,8 +35,8 @@ git.url             https://gitlab.gnome.org/GNOME/gimp.git
 # For non release branches, `revision` should be 0.
 
 # NOTE: don't forget `babl` and `gegl`
-# git.branch          GIMP_2_10_34
-git.branch          origin/gimp-2-10
+git.branch          GIMP_2_10_34
+# git.branch          origin/gimp-2-10
 
 perl5.branches      5.34
 
