@@ -7,8 +7,21 @@ PortGroup           debug 1.0
 
 name                gimp210
 set my_name         gimp210
+
+# ***** For releasing *****
+# 1. Update version and/or revision to the desired state
+#    If the revision is not a release (e.g. 2.99.17) then do not touch the
+#    revision.
+# 2. Ensure any release-specific patches are added to the patchfiles list in the
+#    correct if statement (and order)
+# 3. Do same for babl and gegl
+# *****
 version             2.10.35
-revision            0
+set last_release    2.10.34
+set last_dev        2.10.35
+revision            3
+
+# epoch must never be reduced if set.
 # epoch               1
 license             GPL-3+
 categories          graphics
@@ -29,13 +42,20 @@ homepage            https://gimp.org/
 set branch          [join [lrange [split ${version} .] 0 1] .]
 fetch.type          git
 git.url             https://gitlab.gnome.org/GNOME/gimp.git
-# For releases, use tag instead of branches.
-# Ensure `version` and `revision` are consistent when changing this.
-# For non release branches, `revision` should be 0.
 
-# NOTE: don't forget `babl` and `gegl`
-# git.branch          GIMP_2_10_34
-git.branch          origin/gimp-2-10
+# Releasing and branch management
+set major           [lindex [split ${version} .] 0]
+set minor           [lindex [split ${version} .] 1]
+set patch           [lindex [split ${version} .] 2]
+set is_release      [expr {$patch % 2 == 0}]
+set is_stable       [expr {$minor % 2 == 0} && ${is_release}]
+
+if {${is_release}} {
+    git.branch      GIMP_${major}_${minor}_${patch}
+} else {
+    set branch      origin/gimp-2-10
+    revision        0
+}
 
 perl5.branches      5.34
 
@@ -119,6 +139,13 @@ patchfiles-append \
                     patch-quartz-32bit.diff \
                     MYPAINT_BRUSHES_DIR.patch \
                     PYTHONPATH.patch
+
+# Release-specific patches (step 2 from instructions above)
+if {${major} == 2 && ${minor} == 10 && ${patch} == 34 && ${revision} >= 3} {
+    # Currently a no op
+    # patchfiles-append \
+    #                 macos-Remove-DYLD_LIBRARY_PATH.patch
+}
 
 platform darwin {
     if {${os.major} < 11} {

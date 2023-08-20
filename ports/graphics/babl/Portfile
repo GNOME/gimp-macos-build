@@ -8,8 +8,20 @@ PortGroup           debug 1.0
 name                babl
 conflicts           babl-devel
 set my_name         babl
+
+# ***** For releasing *****
+# 1. Update version and/or revision to the desired state
+#    If the revision is not a release (e.g. 0.1.107) then do not touch the
+#    revision.
+# 2. Ensure any release-specific patches are added to the patchfiles list in the
+#    correct if statement (and order)
+# 3. Do same for babl and gegl
+# *****
 version             0.1.107
+set last_release    0.1.106
+set last_dev        0.1.107
 revision            0
+
 license             LGPL-3+
 set branch          [join [lrange [split ${version} .] 0 1] .]
 categories          graphics
@@ -23,11 +35,30 @@ long_description    ${description}
 homepage            http://gegl.org/babl
 fetch.type          git
 git.url             https://gitlab.gnome.org/GNOME/babl.git
-# For releases, use tag instead of branches.
-# Ensure `version` and `revision` are consistent when changing this.
-# For non release branches, `revision` should be 0.
-# git.branch          BABL_0_1_106
-git.branch          origin/master
+
+# Releasing and branch management
+set major           [lindex [split ${version} .] 0]
+set minor           [lindex [split ${version} .] 1]
+set patch           [lindex [split ${version} .] 2]
+set is_release      [expr {$patch % 2 == 0}]
+set is_stable       [expr {$minor % 2 == 0} && ${is_release}]
+
+if {${is_release}} {
+    git.branch      BABL_${major}_${minor}_${patch}
+} else {
+    set branch      origin/master
+    revision        0
+}
+
+patchfiles-append   patch-babl-linker-fix-darwin.diff
+patchfiles-append   patch-babl-allow-non-clang-compilers-on-darwin.diff
+
+# Release-specific patches (step 2 from instructions above)
+if {${major} == 0 && ${minor} == 1 && ${patch} == 106 && ${revision} >= 0} {
+    # Nothing right now
+    # patchfiles-append \
+    #                 macos-Remove-DYLD_LIBRARY_PATH.patch
+}
 
 # Old: (remove after release of 0.1.108)
 # master_sites        gimp:${my_name}/${branch}/
@@ -56,9 +87,6 @@ platform darwin powerpc {
     configure.args-append \
                     -Denable-vapi=false
 }
-
-patchfiles-append   patch-babl-linker-fix-darwin.diff
-patchfiles-append   patch-babl-allow-non-clang-compilers-on-darwin.diff
 
 # require C11 (typedef redefinition)
 # babl-icc.c:1031:25: error: redefinition of typedef 'UTF8' is invalid in C
