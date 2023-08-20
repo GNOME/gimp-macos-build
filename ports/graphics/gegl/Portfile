@@ -10,8 +10,21 @@ PortGroup           debug 1.0
 name                gegl
 conflicts           gegl-devel
 set my_name         gegl
+
+# ***** For releasing *****
+# 1. Update version and/or revision to the desired state
+#    If the revision is not a release (e.g. 0.4.47) then do not touch the
+#    revision.
+# 2. Ensure any release-specific patches are added to the patchfiles list in the
+#    correct if statement (and order)
+# 3. Do same for babl and gegl
+# *****
 version             0.4.47
+set last_release    0.4.46
+set last_dev        0.4.47
 revision            0
+
+# epoch must never be reduced.
 epoch               1
 set branch          [join [lrange [split ${version} .] 0 1] .]
 license             {GPL-3+ LGPL-3+}
@@ -27,11 +40,20 @@ long_description    GEGL is a graph based image processing framework offering im
 homepage            http://gegl.org/
 fetch.type          git
 git.url             https://gitlab.gnome.org/GNOME/gegl.git
-# For releases, use tag instead of branches.
-# Ensure `version` and `revision` are consistent when changing this.
-# For non release branches, `revision` should be 0.
-# git.branch          GEGL_0_4_46
-git.branch          origin/master
+
+# Releasing and branch management
+set major           [lindex [split ${version} .] 0]
+set minor           [lindex [split ${version} .] 1]
+set patch           [lindex [split ${version} .] 2]
+set is_release      [expr {$patch % 2 == 0}]
+set is_stable       [expr {$minor % 2 == 0} && ${is_release}]
+
+if {${is_release}} {
+    git.branch      GEGL_${major}_${minor}_${patch}
+} else {
+    set branch      origin/master
+    revision        0
+}
 
 depends_build-append \
                     port:pkgconfig \
@@ -82,6 +104,13 @@ patchfiles-append   patch-gegl-32bit-host-statistics.diff
 # https://trac.macports.org/ticket/66233
 if {[string match *gcc* ${configure.compiler}]} {
     patchfiles-append patch-use-gcc.diff
+}
+
+# Release-specific patches (step 2 from instructions above)
+if {${major} == 0 && ${minor} == 4 && ${patch} == 46 && ${revision} >= 0} {
+    # Nothing right now
+    # patchfiles-append \
+    #                 macos-Remove-DYLD_LIBRARY_PATH.patch
 }
 
 platform darwin {

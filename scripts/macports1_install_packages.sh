@@ -48,9 +48,9 @@ function usage() {
   echo "  --part1"
   echo "      first part. Each part takes up to 3 hours on circleci"
   echo "  --part2"
-  echo "      second part."
+  echo "      second part"
   echo "  --part3"
-  echo "      third part."
+  echo "      third part"
   echo "  --part4"
   echo "      fourth part"
   echo "  --part5"
@@ -59,7 +59,9 @@ function usage() {
   echo "      only install named package. Most useful for testing"
   echo "  --uninstall-package <package>"
   echo "      uninstall named package. Useful if needed to clear things out."
-  echo "      This will force uninstall regardless of dependencies."
+  echo "      This will force uninstall regardless of dependencies"
+  echo "  --port-edit-package <package>"
+  echo "      open the Portfile of the package"
   echo "  --version         show tool version number"
   echo "  -h, --help        display this help"
   exit 0
@@ -114,6 +116,10 @@ while test "${1:0:1}" = "-"; do
     ;;
   --uninstall-package)
     UNINSTALL_PACKAGE=$2
+    shift 2
+    ;;
+  --port-edit-package)
+    PORT_EDIT_PACKAGE=$2
     shift 2
     ;;
   -h | --help)
@@ -188,6 +194,11 @@ fi
 
 if [ -n "${UNINSTALL_PACKAGE}" ]; then
   $dosudo port -f uninstall "${UNINSTALL_PACKAGE}"
+  exit 0
+fi
+
+if [ -n "${PORT_EDIT_PACKAGE}" ]; then
+  port edit "${PORT_EDIT_PACKAGE}"
   exit 0
 fi
 

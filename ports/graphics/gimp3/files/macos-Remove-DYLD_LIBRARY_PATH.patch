@@ -1,0 +1,29 @@
+From dea1326ac9a08a57e0cd5b2d2b29177dd50bf144 Mon Sep 17 00:00:00 2001
+From: Lukas Oberhuber <lukaso@gmail.com>
+Date: Sat, 12 Aug 2023 23:05:08 +0100
+Subject: [PATCH] macos: Remove DYLD_LIBRARY_PATH
+
+Revert: https://gitlab.gnome.org/GNOME/gimp/-/merge_requests/561
+---
+ app/main.c | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/app/main.c b/app/main.c
+index 9cc8d7f975..02c505f562 100644
+--- a/app/main.c
++++ b/app/main.c
+@@ -434,12 +434,6 @@ gimp_macos_setenv (const char * progname)
+       tmp = g_strdup_printf ("%s/share/libwmf/fonts", res_dir);
+       g_setenv ("WMF_FONTDIR", tmp, TRUE);
+       g_free (tmp);
+-      if (g_getenv ("DYLD_LIBRARY_PATH"))
+-        tmp = g_strdup_printf ("%s/lib:%s", res_dir, g_getenv ("DYLD_LIBRARY_PATH"));
+-      else
+-        tmp = g_strdup_printf ("%s/lib", res_dir);
+-      g_setenv ("DYLD_LIBRARY_PATH", tmp, TRUE);
+-      g_free (tmp);
+       if (g_getenv ("XDG_DATA_DIRS"))
+         tmp = g_strdup_printf ("%s/share:%s", res_dir, g_getenv ("XDG_DATA_DIRS"));
+       else
+-- 
+2.40.1

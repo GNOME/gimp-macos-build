@@ -9,8 +9,20 @@ PortGroup           debug 1.0
 
 name                gimp3
 set my_name         gimp3
+
+# ***** For releasing *****
+# 1. Update version and/or revision to the desired state
+#    If the revision is not a release (e.g. 2.99.17) then do not touch the
+#    revision.
+# 2. Ensure any release-specific patches are added to the patchfiles list in the
+#    correct if statement (and order)
+# 3. Do same for babl and gegl
+# *****
 version             2.99.17
-revision            0
+set last_release    2.99.16
+set last_dev        2.99.17
+revision            2
+
 # epoch must never be reduced. This was reduced for the 2.99.14 release
 # which was incorrect.
 epoch               1
@@ -32,13 +44,29 @@ long_description    GIMP is a cross-platform image editor available for GNU/Linu
 homepage            https://gimp.org/
 fetch.type          git
 git.url             https://gitlab.gnome.org/GNOME/gimp.git
-# For releases, use tag instead of branches.
-# Ensure `version` and `revision` are consistent when changing this.
-# For non release branches, `revision` should be 0.
 
-# NOTE: don't forget `babl` and `gegl`
-# git.branch          GIMP_2_99_16
-git.branch          origin/master
+# Releasing and branch management
+set major           [lindex [split ${version} .] 0]
+set minor           [lindex [split ${version} .] 1]
+set patch           [lindex [split ${version} .] 2]
+set is_release      [expr {$patch % 2 == 0}]
+set is_stable       [expr {$minor % 2 == 0} && ${is_release}]
+
+if {${is_release}} {
+    git.branch      GIMP_${major}_${minor}_${patch}
+} else {
+    set branch      origin/master
+    revision        0
+}
+
+patchfiles-append   pythonpath.patch
+patch.pre_args      -p1
+
+# Release-specific patches (step 2 from instructions above)
+if {${major} == 2 && ${minor} == 99 && ${patch} == 16 && ${revision} >= 2} {
+    patchfiles-append \
+                    macos-Remove-DYLD_LIBRARY_PATH.patch
+}
 
 depends_build-append \
                     port:pkgconfig
@@ -88,9 +116,6 @@ depends_lib-append \
                     port:gegl \
                     port:adwaita-icon-theme \
                     port:hicolor-icon-theme
-
-patchfiles-append   pythonpath.patch
-patch.pre_args      -p1
 
 # Set preferred python version
 set py_ver          3.10
