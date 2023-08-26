@@ -13,7 +13,6 @@ parameters:
 #        COMMANDS
 # -------------------------
 commands:
-
   setup:
     steps:
       # for local builds, this needs to be checked out to `~/project`
@@ -33,14 +32,14 @@ commands:
 
   cache-break-hosted:
     steps:
-        - run:
-            name: checksums for caching
-            # Triggering cache changes should be done in the directories below
-            command: |
-              find ./ports/cache_break -type f -exec md5 {} \; | md5 | cut -d' ' -f1 > CACHE_BREAK
-              date +%s > CACHE_ITER
-              cat CACHE_BREAK
-              cat CACHE_ITER
+      - run:
+          name: checksums for caching
+          # Triggering cache changes should be done in the directories below
+          command: |
+            find ./ports/cache_break -type f -exec md5 {} \; | md5 | cut -d' ' -f1 > CACHE_BREAK
+            date +%s > CACHE_ITER
+            cat CACHE_BREAK
+            cat CACHE_ITER
 
   cache-break-self:
     steps:
@@ -57,63 +56,48 @@ commands:
 
   got-cache-so-skip-job-hosted:
     steps:
-        - restore_cache:
-            keys:
-              - got_cache{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-{{ checksum "CACHE_ITER" }}
-              - got_cache{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-
-        - run:
-            command: |
-              if [ -f ~/got_cache/cache_check ]; then
-                echo "**skipping job"
-                circleci-agent step halt
-              fi
+      - restore_cache:
+          keys:
+            - got_cache{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-{{ checksum "CACHE_ITER" }}
+            - got_cache{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-
+      - run:
+          command: |
+            if [ -f ~/got_cache/cache_check ]; then
+              echo "**skipping job"
+              circleci-agent step halt
+            fi
 
   got-cache-hosted:
     steps:
-        - restore_cache:
-            keys:
-              - got_cache{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-{{ checksum "CACHE_ITER" }}
-              - got_cache{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-
+      - restore_cache:
+          keys:
+            - got_cache{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-{{ checksum "CACHE_ITER" }}
+            - got_cache{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-
 
   get-cached-data-hosted:
     steps:
-        - restore_cache:
-            keys:
-              - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt5vlocal3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt4vlocal3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt3vlocal3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt2vlocal3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt1vlocal3-{{ checksum "CACHE_ITER" }}
-              - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt5vlocal3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt4vlocal3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt3vlocal3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt2vlocal3-
-              - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt1vlocal3-
+      - restore_cache:
+          keys:
+            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-{{ checksum "CACHE_ITER" }}
+            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt5vlocal3-{{ checksum "CACHE_ITER" }}
+            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt4vlocal3-{{ checksum "CACHE_ITER" }}
+            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt3vlocal3-{{ checksum "CACHE_ITER" }}
+            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt2vlocal3-{{ checksum "CACHE_ITER" }}
+            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt1vlocal3-{{ checksum "CACHE_ITER" }}
+            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-
+            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt5vlocal3-
+            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt4vlocal3-
+            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt3vlocal3-
+            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt2vlocal3-
+            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt1vlocal3-
 
   setup-macports:
     steps:
-        - run:
-            name: Install macports
-            command: |
-              scripts/macports0_install.sh --circleci --homedirgimp<< pipeline.parameters.vgimp >>
-            no_output_timeout: 30m
-        # - run:
-        #     name: Gimp version (default `master`)
-        #     command: |
-        #       pushd ${HOME}/project/modulesets
-        #           if [ ! -z "${BRANCH}" ]; then
-        #               revision_or_tag="revision=\"${BRANCH}\""
-        #           elif [ ! -z "${TAG}" ]; then
-        #               revision_or_tag="tag=\"${TAG}\""
-        #           else
-        #               revision_or_tag="revision=\"master\""
-        #           fi
-        #           sed -e "s|%REVISION_OR_TAG%|${revision_or_tag}|g" \
-        #               -e "s|%WARNING%|DO NOT EDIT THIS FILE. It is automatically generated from the modulesets/gtk-osx-gimp.modules.tmpl file.|g" \
-        #               gtk-osx-gimp.modules.tmpl > gtk-osx-gimp.modules
-        #       popd
+      - run:
+          name: Install macports
+          command: |
+            scripts/macports0_install.sh --circleci --homedirgimp<< pipeline.parameters.vgimp >>
+          no_output_timeout: 30m
 
   pre-cache-store-hosted:
     steps:
@@ -174,10 +158,9 @@ commands:
 # -------------------------
 
 jobs:
-
-# -------------------------
-#        JOBS SELF HOSTED
-# -------------------------
+  # -------------------------
+  #        JOBS SELF HOSTED
+  # -------------------------
 
   dependencies-part1-self:
     machine: true
@@ -193,6 +176,8 @@ jobs:
             scripts/macports1_install_packages.sh --uninstall-package gimp210
             scripts/macports1_install_packages.sh --part1
           no_output_timeout: 30m
+      - store_artifacts:
+          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-arm64/var/macports/logs
 
   dependencies-part2-self:
     machine: true
@@ -206,6 +191,8 @@ jobs:
           command: |
             scripts/macports1_install_packages.sh --part2
           no_output_timeout: 30m
+      - store_artifacts:
+          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-arm64/var/macports/logs
 
   dependencies-part3-self:
     machine: true
@@ -219,6 +206,8 @@ jobs:
           command: |
             scripts/macports1_install_packages.sh --part3
           no_output_timeout: 30m
+      - store_artifacts:
+          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-arm64/var/macports/logs
 
   dependencies-part4-self:
     machine: true
@@ -232,6 +221,8 @@ jobs:
           command: |
             scripts/macports1_install_packages.sh --part4
           no_output_timeout: 30m
+      - store_artifacts:
+          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-arm64/var/macports/logs
 
   dependencies-part5-self:
     machine: true
@@ -259,6 +250,8 @@ jobs:
           # not using --check flag
           command: |
             scripts/macports2_install_gimp.sh
+      - store_artifacts:
+          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-arm64/var/macports/logs
       - setup-gtk-mac-bundler
       - run:
           name: Creating DMG package
@@ -296,26 +289,26 @@ jobs:
             scripts/macports4_build_dmg.sh
           no_output_timeout: 20m
       - run:
-          name:  Notarizing DMG package
+          name: Notarizing DMG package
           command: |
             package/notarize.sh
           no_output_timeout: 20m
       - run:
-          name:  Checksum DMG package
+          name: Checksum DMG package
           command: |
             package/checksum-artifacts.sh
       - store_artifacts:
           path: /tmp/artifacts
           destination: builds
 
-# -------------------------
-#        JOBS CIRCLECI HOSTED
-# -------------------------
+  # -------------------------
+  #        JOBS CIRCLECI HOSTED
+  # -------------------------
 
   dependencies-part1-hosted:
     macos:
       xcode: "14.2.0"
-      resource_class: macos.x86.medium.gen2
+    resource_class: large
 
     steps:
       - setup
@@ -331,7 +324,6 @@ jobs:
           no_output_timeout: 30m
       - store_artifacts:
           path: ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/var/macports/logs
-          when: "on_fail"
       - save_cache:
           paths:
             - ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/
@@ -340,7 +332,7 @@ jobs:
   dependencies-part2-hosted:
     macos:
       xcode: "14.2.0"
-      resource_class: macos.x86.medium.gen2
+    resource_class: large
 
     steps:
       - setup
@@ -355,7 +347,6 @@ jobs:
           no_output_timeout: 30m
       - store_artifacts:
           path: ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/var/macports/logs
-          when: on_fail
       - save_cache:
           paths:
             - ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/
@@ -364,7 +355,7 @@ jobs:
   dependencies-part3-hosted:
     macos:
       xcode: "14.2.0"
-      resource_class: macos.x86.medium.gen2
+    resource_class: large
 
     steps:
       - setup
@@ -379,7 +370,6 @@ jobs:
           no_output_timeout: 30m
       - store_artifacts:
           path: ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/var/macports/logs
-          when: on_fail
       - save_cache:
           paths:
             - ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/
@@ -388,7 +378,7 @@ jobs:
   dependencies-part4-hosted:
     macos:
       xcode: "14.2.0"
-      resource_class: macos.x86.medium.gen2
+    resource_class: large
 
     steps:
       - setup
@@ -403,7 +393,6 @@ jobs:
           no_output_timeout: 30m
       - store_artifacts:
           path: ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/var/macports/logs
-          when: on_fail
       - save_cache:
           paths:
             - ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/
@@ -412,7 +401,7 @@ jobs:
   dependencies-part5-hosted:
     macos:
       xcode: "14.2.0"
-      resource_class: macos.x86.medium.gen2
+    resource_class: large
 
     steps:
       - setup
@@ -427,7 +416,6 @@ jobs:
           no_output_timeout: 30m
       - store_artifacts:
           path: ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/var/macports/logs
-          when: on_fail
       - save_cache:
           paths:
             - ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/
@@ -436,7 +424,7 @@ jobs:
   build-gimp-and-package-hosted:
     macos:
       xcode: "14.2.0"
-      resource_class: macos.x86.medium.gen2
+    resource_class: large
 
     steps:
       - setup
@@ -461,7 +449,6 @@ jobs:
             scripts/macports2_install_gimp.sh circleci
       - store_artifacts:
           path: ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/var/macports/logs
-          when: on_fail
       - save_cache:
           paths:
             - ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/
@@ -481,12 +468,12 @@ jobs:
             scripts/macports4_build_dmg.sh
           no_output_timeout: 20m
       - run:
-          name:  Notarizing DMG package
+          name: Notarizing DMG package
           command: |
             package/notarize.sh
           no_output_timeout: 20m
       - run:
-          name:  Checksum DMG package
+          name: Checksum DMG package
           command: |
             package/checksum-artifacts.sh
       - store_artifacts:

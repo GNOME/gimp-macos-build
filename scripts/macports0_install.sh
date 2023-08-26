@@ -1,30 +1,30 @@
 #!/usr/bin/env bash
 #####################################################################
- # macports_install.sh: installs macports                           #
- #                                                                  #
- # Copyright 2022 Lukas Oberhuber <lukaso@gmail.com>                #
- #                                                                  #
- # This program is free software; you can redistribute it and/or    #
- # modify it under the terms of the GNU General Public License as   #
- # published by the Free Software Foundation; either version 2 of   #
- # the License, or (at your option) any later version.              #
- #                                                                  #
- # This program is distributed in the hope that it will be useful,  #
- # but WITHOUT ANY WARRANTY; without even the implied warranty of   #
- # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the    #
- # GNU General Public License for more details.                     #
- #                                                                  #
- # You should have received a copy of the GNU General Public License#
- # along with this program; if not, contact:                        #
- #                                                                  #
- # Free Software Foundation           Voice:  +1-617-542-5942       #
- # 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652       #
- # Boston, MA  02110-1301,  USA       gnu@gnu.org                   #
- ####################################################################
+# macports_install.sh: installs macports                            #
+#                                                                   #
+# Copyright 2022 Lukas Oberhuber <lukaso@gmail.com>                 #
+#                                                                   #
+# This program is free software; you can redistribute it and/or     #
+# modify it under the terms of the GNU General Public License as    #
+# published by the Free Software Foundation; either version 2 of    #
+# the License, or (at your option) any later version.               #
+#                                                                   #
+# This program is distributed in the hope that it will be useful,   #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of    #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     #
+# GNU General Public License for more details.                      #
+#                                                                   #
+# You should have received a copy of the GNU General Public License #
+# along with this program; if not, contact:                         #
+#                                                                   #
+# Free Software Foundation           Voice:  +1-617-542-5942        #
+# 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652        #
+# Boston, MA  02110-1301,  USA       gnu@gnu.org                    #
+#####################################################################
 
-set -e;
+set -e
 
-PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MACPORTS_VERSION=2.8.1
 
 if [[ $(uname -m) == 'arm64' ]]; then
@@ -38,51 +38,58 @@ else
 fi
 
 function pure_version() {
-	echo '0.2'
+  echo '0.2'
 }
 
 function version() {
-	echo "macports0_install.sh $(pure_version)"
+  echo "macports0_install.sh $(pure_version)"
 }
 
 function usage() {
-    version
-    echo ""
-    echo "Builds macports."
-    echo "Usage:  $(basename $0) [options]"
-    echo ""
-    echo "Builds Gimp dependencies."
-    echo "Options:"
-    echo "  --circleci"
-    echo "      settings for circleci instead of local"
-    echo "  --homedirgimp2"
-    echo "      installs macports to a custom homedir macports-gimp2"
-    echo "  --homedirgimp3"
-    echo "      installs macports to a custom homedir macports-gimp3"
-    echo "  --version         show tool version number"
-    echo "  -h, --help        display this help"
-    exit 0
+  version
+  echo ""
+  echo "Builds macports."
+  echo "Usage:  $(basename $0) [options]"
+  echo ""
+  echo "Builds Gimp dependencies."
+  echo "Options:"
+  echo "  --circleci"
+  echo "      settings for circleci instead of local"
+  echo "  --homedirgimp2"
+  echo "      installs macports to a custom homedir macports-gimp2"
+  echo "  --homedirgimp3"
+  echo "      installs macports to a custom homedir macports-gimp3"
+  echo "  --version         show tool version number"
+  echo "  -h, --help        display this help"
+  exit 0
 }
 
 while test "${1:0:1}" = "-"; do
-	case $1 in
-	--circleci)
-		circleci="true"
-		shift;;
-	--homedirgimp2)
-		homedirgimp2="true"
-		shift;;
-	--homedirgimp3)
-		homedirgimp3="true"
-		shift;;
-	-h | --help)
-		usage;;
-	--version)
-		version; exit 0;;
-	-*)
-		echo "Unknown option $1. Run with --help for help."
-		exit 1;;
-	esac
+  case $1 in
+  --circleci)
+    circleci="true"
+    shift
+    ;;
+  --homedirgimp2)
+    homedirgimp2="true"
+    shift
+    ;;
+  --homedirgimp3)
+    homedirgimp3="true"
+    shift
+    ;;
+  -h | --help)
+    usage
+    ;;
+  --version)
+    version
+    exit 0
+    ;;
+  -*)
+    echo "Unknown option $1. Run with --help for help."
+    exit 1
+    ;;
+  esac
 done
 
 if [ -n "$homedirgimp2" ]; then
@@ -102,12 +109,12 @@ else
 fi
 
 export PATH=$PREFIX/bin:$PATH
-echo "export PREFIX=$PREFIX" > ~/.profile-gimp${VGIMP}
-echo "export dosudo=$dosudo" >> ~/.profile-gimp${VGIMP}
+echo "export PREFIX=$PREFIX" >~/.profile-gimp${VGIMP}
+echo "export dosudo=$dosudo" >>~/.profile-gimp${VGIMP}
 
 if [ -n "$circleci" ]; then
   echo "**Installing MacPorts for CircleCI"
-  echo "export circleci=\"true\"" >> ~/.profile-gimp${VGIMP}
+  echo "export circleci=\"true\"" >>~/.profile-gimp${VGIMP}
 fi
 
 if ! id -u "macports" >/dev/null 2>&1 || [ ! -f "$PREFIX/bin/port" ]; then
@@ -135,14 +142,14 @@ if [ -n "$FIRST_INSTALL" ]; then
     fi
 
     case $version in
-      10.12) friendly_name="Sierra" ;;
-      10.13) friendly_name="HighSierra" ;;
-      10.14) friendly_name="Mojave" ;;
-      10.15) friendly_name="Catalina" ;;
-      11) friendly_name="BigSur" ;;
-      12) friendly_name="Monterey" ;;
-      13) friendly_name="Ventura" ;;
-      *) friendly_name="Unknown" ;;
+    10.12) friendly_name="Sierra" ;;
+    10.13) friendly_name="HighSierra" ;;
+    10.14) friendly_name="Mojave" ;;
+    10.15) friendly_name="Catalina" ;;
+    11) friendly_name="BigSur" ;;
+    12) friendly_name="Monterey" ;;
+    13) friendly_name="Ventura" ;;
+    *) friendly_name="Unknown" ;;
     esac
 
     curl -L -O https://github.com/macports/macports-base/releases/download/v${MACPORTS_VERSION}/MacPorts-${MACPORTS_VERSION}-${version}-${friendly_name}.pkg
@@ -155,7 +162,7 @@ if [ -n "$FIRST_INSTALL" ]; then
     curl -L -O https://github.com/macports/macports-base/releases/download/v${MACPORTS_VERSION}/MacPorts-${MACPORTS_VERSION}.tar.bz2
     tar xf MacPorts-${MACPORTS_VERSION}.tar.bz2
     pushd MacPorts-${MACPORTS_VERSION}
-    ./configure --prefix=$PREFIX --with-applications-dir=$PREFIX/Applications --without-startupitems --with-install-user=${USER} --with-install-group=staff
+    ./configure --prefix=$PREFIX --with-applications-dir=$PREFIX/Applications --with-no-root-privileges --without-startupitems --with-install-user=${USER} --with-install-group=staff
     make
     make install
     popd
@@ -181,7 +188,7 @@ echo 'buildfromsource always' | $dosudo tee -a ${PREFIX}/etc/macports/macports.c
 echo 'startupitem_type none' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
 echo 'startupitem_install no' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
 echo 'startupitem_autostart no' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
-if [ "$build_arm64" = true ] ; then
+if [ "$build_arm64" = true ]; then
   echo 'macosx_deployment_target 11.0' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
   echo 'macosx_sdk_version 11.3' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
 else
@@ -191,25 +198,23 @@ fi
 echo "-x11 +no_x11 +quartz +python27 +no_gnome -gnome -gfortran -openldap -pinentry_mac ${debug}" | $dosudo tee -a ${PREFIX}/etc/macports/variants.conf
 printf "file://${PROJECT_DIR}/ports\n$(cat ${PREFIX}/etc/macports/sources.conf.default)\n" | $dosudo tee ${PREFIX}/etc/macports/sources.conf
 
-if [ "$build_arm64" = true ] ; then
-    echo "*** Setup 11.3 SDK"
-    cd /Library/Developer/CommandLineTools/SDKs
-    if [ ! -d "MacOSX11.3.sdk" ]
-    then
-        sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz' | sudo tar -xzf -
-    fi
-    echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk' >> ~/.profile-gimp${VGIMP}
-    echo 'export MACOSX_DEPLOYMENT_TARGET=11.0' >> ~/.profile-gimp${VGIMP}
-    echo 'export GIMP_ARM64=true' >> ~/.profile-gimp${VGIMP}
+if [ "$build_arm64" = true ]; then
+  echo "*** Setup 11.3 SDK"
+  cd /Library/Developer/CommandLineTools/SDKs
+  if [ ! -d "MacOSX11.3.sdk" ]; then
+    sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz' | sudo tar -xzf -
+  fi
+  echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk' >>~/.profile-gimp${VGIMP}
+  echo 'export MACOSX_DEPLOYMENT_TARGET=11.0' >>~/.profile-gimp${VGIMP}
+  echo 'export GIMP_ARM64=true' >>~/.profile-gimp${VGIMP}
 else
-    echo "*** Setup 10.13 SDK"
-    cd /Library/Developer/CommandLineTools/SDKs
-    if [ ! -d "MacOSX10.13.sdk" ]
-    then
-        sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.13.sdk.tar.xz' | sudo tar -xzf -
-    fi
-    echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.13.sdk' >> ~/.profile-gimp${VGIMP}
-    echo 'export MACOSX_DEPLOYMENT_TARGET=10.13' >> ~/.profile-gimp${VGIMP}
+  echo "*** Setup 10.13 SDK"
+  cd /Library/Developer/CommandLineTools/SDKs
+  if [ ! -d "MacOSX10.13.sdk" ]; then
+    sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.13.sdk.tar.xz' | sudo tar -xzf -
+  fi
+  echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.13.sdk' >>~/.profile-gimp${VGIMP}
+  echo 'export MACOSX_DEPLOYMENT_TARGET=10.13' >>~/.profile-gimp${VGIMP}
 fi
 
 source ~/.profile-gimp${VGIMP}
