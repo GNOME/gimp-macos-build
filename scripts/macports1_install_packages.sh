@@ -153,12 +153,12 @@ function massage_output() {
 }
 
 function port_install() {
-  massage_output $dosudo port -k -N install "$@"
+  massage_output port -k -N install "$@"
 }
 
 function port_clean_and_install() {
   echo "cleaning and installing $@"
-  $dosudo port clean "$@"
+  port clean "$@"
   port_install "$@"
 }
 
@@ -193,7 +193,7 @@ if [ -n "${ONLY_PACKAGE}" ]; then
 fi
 
 if [ -n "${UNINSTALL_PACKAGE}" ]; then
-  $dosudo port -f uninstall "${UNINSTALL_PACKAGE}"
+  port -f uninstall "${UNINSTALL_PACKAGE}"
   exit 0
 fi
 
@@ -207,12 +207,12 @@ if [ -n "${PART1}" ]; then
   # temporarily uninstall gegl, gimp3, libgcc12 (until all builds are fixed)
   # All of these ports at some point failed to upgrade, build or otherwise cooperate
   # unless uninstalled, even when being built from scratch.
-  # $dosudo port uninstall gimp3 || true
-  # $dosudo port uninstall -f gegl || true
-  # $dosudo port uninstall -f gcc12 || true
-  # $dosudo port uninstall -f libgcc12 || true
-  # $dosudo port uninstall -f appstream-glib || true
-  # $dosudo port clean appstream-glib || true
+  # port uninstall gimp3 || true
+  # port uninstall -f gegl || true
+  # port uninstall -f gcc12 || true
+  # port uninstall -f libgcc12 || true
+  # port uninstall -f appstream-glib || true
+  # port clean appstream-glib || true
 
   # Can be removed once run once on master
   # xxx
@@ -227,9 +227,9 @@ if [ -n "${PART1}" ]; then
     ncurses \
     libuv
   echo "cmake-bootstrap being installed since won't build from source with 10.13 SDK"
-  $dosudo sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${PREFIX}/etc/macports/macports.conf
-  $dosudo sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
-  $dosudo sed -i -e 's/macosx_sdk_version/#macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/macosx_sdk_version/#macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
   (
     # temporarily unset deployment targets since cmake does not build with 10.13 SDK
     # and we don't really care since only used at build time
@@ -237,12 +237,12 @@ if [ -n "${PART1}" ]; then
     unset MACOSX_DEPLOYMENT_TARGET
     unset SDKROOT
     echo "clean cmake****"
-    $dosudo port clean cmake
-    $dosudo port -k -N install cmake
+    port clean cmake
+    port -k -N install cmake
   )
-  $dosudo sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${PREFIX}/etc/macports/macports.conf
-  $dosudo sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
-  $dosudo sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
 
   # Former part 2, but Circle CI now allows much longer builds (5 hours)
 
@@ -252,35 +252,35 @@ if [ -n "${PART1}" ]; then
   port_clean_and_install $rust_deps
   # Build only dependency, so don't care if backward compatible
   echo "install rust"
-  $dosudo sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${PREFIX}/etc/macports/macports.conf
-  $dosudo sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
-  $dosudo sed -i -e 's/macosx_sdk_version/#macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/macosx_sdk_version/#macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
   (
     unset MACOSX_DEPLOYMENT_TARGET
     unset SDKROOT
-    $dosudo port clean rust
+    port clean rust
     # Must be verbose because otherwise times out on circle ci
-    $dosudo port -v -N install rust
+    port -v -N install rust
   )
-  $dosudo sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${PREFIX}/etc/macports/macports.conf
-  $dosudo sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
-  $dosudo sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
-  $dosudo port clean llvm-15
+  sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
+  port clean llvm-15
   # Must be verbose because otherwise times out on circle ci
-  $dosudo port -v -N install llvm-15
+  port -v -N install llvm-15
 fi
 
 if [ -n "${PART2}" ]; then
   # Can remove once on master
-  $dosudo port uninstall -f libstemmer || true
+  port uninstall -f libstemmer || true
   port_clean_and_install libstemmer || true
 
   # Have to clean every port because sub-ports get gummed up when they fail to
   # build/install. It would require detecting failure (obscure long error like
   # this): Error: See ${PREFIX}/var/macports/logs/_opt_local_var_macports_sources_rsync.macports.org_macports_release_tarballs_ports_devel_dbus/dbus/main.log for details.
   port_clean_and_install python310
-  $dosudo port select --set python python310
-  $dosudo port select --set python3 python310
+  port select --set python python310
+  port select --set python3 python310
   port_clean_and_install \
     icu \
     openjpeg \
@@ -317,8 +317,8 @@ if [ -n "${PART2}" ]; then
 fi
 
 if [ -n "${PART3}" ]; then
-  $dosudo port clean clang-16
-  $dosudo port -v -N install clang-16
+  port clean clang-16
+  port -v -N install clang-16
 fi
 
 if [ -n "${PART4}" ]; then
@@ -326,17 +326,17 @@ if [ -n "${PART4}" ]; then
 
   # libgcc12 is installed with GIMP so must be set for 10.13
   # Uninstall once
-  $dosudo port uninstall -f libgcc12 || true
-  $dosudo port clean libgcc12
-  # $dosudo port uninstall -f gcc12 || true
-  $dosudo port clean gcc12
-  $dosudo port -v -N install \
+  port uninstall -f libgcc12 || true
+  port clean libgcc12
+  # port uninstall -f gcc12 || true
+  port clean gcc12
+  port -v -N install \
     libgcc12
 
   # libomp can't handle +debug variant as prebuilt binary
-  $dosudo sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${PREFIX}/etc/macports/macports.conf
-  $dosudo sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
-  $dosudo sed -i -e 's/macosx_sdk_version/#macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/macosx_sdk_version/#macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
   (
     unset MACOSX_DEPLOYMENT_TARGET
     unset SDKROOT
@@ -350,11 +350,11 @@ if [ -n "${PART4}" ]; then
     #    Continue? [y/N]:
     #    Too long with no output (exceeded 30m0s): context deadline exceeded"
     # * libgcc12 because it is a dependency of gcc12 and if not also uninstalled, gcc12 build sometimes fails
-    # $dosudo port uninstall -f libgcc12 || true
-    $dosudo port clean libgcc12
-    # $dosudo port uninstall -f gcc12 || true
-    $dosudo port clean gcc12
-    $dosudo port -v -N install \
+    # port uninstall -f libgcc12 || true
+    port clean libgcc12
+    # port uninstall -f gcc12 || true
+    port clean gcc12
+    port -v -N install \
       libgcc12 \
       gcc12
     # broken build on x86_64 and is a build only dependency
@@ -362,26 +362,26 @@ if [ -n "${PART4}" ]; then
     port_clean_and_install \
       jdupes
   )
-  $dosudo sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${PREFIX}/etc/macports/macports.conf
-  $dosudo sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
-  $dosudo sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
 
-  $dosudo port clean dbus
+  port clean dbus
   port_install -f dbus
   port_clean_and_install \
     adwaita-icon-theme \
     babl \
     gegl +vala
   if [ $circleci ]; then
-    $dosudo port clean git
+    port clean git
     port_install git -perl5_34
   fi
 
   echo "**** Outdated ports"
   port outdated
 
-  $dosudo port -v -N upgrade outdated || true
-  $dosudo port uninstall inactive || true
+  port -v -N upgrade outdated || true
+  port uninstall inactive || true
 fi
 
 if [ -n "${PART5}" ]; then
