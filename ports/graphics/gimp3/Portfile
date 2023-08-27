@@ -53,9 +53,11 @@ set is_release      [expr {$patch % 2 == 0}]
 set is_stable       [expr {$minor % 2 == 0} && ${is_release}]
 
 if {${is_release}} {
-    git.branch      GIMP_${major}_${minor}_${patch}
+    set branch      GIMP_${major}_${minor}_${patch}
+    git.branch      ${branch}
 } else {
     set branch      origin/master
+    git.branch      ${branch}
     revision        0
 }
 
