@@ -313,8 +313,7 @@ if [ -n "${PART2}" ]; then
     libwmf \
     openexr \
     libmng \
-    ghostscript \
-    jdupes
+    ghostscript
 fi
 
 if [ -n "${PART3}" ]; then
@@ -358,6 +357,10 @@ if [ -n "${PART4}" ]; then
     $dosudo port -v -N install \
       libgcc12 \
       gcc12
+    # broken build on x86_64 and is a build only dependency
+    # https://trac.macports.org/ticket/68041
+    port_clean_and_install \
+      jdupes
   )
   $dosudo sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${PREFIX}/etc/macports/macports.conf
   $dosudo sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
