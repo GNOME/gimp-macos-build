@@ -103,14 +103,12 @@ elif [ -n "$homedirgimp3" ]; then
   PREFIX="${HOME}/macports-gimp3-${arch}"
   export VGIMP=3
 else
-  PREFIX=/opt/local
-  dosudo=sudo
-  export VGIMP=3
+  echo "**Error: Must choose a homedir"
+  exit 1
 fi
 
 export PATH=$PREFIX/bin:$PATH
 echo "export PREFIX=$PREFIX" >~/.profile-gimp${VGIMP}
-echo "export dosudo=$dosudo" >>~/.profile-gimp${VGIMP}
 
 if [ -n "$circleci" ]; then
   echo "**Installing MacPorts for CircleCI"
@@ -130,43 +128,13 @@ if [ -n "$FIRST_INSTALL" ]; then
   mkdir -p $MACPORTS_INSTALLER
   pushd $MACPORTS_INSTALLER
 
-  if [ -z ${home_dir+x} ]; then
-    os_version=$(sw_vers -productVersion)
-    major_version=$(echo $os_version | awk -F '.' '{print $1}')
-    minor_version=$(echo $os_version | awk -F '.' '{print $2}')
-
-    if [[ $major_version -lt 11 ]]; then
-      version="$major_version.$minor_version"
-    else
-      version="$major_version"
-    fi
-
-    case $version in
-    10.12) friendly_name="Sierra" ;;
-    10.13) friendly_name="HighSierra" ;;
-    10.14) friendly_name="Mojave" ;;
-    10.15) friendly_name="Catalina" ;;
-    11) friendly_name="BigSur" ;;
-    12) friendly_name="Monterey" ;;
-    13) friendly_name="Ventura" ;;
-    *) friendly_name="Unknown" ;;
-    esac
-
-    curl -L -O https://github.com/macports/macports-base/releases/download/v${MACPORTS_VERSION}/MacPorts-${MACPORTS_VERSION}-${version}-${friendly_name}.pkg
-    # Circleci self hosted runner breaks here if the user is not added to the sudoers file so that
-    # the sudo command can be used without a password.
-    # See: https://apple.stackexchange.com/questions/257813/enable-sudo-without-a-password-on-macos?newreg=2d4cdeb8e9354cc4bb1d5d06f5c623e6
-    # look at answer that begins "Better not to edit /etc/sudoers directly."
-    $dosudo installer -pkg MacPorts-${MACPORTS_VERSION}-${version}-${friendly_name}.pkg -target /
-  else
-    curl -L -O https://github.com/macports/macports-base/releases/download/v${MACPORTS_VERSION}/MacPorts-${MACPORTS_VERSION}.tar.bz2
-    tar xf MacPorts-${MACPORTS_VERSION}.tar.bz2
-    pushd MacPorts-${MACPORTS_VERSION}
-    ./configure --prefix=$PREFIX --with-applications-dir=$PREFIX/Applications --with-no-root-privileges --without-startupitems --with-install-user=${USER} --with-install-group=staff
-    make
-    make install
-    popd
-  fi
+  curl -L -O https://github.com/macports/macports-base/releases/download/v${MACPORTS_VERSION}/MacPorts-${MACPORTS_VERSION}.tar.bz2
+  tar xf MacPorts-${MACPORTS_VERSION}.tar.bz2
+  pushd MacPorts-${MACPORTS_VERSION}
+  ./configure --prefix=$PREFIX --with-applications-dir=$PREFIX/Applications --with-no-root-privileges --without-startupitems --with-install-user=${USER} --with-install-group=staff
+  make
+  make install
+  popd
 
   popd
 
@@ -181,22 +149,22 @@ else
   debug="+debug"
 fi
 
-$dosudo cp ${PREFIX}/etc/macports/macports.conf.default ${PREFIX}/etc/macports/macports.conf
-$dosudo cp ${PREFIX}/etc/macports/variants.conf.default ${PREFIX}/etc/macports/variants.conf
+cp ${PREFIX}/etc/macports/macports.conf.default ${PREFIX}/etc/macports/macports.conf
+cp ${PREFIX}/etc/macports/variants.conf.default ${PREFIX}/etc/macports/variants.conf
 
-echo 'buildfromsource always' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
-echo 'startupitem_type none' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
-echo 'startupitem_install no' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
-echo 'startupitem_autostart no' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
+echo 'buildfromsource always' | tee -a ${PREFIX}/etc/macports/macports.conf
+echo 'startupitem_type none' | tee -a ${PREFIX}/etc/macports/macports.conf
+echo 'startupitem_install no' | tee -a ${PREFIX}/etc/macports/macports.conf
+echo 'startupitem_autostart no' | tee -a ${PREFIX}/etc/macports/macports.conf
 if [ "$build_arm64" = true ]; then
-  echo 'macosx_deployment_target 11.0' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
-  echo 'macosx_sdk_version 11.3' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
+  echo 'macosx_deployment_target 11.0' | tee -a ${PREFIX}/etc/macports/macports.conf
+  echo 'macosx_sdk_version 11.3' | tee -a ${PREFIX}/etc/macports/macports.conf
 else
-  echo 'macosx_deployment_target 10.13' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
-  echo 'macosx_sdk_version 10.13' | $dosudo tee -a ${PREFIX}/etc/macports/macports.conf
+  echo 'macosx_deployment_target 10.13' | tee -a ${PREFIX}/etc/macports/macports.conf
+  echo 'macosx_sdk_version 10.13' | tee -a ${PREFIX}/etc/macports/macports.conf
 fi
-echo "-x11 +no_x11 +quartz +python27 +no_gnome -gnome -gfortran -openldap -pinentry_mac ${debug}" | $dosudo tee -a ${PREFIX}/etc/macports/variants.conf
-printf "file://${PROJECT_DIR}/ports\n$(cat ${PREFIX}/etc/macports/sources.conf.default)\n" | $dosudo tee ${PREFIX}/etc/macports/sources.conf
+echo "-x11 +no_x11 +quartz +python27 +no_gnome -gnome -gfortran -openldap -pinentry_mac ${debug}" | tee -a ${PREFIX}/etc/macports/variants.conf
+printf "file://${PROJECT_DIR}/ports\n$(cat ${PREFIX}/etc/macports/sources.conf.default)\n" | tee ${PREFIX}/etc/macports/sources.conf
 
 if [ "$build_arm64" = true ]; then
   echo "*** Setup 11.3 SDK"
@@ -221,11 +189,11 @@ source ~/.profile-gimp${VGIMP}
 
 if [ -n "$FIRST_INSTALL" ]; then
   # must do before and after otherwise local portindex fails if this is the first time
-  $dosudo port -v selfupdate || true
+  port -v selfupdate || true
 fi
 
 pushd ~/project/ports
-$dosudo portindex
+portindex
 popd
 
-$dosudo port -v selfupdate || true
+port -v selfupdate || true
