@@ -2,6 +2,8 @@
 
 # Remove when this is merged
 # https://github.com/macports/macports-ports/pull/18676
+# Which will be never. So maybe check if this can be removed
+# periodically.
 
 PortSystem                                       1.0
 PortGroup           select                       1.0
@@ -197,6 +199,7 @@ set libcxx_incpath ${prefix}/libexec/${name}/libc++/include/c++/v1
 
 subport ${libcxxname} {
     PortGroup compilers     1.0
+
     compilers.choose        cxx
     compilers.setup         -gcc -fortran -clangdevel -clang34 -clang35 -clang36 \
                             -clang37 -clang50 -clang60 -clang70 -clang80 -clang90
@@ -272,6 +275,20 @@ compiler.blacklist-append {clang < 800} gcc-4.0 *gcc-4.2 {llvm-gcc-4.2 < 2336.1}
 # https://build.macports.org/builders/ports-10.13_x86_64-builder/builds/105513/steps/install-port/logs/stdio
 # c++/v1/functional:1408:2: error: no member named 'fancy_abort' in namespace 'std::__1'; did you mean simply 'fancy_abort'?
 compiler.blacklist-append {clang < 1001}
+
+platform darwin {
+    # gcc12 can't be built by Xcode Clang 14.0.x
+    # https://trac.macports.org/ticket/67416
+    # https://github.com/iains/gcc-12-branch/issues/6
+    if { ([vercmp ${xcodeversion} >= 14.0] && [vercmp ${xcodeversion} < 14.1]) || \
+        ([vercmp ${xcodecltversion} >= 14.0] && [vercmp ${xcodecltversion} < 14.1]) } {
+        pre-fetch {
+            ui_error "${name} cannot be built with Xcode/CLT 14.0.x"
+            ui_error "Either upgrade both Xcode and the Command Line Tools to 14.1 or later, or downgrade to 13.4."
+            return -code error "incompatible Xcode/CLT version"
+        }
+    }
+}
 
 # "-stdlib" would be passed on to the bootstrap compiler if present
 configure.cxx_stdlib

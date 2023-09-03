@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-#####################################################################
-# macports1_install_packages.sh: installs gimp dependencies         #
+####################################################################
+# macports1_install_packages.sh: installs gimp dependencies        #
 #                                                                  #
 # Copyright 2022 Lukas Oberhuber <lukaso@gmail.com>                #
 #                                                                  #
@@ -27,7 +27,7 @@ set -e
 export VGIMP=2
 
 function pure_version() {
-  echo '0.1'
+  echo '0.2'
 }
 
 function version() {
@@ -157,10 +157,34 @@ function port_install() {
 }
 
 function port_clean_and_install() {
-  echo "cleaning and installing $@"
+  echo "cleaning and installing $*"
   port clean "$@"
   port_install "$@"
 }
+
+# Must be verbose because otherwise times out on circle ci
+function port_long_clean_and_install() {
+  port clean "$@"
+  port -v -N install "$@"
+}
+
+# * uninstall because if not, then get a failure on building
+# * clean because if not, then get random failure
+# * uninstall -f to avoid:
+#   "Note: It is not recommended to uninstall/deactivate a port that has dependents as it breaks the dependents.
+#    The following ports will break: libgcc @6.0_0
+#    Continue? [y/N]:
+#    Too long with no output (exceeded 30m0s): context deadline exceeded"
+function port_force_uninstall_and_clean() {
+  echo "force uninstalling and cleaning $*"
+  port uninstall -f "$@" || true
+  port clean "$@" || true
+}
+
+# for xargs support
+export -f port_install
+export -f port_clean_and_install
+export -f massage_output
 
 echo "**** Debugging info ****"
 echo "**** installed ports ****"
@@ -188,7 +212,7 @@ if [ -n "${ONLY_PACKAGE}" ]; then
 fi
 
 if [ -n "${UNINSTALL_PACKAGE}" ]; then
-  port -f uninstall "${UNINSTALL_PACKAGE}"
+  port_force_uninstall_and_clean "${UNINSTALL_PACKAGE}"
   exit 0
 fi
 
@@ -202,18 +226,16 @@ if [ -n "${PART1}" ]; then
   # temporarily uninstall gegl, gimp3, libgcc12 (until all builds are fixed)
   # All of these ports at some point failed to upgrade, build or otherwise cooperate
   # unless uninstalled, even when being built from scratch.
-  # port uninstall gimp3 || true
-  # port uninstall -f gegl || true
-  # port uninstall -f gcc12 || true
-  # port uninstall -f libgcc12 || true
-  # port uninstall -f appstream-glib || true
-  # port clean appstream-glib || true
+  # port_force_uninstall_and_clean gimp3
+  # port_force_uninstall_and_clean gegl
+  # port_force_uninstall_and_clean gcc12
+  # port_force_uninstall_and_clean appstream-glib
+  # * libgcc12 because it is a dependency of gcc12 and if not also uninstalled, gcc12 build sometimes fails
+  # port_force_uninstall_and_clean libgcc12
 
-  # Can be removed once run once on master
-  # $dosudo port uninstall clang-14 || true
-  # $dosudo port uninstall llvm-14 || true
-  # $dosudo port uninstall clang-15 || true
-  # $dosudo port uninstall llvm-15 || true
+  # ** Can be removed once run once on master
+  # xxx
+
   echo "build cmake dependencies in case they are needed for gimp"
   port_clean_and_install libcxx \
     curl \
@@ -234,8 +256,7 @@ if [ -n "${PART1}" ]; then
     unset MACOSX_DEPLOYMENT_TARGET
     unset SDKROOT
     echo "clean cmake****"
-    port clean cmake
-    port -k -N install cmake
+    port_clean_and_install cmake
   )
   sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${PREFIX}/etc/macports/macports.conf
   sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
@@ -255,16 +276,12 @@ if [ -n "${PART1}" ]; then
   (
     unset MACOSX_DEPLOYMENT_TARGET
     unset SDKROOT
-    port clean rust
-    # Must be verbose because otherwise times out on circle ci
-    port -v -N install rust
+    port_long_clean_and_install rust
   )
   sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${PREFIX}/etc/macports/macports.conf
   sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
   sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
-  port clean llvm-15
-  # Must be verbose because otherwise times out on circle ci
-  port -v -N install llvm-15
+  port_long_clean_and_install llvm-15
 fi
 
 if [ -n "${PART2}" ]; then
@@ -279,6 +296,7 @@ if [ -n "${PART2}" ]; then
     aalib \
     appstream-glib \
     exiv2 \
+    ffmpeg +slim \
     git \
     gexiv2 \
     ghostscript \
@@ -318,21 +336,15 @@ if [ -n "${PART2}" ]; then
 fi
 
 if [ -n "${PART3}" ]; then
-  port clean clang-16
-  port -v -N install clang-16
+  port_long_clean_and_install clang-16
 fi
 
 if [ -n "${PART4}" ]; then
   echo "gcc12 being installed before gegl"
 
   # libgcc12 is installed with GIMP so must be set for 10.13
-  # Uninstall once
-  port uninstall -f libgcc12 || true
-  port clean libgcc12
-  # port uninstall -f gcc12 || true
   port clean gcc12
-  port -v -N install \
-    libgcc12
+  port_long_clean_and_install libgcc12
 
   # libomp can't handle +debug variant as prebuilt binary
   sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${PREFIX}/etc/macports/macports.conf
@@ -343,21 +355,12 @@ if [ -n "${PART4}" ]; then
     unset SDKROOT
     port_clean_and_install \
       libomp -debug
-    # * uninstall because if not, then get a failure on building
-    # * clean because if not, then get random failure
-    # * uninstall -f to avoid:
-    #   "Note: It is not recommended to uninstall/deactivate a port that has dependents as it breaks the dependents.
-    #    The following ports will break: libgcc @6.0_0
-    #    Continue? [y/N]:
-    #    Too long with no output (exceeded 30m0s): context deadline exceeded"
-    # * libgcc12 because it is a dependency of gcc12 and if not also uninstalled, gcc12 build sometimes fails
-    # port uninstall -f libgcc12 || true
     port clean libgcc12
-    # port uninstall -f gcc12 || true
-    port clean gcc12
-    port -v -N install \
-      libgcc12 \
-      gcc12
+    port_long_clean_and_install gcc12
+    # broken build on x86_64 and is a build only dependency
+    # https://trac.macports.org/ticket/68041
+    port_clean_and_install \
+      jdupes
   )
   sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${PREFIX}/etc/macports/macports.conf
   sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
@@ -377,6 +380,8 @@ if [ -n "${PART4}" ]; then
   echo "**** Outdated ports"
   port outdated
 
+  echo "**** Upgrading outdated ports"
+  # Must be verbose because otherwise times out on circle ci
   port -v -N upgrade outdated || true
   port uninstall inactive || true
 fi
