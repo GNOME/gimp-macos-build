@@ -23,12 +23,6 @@ commands:
       - run:
           name: Avoid hosts unknown for github
           command: mkdir -p ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
-      # This can be removed, but should be done in separate MR
-      - run:
-          name: Workaround gitlab bug https://gitlab.com/gitlab-org/gitlab/-/issues/9371 which blocks gtk3
-          command: |
-            git config --global http.postBuffer 524288000
-            git config --global http.version HTTP/1.1
 
   cache-break-hosted:
     steps:
@@ -98,6 +92,13 @@ commands:
           command: |
             scripts/macports0_install.sh --circleci --homedirgimp<< pipeline.parameters.vgimp >>
           no_output_timeout: 30m
+
+  clear-artifacts-arm64:
+    steps:
+      - run:
+          name: Clearing artifacts
+          command: |
+            rm -rf ~/macports-gimp<< pipeline.parameters.vgimp >>-arm64/var/macports/logs
 
   pre-cache-store-hosted:
     steps:
@@ -170,6 +171,7 @@ jobs:
       - setup
       - cache-break-self
       - setup-macports
+      - clear-artifacts-arm64
       - run:
           name: Build GIMP dependencies part 1
           command: |
@@ -186,6 +188,7 @@ jobs:
     steps:
       - setup
       - setup-macports
+      - clear-artifacts-arm64
       - run:
           name: Build GIMP dependencies part 2
           command: |
@@ -201,6 +204,7 @@ jobs:
     steps:
       - setup
       - setup-macports
+      - clear-artifacts-arm64
       - run:
           name: Build GIMP dependencies part 3
           command: |
@@ -216,6 +220,7 @@ jobs:
     steps:
       - setup
       - setup-macports
+      - clear-artifacts-arm64
       - run:
           name: Build GIMP dependencies part 4
           command: |
@@ -231,6 +236,7 @@ jobs:
     steps:
       - setup
       - setup-macports
+      - clear-artifacts-arm64
       - run:
           name: Build GIMP dependencies part 5
           command: |
@@ -244,6 +250,7 @@ jobs:
     steps:
       - setup
       - setup-macports
+      - clear-artifacts-arm64
       - run:
           name: Build GIMP
           # XXX `make check` is not working reliably under circle ci, so we are

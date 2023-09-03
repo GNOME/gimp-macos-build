@@ -99,7 +99,6 @@ depends_lib-append \
                     port:xmlto \
                     port:py-cairo \
                     port:py-gobject3 \
-                    port:gtk-osx-application-gtk3 \
                     port:libarchive \
                     port:libyaml \
                     port:glib-networking \
