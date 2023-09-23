@@ -296,7 +296,7 @@ if [ -n "${PART2}" ]; then
     aalib \
     appstream-glib \
     exiv2 \
-    ffmpeg +slim \
+    ffmpeg \
     git \
     gexiv2 \
     ghostscript \
