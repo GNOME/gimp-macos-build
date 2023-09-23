@@ -293,39 +293,39 @@ if [ -n "${PART2}" ]; then
   port select --set python3 python310
   # Hail mary since rav1e has been broken for a month as of 20 sep 2023
   port_clean_and_install \
-    icu \
-    openjpeg \
+    aalib \
+    ffmpeg \
+    fontconfig \
+    gexiv2 \
+    ghostscript \
     git \
-    json-c \
-    libde265 \
-    nasm \
-    x265 \
-    util-linux \
-    xmlto \
-    py-cairo \
-    py-gobject3 \
-    gtk3 \
-    libarchive \
-    libyaml \
-    lcms2 \
     glib-networking \
+    gtk3 \
+    icu \
+    iso-codes \
+    json-c \
+    lcms2 \
+    libarchive \
+    libde265 \
+    libheif \
+    libmng \
+    libmypaint \
+    librsvg \
+    libwmf \
+    libyaml \
+    mypaint-brushes1 \
+    nasm \
+    openexr \
+    openjpeg \
     poppler -boost \
     poppler-data \
-    fontconfig \
-    libmypaint \
-    mypaint-brushes1 \
-    libheif \
-    aalib \
-    webp \
+    py-cairo \
+    py-gobject3 \
     shared-mime-info \
-    iso-codes \
-    librsvg \
-    gexiv2 \
-    libwmf \
-    openexr \
-    libmng \
-    ghostscript \
-    ffmpeg +slim
+    util-linux \
+    webp \
+    x265 \
+    xmlto
 fi
 
 if [ -n "${PART3}" ]; then
