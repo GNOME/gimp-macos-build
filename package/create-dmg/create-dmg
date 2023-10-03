@@ -3,7 +3,7 @@
 # Create a read-only disk image of the contents of a folder
 
 # Bail out on any unhandled errors
-set -e;
+set -e
 
 CDMG_VERSION='1.1.0'
 
@@ -41,16 +41,16 @@ function hdiutil-detach-retry() {
 	unmounting_attempts=0
 	until
 		echo "Unmounting disk image..."
-		(( unmounting_attempts++ ))
+		((unmounting_attempts++))
 		hdiutil detach "$1"
 		exit_code=$?
-		(( exit_code ==  0 )) && break            # nothing goes wrong
-		# The above statement returns 1 if test failed (exit_code == 16).
-		#   It can make the code in the {do... done} block to be executed
+		((exit_code == 0)) && break # nothing goes wrong
+	# The above statement returns 1 if test failed (exit_code == 16).
+	#   It can make the code in the {do... done} block to be executed
 	do
-		(( unmounting_attempts == MAXIMUM_UNMOUNTING_ATTEMPTS )) && exit $exit_code  # patience exhausted, exit with code EBUSY
+		((unmounting_attempts == MAXIMUM_UNMOUNTING_ATTEMPTS)) && exit $exit_code # patience exhausted, exit with code EBUSY
 		echo "Wait a moment..."
-		sleep $(( 1 * (2 ** unmounting_attempts) ))
+		sleep $((1 * (2 ** unmounting_attempts)))
 	done
 	unset unmounting_attempts
 }
@@ -127,113 +127,173 @@ EOHELP
 
 while [[ "${1:0:1}" = "-" ]]; do
 	case $1 in
-		--volname)
-			VOLUME_NAME="$2"
-			shift; shift;;
-		--volicon)
-			VOLUME_ICON_FILE="$2"
-			shift; shift;;
-		--background)
-			BACKGROUND_FILE="$2"
-			BACKGROUND_FILE_NAME="$(basename "$BACKGROUND_FILE")"
-			BACKGROUND_CLAUSE="set background picture of opts to file \".background:$BACKGROUND_FILE_NAME\""
-			REPOSITION_HIDDEN_FILES_CLAUSE="set position of every item to {theBottomRightX + 100, 100}"
-			shift; shift;;
-		--icon-size)
-			ICON_SIZE="$2"
-			shift; shift;;
-		--text-size)
-			TEXT_SIZE="$2"
-			shift; shift;;
-		--window-pos)
-			WINX=$2; WINY=$3
-			shift; shift; shift;;
-		--window-size)
-			WINW=$2; WINH=$3
-			shift; shift; shift;;
-		--icon)
-			POSITION_CLAUSE="${POSITION_CLAUSE}set position of item \"$2\" to {$3, $4}
+	--volname)
+		VOLUME_NAME="$2"
+		shift
+		shift
+		;;
+	--volicon)
+		VOLUME_ICON_FILE="$2"
+		shift
+		shift
+		;;
+	--background)
+		BACKGROUND_FILE="$2"
+		BACKGROUND_FILE_NAME="$(basename "$BACKGROUND_FILE")"
+		BACKGROUND_CLAUSE="set background picture of opts to file \".background:$BACKGROUND_FILE_NAME\""
+		REPOSITION_HIDDEN_FILES_CLAUSE="set position of every item to {theBottomRightX + 100, 100}"
+		shift
+		shift
+		;;
+	--icon-size)
+		ICON_SIZE="$2"
+		shift
+		shift
+		;;
+	--text-size)
+		TEXT_SIZE="$2"
+		shift
+		shift
+		;;
+	--window-pos)
+		WINX=$2
+		WINY=$3
+		shift
+		shift
+		shift
+		;;
+	--window-size)
+		WINW=$2
+		WINH=$3
+		shift
+		shift
+		shift
+		;;
+	--icon)
+		POSITION_CLAUSE="${POSITION_CLAUSE}set position of item \"$2\" to {$3, $4}
 			"
-			shift; shift; shift; shift;;
-		--hide-extension)
-			HIDING_CLAUSE="${HIDING_CLAUSE}set the extension hidden of item \"$2\" to true
+		shift
+		shift
+		shift
+		shift
+		;;
+	--hide-extension)
+		HIDING_CLAUSE="${HIDING_CLAUSE}set the extension hidden of item \"$2\" to true
 			"
-			shift; shift;;
-		-h | --help)
-			usage;;
-		--version)
-			version; exit 0;;
-		--pure-version)
-			pure_version; exit 0;;
-		--ql-drop-link)
-			QL_LINK=$2
-			QL_CLAUSE="set position of item \"QuickLook\" to {$2, $3}
+		shift
+		shift
+		;;
+	-h | --help)
+		usage
+		;;
+	--version)
+		version
+		exit 0
+		;;
+	--pure-version)
+		pure_version
+		exit 0
+		;;
+	--ql-drop-link)
+		QL_LINK=$2
+		QL_CLAUSE="set position of item \"QuickLook\" to {$2, $3}
 			"
-			shift; shift; shift;;
-		--app-drop-link)
-			APPLICATION_LINK=$2
-			APPLICATION_CLAUSE="set position of item \"Applications\" to {$2, $3}
+		shift
+		shift
+		shift
+		;;
+	--app-drop-link)
+		APPLICATION_LINK=$2
+		APPLICATION_CLAUSE="set position of item \"Applications\" to {$2, $3}
 			"
-			shift; shift; shift;;
-		--eula)
-			EULA_RSRC=$2
-			shift; shift;;
-		--no-internet-enable)
-			NOINTERNET=1
-			shift;;
-		--format)
-			FORMAT="$2"
-			shift; shift;;
-		--add-file | --add-folder)
-			ADD_FILE_TARGETS+=("$2")
-			ADD_FILE_SOURCES+=("$3")
-			POSITION_CLAUSE="${POSITION_CLAUSE}
+		shift
+		shift
+		shift
+		;;
+	--eula)
+		EULA_RSRC=$2
+		shift
+		shift
+		;;
+	--no-internet-enable)
+		NOINTERNET=1
+		shift
+		;;
+	--format)
+		FORMAT="$2"
+		shift
+		shift
+		;;
+	--add-file | --add-folder)
+		ADD_FILE_TARGETS+=("$2")
+		ADD_FILE_SOURCES+=("$3")
+		POSITION_CLAUSE="${POSITION_CLAUSE}
 			set position of item \"$2\" to {$4, $5}
 			"
-			shift; shift; shift; shift; shift;;
-		--disk-image-size)
-			DISK_IMAGE_SIZE="$2"
-			shift; shift;;
-		--hdiutil-verbose)
-			HDIUTIL_VERBOSITY='-verbose'
-			shift;;
-		--hdiutil-quiet)
-			HDIUTIL_VERBOSITY='-quiet'
-			shift;;
-		--codesign)
-			SIGNATURE="$2"
-			shift; shift;;
-		--notarize)
-			NOTARIZE="$2"
-			shift; shift;;
-		--sandbox-safe)
-			SANDBOX_SAFE=1
-			shift;;
-		--bless)
-			BLESS=1
-			shift;;
-		--rez)
-			echo "REZ is no more directly used. You can remove the --rez argument."
-			shift; shift;;
-		--skip-jenkins)
-			SKIP_JENKINS=1
-			shift;;
-		-*)
-			echo "Unknown option: $1. Run 'create-dmg --help' for help."
-			exit 1;;
+		shift
+		shift
+		shift
+		shift
+		shift
+		;;
+	--disk-image-size)
+		DISK_IMAGE_SIZE="$2"
+		shift
+		shift
+		;;
+	--hdiutil-verbose)
+		HDIUTIL_VERBOSITY='-verbose'
+		shift
+		;;
+	--hdiutil-quiet)
+		HDIUTIL_VERBOSITY='-quiet'
+		shift
+		;;
+	--codesign)
+		SIGNATURE="$2"
+		shift
+		shift
+		;;
+	--notarize)
+		NOTARIZE="$2"
+		shift
+		shift
+		;;
+	--sandbox-safe)
+		SANDBOX_SAFE=1
+		shift
+		;;
+	--bless)
+		BLESS=1
+		shift
+		;;
+	--rez)
+		echo "REZ is no more directly used. You can remove the --rez argument."
+		shift
+		shift
+		;;
+	--skip-jenkins)
+		SKIP_JENKINS=1
+		shift
+		;;
+	-*)
+		echo "Unknown option: $1. Run 'create-dmg --help' for help."
+		exit 1
+		;;
 	esac
 	case $FORMAT in
-		UDZO)
-			IMAGEKEY="-imagekey zlib-level=9";;
-		UDBZ)
-			IMAGEKEY="-imagekey bzip2-level=9";;
-		ULFO)
-			;;
-		ULMO)
-			;;
-		*)
-			echo >&2 "Unknown disk image format: $FORMAT"
-			exit 1;;
+	UDZO)
+		IMAGEKEY="-imagekey zlib-level=9"
+		;;
+	UDBZ)
+		IMAGEKEY="-imagekey bzip2-level=9"
+		;;
+	ULFO) ;;
+	ULMO) ;;
+	*)
+		echo >&2 "Unknown disk image format: $FORMAT"
+		exit 1
+		;;
 	esac
 done
 
@@ -243,7 +303,10 @@ if [[ -z "$2" ]]; then
 fi
 
 DMG_PATH="$1"
-SRC_FOLDER="$(cd "$2" > /dev/null; pwd)"
+SRC_FOLDER="$(
+	cd "$2" >/dev/null
+	pwd
+)"
 
 # Argument validation checks
 
@@ -254,9 +317,12 @@ fi
 
 # Main script logic
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DMG_DIRNAME="$(dirname "$DMG_PATH")"
-DMG_DIR="$(cd "$DMG_DIRNAME" > /dev/null; pwd)"
+DMG_DIR="$(
+	cd "$DMG_DIRNAME" >/dev/null
+	pwd
+)"
 DMG_NAME="$(basename "$DMG_PATH")"
 DMG_TEMP_NAME="$DMG_DIR/rw.${DMG_NAME}"
 
@@ -318,11 +384,17 @@ if [[ -n "$DISK_IMAGE_SIZE" ]]; then
 fi
 
 if [[ $SANDBOX_SAFE -eq 0 ]]; then
+	echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Starting hdiutil create**"
 	hdiutil create ${HDIUTIL_VERBOSITY} -srcfolder "$SRC_FOLDER" -volname "${VOLUME_NAME}" \
 		-fs HFS+ -fsargs "-c c=64,a=16,e=16" -format UDRW ${CUSTOM_SIZE} "${DMG_TEMP_NAME}"
-else	
+	echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Ending hdiutil create**"
+else
+	echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Starting hdiutil makehybrid**"
 	hdiutil makehybrid ${HDIUTIL_VERBOSITY} -default-volume-name "${VOLUME_NAME}" -hfs -o "${DMG_TEMP_NAME}" "$SRC_FOLDER"
+	echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Ending hdiutil makehybrid**"
+	echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Starting hdiutil convert**"
 	hdiutil convert -format UDRW -ov -o "${DMG_TEMP_NAME}" "${DMG_TEMP_NAME}"
+	echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Ending hdiutil convert**"
 	DISK_IMAGE_SIZE_CUSTOM=$DISK_IMAGE_SIZE
 fi
 
@@ -346,13 +418,17 @@ fi
 DISK_IMAGE_SIZE=$(expr $DISK_IMAGE_SIZE + 20)
 
 # Make sure target image size is within limits
+echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Starting hdiutil resize**"
 MIN_DISK_IMAGE_SIZE=$(hdiutil resize -limits "${DMG_TEMP_NAME}" | awk 'NR=1{print int($1/2048+1)}')
+echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Ending hdiutil resize**"
 if [ $MIN_DISK_IMAGE_SIZE -gt $DISK_IMAGE_SIZE ]; then
-       DISK_IMAGE_SIZE=$MIN_DISK_IMAGE_SIZE
+	DISK_IMAGE_SIZE=$MIN_DISK_IMAGE_SIZE
 fi
 
 # Resize the image for the extra stuff
+echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Starting hdiutil resize number 2**"
 hdiutil resize ${HDIUTIL_VERBOSITY} -size ${DISK_IMAGE_SIZE}m "${DMG_TEMP_NAME}"
+echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Ending hdiutil resize number 2**"
 
 # Mount the new DMG
 
@@ -409,17 +485,17 @@ if [[ $SANDBOX_SAFE -eq 1 ]]; then
 	echo "Skipping Finder-prettifying AppleScript because we are in Sandbox..."
 else
 	if [[ $SKIP_JENKINS -eq 0 ]]; then
-		cat "$CDMG_SUPPORT_DIR/template.applescript" \
-			| sed -e "s/WINX/$WINX/g" -e "s/WINY/$WINY/g" -e "s/WINW/$WINW/g" \
-					-e "s/WINH/$WINH/g" -e "s/BACKGROUND_CLAUSE/$BACKGROUND_CLAUSE/g" \
-					-e "s/REPOSITION_HIDDEN_FILES_CLAUSE/$REPOSITION_HIDDEN_FILES_CLAUSE/g" \
-					-e "s/ICON_SIZE/$ICON_SIZE/g" -e "s/TEXT_SIZE/$TEXT_SIZE/g" \
-			| perl -pe "s/POSITION_CLAUSE/$POSITION_CLAUSE/g" \
-			| perl -pe "s/QL_CLAUSE/$QL_CLAUSE/g" \
-			| perl -pe "s/APPLICATION_CLAUSE/$APPLICATION_CLAUSE/g" \
-			| perl -pe "s/HIDING_CLAUSE/$HIDING_CLAUSE/" \
-			> "$APPLESCRIPT_FILE"
-		sleep 2 # pause to workaround occasional "Can’t get disk" (-1728) issues  
+		cat "$CDMG_SUPPORT_DIR/template.applescript" |
+			sed -e "s/WINX/$WINX/g" -e "s/WINY/$WINY/g" -e "s/WINW/$WINW/g" \
+				-e "s/WINH/$WINH/g" -e "s/BACKGROUND_CLAUSE/$BACKGROUND_CLAUSE/g" \
+				-e "s/REPOSITION_HIDDEN_FILES_CLAUSE/$REPOSITION_HIDDEN_FILES_CLAUSE/g" \
+				-e "s/ICON_SIZE/$ICON_SIZE/g" -e "s/TEXT_SIZE/$TEXT_SIZE/g" |
+			perl -pe "s/POSITION_CLAUSE/$POSITION_CLAUSE/g" |
+			perl -pe "s/QL_CLAUSE/$QL_CLAUSE/g" |
+			perl -pe "s/APPLICATION_CLAUSE/$APPLICATION_CLAUSE/g" |
+			perl -pe "s/HIDING_CLAUSE/$HIDING_CLAUSE/" \
+				>"$APPLESCRIPT_FILE"
+		sleep 2 # pause to workaround occasional "Can’t get disk" (-1728) issues
 		echo "Running AppleScript to make Finder stuff pretty: /usr/bin/osascript \"${APPLESCRIPT_FILE}\" \"${VOLUME_NAME}\""
 		if /usr/bin/osascript "${APPLESCRIPT_FILE}" "${VOLUME_NAME}"; then
 			# Okay, we're cool
@@ -437,7 +513,7 @@ fi
 
 # Make sure it's not world writeable
 echo "Fixing permissions..."
-chmod -Rf go-w "${MOUNT_DIR}" &> /dev/null || true
+chmod -Rf go-w "${MOUNT_DIR}" &>/dev/null || true
 echo "Done fixing permissions"
 
 # Make the top window open itself on mount:
@@ -477,7 +553,7 @@ if [[ -n "${EULA_RSRC}" && "${EULA_RSRC}" != "-null-" ]]; then
 	#
 	EULA_RESOURCES_FILE=$(mktemp -t createdmg.tmp.XXXXXXXXXX)
 	EULA_FORMAT=$(file -b ${EULA_RSRC})
-	if [[ ${EULA_FORMAT} == 'Rich Text Format data'* ]] ; then
+	if [[ ${EULA_FORMAT} == 'Rich Text Format data'* ]]; then
 		EULA_FORMAT='RTF '
 	else
 		EULA_FORMAT='TEXT'
@@ -513,7 +589,7 @@ else
 fi
 
 if [[ -n "${SIGNATURE}" && "${SIGNATURE}" != "-null-" ]]; then
-	echo "Codesign started"	
+	echo "Codesign started"
 	codesign -s "${SIGNATURE}" "${DMG_DIR}/${DMG_NAME}"
 	dmgsignaturecheck="$(codesign --verify --deep --verbose=2 --strict "${DMG_DIR}/${DMG_NAME}" 2>&1 >/dev/null)"
 	if [ $? -eq 0 ]; then
@@ -525,7 +601,7 @@ if [[ -n "${SIGNATURE}" && "${SIGNATURE}" != "-null-" ]]; then
 fi
 
 if [[ -n "${NOTARIZE}" && "${NOTARIZE}" != "-null-" ]]; then
-	echo "Notarization started"	
+	echo "Notarization started"
 	xcrun notarytool submit "${DMG_DIR}/${DMG_NAME}" --keychain-profile "${NOTARIZE}" --wait
 	echo "Stapling the notarization ticket"
 	staple="$(xcrun stapler staple "${DMG_DIR}/${DMG_NAME}")"
