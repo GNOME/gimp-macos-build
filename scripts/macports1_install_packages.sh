@@ -340,11 +340,11 @@ if [ -n "${PART3}" ]; then
 fi
 
 if [ -n "${PART4}" ]; then
-  echo "gcc12 being installed before gegl"
+  echo "gcc13 being installed before gegl"
 
   # libgcc12 is installed with GIMP so must be set for 10.13
-  port clean gcc12
-  port_long_clean_and_install libgcc12
+  port clean gcc13
+  port_long_clean_and_install libgcc
 
   # libomp can't handle +debug variant as prebuilt binary
   sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${PREFIX}/etc/macports/macports.conf
@@ -355,8 +355,8 @@ if [ -n "${PART4}" ]; then
     unset SDKROOT
     port_clean_and_install \
       libomp -debug
-    port clean libgcc12
-    port_long_clean_and_install gcc12
+    port clean libgcc
+    port_long_clean_and_install gcc13
     # broken build on x86_64 and is a build only dependency
     # https://trac.macports.org/ticket/68041
     port_clean_and_install \
