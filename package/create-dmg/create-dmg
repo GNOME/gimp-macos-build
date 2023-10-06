@@ -385,19 +385,23 @@ fi
 
 if [[ $SANDBOX_SAFE -eq 0 ]]; then
 	echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Starting hdiutil create**"
-	# Step 1: Create a sparse image
-	hdiutil create ${HDIUTIL_VERBOSITY} -type SPARSE -fs "HFS+" -volname "${VOLUME_NAME}" \
-		${CUSTOM_SIZE} -srcfolder "${SRC_FOLDER}" "${DMG_TEMP_NAME}.sparseimage"
-	echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Ending hdiutil create**"
-	echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Starting hdiutil convert**"
+	hdiutil create ${HDIUTIL_VERBOSITY} -type SPARSE -fs "HFS+" -fsargs "-c c=64,a=16,e=16" -volname "${VOLUME_NAME}" \
+		-megabytes 1000 ${CUSTOM_SIZE} -attach -nospotlight -quiet "${DMG_TEMP_NAME}"
 
-	# Step 2: Convert the sparse image to a DMG
-	hdiutil convert "${DMG_TEMP_NAME}.sparseimage" -format UDBZ -o "${DMG_TEMP_NAME}"
-	echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Ending hdiutil convert**"
+	echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Copying data to sparse image**"
+	cp -R "${SRC_FOLDER}/" "/Volumes/${VOLUME_NAME}/"
 
-	# hdiutil create ${HDIUTIL_VERBOSITY} -srcfolder "$SRC_FOLDER" -volname "${VOLUME_NAME}" \
-	# 	-fs HFS+ -fsargs "-c c=64,a=16,e=16" -format UDRW ${CUSTOM_SIZE} "${DMG_TEMP_NAME}"
-	# echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Ending hdiutil create**"
+	MOUNT_POINT=$(hdiutil info | grep "${VOLUME_NAME}$" | awk '{print $1}')
+
+	echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Detaching the sparse image**"
+	hdiutil detach "${MOUNT_POINT}"
+
+	echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Converting sparse image to DMG**"
+	hdiutil convert "${DMG_TEMP_NAME}.sparseimage" -format UDRW -o "${DMG_TEMP_NAME}"
+	echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Deleting the sparse image**"
+	rm -f "${DMG_TEMP_NAME}.sparseimage"
+
+	echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Process completed**"
 else
 	echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Starting hdiutil makehybrid**"
 	hdiutil makehybrid ${HDIUTIL_VERBOSITY} -default-volume-name "${VOLUME_NAME}" -hfs -o "${DMG_TEMP_NAME}" "$SRC_FOLDER"
