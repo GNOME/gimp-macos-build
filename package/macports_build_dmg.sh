@@ -100,6 +100,7 @@ cd create-dmg
   --hide-extension "Applications" \
   --app-drop-link 450 360 \
   --format ULFO \
+  --disk-image-size 1000 \
   --hdiutil-verbose \
   "/tmp/artifacts/${DMGNAME}" \
   "$PACKAGE_DIR/"

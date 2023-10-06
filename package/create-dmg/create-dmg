@@ -380,13 +380,13 @@ function get_size() {
 # Create the DMG with the specified size or the hdiutil estimation
 CUSTOM_SIZE=''
 if [[ -n "$DISK_IMAGE_SIZE" ]]; then
-	CUSTOM_SIZE="-size ${DISK_IMAGE_SIZE}m"
+	CUSTOM_SIZE="-megabytes ${DISK_IMAGE_SIZE}"
 fi
 
 if [[ $SANDBOX_SAFE -eq 0 ]]; then
 	echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Starting hdiutil create**"
 	hdiutil create ${HDIUTIL_VERBOSITY} -type SPARSE -fs "HFS+" -fsargs "-c c=64,a=16,e=16" -volname "${VOLUME_NAME}" \
-		-megabytes 1000 ${CUSTOM_SIZE} -attach -nospotlight -quiet "${DMG_TEMP_NAME}"
+		${CUSTOM_SIZE} -attach -nospotlight -quiet "${DMG_TEMP_NAME}"
 
 	echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Copying data to sparse image**"
 	cp -R "${SRC_FOLDER}/" "/Volumes/${VOLUME_NAME}/"
@@ -439,13 +439,7 @@ if [ $MIN_DISK_IMAGE_SIZE -gt $DISK_IMAGE_SIZE ]; then
 	DISK_IMAGE_SIZE=$MIN_DISK_IMAGE_SIZE
 fi
 
-# Resize the image for the extra stuff
-echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Starting hdiutil resize number 2**"
-hdiutil resize ${HDIUTIL_VERBOSITY} -size ${DISK_IMAGE_SIZE}m "${DMG_TEMP_NAME}"
-echo "[$(date +"%Y-%m-%d %H:%M:%S")] **Ending hdiutil resize number 2**"
-
 # Mount the new DMG
-
 MOUNT_DIR="/Volumes/${VOLUME_NAME}"
 
 # Unmount leftover dmg if it was mounted previously (e.g. developer mounted dmg, installed app and forgot to unmount it)
