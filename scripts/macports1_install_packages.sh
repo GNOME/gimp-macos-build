@@ -228,10 +228,10 @@ if [ -n "${PART1}" ]; then
   # unless uninstalled, even when being built from scratch.
   # port_force_uninstall_and_clean gimp3
   # port_force_uninstall_and_clean gegl
-  port_force_uninstall_and_clean gcc12
+  # port_force_uninstall_and_clean gcc12
   # port_force_uninstall_and_clean appstream-glib
   # * libgcc12 because it is a dependency of gcc12 and if not also uninstalled, gcc12 build sometimes fails
-  port_force_uninstall_and_clean libgcc12
+  # port_force_uninstall_and_clean libgcc12
 
   # ** Can be removed once run once on master
   # xxx
