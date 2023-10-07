@@ -186,6 +186,8 @@ jobs:
     resource_class: gnome/gimp
 
     steps:
+      - setup
+      - setup-macports
       - clear-artifacts-arm64
       - run:
           name: Build GIMP dependencies part 2
@@ -200,6 +202,8 @@ jobs:
     resource_class: gnome/gimp
 
     steps:
+      - setup
+      - setup-macports
       - clear-artifacts-arm64
       - run:
           name: Build GIMP dependencies part 3
@@ -214,6 +218,8 @@ jobs:
     resource_class: gnome/gimp
 
     steps:
+      - setup
+      - setup-macports
       - clear-artifacts-arm64
       - run:
           name: Build GIMP dependencies part 4
@@ -228,6 +234,8 @@ jobs:
     resource_class: gnome/gimp
 
     steps:
+      - setup
+      - setup-macports
       - clear-artifacts-arm64
       - run:
           name: Build GIMP dependencies part 5
@@ -240,6 +248,8 @@ jobs:
     resource_class: gnome/gimp
 
     steps:
+      - setup
+      - setup-macports
       - clear-artifacts-arm64
       - run:
           name: Build GIMP
