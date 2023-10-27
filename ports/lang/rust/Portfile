@@ -9,6 +9,7 @@ name                        rust
 # keep in mind that you also need to update cargo.crates at the end of this file
 version                     1.71.1
 revision                    999
+epoch                       1
 subport rust-src {revision  0}
 
 categories                  lang devel
@@ -152,28 +153,46 @@ if { ${os.platform} eq "darwin" && ${os.major} < 9 } {
     configure.args-append   --disable-rpath
 }
 if { ${os.platform} eq "darwin" && ${os.major} > 14 } {
-    # check if running in rosetta2 and don't set jemalloc if so
-    try {
-        set in_rosetta2 [exec sysctl -n sysctl.proc_translated]
-        if { ${in_rosetta2} == 0 } {
-            configure.args-append   --set=rust.jemalloc
-            ui_debug "proc_translated = 0. Enabling jemalloc."
-        } else {
-            ui_debug "proc_translated = 1. Disabling jemalloc."
-            depends_build-append        port:libatomic_ops
+    # x86_64, check if running in rosetta2 and don't set jemalloc if so
+    set result ""
+    set errorCode [catch {exec sysctl -n sysctl.proc_translated} result]
+    if {$errorCode} {
+        ui_error "rosetta2: sysctl failed: $result"
+        configure.args-append      --set=rust.jemalloc
+        if { ${os.arch} eq "arm" } {
+            # specify the number of significant virtual address bits in jmalloc
+            # the configure script calls cpuid, but it does not work properly on Rosetta 2
+            # see https://github.com/jemalloc/jemalloc/issues/1997#issuecomment-1041589117
+            build.env.x86_64-append     JEMALLOC_SYS_WITH_LG_VADDR=48
+            destroot.env.x86_64-append  JEMALLOC_SYS_WITH_LG_VADDR=48
+            ui_error "rosetta2: Got here"
         }
-    } catch {
-        ui_debug "proc_translated errored. Disabling jemalloc."
-        depends_build-append        port:libatomic_ops
-        # Handle non-zero return of proc_translated gracefully, optionally log the error.
-    }
-    if { ${os.arch} eq "arm" } {
-        configure.args-append   --set=rust.jemalloc
-        # specify the number of significant virtual address bits in jmalloc
-        # the configure script calls cpuid, but it does not work properly on Rosetta 2
-        # see https://github.com/jemalloc/jemalloc/issues/1997#issuecomment-1041589117
-        build.env.x86_64-append     JEMALLOC_SYS_WITH_LG_VADDR=48
-        destroot.env.x86_64-append  JEMALLOC_SYS_WITH_LG_VADDR=48
+    } else {
+        # Disable jemalloc if running in rosetta2
+        if {$result == "1"} {
+            ui_error "rosetta2: Running in rosetta2, setting jemalloc arm workaround"
+            # depends_build-append   port:libatomic_ops
+            # specify the number of significant virtual address bits in jmalloc
+            # the configure script calls cpuid, but it does not work properly on Rosetta 2
+            # see https://github.com/jemalloc/jemalloc/issues/1997#issuecomment-1041589117
+            configure.args-append      --set=rust.jemalloc
+            build.env.x86_64-append     JEMALLOC_SYS_WITH_LG_VADDR=48
+            destroot.env.x86_64-append  JEMALLOC_SYS_WITH_LG_VADDR=48
+            # Other option is below (comment out 3 lines above) and add line below
+            # depends_build-append        port:libatomic_ops
+
+        } else {
+            ui_error "rosetta2: Running natively, enabling jemalloc"
+            configure.args-append  --set=rust.jemalloc
+            if { ${os.arch} eq "arm" } {
+                # specify the number of significant virtual address bits in jmalloc
+                # the configure script calls cpuid, but it does not work properly on Rosetta 2
+                # see https://github.com/jemalloc/jemalloc/issues/1997#issuecomment-1041589117
+                build.env.x86_64-append     JEMALLOC_SYS_WITH_LG_VADDR=48
+                destroot.env.x86_64-append  JEMALLOC_SYS_WITH_LG_VADDR=48
+                ui_error "rosetta2: Got here2"
+            }
+        }
     }
 }
 
