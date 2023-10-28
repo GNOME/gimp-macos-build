@@ -28,7 +28,14 @@ export VGIMP=3
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-source ~/.profile-gimp${VGIMP}
+if [[ $(uname -m) == 'arm64' ]]; then
+  arch='arm64'
+  echo "*** Build: arm64"
+else
+  arch='x86_64'
+  echo "*** Build: x86_64"
+fi
+source ~/.profile-gimp${VGIMP}-${arch}
 export PATH=$PREFIX/bin:$PATH
 
 function sup_port() {

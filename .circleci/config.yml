@@ -273,7 +273,7 @@ jobs:
           paths:
             - macports-gimp<< pipeline.parameters.vgimp >>-osx-app
             - macports-gimp<< pipeline.parameters.vgimp >>-osx-app-x86_64
-            - .profile-gimp<< pipeline.parameters.vgimp >>
+            - .profile-gimp<< pipeline.parameters.vgimp >>-arm64
 
   package-gimp-self:
     macos:
