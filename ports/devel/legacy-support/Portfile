@@ -83,6 +83,7 @@ if {[info exists macosx_deployment_target] && ${macosx_deployment_target} != ""}
     # Default behavior if macosx_deployment_target isn't set
     set darwin_version ${os.major}
 }
+ui_error "darwin_version: ${darwin_version}"
 
 # Set PLATFORM to the mapped Darwin version
 build.env-append    LD=ld \
