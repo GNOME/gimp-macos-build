@@ -108,11 +108,11 @@ else
 fi
 
 export PATH=$PREFIX/bin:$PATH
-echo "export PREFIX=$PREFIX" >~/.profile-gimp${VGIMP}
+echo "export PREFIX=$PREFIX" >~/.profile-gimp${VGIMP}-${arch}
 
 if [ -n "$circleci" ]; then
   echo "**Installing MacPorts for CircleCI"
-  echo "export circleci=\"true\"" >>~/.profile-gimp${VGIMP}
+  echo "export circleci=\"true\"" >>~/.profile-gimp${VGIMP}-${arch}
 fi
 
 if [ ! -f "$PREFIX/bin/port" ]; then
@@ -172,20 +172,20 @@ if [ "$build_arm64" = true ]; then
   if [ ! -d "MacOSX11.3.sdk" ]; then
     sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz' | sudo tar -xzf -
   fi
-  echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk' >>~/.profile-gimp${VGIMP}
-  echo 'export MACOSX_DEPLOYMENT_TARGET=11.0' >>~/.profile-gimp${VGIMP}
-  echo 'export GIMP_ARM64=true' >>~/.profile-gimp${VGIMP}
+  echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk' >>~/.profile-gimp${VGIMP}-${arch}
+  echo 'export MACOSX_DEPLOYMENT_TARGET=11.0' >>~/.profile-gimp${VGIMP}-${arch}
+  echo 'export GIMP_ARM64=true' >>~/.profile-gimp${VGIMP}-${arch}
 else
   echo "*** Setup 10.13 SDK"
   cd /Library/Developer/CommandLineTools/SDKs
   if [ ! -d "MacOSX10.13.sdk" ]; then
     sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.13.sdk.tar.xz' | sudo tar -xzf -
   fi
-  echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.13.sdk' >>~/.profile-gimp${VGIMP}
-  echo 'export MACOSX_DEPLOYMENT_TARGET=10.13' >>~/.profile-gimp${VGIMP}
+  echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.13.sdk' >>~/.profile-gimp${VGIMP}-${arch}
+  echo 'export MACOSX_DEPLOYMENT_TARGET=10.13' >>~/.profile-gimp${VGIMP}-${arch}
 fi
 
-source ~/.profile-gimp${VGIMP}
+source ~/.profile-gimp${VGIMP}-${arch}
 
 if [ -n "$FIRST_INSTALL" ]; then
   # must do before and after otherwise local portindex fails if this is the first time
