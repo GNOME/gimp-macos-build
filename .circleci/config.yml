@@ -289,7 +289,7 @@ jobs:
       - run:
           name: Creating DMG package
           command: |
-            source ~/.profile-gimp<< pipeline.parameters.vgimp >>
+            source ~/.profile-gimp<< pipeline.parameters.vgimp >>-arm64
             cd ${HOME}/project
 
             # run script
