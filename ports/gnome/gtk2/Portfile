@@ -77,6 +77,10 @@ patchfiles-append   08-gtk+-2.24-gimp-issue-2828-0002.patch
 patchfiles-append   09-DJM_gtk_quartzheader.patch
 # GIMP Issue 2731 - Tool Options DND window obscures Mac menu bar
 patchfiles-append   10-gtk+-2.24.33-bug-2731-dnd.patch
+# Avoid errors https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/5645
+patchfiles-append   gtk+-2.24-mr-5645-backport-1.patch \
+                    gtk+-2.24-mr-5645-backport-2.patch \
+                    gtk+-2.24-mr-5645-backport-3.patch
 
 # autoreconf to deal with stupid issues during install (install: .libs/libferret.lai: No such file or directory)
 use_autoreconf      yes

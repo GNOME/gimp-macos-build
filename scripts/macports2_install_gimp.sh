@@ -55,8 +55,12 @@ popd
 
 # Force new install of gimp so latest changes are pulled from gitlab
 # deal with 'Error: Port gimp210 not found'
+port -N uninstall installed and gimp2 || true
+port clean gimp2 || true
 port -N uninstall installed and gimp210 || true
 port clean gimp210 || true
 port -N uninstall installed and gimp3 || true
 port clean gimp3 || true
-sup_port port -v -k -N install gimp${VGIMP} +vala ${local}
+
+# Install gimp
+sup_port port -v -k -N install gimp${VGIMPPORT} +vala ${local}

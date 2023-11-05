@@ -16,10 +16,10 @@ set my_name         gimp210
 #    correct if statement (and order)
 # 3. Do same for babl and gegl
 # *****
-version             2.10.35
-set last_release    2.10.34
+version             2.10.36
+set last_release    2.10.36
 set last_dev        2.10.35
-revision            3
+revision            0
 
 # epoch must never be reduced if set.
 # epoch               1
