@@ -16,9 +16,9 @@ set my_name         gimp210
 #    correct if statement (and order)
 # 3. Do same for babl and gegl
 # *****
-version             2.10.36
+version             2.10.37
 set last_release    2.10.36
-set last_dev        2.10.35
+set last_dev        2.10.37
 revision            0
 
 # epoch must never be reduced if set.
@@ -39,7 +39,6 @@ long_description    GIMP is a cross-platform image editor available for GNU/Linu
 
 homepage            https://gimp.org/
 
-set branch          [join [lrange [split ${version} .] 0 1] .]
 fetch.type          git
 git.url             https://gitlab.gnome.org/GNOME/gimp.git
 
@@ -51,11 +50,12 @@ set is_release      [expr {$patch % 2 == 0}]
 set is_stable       [expr {$minor % 2 == 0} && ${is_release}]
 
 if {${is_release}} {
-    git.branch      GIMP_${major}_${minor}_${patch}
+    set branch      GIMP_${major}_${minor}_${patch}
 } else {
     set branch      origin/gimp-2-10
     revision        0
 }
+git.branch          ${branch}
 
 perl5.branches      5.34
 
