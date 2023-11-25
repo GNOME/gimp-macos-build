@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-####################################################################
+#####################################################################
 # cd_gimp.sh: goes to gimp source dir                              #
 #                                                                  #
 # Copyright 2023 Lukas Oberhuber <lukaso@gmail.com>                #
@@ -22,8 +22,13 @@
 # Boston, MA  02110-1301,  USA       gnu@gnu.org                   #
 ####################################################################
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+export VGIMP=2
+export VGIMPFULL=210
 
-echo $SCRIPT_DIR
-echo "Usage: \`. scripts/cd_gimp.sh\` otherwise does not change directory"
-cd $(${SCRIPT_DIR}/scripts/gimp_dir.sh)
+if [[ $(uname -m) == 'arm64' ]]; then
+  arch='arm64'
+else
+  arch='x86_64'
+fi
+
+echo "${HOME}/macports-gimp${VGIMP}-${arch}/var/macports/build/_Users_$(whoami)_project_ports_graphics_gimp${VGIMPFULL}/gimp${VGIMPFULL}/work"

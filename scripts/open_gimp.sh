@@ -22,13 +22,6 @@
 # Boston, MA  02110-1301,  USA       gnu@gnu.org                   #
 ####################################################################
 
-export VGIMP=2
-export VGIMPFULL=210
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
-if [[ $(uname -m) == 'arm64' ]]; then
-  arch='arm64'
-else
-  arch='x86_64'
-fi
-
-code ~/macports-gimp${VGIMP}-${arch}/var/macports/build/_Users_$(whoami)_project_ports_graphics_gimp${VGIMPFULL}/gimp${VGIMPFULL}/work
+code $(${SCRIPT_DIR}/gimp_dir.sh)

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 ####################################################################
-# cd_gimp.sh: goes to gimp source dir                              #
+# open_gtk3.sh: Opens local gimp git code in vscode                #
 #                                                                  #
 # Copyright 2023 Lukas Oberhuber <lukaso@gmail.com>                #
 #                                                                  #
@@ -24,6 +24,4 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
-echo $SCRIPT_DIR
-echo "Usage: \`. scripts/cd_gimp.sh\` otherwise does not change directory"
-cd $(${SCRIPT_DIR}/scripts/gimp_dir.sh)
+code "$(${SCRIPT_DIR}/gtk2_dir.sh)"

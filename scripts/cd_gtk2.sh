@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 ####################################################################
-# cd_gimp.sh: goes to gimp source dir                              #
+# cd_gtk3.sh: goes to gtk3 source dir                              #
 #                                                                  #
 # Copyright 2023 Lukas Oberhuber <lukaso@gmail.com>                #
 #                                                                  #
@@ -24,6 +24,5 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
-echo $SCRIPT_DIR
-echo "Usage: \`. scripts/cd_gimp.sh\` otherwise does not change directory"
-cd $(${SCRIPT_DIR}/scripts/gimp_dir.sh)
+echo "Usage: \`. scripts/cd_gtk2.sh\` otherwise does not change directory"
+cd "$(${SCRIPT_DIR}/scripts/gtk2_dir.sh)"
