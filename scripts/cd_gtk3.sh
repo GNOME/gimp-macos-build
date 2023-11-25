@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 ####################################################################
-# open_gtk3.sh: Opens local gimp git code in vscode                #
+# cd_gtk3.sh: goes to gtk3 source dir                              #
 #                                                                  #
 # Copyright 2023 Lukas Oberhuber <lukaso@gmail.com>                #
 #                                                                  #
@@ -24,4 +24,5 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
-code "$(${SCRIPT_DIR}/gtk3_dir.sh)"
+echo "Usage: \`. scripts/cd_gtk3.sh\` otherwise does not change directory"
+cd "$(${SCRIPT_DIR}/scripts/gtk3_dir.sh)"

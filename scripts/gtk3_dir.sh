@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-####################################################################
-# open_gtk3.sh: Opens local gimp git code in vscode                #
+#####################################################################
+# open_gimp.sh: Opens local gimp git code in vscode                #
 #                                                                  #
 # Copyright 2023 Lukas Oberhuber <lukaso@gmail.com>                #
 #                                                                  #
@@ -22,6 +22,12 @@
 # Boston, MA  02110-1301,  USA       gnu@gnu.org                   #
 ####################################################################
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+export VGIMP=3
 
-code "$(${SCRIPT_DIR}/gtk3_dir.sh)"
+if [[ $(uname -m) == 'arm64' ]]; then
+  arch='arm64'
+else
+  arch='x86_64'
+fi
+
+echo "${HOME}/macports-gimp${VGIMP}-${arch}/var/macports/build/_Users_$(whoami)_project_ports_gnome_gtk3/gtk3/work"
