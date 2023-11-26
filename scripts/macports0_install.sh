@@ -55,6 +55,8 @@ function usage() {
   echo "Options:"
   echo "  --circleci"
   echo "      settings for circleci instead of local"
+  echo "  --force"
+  echo "      force install (useful after upgrading macos)"
   echo "  --homedirgimp2"
   echo "      installs macports to a custom homedir macports-gimp2"
   echo "  --homedirgimp3"
@@ -68,6 +70,10 @@ while test "${1:0:1}" = "-"; do
   case $1 in
   --circleci)
     circleci="true"
+    shift
+    ;;
+  --force)
+    force="true"
     shift
     ;;
   --homedirgimp2)
@@ -115,7 +121,7 @@ if [ -n "$circleci" ]; then
   echo "export circleci=\"true\"" >>~/.profile-gimp${VGIMP}-${arch}
 fi
 
-if [ ! -f "$PREFIX/bin/port" ]; then
+if [ ! -f "$PREFIX/bin/port" ] || [ -n "$force" ]; then
   # Must install MacPorts to get both user and command
   FIRST_INSTALL=true
 fi
