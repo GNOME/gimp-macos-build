@@ -134,7 +134,7 @@ commands:
           command: |
             mkdir ${HOME}/codesign && cd ${HOME}/codesign
             echo "$osx_crt" | base64 -D > gnome.pfx
-            curl 'https://developer.apple.com/certificationauthority/AppleWWDRCA.cer' > apple.cer
+            curl 'https://www.apple.com/certificateauthority/DeveloperIDG2CA.cer' > apple.cer
             security create-keychain -p "" signchain
             security set-keychain-settings signchain
             security unlock-keychain -u signchain
