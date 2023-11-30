@@ -8,14 +8,14 @@ NOTARY_OUT="$(xcrun notarytool submit ${DMG_FILE} --apple-id ${notarization_logi
 echo "$NOTARY_OUT"
 
 # Extract Request UUID
-REQUEST_UUID=$(echo "$NOTARY_OUT" | grep -oE "id: [0-9a-f-]+" | awk '{print $2}')
+SUBMISSION_ID=$(echo "$NOTARY_OUT" | grep -oE "id: [0-9a-f-]+" | awk '{print $2}')
 
-if [ -z "$REQUEST_UUID" ]; then
+if [ -z "$SUBMISSION_ID" ]; then
   echo "Failed finding Request UUID in notarytool output"
   exit 1
 fi
 
-echo "Request UUID: $REQUEST_UUID"
+echo "Submission ID: $SUBMISSION_ID"
 
 NOT_STATUS=$(echo "$NOTARY_OUT" | grep status: | awk -F ": " '{print $NF}')
 
