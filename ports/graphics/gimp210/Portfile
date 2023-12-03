@@ -52,7 +52,7 @@ set is_stable       [expr {$minor % 2 == 0} && ${is_release}]
 if {${is_release}} {
     set branch      GIMP_${major}_${minor}_${patch}
 } else {
-    set branch      origin/wip/lukaso/g210-mainline-patch
+    set branch      origin/gimp-2-10
     revision        0
 }
 git.branch          ${branch}
