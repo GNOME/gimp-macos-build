@@ -41,7 +41,7 @@ A runnable gimp will be built into the macports bin directory (e.g. `~/macports-
 To `cd` to the gimp directory, run:
 
 ```sh
-. cd_gimp.sh
+. scripts/cd_gimp.sh
 ```
 
 ## Notarization and security ##
