@@ -86,7 +86,12 @@ patchfiles-append   patch-quartz-nseventtype.diff
 patchfiles-append   patch-quartz-meson-appleframeworks.diff
 
 # Titelbar detection patch for macOS (doesn't accurately detect titlebars)
+# Merged in https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/6691
 patchfiles-append   patch-6691.patch
+
+# When removing menu items, this prevents dereferencing a null pointer
+# https://gitlab.gnome.org/GNOME/gtk/-/issues/6304
+patchfiles-append   gtk-menu-crash.patch
 
 # gtk3 +quartz uses instancetype which is not available
 # before approximately Xcode 4.6 (#49391)
