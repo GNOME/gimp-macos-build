@@ -371,7 +371,10 @@ if [ -n "${PART4}" ]; then
   port clean dbus
   port_install -f dbus
   port_clean_and_install \
-    adwaita-icon-theme \
+    adwaita-icon-theme
+  # always need latest version
+  port_force_uninstall_and_clean gegl babl
+  port_clean_and_install \
     babl \
     gegl +vala
   if [ $circleci ]; then
