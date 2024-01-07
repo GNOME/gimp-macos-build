@@ -289,6 +289,9 @@ if [ -n "${PART1}" ]; then
   sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
   sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
   port_long_clean_and_install llvm-15
+  # Can remove uninstall once merged to master
+  port_force_uninstall_and_clean x265
+  port_clean_and_install x265 +highdepth
 fi
 
 if [ -n "${PART2}" ]; then
@@ -331,7 +334,6 @@ if [ -n "${PART2}" ]; then
     shared-mime-info \
     util-linux \
     webp \
-    x265 \
     xmlto
 fi
 
