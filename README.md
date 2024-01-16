@@ -18,9 +18,21 @@ Also, currently arm64 builds are built on a dedicated machine provided by MacSta
 
 ## Building
 
-See [scripts/README.md](scripts/README.md) for details on how to build locally and on CircleCI.
+See the dedicated page on the developer site `https://developer.gimp.org/core/setup/build/macos/`
+for details on how to build locally and on CircleCI.
+
+* Developing GIMP (or dependencies) locally still needs to be refined as the Macports
+environment is not that amenable to that workflow.
+
+## MacPorts
+
+Sometimes it is necessary to edit or patch a package in MacPorts. There are a few packages aside from GIMP that we have our own `Portfile` for. These are: `babl`, `gegl`, occasionally others as needed (breaking build, etc.)
+
+Here is how to make those kinds of changes to a package: https://trac.macports.org/wiki/howto/PatchLocal
 
 See also [MACPORTS.md](MACPORTS.md) for details on how MacPorts is used to build GIMP.
+
+## Branches
 
 **Note**: CircleCI is currently set up to build the `master` and `gimp-2-10` branchs on a nightly basis (and pulls the latest GIMP code from the same branches on the [GIMP repo](https://gitlab.gnome.org/GNOME/gimp). It also builds any branch of this repo that is pushed to.
 
@@ -31,22 +43,6 @@ For releases, create a release branch, and go into the `/ports/gimp` directory a
 When ready, the branch can be merged to `master` or `gimp-2-10` as appropriate. The release should then be tagged on this repo (use the same tag as on the [GIMP repo](https://gitlab.gnome.org/GNOME/gimp)). That build will be the release build (in the Circle CI artifacts). There will be two builds, one for arm64 and one for x86_64. These should be downloaded and tested locally to make sure they work, and then provided to the GIMP team for distribution.
 
 Once everything is fine with the release, create a new branch for going back to building the head release. Update the version appropriately in the `Portfile` and set to pulling the `master` branch of the GIMP repo. Once this is working properly, merge the new branch back to `master`.
-
-# Prerequisites for local build (Draft) ##
-
-At a minimum, you will need to install:
-
-- XCode Command Line Tools or XCode
-- Also `gtk-mac-bundler`:
-  ```sh
-  if [ ! -d ~/Source/gtk-mac-bundler ]; then
-    mkdir -p ~/Source
-    cd ~/Source
-    git clone https://gitlab.gnome.org/lukaso/gtk-mac-bundler
-    cd gtk-mac-bundler
-    make install
-  fi
-  ```
 
 ## (Out of date) Steps in the CircleCI [config.yml](https://gitlab.gnome.org/Infrastructure/gimp-macos-build/blob/master/.circleci/config.yml) are:
 
@@ -128,99 +124,6 @@ framework. Probably could be a small Python plugin as [there is a module](https:
 - Some of the system modifiers are not working correctly, e.g., `Command+H`, `Command+~`, etc.
 - Loading of remote HTTP objects is not supported due to [Glib limitations on macOS](https://gitlab.gnome.org/GNOME/glib/issues/1579)
 
-## Branches
-
-- `master`: latest GIMP release and build (development)
-- `gimp-2-10`: latest GIMP 2.10 release and build (stable)
-
-## How to build locally (beta) ##
-
-- See `./scripts/README.md`
-
-Developing GIMP (or dependencies) locally still needs to be refined as the Macports
-environment is not that amenable to that workflow.
-
-### Apple Silicon (M1, arm64) Support ###
-
-The local build script supports building on Apple Silicon on an M1/2 mac as well as Intel macs. The script
-will autodetect the architecture and build accordingly.
-
-Additionally, the x86_64 build will also work on Apple Silicon if built from a shell
-running in Rosetta (for example by running `arch -x86_64 zsh`).
-
-### Instructions ###
-
-If you run into issues with Homebrew versions of libraries being used instead of macports versions, it's easier to retry with Homebrew disabled somehow. (Just take care your login shell isn't a Homebrew shell.)
-
-From your `$HOME` directory:
-
-```sh
-git clone https://gitlab.gnome.org/Infrastructure/gimp-macos-build.git project
-cd project
-```
-
-Then get the branch for the build you want to create a script for.
-
-For 2.99.xx:
-
-```sh
-git checkout master
-```
-
-Or for 2.10.xx (although there are tags for specific releases so go to that if desired):
-
-```sh
-git checkout gimp-2-10
-```
-
-Then follow instructions in `scripts/README.md`
-
-So that you can use the commands below, set this:
-
-```sh
-export VGIMP=2
-```
-
-The `Gimp` executable will be in:
-
-```sh
-/opt/local/bin/gimp
-```
-
-or
-
-```sh
-~/macports-gimp${VGIMP}-arm64/bin/gimp
-```
-
-Additionally the script will create a staged version of the app in:
-
-```sh
-~/macports-gimp${VGIMP}-osx-app
-```
-
-or 
-
-```sh
-~/macports-gimp${VGIMP}-osx-app-x86_64
-```
-
-depending on architecture.
-
-Which can be run with:
-
-```sh
-~/gimp${VGIMP}-osx-app/GIMP.app/Contents/MacOS/gimp
-```
-
-or
-
-```sh
-~/gimp${VGIMP}-osx-app-x86_64/GIMP.app/Contents/MacOS/gimp
-```
-
-Finally, the script will create a DMG file which is the "installer", in `/tmp/artifacts/`
-
 ## Debug info ##
 
 By default, the executable will be built with debug symbols.
@@ -260,22 +163,6 @@ leaks gimp > ~/Downloads/leaks-with-malloc-check.txt
 ```
 
 This was pulled from https://developer.apple.com/library/archive/documentation/Performance/Conceptual/ManagingMemory/Articles/FindingLeaks.html
-
-## MacPorts ##
-
-Sometimes it is necessary to edit or patch a package in MacPorts. There are a few packages aside from GIMP that we have our own `Portfile` for. These are: `babl`, `gegl`, occasionally others as needed (breaking build, etc.)
-
-Here is how to make those kinds of changes to a package: https://trac.macports.org/wiki/howto/PatchLocal
-
-### Building locally when making changes to GIMP ###
-
-This is the command to build GIMP locally when making changes to GIMP itself.
-
-*Note*: any changes you make in the files under the `work` directory will be wiped out the next time you ask MacPorts to build GIMP. So, if you want to make changes to GIMP itself, once you have tested, copy them to a repo manually (or temporarily connect this repo to your remote).
-
-This command is for a `non-sudo` install of MacPorts. For the `sudo` version, the path will be `/opt/local/` as the prefix instead of `~/macports-gimp${VGIMP}-arm64/`.
-
-Got to [scripts/README.md](scripts/README.md) for more details on how to build locally and rapidly.
 
 ## Our partners ##
 
