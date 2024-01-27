@@ -315,7 +315,7 @@ jobs:
   dependencies-part1-hosted:
     macos:
       xcode: "14.2.0"
-    resource_class: large
+    resource_class: macos.x86.medium.gen2
 
     steps:
       - setup
@@ -339,7 +339,7 @@ jobs:
   dependencies-part2-hosted:
     macos:
       xcode: "14.2.0"
-    resource_class: large
+    resource_class: macos.x86.medium.gen2
 
     steps:
       - setup
@@ -362,7 +362,7 @@ jobs:
   dependencies-part3-hosted:
     macos:
       xcode: "14.2.0"
-    resource_class: large
+    resource_class: macos.x86.medium.gen2
 
     steps:
       - setup
@@ -385,7 +385,7 @@ jobs:
   dependencies-part4-hosted:
     macos:
       xcode: "14.2.0"
-    resource_class: large
+    resource_class: macos.x86.medium.gen2
 
     steps:
       - setup
@@ -408,7 +408,7 @@ jobs:
   dependencies-part5-hosted:
     macos:
       xcode: "14.2.0"
-    resource_class: large
+    resource_class: macos.x86.medium.gen2
 
     steps:
       - setup
@@ -431,7 +431,7 @@ jobs:
   build-gimp-and-package-hosted:
     macos:
       xcode: "14.2.0"
-    resource_class: large
+    resource_class: macos.x86.medium.gen2
 
     steps:
       - setup
