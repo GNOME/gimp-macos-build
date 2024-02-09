@@ -271,7 +271,7 @@ if [ -n "${PART1}" ]; then
 
   # Former part 2, but Circle CI now allows much longer builds (5 hours)
   port_force_uninstall_and_clean p5.34-io-compress-brotli
-  # port_clean_and_install p5.34-io-compress-brotli build.jobs=1
+  port_clean_and_install p5.34-io-compress-brotli build.jobs=1
   echo "about to build rust dependencies"
   rust_deps=$(port deps rust | awk '/Library Dependencies:/ {for (i=3; i<=NF; i++) print $i}' ORS=" " | tr ',' ' ')
   port_clean_and_install $rust_deps
