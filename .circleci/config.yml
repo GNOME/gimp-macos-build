@@ -282,6 +282,7 @@ jobs:
   package-gimp-self:
     macos:
       xcode: "14.2.0"
+    resource_class: macos.x86.medium.gen2
 
     steps:
       - setup
