@@ -277,15 +277,16 @@ jobs:
 
   package-gimp-self:
     macos:
-      xcode: "14.2.0"
+      xcode: "14.3.1"
+    resource_class: macos.x86.medium.gen2
 
     steps:
       - setup
-      - import-signing-cert
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
           at: "~"
       - authorize-applescript
+      - import-signing-cert
       - run:
           name: Creating DMG package
           command: |
@@ -314,7 +315,7 @@ jobs:
 
   dependencies-part1-hosted:
     macos:
-      xcode: "14.2.0"
+      xcode: "14.3.1"
     resource_class: macos.x86.medium.gen2
 
     steps:
@@ -338,7 +339,7 @@ jobs:
 
   dependencies-part2-hosted:
     macos:
-      xcode: "14.2.0"
+      xcode: "14.3.1"
     resource_class: macos.x86.medium.gen2
 
     steps:
@@ -361,7 +362,7 @@ jobs:
 
   dependencies-part3-hosted:
     macos:
-      xcode: "14.2.0"
+      xcode: "14.3.1"
     resource_class: macos.x86.medium.gen2
 
     steps:
@@ -384,7 +385,7 @@ jobs:
 
   dependencies-part4-hosted:
     macos:
-      xcode: "14.2.0"
+      xcode: "14.3.1"
     resource_class: macos.x86.medium.gen2
 
     steps:
@@ -407,7 +408,7 @@ jobs:
 
   dependencies-part5-hosted:
     macos:
-      xcode: "14.2.0"
+      xcode: "14.3.1"
     resource_class: macos.x86.medium.gen2
 
     steps:
@@ -430,7 +431,7 @@ jobs:
 
   build-gimp-and-package-hosted:
     macos:
-      xcode: "14.2.0"
+      xcode: "14.3.1"
     resource_class: macos.x86.medium.gen2
 
     steps:
