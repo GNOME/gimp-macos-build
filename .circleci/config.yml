@@ -286,11 +286,11 @@ jobs:
 
     steps:
       - setup
-      - import-signing-cert
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
           at: "~"
       - authorize-applescript
+      - import-signing-cert
       - run:
           name: Creating DMG package
           command: |
