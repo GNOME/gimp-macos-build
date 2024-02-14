@@ -280,9 +280,8 @@ jobs:
             - .profile-gimp<< pipeline.parameters.vgimp >>-arm64
 
   package-gimp-self:
-    macos:
-      xcode: "14.3.1"
-    resource_class: macos.x86.medium.gen2
+    machine: true
+    resource_class: gnome/gimp
 
     steps:
       - setup
