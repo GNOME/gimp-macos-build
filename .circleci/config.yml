@@ -137,14 +137,23 @@ commands:
             curl 'https://www.apple.com/certificateauthority/DeveloperIDG2CA.cer' > apple.cer
             curl 'https://www.apple.com/certificateauthority/DeveloperIDCA.cer' > apple2.cer
             curl 'https://www.apple.com/certificateauthority/AppleWWDRCAG2.cer' > apple3.cer
+            echo "step 1"
             security create-keychain -p "" signchain
+            echo "step 2"
             security set-keychain-settings signchain
+            echo "step 3"
             security unlock-keychain -u signchain
+            echo "step 4"
             security list-keychains  -s "${HOME}/Library/Keychains/signchain-db" "${HOME}/Library/Keychains/login.keychain-db"
+            echo "step 5"
             security import apple.cer -k signchain  -T /usr/bin/codesign
+            echo "step 6"
             security import apple2.cer -k signchain  -T /usr/bin/codesign
+            echo "step 7"
             security import apple3.cer -k signchain  -T /usr/bin/codesign
+            echo "step 8"
             security import gnome.p12  -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
+            echo "step 9"
             security set-key-partition-list -S apple-tool:,apple: -k "" signchain
             rm -rf ${HOME}/codesign
 
@@ -288,7 +297,7 @@ jobs:
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
           at: "~"
-      # - authorize-applescript
+      - authorize-applescript
       - import-signing-cert
       - run:
           name: Creating DMG package
