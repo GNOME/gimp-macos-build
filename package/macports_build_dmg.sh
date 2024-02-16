@@ -90,7 +90,6 @@ rm -f "/tmp/artifacts/gimp-${GIMP_VERSION}-${arch}.dmg"
 cd create-dmg
 
 ./create-dmg \
-  --skip-jenkins \
   --volname "GIMP 2.99 Install" \
   --background "../gimp-dmg.png" \
   --window-pos 1 1 \
