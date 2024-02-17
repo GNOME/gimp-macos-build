@@ -148,6 +148,15 @@ commands:
             security set-key-partition-list -S apple-tool:,apple: -k "" signchain
             rm -rf ${HOME}/codesign
 
+  open-signing-cert:
+    steps:
+      - run:
+          name: Opening signing certificate keychain
+          command: |
+            security unlock-keychain -u signchain
+            security list-keychains  -s "${HOME}/Library/Keychains/signchain-db" "${HOME}/Library/Keychains/login.keychain-db"
+            # security set-key-partition-list -S apple-tool:,apple: -k "" signchain
+
   authorize-applescript:
     steps:
       - run:
@@ -279,6 +288,7 @@ jobs:
       - authorize-applescript
       # did this once, so we can skip it
       # - import-signing-cert
+      - open-signing-cert
       - run:
           name: Creating DMG package
           command: |
