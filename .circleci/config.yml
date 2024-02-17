@@ -155,9 +155,10 @@ commands:
           command: |
             echo "** List keychains"
             security list-keychains  -s "${HOME}/Library/Keychains/signchain-db" "${HOME}/Library/Keychains/login.keychain-db"
-            # echo "** Unlock keychain"
-            # security unlock-keychain -u signchain
-            # security set-key-partition-list -S apple-tool:,apple: -k "" signchain
+            echo "** Unlock keychain"
+            security unlock-keychain -u signchain
+            echo "** Set key partition list"
+            security set-key-partition-list -S apple-tool:,apple: -k "" signchain
 
   authorize-applescript:
     steps:
