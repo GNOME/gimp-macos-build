@@ -153,8 +153,10 @@ commands:
       - run:
           name: Opening signing certificate keychain
           command: |
-            security unlock-keychain -u signchain
+            echo "** List keychains"
             security list-keychains  -s "${HOME}/Library/Keychains/signchain-db" "${HOME}/Library/Keychains/login.keychain-db"
+            echo "** Unlock keychain"
+            security unlock-keychain -u signchain
             # security set-key-partition-list -S apple-tool:,apple: -k "" signchain
 
   authorize-applescript:
