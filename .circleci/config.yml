@@ -286,17 +286,29 @@ jobs:
           command: |
             scripts/macports3_build_app.sh
           no_output_timeout: 20m
+      - persist_to_workspace:
+          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
+          # taken to be the root directory of the workspace.
+          root: "~"
+          # Must be relative path from root
+          paths:
+            - macports-gimp<< pipeline.parameters.vgimp >>-osx-app
+            - macports-gimp<< pipeline.parameters.vgimp >>-osx-app-x86_64
+            - .profile-gimp<< pipeline.parameters.vgimp >>-arm64
 
   package-gimp-self:
-    machine: true
-    resource_class: gnome/gimp
+    macos:
+      xcode: "14.3.1"
+    resource_class: macos.x86.medium.gen2
 
     steps:
       - setup
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: "~"
       - authorize-applescript
-      # did this once, so we can skip it
-      # - import-signing-cert
-      - open-signing-cert
+      - import-signing-cert
+      # - open-signing-cert
       - run:
           name: Creating DMG package
           command: |
