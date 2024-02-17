@@ -57,3 +57,8 @@ security: SecKeychainItemImport: MAC verification failed during PKCS12 import (w
 It's because "OpenSSL 3.x changed its default algorithm in pkcs12. Which is not compatible with embedded Security frameworks in macOS/iOS. You could alternatively use OpenSSL 1.x."
 
 Add the `-legacy` flag in step 8. See [here](https://stackoverflow.com/a/70656724) for more info. Massive thanks to [i_82](https://stackoverflow.com/users/5227717/i-82) and [Jarrod Moldrich](https://stackoverflow.com/users/2064098/jarrod-moldrich).
+
+## Self-hosted runner
+
+<https://circleci.com/blog/code-signing-with-runner/>
+<https://circleci.com/docs/runner-installation-mac/>

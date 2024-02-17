@@ -137,6 +137,7 @@ commands:
             curl 'https://www.apple.com/certificateauthority/DeveloperIDG2CA.cer' > apple.cer
             curl 'https://www.apple.com/certificateauthority/DeveloperIDCA.cer' > apple2.cer
             curl 'https://www.apple.com/certificateauthority/AppleWWDRCAG2.cer' > apple3.cer
+            curl 'https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer' > apple4.cer
             security create-keychain -p "" signchain
             security set-keychain-settings signchain
             security unlock-keychain -u signchain
@@ -144,9 +145,25 @@ commands:
             security import apple.cer -k signchain  -T /usr/bin/codesign
             security import apple2.cer -k signchain  -T /usr/bin/codesign
             security import apple3.cer -k signchain  -T /usr/bin/codesign
+            security import apple4.cer -k signchain  -T /usr/bin/codesign
             security import gnome.p12  -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
             security set-key-partition-list -S apple-tool:,apple: -k "" signchain
             rm -rf ${HOME}/codesign
+
+  open-signing-cert:
+    steps:
+      - run:
+          name: Opening signing certificate keychain
+          command: |
+            echo "It's all set up"
+            # echo "** Don't lock keychain"
+            # security set-keychain-settings signchain
+            # echo "** Unlock keychain"
+            # security unlock-keychain -u signchain
+            # echo "** List keychains"
+            # security list-keychains  -s "${HOME}/Library/Keychains/signchain-db" "${HOME}/Library/Keychains/login.keychain-db"
+            # echo "** Set key partition list"
+            # security set-key-partition-list -S apple-tool:,apple: -k "" signchain
 
   authorize-applescript:
     steps:
@@ -156,7 +173,7 @@ commands:
             # Authorize applescript on circle ci build
             epochdate=$(($(date +'%s * 1000 + %-N / 1000000')))
             tcc_service_appleevents="replace into access (service,client,client_type,auth_value,auth_reason,auth_version,indirect_object_identifier_type,indirect_object_identifier,flags,last_modified) values (\"kTCCServiceAppleEvents\",\"/usr/sbin/sshd\",1,2,4,1,0,\"com.apple.finder\",0,$epochdate);"
-            sudo sqlite3 "/Users/distiller/Library/Application Support/com.apple.TCC/TCC.db" "$tcc_service_appleevents"
+            sudo sqlite3 "${HOME}/Library/Application Support/com.apple.TCC/TCC.db" "$tcc_service_appleevents"
 
 # -------------------------
 #        JOBS
@@ -291,6 +308,7 @@ jobs:
           at: "~"
       - authorize-applescript
       - import-signing-cert
+      # - open-signing-cert
       - run:
           name: Creating DMG package
           command: |
