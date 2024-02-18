@@ -18,10 +18,10 @@ set my_name         gimp3
 #    correct if statement (and order)
 # 3. Do same for babl and gegl
 # *****
-version             2.99.17
-set last_release    2.99.16
+version             2.99.18
+set last_release    2.99.18
 set last_dev        2.99.17
-revision            2
+revision            0
 
 # epoch must never be reduced. This was reduced for the 2.99.14 release
 # which was incorrect.
@@ -66,8 +66,8 @@ patch.pre_args      -p1
 
 # Release-specific patches (step 2 from instructions above)
 if {${major} == 2 && ${minor} == 99 && ${patch} == 16 && ${revision} >= 2} {
-    patchfiles-append \
-                    macos-Remove-DYLD_LIBRARY_PATH.patch
+    # patchfiles-append \
+    #                 macos-Remove-DYLD_LIBRARY_PATH.patch
 }
 
 depends_build-append \
