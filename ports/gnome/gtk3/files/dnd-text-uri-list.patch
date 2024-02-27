@@ -1,0 +1,15 @@
+diff --git gtk/gtkquartz.c gtk/gtkquartz.c
+index 4790087b89..bafc1c8647 100644
+--- gtk/gtkquartz.c
++++ gtk/gtkquartz.c
+@@ -309,7 +309,11 @@ _gtk_quartz_set_selection_data_for_pasteboard (NSPasteboard     *pasteboard,
+       nscolor = [NSColor colorWithDeviceRed:red green:green blue:blue alpha:alpha];
+       [nscolor writeToPasteboard:pasteboard];
+     }
++#if MAC_OS_X_VERSION_MIN_REQUIRED >= 101400
++  else if ([type isEqualTo:NSPasteboardTypeURL])
++#else
+   else if ([type isEqualTo:NSURLPboardType])
++#endif
+     {
+       gchar **uris;

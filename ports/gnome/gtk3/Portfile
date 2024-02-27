@@ -13,7 +13,7 @@ name                gtk3
 conflicts           gtk3-devel
 set my_name         gtk3
 version             3.24.38
-revision            0
+revision            1
 epoch               1
 
 set proj_name       gtk+
@@ -92,6 +92,10 @@ patchfiles-append   patch-6691.patch
 # When removing menu items, this prevents dereferencing a null pointer
 # https://gitlab.gnome.org/GNOME/gtk/-/issues/6304
 patchfiles-append   gtk-menu-crash.patch
+
+# Fix for drag and drop of text/uri-list
+# https://gitlab.gnome.org/GNOME/gtk/-/issues/6480
+patchfiles-append   dnd-text-uri-list.patch
 
 # gtk3 +quartz uses instancetype which is not available
 # before approximately Xcode 4.6 (#49391)
