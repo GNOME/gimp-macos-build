@@ -148,10 +148,9 @@ commands:
             security import apple2.cer -k signchain  -T /usr/bin/codesign
             security import apple3.cer -k signchain  -T /usr/bin/codesign
             security import apple4.cer -k signchain  -T /usr/bin/codesign
-            # wait for keychain to settle
-            sleep 300
             security import gnome.p12  -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
             security set-key-partition-list -S apple-tool:,apple: -k "" signchain
+            security find-identity -v signchain
             rm -rf ${HOME}/codesign
 
   open-signing-cert:
