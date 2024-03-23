@@ -230,11 +230,11 @@ fi
 
 if [ -n "${PART1}" ]; then
   # ** Reinstate these uninstalls if builds fail
-  # temporarily uninstall gegl, gimp3, libgcc12 (until all builds are fixed)
+  # temporarily uninstall gegl, gimp210, libgcc12 (until all builds are fixed)
   # All of these ports at some point failed to upgrade, build or otherwise cooperate
   # unless uninstalled, even when being built from scratch.
-  # port_force_uninstall_and_clean gimp3
-  # port_force_uninstall_and_clean gegl
+  port_force_uninstall_and_clean gimp210
+  port_force_uninstall_and_clean babl gegl
   # port_force_uninstall_and_clean gcc12
   # port_force_uninstall_and_clean appstream-glib
   # * libgcc12 because it is a dependency of gcc12 and if not also uninstalled, gcc12 build sometimes fails
@@ -380,8 +380,6 @@ if [ -n "${PART4}" ]; then
   # port_install -f dbus
   port_clean_and_install \
     adwaita-icon-theme
-  # always need latest version
-  port_force_uninstall_and_clean gegl babl
   port_clean_and_install \
     babl \
     gegl +vala
