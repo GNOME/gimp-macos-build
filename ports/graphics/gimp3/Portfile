@@ -127,10 +127,18 @@ depends_build-append \
 
 configure.python    ${prefix}/bin/python${py_ver}
 
+post-fetch {
+    system -W ${worksrcpath} "git submodule update --init"
+}
+
 post-patch {
     reinplace -W ${worksrcpath} \
         "s|@@PYTHON3_BIN@@|${configure.python}|" \
         meson.build
+}
+
+post-build {
+    system -W ${workpath}/build "ninja gimp-data/images/logo/gimp.icns"
 }
 
 # needs C++14 C11
