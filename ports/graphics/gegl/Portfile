@@ -101,11 +101,6 @@ if {${os.platform} eq "darwin" && (${os.major} < 10 || ${build_arch} in [list pp
 # https://trac.macports.org/ticket/58524
 patchfiles-append   patch-gegl-32bit-host-statistics.diff
 
-# https://trac.macports.org/ticket/66233
-if {[string match *gcc* ${configure.compiler}]} {
-    patchfiles-append patch-use-gcc.diff
-}
-
 # Release-specific patches (step 2 from instructions above)
 if {${major} == 0 && ${minor} == 4 && ${patch} == 46 && ${revision} >= 0} {
     # Nothing right now

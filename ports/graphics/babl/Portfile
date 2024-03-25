@@ -50,9 +50,6 @@ if {${is_release}} {
     revision        0
 }
 
-patchfiles-append   patch-babl-linker-fix-darwin.diff
-patchfiles-append   patch-babl-allow-non-clang-compilers-on-darwin.diff
-
 # Release-specific patches (step 2 from instructions above)
 if {${major} == 0 && ${minor} == 1 && ${patch} == 106 && ${revision} >= 0} {
     # Nothing right now
