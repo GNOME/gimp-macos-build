@@ -56,7 +56,7 @@ if {${is_release}} {
     set branch      GIMP_${major}_${minor}_${patch}
     git.branch      ${branch}
 } else {
-    set branch      origin/master
+    set branch      origin/wip/Jehan/fix-macos-local-build
     git.branch      ${branch}
     revision        0
 }
