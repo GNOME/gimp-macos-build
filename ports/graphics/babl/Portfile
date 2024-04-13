@@ -17,9 +17,9 @@ set my_name         babl
 #    correct if statement (and order)
 # 3. Do same for babl and gegl
 # *****
-version             0.1.107
-set last_release    0.1.106
-set last_dev        0.1.107
+version             0.1.109
+set last_release    0.1.108
+set last_dev        0.1.109
 revision            0
 
 license             LGPL-3+
@@ -50,25 +50,12 @@ if {${is_release}} {
     revision        0
 }
 
-patchfiles-append   patch-babl-linker-fix-darwin.diff
-patchfiles-append   patch-babl-allow-non-clang-compilers-on-darwin.diff
-
 # Release-specific patches (step 2 from instructions above)
 if {${major} == 0 && ${minor} == 1 && ${patch} == 106 && ${revision} >= 0} {
     # Nothing right now
     # patchfiles-append \
     #                 macos-Remove-DYLD_LIBRARY_PATH.patch
 }
-
-# Old: (remove after release of 0.1.108)
-# master_sites        gimp:${my_name}/${branch}/
-# dist_subdir         ${my_name}
-# distname            ${my_name}-${version}
-# use_xz              yes
-
-# checksums           rmd160  a85208f7a7b8943d19e135781f858fb93e6f7d1e \
-#                     sha256  d325135d3304f088c134cc620013acf035de2e5d125a50a2d91054e7377c415f \
-#                     size    315068
 
 configure.args-append \
                     -Dwith-docs=false
