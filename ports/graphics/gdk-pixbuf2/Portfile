@@ -16,7 +16,7 @@ set my_name         gdk-pixbuf2
 set gname           gdk-pixbuf
 
 version             2.42.10
-revision            1
+revision            2
 epoch               2
 
 checksums           rmd160  38a225271d100b58aacec52ab18144871e7073bc \
