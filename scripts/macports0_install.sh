@@ -25,7 +25,7 @@
 set -e
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-MACPORTS_VERSION=2.8.1
+MACPORTS_VERSION=2.9.3
 
 if [[ $(uname -m) == 'arm64' ]]; then
   build_arm64=true
