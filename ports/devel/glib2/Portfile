@@ -16,7 +16,8 @@ conflicts                   glib2-devel
 set my_name                 glib
 version                     2.78.4
 revision                    0
-epoch                       1 # https://trac.macports.org/ticket/69749
+# https://trac.macports.org/ticket/69749
+epoch                       1
 
 checksums                   rmd160  7941be85af18c428d86f4a00e52f41542b061aa9 \
                             sha256  24b8e0672dca120cc32d394bccb85844e732e04fe75d18bb0573b2dbc7548f63 \

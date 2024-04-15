@@ -76,9 +76,10 @@ compiler.c_standard \
 configure.ldflags-append \
                     -lintl
 
+# https://trac.macports.org/ticket/69747 need to add -Dman=false
 configure.args-append \
                     -Dgtk_doc=false \
-                    -Dman=false # https://trac.macports.org/ticket/69747
+                    -Dman=false
 
 # gobject-introspection uses g-ir-scanner, which uses $CC from env
 if {${universal_possible} && [variant_isset universal]} {
