@@ -200,8 +200,6 @@ jobs:
           name: Build GIMP dependencies part 1
           command: |
             scripts/macports1_install_packages.sh --uninstall-package gimp3
-            scripts/macports1_install_packages.sh --uninstall-package glib2
-            scripts/macports1_install_packages.sh --uninstall-package gobject-introspection
             scripts/macports1_install_packages.sh --part1
           no_output_timeout: 30m
       - store_artifacts:
@@ -354,8 +352,6 @@ jobs:
       - run:
           name: Build GIMP dependencies part 1
           command: |
-            scripts/macports1_install_packages.sh --uninstall-package glib2
-            scripts/macports1_install_packages.sh --uninstall-package gobject-introspection
             scripts/macports1_install_packages.sh --part1
           no_output_timeout: 30m
       - store_artifacts:
