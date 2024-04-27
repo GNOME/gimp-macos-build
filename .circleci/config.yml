@@ -302,7 +302,7 @@ jobs:
   package-gimp-self:
     macos:
       xcode: "14.3.1"
-    resource_class: macos.x86.medium.gen2
+    resource_class: macos.m1.medium.gen1
 
     steps:
       - setup
@@ -454,7 +454,7 @@ jobs:
             - ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/
           key: v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt5vlocal3-{{ checksum "CACHE_ITER" }}
 
-  build-gimp-and-package-hosted:
+  build-gimp-hosted:
     macos:
       xcode: "14.3.1"
     resource_class: macos.x86.medium.gen2
@@ -493,11 +493,36 @@ jobs:
           command: |
             scripts/macports3_build_app.sh
           no_output_timeout: 20m
-      - import-signing-cert
+      - persist_to_workspace:
+          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
+          # taken to be the root directory of the workspace.
+          root: "~"
+          # Must be relative path from root
+          paths:
+            - macports-gimp<< pipeline.parameters.vgimp >>-osx-app
+            - macports-gimp<< pipeline.parameters.vgimp >>-osx-app-x86_64
+            - .profile-gimp<< pipeline.parameters.vgimp >>-x86_64
+
+  package-gimp-hosted:
+    macos:
+      xcode: "14.3.1"
+    resource_class: macos.m1.medium.gen1
+
+    steps:
+      - setup
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: "~"
       - authorize-applescript
+      - import-signing-cert
+      # - open-signing-cert
       - run:
           name: Creating DMG package
           command: |
+            source ~/.profile-gimp<< pipeline.parameters.vgimp >>-x86_64
+            cd ${HOME}/project
+
+            # run script
             scripts/macports4_build_dmg.sh
           no_output_timeout: 20m
       - run:
@@ -552,6 +577,9 @@ workflows:
       # - dependencies-part5-hosted:
       #     requires:
       #       - dependencies-part4-hosted
-      - build-gimp-and-package-hosted:
+      - build-gimp-hosted:
           requires:
             - dependencies-part4-hosted
+      - package-gimp-hosted:
+          requires:
+            - build-gimp-hosted
