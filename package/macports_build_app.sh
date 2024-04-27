@@ -129,7 +129,7 @@ find  ${PACKAGE_DIR}/GIMP.app/Contents/MacOS -type f -perm +111 \
        -change @rpath/libubsan.dylib      @rpath/lib/libgcc/libubsan.dylib
 
 echo "adding @rpath to the plugins (incl special ghostscript 9.56 fix)"
-find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/2.99/plug-ins/ -perm +111 -type f \
+find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/3.0/plug-ins/ -perm +111 -type f \
    | xargs file \
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
    | xargs -n1 install_name_tool -add_rpath @executable_path/../../../../../ \
@@ -158,7 +158,7 @@ find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/2.99/plug-ins/ -perm +
        -change @rpath/libubsan.dylib      @rpath/lib/libgcc/libubsan.dylib
 
 echo "adding @rpath to the extensions (incl special ghostscript 9.56 fix)"
-find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/2.99/extensions/ -perm +111 -type f \
+find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/3.0/extensions/ -perm +111 -type f \
    | xargs file \
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
    | xargs -n1 install_name_tool -add_rpath @executable_path/../../../../../ \
@@ -243,8 +243,8 @@ echo "fixing pixmap cache"
 sed -i.old 's|@executable_path/../Resources/||' \
     ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache
 # Works around gdk-pixbuf loader bug for release builds only https://gitlab.gnome.org/GNOME/gdk-pixbuf/-/issues/217
-mkdir -p "${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/2.99/plug-ins/Resources/lib"
-pushd ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/2.99/plug-ins/Resources/lib || exit 1
+mkdir -p "${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/3.0/plug-ins/Resources/lib"
+pushd ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/3.0/plug-ins/Resources/lib || exit 1
   ln -s ../../../../../gdk-pixbuf-2.0 gdk-pixbuf-2.0
 popd
 
