@@ -289,6 +289,10 @@ jobs:
           command: |
             scripts/macports3_build_app.sh
           no_output_timeout: 20m
+      - run:
+          name: Check minos and sdk properly set
+          command: |
+            scripts/validate_min_os.py ~/macports-gimp<< pipeline.parameters.vgimp >>-osx-app
       - persist_to_workspace:
           # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
           # taken to be the root directory of the workspace.
@@ -492,6 +496,10 @@ jobs:
           command: |
             scripts/macports3_build_app.sh
           no_output_timeout: 20m
+      - run:
+          name: Check minos and sdk properly set
+          command: |
+            scripts/validate_min_os.py ~/macports-gimp<< pipeline.parameters.vgimp >>-osx-app-x86_64
       - persist_to_workspace:
           # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
           # taken to be the root directory of the workspace.
