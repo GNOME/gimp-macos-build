@@ -8,6 +8,7 @@ PortGroup           muniversal 1.0
 
 github.setup        hughsie appstream-glib 0_8_1 appstream_glib_
 version             0.8.2
+# can delete because https://trac.macports.org/ticket/67519 is closed
 revision            1
 license             LGPL-2.1+
 categories          devel
