@@ -19,7 +19,7 @@ set my_name         gimp210
 version             2.10.38
 set last_release    2.10.38
 set last_dev        2.10.39
-revision            0
+revision            1
 
 # epoch must never be reduced if set.
 # epoch               1
