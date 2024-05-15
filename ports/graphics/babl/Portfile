@@ -17,7 +17,7 @@ set my_name         babl
 #    correct if statement (and order)
 # 3. Do same for babl and gegl
 # *****
-version             0.1.108
+version             0.1.109
 set last_release    0.1.108
 set last_dev        0.1.109
 revision            0
