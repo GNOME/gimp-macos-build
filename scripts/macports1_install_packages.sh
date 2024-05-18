@@ -252,6 +252,9 @@ if [ -n "${PART1}" ]; then
     libarchive \
     ncurses \
     libuv
+
+  port_long_clean_and_install llvm-18
+
   echo "cmake-bootstrap being installed since won't build from source with 10.13 SDK"
   sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${PREFIX}/etc/macports/macports.conf
   sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
@@ -290,8 +293,6 @@ if [ -n "${PART1}" ]; then
   sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
   sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
   port_long_clean_and_install llvm-15
-  # Can remove uninstall once merged to master
-  port_force_uninstall_and_clean x265
   port_clean_and_install x265 +highdepth
 fi
 
@@ -361,7 +362,7 @@ if [ -n "${PART4}" ]; then
     port clean libgcc
     port_long_clean_and_install gcc13
     # broken build on x86_64 and is a build only dependency
-    # https://trac.macports.org/ticket/68041
+    # https://trac.macports.org/ticket/68041 <-- this is fixed
     port_clean_and_install \
       jdupes
   )
