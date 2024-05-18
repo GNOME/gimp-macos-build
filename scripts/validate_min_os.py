@@ -77,12 +77,19 @@ def main(directory):
                 ["otool", "-l", filepath], capture_output=True, text=True
             )
             minos, sdk = parse_otool_output(result.stdout)
-            if minos is not None and sdk is not None:
-                if version_greater_or_equal(minos, "12.0") or version_greater_or_equal(
-                    sdk, "12.0"
-                ):
-                    print(f"File: {filepath}, minos: {minos}, sdk: {sdk}")
-                    errors_found = True
+            if minos is not None:
+                # Ignore sdk check for libstemmer.dylib
+                # due to https://trac.macports.org/ticket/69999
+                if "libstemmer.dylib" in filepath:
+                    if version_greater_or_equal(minos, "12.0"):
+                        print(f"File: {filepath}, minos: {minos} (sdk ignored)")
+                        errors_found = True
+                else:
+                    if version_greater_or_equal(minos, "12.0") or (
+                        sdk is not None and version_greater_or_equal(sdk, "12.0")
+                    ):
+                        print(f"File: {filepath}, minos: {minos}, sdk: {sdk}")
+                        errors_found = True
             # Count only dylibs
             if filepath.endswith(".dylib"):
                 dylib_count += 1
