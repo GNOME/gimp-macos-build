@@ -190,11 +190,6 @@ if {${universal_possible} && [variant_isset universal]} {
     destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
 }
 
-variant gtk_docs description {Build API docs using gtk-doc} {
-    depends_build-append    port:gtk-doc
-    configure.args-append -Ddocs=true
-}
-
 variant vala description {Enable build of vala extensions} {
     depends_lib-append path:bin/vala:vala
     configure.args-delete -Dvapigen=disabled
