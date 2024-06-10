@@ -10,12 +10,6 @@ parameters:
     default: "3"
 
 # -------------------------
-#        ORBS
-# -------------------------
-orbs:
-  macos: circleci/macos@2.4.1
-
-# -------------------------
 #        COMMANDS
 # -------------------------
 commands:
@@ -354,7 +348,6 @@ jobs:
     resource_class: macos.m1.medium.gen1
 
     steps:
-      - macos/install-rosetta
       - setup
       - cache-break-hosted
       - got-cache-so-skip-job-hosted
@@ -378,7 +371,6 @@ jobs:
     resource_class: macos.m1.medium.gen1
 
     steps:
-      - macos/install-rosetta
       - setup
       - cache-break-hosted
       - got-cache-so-skip-job-hosted
@@ -402,7 +394,6 @@ jobs:
     resource_class: macos.m1.medium.gen1
 
     steps:
-      - macos/install-rosetta
       - setup
       - cache-break-hosted
       - got-cache-so-skip-job-hosted
@@ -426,7 +417,6 @@ jobs:
     resource_class: macos.m1.medium.gen1
 
     steps:
-      - macos/install-rosetta
       - setup
       - cache-break-hosted
       - got-cache-so-skip-job-hosted
@@ -450,7 +440,6 @@ jobs:
     resource_class: macos.m1.medium.gen1
 
     steps:
-      - macos/install-rosetta
       - setup
       - cache-break-hosted
       - got-cache-so-skip-job-hosted
@@ -474,7 +463,6 @@ jobs:
     resource_class: macos.m1.medium.gen1
 
     steps:
-      - macos/install-rosetta
       - setup
       - cache-break-hosted
       - got-cache-hosted
