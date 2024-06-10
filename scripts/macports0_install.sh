@@ -27,6 +27,9 @@ set -e
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MACPORTS_VERSION=2.9.3
 
+DEPLOYMENT_TARGET_X86_64='11.0'
+SDK_VERSION_X86_64='11.3'
+
 if [[ $(uname -m) == 'arm64' ]]; then
   build_arm64=true
   arch='arm64'
@@ -99,12 +102,12 @@ while test "${1:0:1}" = "-"; do
 done
 
 if [ -n "$homedirgimp2" ]; then
-  echo "**Installing MacPorts in home dir macports-gimp2-{arch}"
+  echo "**Installing MacPorts in home dir macports-gimp2-${arch}"
   home_dir=true
   PREFIX="${HOME}/macports-gimp2-${arch}"
   export VGIMP=2
 elif [ -n "$homedirgimp3" ]; then
-  echo "**Installing MacPorts in home dir macports-gimp3-{arch}"
+  echo "**Installing MacPorts in home dir macports-gimp3-${arch}"
   home_dir=true
   PREFIX="${HOME}/macports-gimp3-${arch}"
   export VGIMP=3
@@ -166,8 +169,8 @@ if [ "$build_arm64" = true ]; then
   echo 'macosx_deployment_target 11.0' | tee -a ${PREFIX}/etc/macports/macports.conf
   echo 'macosx_sdk_version 11.3' | tee -a ${PREFIX}/etc/macports/macports.conf
 else
-  echo 'macosx_deployment_target 10.13' | tee -a ${PREFIX}/etc/macports/macports.conf
-  echo 'macosx_sdk_version 10.13' | tee -a ${PREFIX}/etc/macports/macports.conf
+  echo "macosx_deployment_target ${DEPLOYMENT_TARGET_X86_64}" | tee -a ${PREFIX}/etc/macports/macports.conf
+  echo "macosx_sdk_version ${SDK_VERSION_X86_64}" | tee -a ${PREFIX}/etc/macports/macports.conf
 fi
 echo "-x11 +no_x11 +quartz -python27 +no_gnome -gnome -gfortran -openldap -pinentry_mac ${debug}" | tee -a ${PREFIX}/etc/macports/variants.conf
 printf "file://${PROJECT_DIR}/ports\n$(cat ${PREFIX}/etc/macports/sources.conf.default)\n" | tee ${PREFIX}/etc/macports/sources.conf
@@ -182,13 +185,13 @@ if [ "$build_arm64" = true ]; then
   echo 'export MACOSX_DEPLOYMENT_TARGET=11.0' >>~/.profile-gimp${VGIMP}-${arch}
   echo 'export GIMP_ARM64=true' >>~/.profile-gimp${VGIMP}-${arch}
 else
-  echo "*** Setup 10.13 SDK"
+  echo "*** Setup ${SDK_VERSION_X86_64} SDK"
   cd /Library/Developer/CommandLineTools/SDKs
-  if [ ! -d "MacOSX10.13.sdk" ]; then
-    sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.13.sdk.tar.xz' | sudo tar -xzf -
+  if [ ! -d "MacOSX${SDK_VERSION_X86_64}.sdk" ]; then
+    sudo curl -L "https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX${SDK_VERSION_X86_64}.sdk.tar.xz" | sudo tar -xzf -
   fi
-  echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX10.13.sdk' >>~/.profile-gimp${VGIMP}-${arch}
-  echo 'export MACOSX_DEPLOYMENT_TARGET=10.13' >>~/.profile-gimp${VGIMP}-${arch}
+  echo "export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX${SDK_VERSION_X86_64}.sdk" >>~/.profile-gimp${VGIMP}-${arch}
+  echo "export MACOSX_DEPLOYMENT_TARGET=${DEPLOYMENT_TARGET_X86_64}" >>~/.profile-gimp${VGIMP}-${arch}
 fi
 
 source ~/.profile-gimp${VGIMP}-${arch}

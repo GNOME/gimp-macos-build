@@ -348,6 +348,27 @@ if [ -n "${PART4}" ]; then
 
   # libgcc12 is installed with GIMP so must be set for 10.13
   port clean gcc13
+  # libgcc dependencies
+  port_clean_and_install isl libmpc mpfr
+
+  # libgcc14 dependencies
+  port_clean_and_install libiconv zlib
+  port_long_clean_and_install libgcc14
+
+  # libgcc dependency libgcc14
+  sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/macosx_sdk_version/#macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
+  (
+    unset MACOSX_DEPLOYMENT_TARGET
+    unset SDKROOT
+    port_long_clean_and_install gcc14
+  )
+  sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
+
+  # Now we can install libgcc
   port_long_clean_and_install libgcc
 
   # libomp can't handle +debug variant as prebuilt binary

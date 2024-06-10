@@ -18,6 +18,9 @@ fi
 export JHBUILD_PREFIX=${PREFIX}
 GTK_MAC_BUNDLER=${HOME}/.local/bin/gtk-mac-bundler
 
+echo "Remove old app: ${PACKAGE_DIR}"
+rm -rf ${PACKAGE_DIR}
+
 printf "Determining GIMP version: "
 
 GIMP_VERSION="$(${PREFIX}/bin/gimp-2.99 --version 2>/dev/null | grep 'GNU Image Manipulation Program version' | sed 's|GNU Image Manipulation Program version ||')"
@@ -28,10 +31,12 @@ echo "$GIMP_VERSION"
 cat info.plist.tmpl | sed "s|%VERSION%|${GIMP_VERSION}|g" > info.plist
 
 echo "Copying charset.alias"
+# It's totally unclear if this file matters at all, or what should be in it.
+# This version was pulled from pkg-config-0.29.2/glib/glib/libcharset/charset.alias
 if [ -w "${PREFIX}/lib/" ]; then
-  cp -f "/usr/lib/charset.alias" "${PREFIX}/lib/"
+  cp -f charset.alias "${PREFIX}/lib/"
 else
-  sudo cp -f "/usr/lib/charset.alias" "${PREFIX}/lib/"
+  sudo cp -f charset.alias "${PREFIX}/lib/"
 fi
 
 echo "Creating bundle"
@@ -65,8 +70,8 @@ echo "Removing pathnames from the libraries and binaries"
 # fix permission for some libs
 find ${PACKAGE_DIR}/GIMP.app/Contents/Resources \( -name '*.dylib' -o -name '*.so' \) -type f | xargs chmod 755
 
-# Remove LC_RPATH from libraries. MacPorts adds an LC_RPATH statement to all `dylibs` and `so`` binaries, which should
-# not have them set.
+# Remove LC_RPATH from libraries and executables. MacPorts adds an LC_RPATH statement to all `dylibs` and `so`
+# binaries, which should not have them set (and it messes up notarization).
 delete_rpaths() {
   for rpath in $(otool -l "$1" | awk "/ path / { print \$2 }")
   do
@@ -76,6 +81,8 @@ delete_rpaths() {
 }
 export -f delete_rpaths
 find ${PACKAGE_DIR}/GIMP.app/Contents/Resources \( -name "*.dylib" -o -name "*.so" \) -type f -exec bash -c 'delete_rpaths "$0"' {} \;
+find ${PACKAGE_DIR}/GIMP.app/Contents/MacOS -type f -perm +111 -exec bash -c 'delete_rpaths "$0"' {} \;
+find ${PACKAGE_DIR}/GIMP.app/Contents/Resources -type f -perm +111 -exec bash -c 'delete_rpaths "$0"' {} \;
 
 # getting list of the files to fix
 FILES=$(
