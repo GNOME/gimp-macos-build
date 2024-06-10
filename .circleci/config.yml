@@ -345,9 +345,10 @@ jobs:
   dependencies-part1-hosted:
     macos:
       xcode: "14.3.1"
-    resource_class: macos.x86.medium.gen2
+    resource_class: macos.m1.medium.gen1
 
     steps:
+      - macos/install-rosetta
       - setup
       - cache-break-hosted
       - got-cache-so-skip-job-hosted
@@ -368,9 +369,10 @@ jobs:
   dependencies-part2-hosted:
     macos:
       xcode: "14.3.1"
-    resource_class: macos.x86.medium.gen2
+    resource_class: macos.m1.medium.gen1
 
     steps:
+      - macos/install-rosetta
       - setup
       - cache-break-hosted
       - got-cache-so-skip-job-hosted
@@ -391,9 +393,10 @@ jobs:
   dependencies-part3-hosted:
     macos:
       xcode: "14.3.1"
-    resource_class: macos.x86.medium.gen2
+    resource_class: macos.m1.medium.gen1
 
     steps:
+      - macos/install-rosetta
       - setup
       - cache-break-hosted
       - got-cache-so-skip-job-hosted
@@ -414,9 +417,10 @@ jobs:
   dependencies-part4-hosted:
     macos:
       xcode: "14.3.1"
-    resource_class: macos.x86.medium.gen2
+    resource_class: macos.m1.medium.gen1
 
     steps:
+      - macos/install-rosetta
       - setup
       - cache-break-hosted
       - got-cache-so-skip-job-hosted
@@ -437,9 +441,10 @@ jobs:
   dependencies-part5-hosted:
     macos:
       xcode: "14.3.1"
-    resource_class: macos.x86.medium.gen2
+    resource_class: macos.m1.medium.gen1
 
     steps:
+      - macos/install-rosetta
       - setup
       - cache-break-hosted
       - got-cache-so-skip-job-hosted
@@ -460,9 +465,10 @@ jobs:
   build-gimp-hosted:
     macos:
       xcode: "14.3.1"
-    resource_class: macos.x86.medium.gen2
+    resource_class: macos.m1.medium.gen1
 
     steps:
+      - macos/install-rosetta
       - setup
       - cache-break-hosted
       - got-cache-hosted
