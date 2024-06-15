@@ -62,6 +62,8 @@ function usage() {
   echo "      This will force uninstall regardless of dependencies"
   echo "  --port-edit-package <package>"
   echo "      open the Portfile of the package"
+  echo "  --x86_64"
+  echo "      does x86_64 cross compile"
   echo "  --version         show tool version number"
   echo "  -h, --help        display this help"
   exit 0
@@ -72,6 +74,9 @@ PART2="true"
 PART3="true"
 PART4="true"
 PART5="true"
+
+# default
+arch='arm64'
 
 while test "${1:0:1}" = "-"; do
   case $1 in
@@ -122,6 +127,10 @@ while test "${1:0:1}" = "-"; do
     PORT_EDIT_PACKAGE=$2
     shift 2
     ;;
+  --x86_64)
+    arch='x86_64'
+    shift
+    ;;
   -h | --help)
     usage
     ;;
@@ -138,11 +147,9 @@ done
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-if [[ $(uname -m) == 'arm64' ]]; then
-  arch='arm64'
+if [[ $arch == 'arm64' ]]; then
   echo "*** Build: arm64"
 else
-  arch='x86_64'
   echo "*** Build: x86_64"
 fi
 source ~/.profile-gimp${VGIMP}-${arch}

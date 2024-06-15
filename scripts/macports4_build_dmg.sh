@@ -26,12 +26,50 @@ set -e
 
 export VGIMP=3
 
+function usage() {
+  version
+  echo ""
+  echo "Builds Gimp app."
+  echo "Usage:  $(basename $0) [options]"
+  echo ""
+  echo "Builds Gimp app."
+  echo "Options:"
+  echo "  --x86_64"
+  echo "      does x86_64 cross compile"
+  echo "  --version         show tool version number"
+  echo "  -h, --help        display this help"
+  exit 0
+}
+
+# default
+arch='arm64'
+
+while test "${1:0:1}" = "-"; do
+  case $1 in
+  --x86_64)
+    arch='x86_64'
+    shift
+    ;;
+  -h | --help)
+    usage
+    ;;
+  --version)
+    version
+    exit 0
+    ;;
+  -*)
+    echo "Unknown option $1. Run with --help for help."
+    exit 1
+    ;;
+  esac
+done
+
 arm64_file="$HOME/.profile-gimp${VGIMP}-arm64"
 x86_64_file="$HOME/.profile-gimp${VGIMP}-x86_64"
 if [ -f "$arm64_file" ] && [ -f "$x86_64_file" ]; then
   # Both files are present, decide based on current arch because this is a
   # local build
-  if [[ $(uname -m) == 'arm64' ]]; then
+  if [[ $arch == 'arm64' ]]; then
     arch='arm64'
     echo "*** Build: arm64"
   else

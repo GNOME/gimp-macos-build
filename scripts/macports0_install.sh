@@ -27,16 +27,6 @@ set -e
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MACPORTS_VERSION=2.9.3
 
-if [[ $(uname -m) == 'arm64' ]]; then
-  build_arm64=true
-  arch='arm64'
-  echo "*** Build: arm64"
-else
-  build_arm64=false
-  arch='x86_64'
-  echo "*** Build: x86_64"
-fi
-
 function pure_version() {
   echo '0.2'
 }
@@ -61,10 +51,16 @@ function usage() {
   echo "      installs macports to a custom homedir macports-gimp2"
   echo "  --homedirgimp3"
   echo "      installs macports to a custom homedir macports-gimp3"
+  echo "  --x86_64"
+  echo "      does x86_64 cross compile"
   echo "  --version         show tool version number"
   echo "  -h, --help        display this help"
   exit 0
 }
+
+# default
+build_arm64=true
+arch='arm64'
 
 while test "${1:0:1}" = "-"; do
   case $1 in
@@ -84,6 +80,11 @@ while test "${1:0:1}" = "-"; do
     homedirgimp3="true"
     shift
     ;;
+  --x86_64)
+    build_arm64=false
+    arch='x86_64'
+    shift
+    ;;
   -h | --help)
     usage
     ;;
@@ -97,6 +98,12 @@ while test "${1:0:1}" = "-"; do
     ;;
   esac
 done
+
+if [ $build_arm64 ]; then
+  echo "*** Build: arm64"
+else
+  echo "*** Build: x86_64"
+fi
 
 if [ -n "$homedirgimp2" ]; then
   echo "**Installing MacPorts in home dir macports-gimp2-{arch}"
@@ -168,6 +175,7 @@ if [ "$build_arm64" = true ]; then
 else
   echo 'macosx_deployment_target 10.13' | tee -a ${PREFIX}/etc/macports/macports.conf
   echo 'macosx_sdk_version 10.13' | tee -a ${PREFIX}/etc/macports/macports.conf
+  echo 'build_arch=x86_64' | tee -a ${PREFIX}/etc/macports/macports.conf
 fi
 echo "-x11 +no_x11 +quartz -python27 +no_gnome -gnome -gfortran -openldap -pinentry_mac ${debug}" | tee -a ${PREFIX}/etc/macports/variants.conf
 printf "file://${PROJECT_DIR}/ports\n$(cat ${PREFIX}/etc/macports/sources.conf.default)\n" | tee ${PREFIX}/etc/macports/sources.conf

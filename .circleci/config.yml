@@ -93,6 +93,14 @@ commands:
             scripts/macports0_install.sh --circleci --homedirgimp<< pipeline.parameters.vgimp >>
           no_output_timeout: 30m
 
+  setup-macports-x86-64:
+    steps:
+      - run:
+          name: Install macports
+          command: |
+            scripts/macports0_install.sh --circleci --homedirgimp<< pipeline.parameters.vgimp >> --x86_64
+          no_output_timeout: 30m
+
   clear-artifacts-arm64:
     steps:
       - run:
@@ -352,7 +360,7 @@ jobs:
       - cache-break-hosted
       - got-cache-so-skip-job-hosted
       - get-cached-data-hosted
-      - setup-macports
+      - setup-macports-x86-64
       - run:
           name: Build GIMP dependencies part 1
           command: |
@@ -375,7 +383,7 @@ jobs:
       - cache-break-hosted
       - got-cache-so-skip-job-hosted
       - get-cached-data-hosted
-      - setup-macports
+      - setup-macports-x86-64
       - run:
           name: Build GIMP dependencies part 2
           command: |
@@ -398,7 +406,7 @@ jobs:
       - cache-break-hosted
       - got-cache-so-skip-job-hosted
       - get-cached-data-hosted
-      - setup-macports
+      - setup-macports-x86-64
       - run:
           name: Build GIMP dependencies part 3
           command: |
@@ -421,7 +429,7 @@ jobs:
       - cache-break-hosted
       - got-cache-so-skip-job-hosted
       - get-cached-data-hosted
-      - setup-macports
+      - setup-macports-x86-64
       - run:
           name: Build GIMP dependencies part 4
           command: |
@@ -444,7 +452,7 @@ jobs:
       - cache-break-hosted
       - got-cache-so-skip-job-hosted
       - get-cached-data-hosted
-      - setup-macports
+      - setup-macports-x86-64
       - run:
           name: Build GIMP dependencies part 5
           command: |
@@ -467,7 +475,7 @@ jobs:
       - cache-break-hosted
       - got-cache-hosted
       - get-cached-data-hosted
-      - setup-macports
+      - setup-macports-x86-64
       - run:
           name: Build GIMP dependencies part 1
           command: |
