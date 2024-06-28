@@ -349,9 +349,8 @@ jobs:
   # -------------------------
 
   dependencies-part1-hosted:
-    macos:
-      xcode: "14.3.1"
-    resource_class: macos.m1.medium.gen1
+    machine: true
+    resource_class: gnome/gimp
 
     steps:
       - macos/install-rosetta
@@ -373,9 +372,8 @@ jobs:
           key: v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt1vlocal3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part2-hosted:
-    macos:
-      xcode: "14.3.1"
-    resource_class: macos.m1.medium.gen1
+    machine: true
+    resource_class: gnome/gimp
 
     steps:
       - macos/install-rosetta
@@ -397,9 +395,8 @@ jobs:
           key: v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt2vlocal3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part3-hosted:
-    macos:
-      xcode: "14.3.1"
-    resource_class: macos.m1.medium.gen1
+    machine: true
+    resource_class: gnome/gimp
 
     steps:
       - macos/install-rosetta
@@ -421,9 +418,8 @@ jobs:
           key: v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt3vlocal3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part4-hosted:
-    macos:
-      xcode: "14.3.1"
-    resource_class: macos.m1.medium.gen1
+    machine: true
+    resource_class: gnome/gimp
 
     steps:
       - macos/install-rosetta
@@ -445,9 +441,8 @@ jobs:
           key: v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt4vlocal3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part5-hosted:
-    macos:
-      xcode: "14.3.1"
-    resource_class: macos.m1.medium.gen1
+    machine: true
+    resource_class: gnome/gimp
 
     steps:
       - macos/install-rosetta
@@ -469,9 +464,8 @@ jobs:
           key: v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt5vlocal3-{{ checksum "CACHE_ITER" }}
 
   build-gimp-hosted:
-    macos:
-      xcode: "14.3.1"
-    resource_class: macos.m1.medium.gen1
+    machine: true
+    resource_class: gnome/gimp
 
     steps:
       - macos/install-rosetta
