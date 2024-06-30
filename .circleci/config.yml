@@ -366,8 +366,6 @@ jobs:
       - macos/install-rosetta
       - setup
       - cache-break-hosted
-      - got-cache-so-skip-job-hosted
-      - get-cached-data-hosted
       - setup-macports-x86_64
       - run:
           name: Build GIMP dependencies part 1
@@ -390,8 +388,6 @@ jobs:
       - macos/install-rosetta
       - setup
       - cache-break-hosted
-      - got-cache-so-skip-job-hosted
-      - get-cached-data-hosted
       - setup-macports-x86_64
       - run:
           name: Build GIMP dependencies part 2
@@ -413,8 +409,6 @@ jobs:
       - macos/install-rosetta
       - setup
       - cache-break-hosted
-      - got-cache-so-skip-job-hosted
-      - get-cached-data-hosted
       - setup-macports-x86_64
       - run:
           name: Build GIMP dependencies part 3
@@ -436,8 +430,6 @@ jobs:
       - macos/install-rosetta
       - setup
       - cache-break-hosted
-      - got-cache-so-skip-job-hosted
-      - get-cached-data-hosted
       - setup-macports-x86_64
       - run:
           name: Build GIMP dependencies part 4
@@ -459,8 +451,6 @@ jobs:
       - macos/install-rosetta
       - setup
       - cache-break-hosted
-      - got-cache-so-skip-job-hosted
-      - get-cached-data-hosted
       - setup-macports-x86_64
       - run:
           name: Build GIMP dependencies part 5
