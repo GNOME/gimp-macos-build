@@ -33,13 +33,15 @@ commands:
   cache-break-hosted:
     steps:
       - run:
-          name: checksums for caching
+          name: should cache break
           # Triggering cache changes should be done in the directories below
           command: |
-            find ./ports/cache_break -type f -exec md5 {} \; | md5 | cut -d' ' -f1 > CACHE_BREAK
-            date +%s > CACHE_ITER
-            cat CACHE_BREAK
-            cat CACHE_ITER
+            cache_break=$(md5 ports/cache_break)
+            if [ ! -e "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >>_x86_64" ] || [ "${cache_break}" != "$(cat "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >>_x86_64")" ]; then
+              echo "Cache break"
+              echo "${cache_break}" > "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >>_x86_64"
+              arch -x86_64 scripts/macports_uninstall.sh --homedirgimp<< pipeline.parameters.vgimp >>
+            fi
 
   cache-break-self:
     steps:
@@ -97,6 +99,14 @@ commands:
           name: Install macports
           command: |
             scripts/macports0_install.sh --circleci --homedirgimp<< pipeline.parameters.vgimp >>
+          no_output_timeout: 30m
+
+  setup-macports-x86_64:
+    steps:
+      - run:
+          name: Install macports
+          command: |
+            arch -x86_64 scripts/macports0_install.sh --circleci --homedirgimp<< pipeline.parameters.vgimp >>
           no_output_timeout: 30m
 
   clear-artifacts-arm64:
@@ -358,11 +368,12 @@ jobs:
       - cache-break-hosted
       - got-cache-so-skip-job-hosted
       - get-cached-data-hosted
-      - setup-macports
+      - setup-macports-x86_64
       - run:
           name: Build GIMP dependencies part 1
           command: |
-            scripts/macports1_install_packages.sh --part1
+            arch -x86_64 scripts/macports1_install_packages.sh --uninstall-package gimp3
+            arch -x86_64 scripts/macports1_install_packages.sh --part1
           no_output_timeout: 30m
       - store_artifacts:
           path: ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/var/macports/logs
@@ -381,11 +392,11 @@ jobs:
       - cache-break-hosted
       - got-cache-so-skip-job-hosted
       - get-cached-data-hosted
-      - setup-macports
+      - setup-macports-x86_64
       - run:
           name: Build GIMP dependencies part 2
           command: |
-            scripts/macports1_install_packages.sh --part2
+            arch -x86_64 scripts/macports1_install_packages.sh --part2
           no_output_timeout: 30m
       - store_artifacts:
           path: ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/var/macports/logs
@@ -404,11 +415,11 @@ jobs:
       - cache-break-hosted
       - got-cache-so-skip-job-hosted
       - get-cached-data-hosted
-      - setup-macports
+      - setup-macports-x86_64
       - run:
           name: Build GIMP dependencies part 3
           command: |
-            scripts/macports1_install_packages.sh --part3
+            arch -x86_64 scripts/macports1_install_packages.sh --part3
           no_output_timeout: 30m
       - store_artifacts:
           path: ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/var/macports/logs
@@ -427,11 +438,11 @@ jobs:
       - cache-break-hosted
       - got-cache-so-skip-job-hosted
       - get-cached-data-hosted
-      - setup-macports
+      - setup-macports-x86_64
       - run:
           name: Build GIMP dependencies part 4
           command: |
-            scripts/macports1_install_packages.sh --part4
+            arch -x86_64 scripts/macports1_install_packages.sh --part4
           no_output_timeout: 30m
       - store_artifacts:
           path: ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/var/macports/logs
@@ -450,11 +461,11 @@ jobs:
       - cache-break-hosted
       - got-cache-so-skip-job-hosted
       - get-cached-data-hosted
-      - setup-macports
+      - setup-macports-x86_64
       - run:
           name: Build GIMP dependencies part 5
           command: |
-            scripts/macports1_install_packages.sh --part5
+            arch -x86_64 scripts/macports1_install_packages.sh --part5
           no_output_timeout: 30m
       - store_artifacts:
           path: ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/var/macports/logs
@@ -473,14 +484,14 @@ jobs:
       - cache-break-hosted
       - got-cache-hosted
       - get-cached-data-hosted
-      - setup-macports
+      - setup-macports-x86_64
       - run:
           name: Build GIMP dependencies part 1
           command: |
             # if not cache then build deps in split parts
             if [ -f ~/got_cache/cache_check ]; then
               echo "**got cache, building all packages"
-              scripts/macports1_install_packages.sh
+              arch -x86_64 scripts/macports1_install_packages.sh
             fi
           no_output_timeout: 30m
       - run:
@@ -488,7 +499,7 @@ jobs:
           # XXX `make check` is not working reliably under circle ci, so we are
           # not using --check flag
           command: |
-            scripts/macports2_install_gimp.sh circleci
+            arch -x86_64 scripts/macports2_install_gimp.sh circleci
       - store_artifacts:
           path: ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/var/macports/logs
       - save_cache:
@@ -500,7 +511,7 @@ jobs:
       - run:
           name: Build GIMP app
           command: |
-            scripts/macports3_build_app.sh
+            arch -x86_64 scripts/macports3_build_app.sh
           no_output_timeout: 20m
       - run:
           name: Check minos and sdk properly set
