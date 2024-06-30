@@ -33,6 +33,17 @@ commands:
   cache-break-hosted:
     steps:
       - run:
+          name: checksums for caching
+          # Triggering cache changes should be done in the directories below
+          command: |
+            find ./ports/cache_break -type f -exec md5 {} \; | md5 | cut -d' ' -f1 > CACHE_BREAK
+            date +%s > CACHE_ITER
+            cat CACHE_BREAK
+            cat CACHE_ITER
+
+  cache-break-hosted-gimp-runner:
+    steps:
+      - run:
           name: should cache break
           # Triggering cache changes should be done in the directories below
           command: |
@@ -359,13 +370,19 @@ jobs:
   # -------------------------
 
   dependencies-part1-hosted:
-    machine: true
-    resource_class: gnome/gimp
+    macos:
+      xcode: "15.4.0"
+    resource_class: macos.x86.medium.gen2
+
+    # machine: true
+    # resource_class: gnome/gimp
 
     steps:
       - macos/install-rosetta
       - setup
       - cache-break-hosted
+      - got-cache-so-skip-job-hosted
+      - get-cached-data-hosted
       - setup-macports-x86_64
       - run:
           name: Build GIMP dependencies part 1
@@ -381,13 +398,19 @@ jobs:
           key: v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt1vlocal3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part2-hosted:
-    machine: true
-    resource_class: gnome/gimp
+    macos:
+      xcode: "15.4.0"
+    resource_class: macos.x86.medium.gen2
+
+    # machine: true
+    # resource_class: gnome/gimp
 
     steps:
       - macos/install-rosetta
       - setup
       - cache-break-hosted
+      - got-cache-so-skip-job-hosted
+      - get-cached-data-hosted
       - setup-macports-x86_64
       - run:
           name: Build GIMP dependencies part 2
@@ -402,13 +425,19 @@ jobs:
           key: v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt2vlocal3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part3-hosted:
-    machine: true
-    resource_class: gnome/gimp
+    macos:
+      xcode: "15.4.0"
+    resource_class: macos.x86.medium.gen2
+
+    # machine: true
+    # resource_class: gnome/gimp
 
     steps:
       - macos/install-rosetta
       - setup
       - cache-break-hosted
+      - got-cache-so-skip-job-hosted
+      - get-cached-data-hosted
       - setup-macports-x86_64
       - run:
           name: Build GIMP dependencies part 3
@@ -423,13 +452,19 @@ jobs:
           key: v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt3vlocal3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part4-hosted:
-    machine: true
-    resource_class: gnome/gimp
+    macos:
+      xcode: "15.4.0"
+    resource_class: macos.x86.medium.gen2
+
+    # machine: true
+    # resource_class: gnome/gimp
 
     steps:
       - macos/install-rosetta
       - setup
       - cache-break-hosted
+      - got-cache-so-skip-job-hosted
+      - get-cached-data-hosted
       - setup-macports-x86_64
       - run:
           name: Build GIMP dependencies part 4
@@ -444,13 +479,19 @@ jobs:
           key: v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt4vlocal3-{{ checksum "CACHE_ITER" }}
 
   dependencies-part5-hosted:
-    machine: true
-    resource_class: gnome/gimp
+    macos:
+      xcode: "15.4.0"
+    resource_class: macos.x86.medium.gen2
+
+    # machine: true
+    # resource_class: gnome/gimp
 
     steps:
       - macos/install-rosetta
       - setup
       - cache-break-hosted
+      - got-cache-so-skip-job-hosted
+      - get-cached-data-hosted
       - setup-macports-x86_64
       - run:
           name: Build GIMP dependencies part 5
@@ -465,8 +506,12 @@ jobs:
           key: v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt5vlocal3-{{ checksum "CACHE_ITER" }}
 
   build-gimp-hosted:
-    machine: true
-    resource_class: gnome/gimp
+    macos:
+      xcode: "15.4.0"
+    resource_class: macos.x86.medium.gen2
+
+    # machine: true
+    # resource_class: gnome/gimp
 
     steps:
       - macos/install-rosetta
@@ -519,8 +564,8 @@ jobs:
 
   package-gimp-hosted:
     macos:
-      xcode: "14.3.1"
-    resource_class: macos.m1.medium.gen1
+      xcode: "15.4.0"
+    resource_class: macos.x86.medium.gen2
 
     steps:
       - setup
