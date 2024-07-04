@@ -106,6 +106,8 @@
   <!-- Gimp data -->
   <data>${prefix}/etc/gimp/3.0/*</data>
   <data dest="${bundle}/Contents/Resources/share/gimp">${prefix}/share/gimp</data>
+  <!-- CJK and Cyrillic support for file-pdf -->
+  <data>${prefix}/share/poppler</data>
   <!-- brushes -->
   <data>${prefix}/share/mypaint-data</data>
   <!-- XML data -->
