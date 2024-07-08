@@ -56,49 +56,16 @@ commands:
               scripts/macports_uninstall.sh --homedirgimp<< pipeline.parameters.vgimp >>
             fi
 
-  got-cache-so-skip-job-hosted:
-    steps:
-      - restore_cache:
-          keys:
-            - got_cache{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-{{ checksum "CACHE_ITER" }}
-            - got_cache{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-
-      - run:
-          command: |
-            if [ -f ~/got_cache/cache_check ]; then
-              echo "**skipping job"
-              circleci-agent step halt
-            fi
-
-  got-cache-hosted:
-    steps:
-      - restore_cache:
-          keys:
-            - got_cache{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-{{ checksum "CACHE_ITER" }}
-            - got_cache{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-
-
-  get-cached-data-hosted:
-    steps:
-      - restore_cache:
-          keys:
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-{{ checksum "CACHE_ITER" }}
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt5vlocal3-{{ checksum "CACHE_ITER" }}
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt4vlocal3-{{ checksum "CACHE_ITER" }}
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt3vlocal3-{{ checksum "CACHE_ITER" }}
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt2vlocal3-{{ checksum "CACHE_ITER" }}
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt1vlocal3-{{ checksum "CACHE_ITER" }}
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt5vlocal3-
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt4vlocal3-
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt3vlocal3-
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt2vlocal3-
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt1vlocal3-
-
   setup-macports:
+    parameters:
+      arch:
+        type: string
+        default: ""
     steps:
       - run:
           name: Install macports
           command: |
-            scripts/macports0_install.sh --circleci --homedirgimp<< pipeline.parameters.vgimp >>
+            << parameters.arch >> scripts/macports0_install.sh --circleci --homedirgimp<< pipeline.parameters.vgimp >>
           no_output_timeout: 30m
 
   setup-macports-x86_64:
@@ -373,7 +340,8 @@ jobs:
       - macos/install-rosetta
       - setup
       - cache-break-hosted
-      - setup-macports-x86_64
+      - setup-macports:
+          arch: "arch -x86_64"
       - clear-artifacts-x86_64
       - run:
           name: Build GIMP dependencies part 1
