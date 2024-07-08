@@ -27,6 +27,8 @@ set -e
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MACPORTS_VERSION=2.9.3
 
+DEPLOYMENT_TARGET_ARM64='11.0'
+SDK_VERSION_ARM64='11.3'
 DEPLOYMENT_TARGET_X86_64='11.0'
 SDK_VERSION_X86_64='11.3'
 
@@ -100,6 +102,16 @@ while test "${1:0:1}" = "-"; do
     ;;
   esac
 done
+
+if [ "$build_arm64" = true ]; then
+  SDK_VERSION=$SDK_VERSION_ARM64
+  SDK_MAJOR_VERSION=$(echo $SDK_VERSION_ARM64 | cut -d. -f1)
+  DEPLOYMENT_TARGET=$DEPLOYMENT_TARGET_ARM64
+else
+  SDK_VERSION=$SDK_VERSION_X86_64
+  SDK_MAJOR_VERSION=$(echo $SDK_VERSION_X86_64 | cut -d. -f1)
+  DEPLOYMENT_TARGET=$DEPLOYMENT_TARGET_X86_64
+fi
 
 if [ -n "$homedirgimp2" ]; then
   echo "**Installing MacPorts in home dir macports-gimp2-${arch}"
@@ -175,23 +187,20 @@ fi
 echo "-x11 +no_x11 +quartz -python27 +no_gnome -gnome -gfortran -openldap -pinentry_mac ${debug}" | tee -a ${PREFIX}/etc/macports/variants.conf
 printf "file://${PROJECT_DIR}/ports\n$(cat ${PREFIX}/etc/macports/sources.conf.default)\n" | tee ${PREFIX}/etc/macports/sources.conf
 
+echo "*** Setup ${SDK_VERSION} SDK"
+cd /Library/Developer/CommandLineTools/SDKs
+if [ ! -d "MacOSX${SDK_VERSION}.sdk" ]; then
+  sudo curl -L "https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX${SDK_VERSION}.sdk.tar.xz" | sudo tar -xzf -
+fi
+if [ -L "MacOSX${SDK_MAJOR_VERSION}.sdk" ]; then
+  sudo rm "MacOSX${SDK_MAJOR_VERSION}.sdk"
+fi
+sudo ln -s "MacOSX${SDK_VERSION}.sdk" "MacOSX${SDK_MAJOR_VERSION}.sdk"
+
+echo "export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX${SDK_VERSION_X86_64}.sdk" >>~/.profile-gimp${VGIMP}-${arch}
+echo "export MACOSX_DEPLOYMENT_TARGET=${DEPLOYMENT_TARGET}" >>~/.profile-gimp${VGIMP}-${arch}
 if [ "$build_arm64" = true ]; then
-  echo "*** Setup 11.3 SDK"
-  cd /Library/Developer/CommandLineTools/SDKs
-  if [ ! -d "MacOSX11.3.sdk" ]; then
-    sudo curl -L 'https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX11.3.sdk.tar.xz' | sudo tar -xzf -
-  fi
-  echo 'export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk' >>~/.profile-gimp${VGIMP}-${arch}
-  echo 'export MACOSX_DEPLOYMENT_TARGET=11.0' >>~/.profile-gimp${VGIMP}-${arch}
   echo 'export GIMP_ARM64=true' >>~/.profile-gimp${VGIMP}-${arch}
-else
-  echo "*** Setup ${SDK_VERSION_X86_64} SDK"
-  cd /Library/Developer/CommandLineTools/SDKs
-  if [ ! -d "MacOSX${SDK_VERSION_X86_64}.sdk" ]; then
-    sudo curl -L "https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX${SDK_VERSION_X86_64}.sdk.tar.xz" | sudo tar -xzf -
-  fi
-  echo "export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX${SDK_VERSION_X86_64}.sdk" >>~/.profile-gimp${VGIMP}-${arch}
-  echo "export MACOSX_DEPLOYMENT_TARGET=${DEPLOYMENT_TARGET_X86_64}" >>~/.profile-gimp${VGIMP}-${arch}
 fi
 
 source ~/.profile-gimp${VGIMP}-${arch}
