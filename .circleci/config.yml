@@ -30,98 +30,48 @@ commands:
           name: Avoid hosts unknown for github
           command: mkdir -p ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
 
-  cache-break-hosted:
+  cache-break:
+    parameters:
+      arch:
+        type: string
+        default: ""
+      arch_suffix:
+        type: string
+        default: ""
     steps:
       - run:
           name: should cache break
           # Triggering cache changes should be done in the directories below
           command: |
             cache_break=$(md5 ports/cache_break)
-            if [ ! -e "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >>_x86_64" ] || [ "${cache_break}" != "$(cat "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >>_x86_64")" ]; then
+            if [ ! -e "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >><< parameters.arch_suffix >>" ] || [ "${cache_break}" != "$(cat "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >><< parameters.arch_suffix >>")" ]; then
               echo "Cache break"
-              echo "${cache_break}" > "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >>_x86_64"
-              arch -x86_64 scripts/macports_uninstall.sh --homedirgimp<< pipeline.parameters.vgimp >>
+              echo "${cache_break}" > "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >><< parameters.arch_suffix >>"
+              << parameters.arch >> scripts/macports_uninstall.sh --homedirgimp<< pipeline.parameters.vgimp >>
             fi
-
-  cache-break-self:
-    steps:
-      - run:
-          name: should cache break
-          # Triggering cache changes should be done in the directories below
-          command: |
-            cache_break=$(md5 ports/cache_break)
-            if [ ! -e "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >>" ] || [ "${cache_break}" != "$(cat "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >>")" ]; then
-              echo "Cache break"
-              echo "${cache_break}" > "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >>"
-              scripts/macports_uninstall.sh --homedirgimp<< pipeline.parameters.vgimp >>
-            fi
-
-  got-cache-so-skip-job-hosted:
-    steps:
-      - restore_cache:
-          keys:
-            - got_cache{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-{{ checksum "CACHE_ITER" }}
-            - got_cache{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-
-      - run:
-          command: |
-            if [ -f ~/got_cache/cache_check ]; then
-              echo "**skipping job"
-              circleci-agent step halt
-            fi
-
-  got-cache-hosted:
-    steps:
-      - restore_cache:
-          keys:
-            - got_cache{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-{{ checksum "CACHE_ITER" }}
-            - got_cache{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-
-
-  get-cached-data-hosted:
-    steps:
-      - restore_cache:
-          keys:
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-{{ checksum "CACHE_ITER" }}
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt5vlocal3-{{ checksum "CACHE_ITER" }}
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt4vlocal3-{{ checksum "CACHE_ITER" }}
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt3vlocal3-{{ checksum "CACHE_ITER" }}
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt2vlocal3-{{ checksum "CACHE_ITER" }}
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt1vlocal3-{{ checksum "CACHE_ITER" }}
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt5vlocal3-
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt4vlocal3-
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt3vlocal3-
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt2vlocal3-
-            - v{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>-depspt1vlocal3-
 
   setup-macports:
+    parameters:
+      arch:
+        type: string
+        default: ""
     steps:
       - run:
           name: Install macports
           command: |
-            scripts/macports0_install.sh --circleci --homedirgimp<< pipeline.parameters.vgimp >>
+            << parameters.arch >> scripts/macports0_install.sh --circleci --homedirgimp<< pipeline.parameters.vgimp >>
           no_output_timeout: 30m
 
-  setup-macports-x86_64:
-    steps:
-      - run:
-          name: Install macports
-          command: |
-            arch -x86_64 scripts/macports0_install.sh --circleci --homedirgimp<< pipeline.parameters.vgimp >>
-          no_output_timeout: 30m
-
-  clear-artifacts-arm64:
+  clear-artifacts:
+    parameters:
+      arch_suffix:
+        type: string
+        default: "arm64"
     steps:
       - run:
           name: Clearing artifacts
           command: |
-            rm -rf ~/macports-gimp<< pipeline.parameters.vgimp >>-arm64/var/macports/logs
-
-  clear-artifacts-x86_64:
-    steps:
-      - run:
-          name: Clearing artifacts
-          command: |
-            rm -rf ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/var/macports/logs
+            rm -rf ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch_suffix >>/var/macports/logs
 
   pre-cache-store-hosted:
     steps:
@@ -216,9 +166,9 @@ jobs:
 
     steps:
       - setup
-      - cache-break-self
+      - cache-break
       - setup-macports
-      - clear-artifacts-arm64
+      - clear-artifacts
       - run:
           name: Build GIMP dependencies part 1
           command: |
@@ -235,7 +185,7 @@ jobs:
     steps:
       - setup
       - setup-macports
-      - clear-artifacts-arm64
+      - clear-artifacts
       - run:
           name: Build GIMP dependencies part 2
           command: |
@@ -251,7 +201,7 @@ jobs:
     steps:
       - setup
       - setup-macports
-      - clear-artifacts-arm64
+      - clear-artifacts
       - run:
           name: Build GIMP dependencies part 3
           command: |
@@ -267,7 +217,7 @@ jobs:
     steps:
       - setup
       - setup-macports
-      - clear-artifacts-arm64
+      - clear-artifacts
       - run:
           name: Build GIMP dependencies part 4
           command: |
@@ -283,7 +233,7 @@ jobs:
     steps:
       - setup
       - setup-macports
-      - clear-artifacts-arm64
+      - clear-artifacts
       - run:
           name: Build GIMP dependencies part 5
           command: |
@@ -297,7 +247,7 @@ jobs:
     steps:
       - setup
       - setup-macports
-      - clear-artifacts-arm64
+      - clear-artifacts
       - run:
           name: Build GIMP
           # XXX `make check` is not working reliably under circle ci, so we are
@@ -372,9 +322,13 @@ jobs:
     steps:
       - macos/install-rosetta
       - setup
-      - cache-break-hosted
-      - setup-macports-x86_64
-      - clear-artifacts-x86_64
+      - cache-break:
+          arch: "arch -x86_64"
+          arch_suffix: "_x86_64"
+      - setup-macports:
+          arch: "arch -x86_64"
+      - clear-artifacts:
+          arch_suffix: "x86_64"
       - run:
           name: Build GIMP dependencies part 1
           command: |
@@ -391,8 +345,10 @@ jobs:
     steps:
       - macos/install-rosetta
       - setup
-      - setup-macports-x86_64
-      - clear-artifacts-x86_64
+      - setup-macports:
+          arch: "arch -x86_64"
+      - clear-artifacts:
+          arch_suffix: "x86_64"
       - run:
           name: Build GIMP dependencies part 2
           command: |
@@ -408,8 +364,10 @@ jobs:
     steps:
       - macos/install-rosetta
       - setup
-      - setup-macports-x86_64
-      - clear-artifacts-x86_64
+      - setup-macports:
+          arch: "arch -x86_64"
+      - clear-artifacts:
+          arch_suffix: "x86_64"
       - run:
           name: Build GIMP dependencies part 3
           command: |
@@ -425,8 +383,10 @@ jobs:
     steps:
       - macos/install-rosetta
       - setup
-      - setup-macports-x86_64
-      - clear-artifacts-x86_64
+      - setup-macports:
+          arch: "arch -x86_64"
+      - clear-artifacts:
+          arch_suffix: "x86_64"
       - run:
           name: Build GIMP dependencies part 4
           command: |
@@ -442,8 +402,10 @@ jobs:
     steps:
       - macos/install-rosetta
       - setup
-      - setup-macports-x86_64
-      - clear-artifacts-x86_64
+      - setup-macports:
+          arch: "arch -x86_64"
+      - clear-artifacts:
+          arch_suffix: "x86_64"
       - run:
           name: Build GIMP dependencies part 5
           command: |
@@ -459,8 +421,10 @@ jobs:
     steps:
       - macos/install-rosetta
       - setup
-      - setup-macports-x86_64
-      - clear-artifacts-x86_64
+      - setup-macports:
+          arch: "arch -x86_64"
+      - clear-artifacts:
+          arch_suffix: "x86_64"
       - run:
           name: Build GIMP
           # XXX `make check` is not working reliably under circle ci, so we are
