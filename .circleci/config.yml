@@ -32,7 +32,7 @@ commands:
 
   cache-break:
     parameters:
-      arch:
+      arch_command:
         type: string
         default: ""
       arch_suffix:
@@ -47,45 +47,31 @@ commands:
             if [ ! -e "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >><< parameters.arch_suffix >>" ] || [ "${cache_break}" != "$(cat "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >><< parameters.arch_suffix >>")" ]; then
               echo "Cache break"
               echo "${cache_break}" > "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >><< parameters.arch_suffix >>"
-              << parameters.arch >> scripts/macports_uninstall.sh --homedirgimp<< pipeline.parameters.vgimp >>
+              << parameters.arch_command >> scripts/macports_uninstall.sh --homedirgimp<< pipeline.parameters.vgimp >>
             fi
 
   setup-macports:
     parameters:
-      arch:
+      arch_command:
         type: string
         default: ""
     steps:
       - run:
           name: Install macports
           command: |
-            << parameters.arch >> scripts/macports0_install.sh --circleci --homedirgimp<< pipeline.parameters.vgimp >>
+            << parameters.arch_command >> scripts/macports0_install.sh --circleci --homedirgimp<< pipeline.parameters.vgimp >>
           no_output_timeout: 30m
 
   clear-artifacts:
     parameters:
-      arch_suffix:
+      arch:
         type: string
         default: "arm64"
     steps:
       - run:
           name: Clearing artifacts
           command: |
-            rm -rf ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch_suffix >>/var/macports/logs
-
-  pre-cache-store-hosted:
-    steps:
-      - run:
-          command: |
-            mkdir -p ~/got_cache
-            if [ ! -f ~/got_cache/cache_check ]; then
-              echo "we got cache" > ~/got_cache/cache_check
-            fi
-            echo "**saving that we have cache"
-      - save_cache:
-          paths:
-            - ~/got_cache
-          key: got_cache{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-{{ checksum "CACHE_ITER" }}
+            rm -rf ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/var/macports/logs
 
   setup-gtk-mac-bundler:
     steps:
@@ -160,15 +146,29 @@ jobs:
   #        JOBS SELF HOSTED
   # -------------------------
 
-  dependencies-part1-self:
+  dependencies-part1:
     machine: true
     resource_class: gnome/gimp
+    parameters:
+      arch:
+        type: string
+        default: "arm64"
+      arch_command:
+        type: string
+        default: ""
+      arch_suffix:
+        type: string
+        default: ""
 
     steps:
       - setup
-      - cache-break
-      - setup-macports
-      - clear-artifacts
+      - cache-break:
+          arch_command: "<< parameters.arch_command >>"
+          arch_suffix: "<< parameters.arch_suffix >>"
+      - setup-macports:
+          arch_command: "<< parameters.arch_command >>"
+      - clear-artifacts:
+          arch: "<< parameters.arch >>"
       - run:
           name: Build GIMP dependencies part 1
           command: |
@@ -176,7 +176,7 @@ jobs:
             scripts/macports1_install_packages.sh --part1
           no_output_timeout: 30m
       - store_artifacts:
-          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-arm64/var/macports/logs
+          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/var/macports/logs
 
   dependencies-part2-self:
     machine: true
@@ -315,29 +315,6 @@ jobs:
   #        JOBS CIRCLECI HOSTED
   # -------------------------
 
-  dependencies-part1-hosted:
-    machine: true
-    resource_class: gnome/gimp
-
-    steps:
-      - macos/install-rosetta
-      - setup
-      - cache-break:
-          arch: "arch -x86_64"
-          arch_suffix: "_x86_64"
-      - setup-macports:
-          arch: "arch -x86_64"
-      - clear-artifacts:
-          arch_suffix: "x86_64"
-      - run:
-          name: Build GIMP dependencies part 1
-          command: |
-            arch -x86_64 scripts/macports1_install_packages.sh --uninstall-package gimp3
-            arch -x86_64 scripts/macports1_install_packages.sh --part1
-          no_output_timeout: 30m
-      - store_artifacts:
-          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/var/macports/logs
-
   dependencies-part2-hosted:
     machine: true
     resource_class: gnome/gimp
@@ -346,9 +323,9 @@ jobs:
       - macos/install-rosetta
       - setup
       - setup-macports:
-          arch: "arch -x86_64"
+          arch_command: "arch -x86_64"
       - clear-artifacts:
-          arch_suffix: "x86_64"
+          arch: "x86_64"
       - run:
           name: Build GIMP dependencies part 2
           command: |
@@ -365,9 +342,9 @@ jobs:
       - macos/install-rosetta
       - setup
       - setup-macports:
-          arch: "arch -x86_64"
+          arch_command: "arch -x86_64"
       - clear-artifacts:
-          arch_suffix: "x86_64"
+          arch: "x86_64"
       - run:
           name: Build GIMP dependencies part 3
           command: |
@@ -384,9 +361,9 @@ jobs:
       - macos/install-rosetta
       - setup
       - setup-macports:
-          arch: "arch -x86_64"
+          arch_command: "arch -x86_64"
       - clear-artifacts:
-          arch_suffix: "x86_64"
+          arch: "x86_64"
       - run:
           name: Build GIMP dependencies part 4
           command: |
@@ -403,9 +380,9 @@ jobs:
       - macos/install-rosetta
       - setup
       - setup-macports:
-          arch: "arch -x86_64"
+          arch_command: "arch -x86_64"
       - clear-artifacts:
-          arch_suffix: "x86_64"
+          arch: "x86_64"
       - run:
           name: Build GIMP dependencies part 5
           command: |
@@ -422,9 +399,9 @@ jobs:
       - macos/install-rosetta
       - setup
       - setup-macports:
-          arch: "arch -x86_64"
+          arch_command: "arch -x86_64"
       - clear-artifacts:
-          arch_suffix: "x86_64"
+          arch: "x86_64"
       - run:
           name: Build GIMP
           # XXX `make check` is not working reliably under circle ci, so we are
@@ -492,7 +469,11 @@ workflows:
   version: 2
   build-arm64:
     jobs:
-      - dependencies-part1-self
+      - dependencies-part1:
+          parameters:
+            arch: "arm64"
+            arch_command: ""
+            arch_suffix: ""
       - dependencies-part2-self:
           requires:
             - dependencies-part1-self
@@ -514,7 +495,11 @@ workflows:
 
   build-x86_64:
     jobs:
-      - dependencies-part1-hosted
+      - dependencies-part1:
+          parameters:
+            arch: "x86_64"
+            arch_command: "arch -x86_64"
+            arch_suffix: "_x86_64"
       - dependencies-part2-hosted:
           requires:
             - dependencies-part1-hosted
