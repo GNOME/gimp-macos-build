@@ -472,20 +472,22 @@ workflows:
   build-arm64:
     jobs:
       - dependencies:
+          name: part1
           part: "1"
           arch: "arm64"
           arch_command: ""
           arch_suffix: ""
       - dependencies:
+          name: part2
           part: "2"
           arch: "arm64"
           arch_command: ""
           arch_suffix: ""
           requires:
-            - dependencies
+            - part1
       - dependencies-part3-self:
           requires:
-            - dependencies-part2-self
+            - part2
       - dependencies-part4-self:
           requires:
             - dependencies-part3-self
