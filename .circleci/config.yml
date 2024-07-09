@@ -470,10 +470,9 @@ workflows:
   build-arm64:
     jobs:
       - dependencies-part1:
-          parameters:
-            arch: "arm64"
-            arch_command: ""
-            arch_suffix: ""
+          arch: "arm64"
+          arch_command: ""
+          arch_suffix: ""
       - dependencies-part2-self:
           requires:
             - dependencies-part1-self
@@ -496,10 +495,9 @@ workflows:
   build-x86_64:
     jobs:
       - dependencies-part1:
-          parameters:
-            arch: "x86_64"
-            arch_command: "arch -x86_64"
-            arch_suffix: "_x86_64"
+          arch: "x86_64"
+          arch_command: "arch -x86_64"
+          arch_suffix: "_x86_64"
       - dependencies-part2-hosted:
           requires:
             - dependencies-part1-hosted
