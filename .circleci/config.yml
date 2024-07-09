@@ -475,7 +475,7 @@ workflows:
           arch_suffix: ""
       - dependencies-part2-self:
           requires:
-            - dependencies-part1-self
+            - dependencies-part1
       - dependencies-part3-self:
           requires:
             - dependencies-part2-self
@@ -500,7 +500,7 @@ workflows:
           arch_suffix: "_x86_64"
       - dependencies-part2-hosted:
           requires:
-            - dependencies-part1-hosted
+            - dependencies-part1
       - dependencies-part3-hosted:
           requires:
             - dependencies-part2-hosted
