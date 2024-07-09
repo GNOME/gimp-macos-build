@@ -503,13 +503,15 @@ workflows:
 
   build-x86_64:
     jobs:
-      - dependencies-part1:
+      - dependencies:
+          name: part1
+          part: "1"
           arch: "x86_64"
           arch_command: "arch -x86_64"
           arch_suffix: "_x86_64"
       - dependencies-part2-hosted:
           requires:
-            - dependencies-part1
+            - part1
       - dependencies-part3-hosted:
           requires:
             - dependencies-part2-hosted
