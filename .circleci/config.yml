@@ -146,10 +146,13 @@ jobs:
   #        JOBS SELF HOSTED
   # -------------------------
 
-  dependencies-part1:
+  dependencies:
     machine: true
     resource_class: gnome/gimp
     parameters:
+      part:
+        type: string
+        default: "1"
       arch:
         type: string
         default: "arm64"
@@ -172,8 +175,7 @@ jobs:
       - run:
           name: Build GIMP dependencies part 1
           command: |
-            << parameters.arch_command >> scripts/macports1_install_packages.sh --uninstall-package gimp3
-            << parameters.arch_command >> scripts/macports1_install_packages.sh --part1
+            << parameters.arch_command >> scripts/macports1_install_packages.sh --part<< parameters.part >>
           no_output_timeout: 30m
       - store_artifacts:
           path: ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/var/macports/logs
@@ -469,13 +471,18 @@ workflows:
   version: 2
   build-arm64:
     jobs:
-      - dependencies-part1:
+      - dependencies:
+          part: "1"
           arch: "arm64"
           arch_command: ""
           arch_suffix: ""
-      - dependencies-part2-self:
+      - dependencies:
+          part: "2"
+          arch: "arm64"
+          arch_command: ""
+          arch_suffix: ""
           requires:
-            - dependencies-part1
+            - dependencies
       - dependencies-part3-self:
           requires:
             - dependencies-part2-self
