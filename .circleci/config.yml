@@ -363,4 +363,4 @@ workflows:
       - package-gimp:
           arch: "x86_64"
           requires:
-            - build-gimp-hosted
+            - build-gimp
