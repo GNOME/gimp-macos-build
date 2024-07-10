@@ -6,7 +6,7 @@ if [[ $(uname -m) == 'arm64' ]]; then
   build_arm64=true
   echo "*** Build: arm64"
   #  target directory
-  export PACKAGE_DIR="${HOME}/macports-gimp${VGIMP}-osx-app"
+  export PACKAGE_DIR="${HOME}/macports-gimp${VGIMP}-osx-app-arm64"
   export arch="arm64"
 else
   build_arm64=false
