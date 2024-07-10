@@ -32,7 +32,7 @@ commands:
 
   cache-break:
     parameters:
-      arch:
+      arch_command:
         type: string
         default: ""
       arch_suffix:
@@ -47,45 +47,31 @@ commands:
             if [ ! -e "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >><< parameters.arch_suffix >>" ] || [ "${cache_break}" != "$(cat "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >><< parameters.arch_suffix >>")" ]; then
               echo "Cache break"
               echo "${cache_break}" > "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >><< parameters.arch_suffix >>"
-              << parameters.arch >> scripts/macports_uninstall.sh --homedirgimp<< pipeline.parameters.vgimp >>
+              << parameters.arch_command >> scripts/macports_uninstall.sh --homedirgimp<< pipeline.parameters.vgimp >>
             fi
 
   setup-macports:
     parameters:
-      arch:
+      arch_command:
         type: string
         default: ""
     steps:
       - run:
           name: Install macports
           command: |
-            << parameters.arch >> scripts/macports0_install.sh --circleci --homedirgimp<< pipeline.parameters.vgimp >>
+            << parameters.arch_command >> scripts/macports0_install.sh --circleci --homedirgimp<< pipeline.parameters.vgimp >>
           no_output_timeout: 30m
 
   clear-artifacts:
     parameters:
-      arch_suffix:
+      arch:
         type: string
         default: "arm64"
     steps:
       - run:
           name: Clearing artifacts
           command: |
-            rm -rf ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch_suffix >>/var/macports/logs
-
-  pre-cache-store-hosted:
-    steps:
-      - run:
-          command: |
-            mkdir -p ~/got_cache
-            if [ ! -f ~/got_cache/cache_check ]; then
-              echo "we got cache" > ~/got_cache/cache_check
-            fi
-            echo "**saving that we have cache"
-      - save_cache:
-          paths:
-            - ~/got_cache
-          key: got_cache{{ checksum "CACHE_BREAK" }}-gimp<< pipeline.parameters.vgimp >>vlocal3-{{ checksum "CACHE_ITER" }}
+            rm -rf ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/var/macports/logs
 
   setup-gtk-mac-bundler:
     steps:
@@ -160,303 +146,92 @@ jobs:
   #        JOBS SELF HOSTED
   # -------------------------
 
-  dependencies-part1-self:
+  dependencies:
     machine: true
     resource_class: gnome/gimp
+    parameters:
+      part:
+        type: string
+        default: "1"
+      arch:
+        type: string
+        default: "arm64"
+      arch_command:
+        type: string
+        default: ""
+      arch_suffix:
+        type: string
+        default: ""
 
     steps:
-      - setup
-      - cache-break
-      - setup-macports
-      - clear-artifacts
-      - run:
-          name: Build GIMP dependencies part 1
-          command: |
-            scripts/macports1_install_packages.sh --uninstall-package gimp3
-            scripts/macports1_install_packages.sh --part1
-          no_output_timeout: 30m
-      - store_artifacts:
-          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-arm64/var/macports/logs
-
-  dependencies-part2-self:
-    machine: true
-    resource_class: gnome/gimp
-
-    steps:
-      - setup
-      - setup-macports
-      - clear-artifacts
-      - run:
-          name: Build GIMP dependencies part 2
-          command: |
-            scripts/macports1_install_packages.sh --part2
-          no_output_timeout: 30m
-      - store_artifacts:
-          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-arm64/var/macports/logs
-
-  dependencies-part3-self:
-    machine: true
-    resource_class: gnome/gimp
-
-    steps:
-      - setup
-      - setup-macports
-      - clear-artifacts
-      - run:
-          name: Build GIMP dependencies part 3
-          command: |
-            scripts/macports1_install_packages.sh --part3
-          no_output_timeout: 30m
-      - store_artifacts:
-          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-arm64/var/macports/logs
-
-  dependencies-part4-self:
-    machine: true
-    resource_class: gnome/gimp
-
-    steps:
-      - setup
-      - setup-macports
-      - clear-artifacts
-      - run:
-          name: Build GIMP dependencies part 4
-          command: |
-            scripts/macports1_install_packages.sh --part4
-          no_output_timeout: 30m
-      - store_artifacts:
-          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-arm64/var/macports/logs
-
-  dependencies-part5-self:
-    machine: true
-    resource_class: gnome/gimp
-
-    steps:
-      - setup
-      - setup-macports
-      - clear-artifacts
-      - run:
-          name: Build GIMP dependencies part 5
-          command: |
-            scripts/macports1_install_packages.sh --part5
-          no_output_timeout: 30m
-
-  build-gimp-self:
-    machine: true
-    resource_class: gnome/gimp
-
-    steps:
-      - setup
-      - setup-macports
-      - clear-artifacts
-      - run:
-          name: Build GIMP
-          # XXX `make check` is not working reliably under circle ci, so we are
-          # not using --check flag
-          command: |
-            scripts/macports2_install_gimp.sh
-      - store_artifacts:
-          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-arm64/var/macports/logs
-      - setup-gtk-mac-bundler
-      - run:
-          name: Creating DMG package
-          command: |
-            scripts/macports3_build_app.sh
-          no_output_timeout: 20m
-      - run:
-          name: Check minos and sdk properly set
-          command: |
-            scripts/validate_min_os.py ~/macports-gimp<< pipeline.parameters.vgimp >>-osx-app
-      - persist_to_workspace:
-          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
-          # taken to be the root directory of the workspace.
-          root: "~"
-          # Must be relative path from root
-          paths:
-            - macports-gimp<< pipeline.parameters.vgimp >>-osx-app
-            - macports-gimp<< pipeline.parameters.vgimp >>-osx-app-x86_64
-            - .profile-gimp<< pipeline.parameters.vgimp >>-arm64
-
-  package-gimp-self:
-    macos:
-      xcode: "14.3.1"
-    resource_class: macos.m1.medium.gen1
-
-    steps:
-      - setup
-      - attach_workspace:
-          # Must be absolute path or relative path from working_directory
-          at: "~"
-      - authorize-applescript
-      - import-signing-cert
-      # - open-signing-cert
-      - run:
-          name: Creating DMG package
-          command: |
-            source ~/.profile-gimp<< pipeline.parameters.vgimp >>-arm64
-            cd ${HOME}/project
-
-            # run script
-            scripts/macports4_build_dmg.sh
-          no_output_timeout: 20m
-      - run:
-          name: Notarizing DMG package
-          command: |
-            package/notarize.sh
-          no_output_timeout: 20m
-      - run:
-          name: Checksum DMG package
-          command: |
-            package/checksum-artifacts.sh
-      - store_artifacts:
-          path: /tmp/artifacts
-          destination: builds
-
-  # -------------------------
-  #        JOBS CIRCLECI HOSTED
-  # -------------------------
-
-  dependencies-part1-hosted:
-    machine: true
-    resource_class: gnome/gimp
-
-    steps:
-      - macos/install-rosetta
       - setup
       - cache-break:
-          arch: "arch -x86_64"
-          arch_suffix: "_x86_64"
+          arch_command: "<< parameters.arch_command >>"
+          arch_suffix: "<< parameters.arch_suffix >>"
       - setup-macports:
-          arch: "arch -x86_64"
+          arch_command: "<< parameters.arch_command >>"
       - clear-artifacts:
-          arch_suffix: "x86_64"
+          arch: "<< parameters.arch >>"
       - run:
-          name: Build GIMP dependencies part 1
+          name: Build GIMP dependencies part << parameters.part >>
           command: |
-            arch -x86_64 scripts/macports1_install_packages.sh --uninstall-package gimp3
-            arch -x86_64 scripts/macports1_install_packages.sh --part1
+            << parameters.arch_command >> scripts/macports1_install_packages.sh --part<< parameters.part >>
           no_output_timeout: 30m
       - store_artifacts:
-          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/var/macports/logs
+          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/var/macports/logs
 
-  dependencies-part2-hosted:
+  build-gimp:
     machine: true
     resource_class: gnome/gimp
+    parameters:
+      arch:
+        type: string
+        default: "arm64"
+      arch_command:
+        type: string
+        default: ""
 
     steps:
-      - macos/install-rosetta
       - setup
       - setup-macports:
-          arch: "arch -x86_64"
+          arch_command: "<< parameters.arch_command >>"
       - clear-artifacts:
-          arch_suffix: "x86_64"
-      - run:
-          name: Build GIMP dependencies part 2
-          command: |
-            arch -x86_64 scripts/macports1_install_packages.sh --part2
-          no_output_timeout: 30m
-      - store_artifacts:
-          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/var/macports/logs
-
-  dependencies-part3-hosted:
-    machine: true
-    resource_class: gnome/gimp
-
-    steps:
-      - macos/install-rosetta
-      - setup
-      - setup-macports:
-          arch: "arch -x86_64"
-      - clear-artifacts:
-          arch_suffix: "x86_64"
-      - run:
-          name: Build GIMP dependencies part 3
-          command: |
-            arch -x86_64 scripts/macports1_install_packages.sh --part3
-          no_output_timeout: 30m
-      - store_artifacts:
-          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/var/macports/logs
-
-  dependencies-part4-hosted:
-    machine: true
-    resource_class: gnome/gimp
-
-    steps:
-      - macos/install-rosetta
-      - setup
-      - setup-macports:
-          arch: "arch -x86_64"
-      - clear-artifacts:
-          arch_suffix: "x86_64"
-      - run:
-          name: Build GIMP dependencies part 4
-          command: |
-            arch -x86_64 scripts/macports1_install_packages.sh --part4
-          no_output_timeout: 30m
-      - store_artifacts:
-          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/var/macports/logs
-
-  dependencies-part5-hosted:
-    machine: true
-    resource_class: gnome/gimp
-
-    steps:
-      - macos/install-rosetta
-      - setup
-      - setup-macports:
-          arch: "arch -x86_64"
-      - clear-artifacts:
-          arch_suffix: "x86_64"
-      - run:
-          name: Build GIMP dependencies part 5
-          command: |
-            arch -x86_64 scripts/macports1_install_packages.sh --part5
-          no_output_timeout: 30m
-      - store_artifacts:
-          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/var/macports/logs
-
-  build-gimp-hosted:
-    machine: true
-    resource_class: gnome/gimp
-
-    steps:
-      - macos/install-rosetta
-      - setup
-      - setup-macports:
-          arch: "arch -x86_64"
-      - clear-artifacts:
-          arch_suffix: "x86_64"
+          arch: "<< parameters.arch >>"
       - run:
           name: Build GIMP
           # XXX `make check` is not working reliably under circle ci, so we are
           # not using --check flag
           command: |
-            arch -x86_64 scripts/macports2_install_gimp.sh
+            << parameters.arch_command >> scripts/macports2_install_gimp.sh
       - store_artifacts:
-          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-x86_64/var/macports/logs
+          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/var/macports/logs
       - setup-gtk-mac-bundler
       - run:
-          name: Build GIMP app
+          name: Creating DMG package
           command: |
-            arch -x86_64 scripts/macports3_build_app.sh
+            << parameters.arch_command >> scripts/macports3_build_app.sh
           no_output_timeout: 20m
       - run:
           name: Check minos and sdk properly set
           command: |
-            scripts/validate_min_os.py ~/macports-gimp<< pipeline.parameters.vgimp >>-osx-app-x86_64
+            scripts/validate_min_os.py ~/macports-gimp<< pipeline.parameters.vgimp >>-osx-app-<< parameters.arch >>
       - persist_to_workspace:
           # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
           # taken to be the root directory of the workspace.
           root: "~"
           # Must be relative path from root
           paths:
-            - macports-gimp<< pipeline.parameters.vgimp >>-osx-app
-            - macports-gimp<< pipeline.parameters.vgimp >>-osx-app-x86_64
-            - .profile-gimp<< pipeline.parameters.vgimp >>-x86_64
+            - macports-gimp<< pipeline.parameters.vgimp >>-osx-app-<< parameters.arch >>
+            - .profile-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>
 
-  package-gimp-hosted:
+  package-gimp:
     macos:
       xcode: "14.3.1"
     resource_class: macos.m1.medium.gen1
+    parameters:
+      arch:
+        type: string
+        default: "arm64"
 
     steps:
       - setup
@@ -469,7 +244,7 @@ jobs:
       - run:
           name: Creating DMG package
           command: |
-            source ~/.profile-gimp<< pipeline.parameters.vgimp >>-x86_64
+            source ~/.profile-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>
             cd ${HOME}/project
 
             # run script
@@ -492,44 +267,100 @@ workflows:
   version: 2
   build-arm64:
     jobs:
-      - dependencies-part1-self
-      - dependencies-part2-self:
+      - dependencies:
+          name: dependencies-part1
+          part: "1"
+          arch: "arm64"
+          arch_command: ""
+          arch_suffix: ""
+      - dependencies:
+          name: dependencies-part2
+          part: "2"
+          arch: "arm64"
+          arch_command: ""
+          arch_suffix: ""
           requires:
-            - dependencies-part1-self
-      - dependencies-part3-self:
+            - dependencies-part1
+      - dependencies:
+          name: dependencies-part3
+          part: "3"
+          arch: "arm64"
+          arch_command: ""
+          arch_suffix: ""
           requires:
-            - dependencies-part2-self
-      - dependencies-part4-self:
+            - dependencies-part2
+      - dependencies:
+          name: dependencies-part4
+          part: "4"
+          arch: "arm64"
+          arch_command: ""
+          arch_suffix: ""
           requires:
-            - dependencies-part3-self
-      # - dependencies-part5-self:
+            - dependencies-part3
+      # - dependencies:
+      #     name: dependencies-part5
+      #     part: "5"
+      #     arch: "arm64"
+      #     arch_command: ""
+      #     arch_suffix: ""
       #     requires:
-      #       - dependencies-part4-self
-      - build-gimp-self:
+      #       - dependencies-part4
+      - build-gimp:
+          arch: "arm64"
+          arch_command: ""
           requires:
-            - dependencies-part4-self
-      - package-gimp-self:
+            - dependencies-part4
+      - package-gimp:
+          arch: "arm64"
           requires:
-            - build-gimp-self
+            - build-gimp
 
   build-x86_64:
     jobs:
-      - dependencies-part1-hosted
-      - dependencies-part2-hosted:
+      - dependencies:
+          name: dependencies-part1
+          part: "1"
+          arch: "x86_64"
+          arch_command: "arch -x86_64"
+          arch_suffix: "_x86_64"
+      - dependencies:
+          name: dependencies-part2
+          part: "2"
+          arch: "x86_64"
+          arch_command: "arch -x86_64"
+          arch_suffix: "_x86_64"
           requires:
-            - dependencies-part1-hosted
-      - dependencies-part3-hosted:
+            - dependencies-part1
+      - dependencies:
+          name: dependencies-part3
+          part: "3"
+          arch: "x86_64"
+          arch_command: "arch -x86_64"
+          arch_suffix: "_x86_64"
           requires:
-            - dependencies-part2-hosted
-      - dependencies-part4-hosted:
+            - dependencies-part2
+      - dependencies:
+          name: dependencies-part4
+          part: "4"
+          arch: "x86_64"
+          arch_command: "arch -x86_64"
+          arch_suffix: "_x86_64"
           requires:
-            - dependencies-part3-hosted
-      # - dependencies-part5-hosted:
+            - dependencies-part3
+      # - dependencies:
+      #     name: dependencies-part5
+      #     part: "5"
+      #     arch: "x86_64"
+      #     arch_command: "arch -x86_64"
+      #     arch_suffix: "_x86_64"
       #     requires:
-      #       - dependencies-part4-hosted
-      - build-gimp-hosted:
+      #       - dependencies-part4
+      - build-gimp:
+          arch: "x86_64"
+          arch_command: "arch -x86_64"
           requires:
-            - dependencies-part4-hosted
-      - package-gimp-hosted:
+            - dependencies-part4
+      - package-gimp:
+          arch: "x86_64"
           requires:
-            - build-gimp-hosted
+            - build-gimp

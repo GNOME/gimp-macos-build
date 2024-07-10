@@ -11,16 +11,15 @@ fi
 if [[ "$ARCH" == 'arm64' ]]; then
   build_arm64=true
   echo "*** Build: arm64"
-  #  target directory
-  export PACKAGE_DIR="${HOME}/macports-gimp${VGIMP}-osx-app"
   export arch="arm64"
 else
   build_arm64=false
   echo "*** Build: x86_64"
-  #  target directory
-  export PACKAGE_DIR="${HOME}/macports-gimp${VGIMP}-osx-app-x86_64"
   export arch="x86_64"
 fi
+
+#  target directory
+export PACKAGE_DIR="${HOME}/macports-gimp${VGIMP}-osx-app-${arch}"
 
 GIMP_VERSION="$(cat ${PACKAGE_DIR}/GIMP.app/Contents/Resources/.version)"
 rm ${PACKAGE_DIR}/GIMP.app/Contents/Resources/.version
