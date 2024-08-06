@@ -140,6 +140,8 @@ post-patch {
 post-build {
     system -W ${workpath}/build "ninja gimp-data/images/logo/gimp.icns"
     file copy ${workpath}/build/gimp-data/images/logo/gimp.icns ${portpath}/../../../package/
+    system -W ${workpath}/build "ninja gimp-data/images/logo/gimp-dmg.png"
+    file copy ${workpath}/build/gimp-data/images/logo/gimp-dmg.png ${portpath}/../../../package/
 }
 
 # needs C++14 C11
