@@ -92,12 +92,12 @@ cd create-dmg
   --volname "GIMP 2.99 Install" \
   --background "../gimp-dmg.png" \
   --window-pos 1 1 \
-  --icon "GIMP.app" 190 360 \
+  --icon "GIMP.app" 192 352 \
   --window-size 640 535 \
   --icon-size 110 \
   --icon "Applications" 110 110 \
   --hide-extension "Applications" \
-  --app-drop-link 450 360 \
+  --app-drop-link 448 352 \
   --format ULFO \
   --disk-image-size 1200 \
   --hdiutil-verbose \
