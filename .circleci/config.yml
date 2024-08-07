@@ -176,7 +176,7 @@ jobs:
           name: Build GIMP dependencies part << parameters.part >>
           command: |
             << parameters.arch_command >> scripts/macports1_install_packages.sh --part<< parameters.part >>
-          no_output_timeout: 30m
+          no_output_timeout: 2h
       - store_artifacts:
           path: ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/var/macports/logs
 
