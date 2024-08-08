@@ -90,7 +90,7 @@ cd create-dmg
 
 ./create-dmg \
   --volname "GIMP 2.99 Install" \
-  --background "../gimp-dmg.png" \
+  --background "${PACKAGE_DIR}/GIMP.app/Contents/Resources/gimp-dmg.png" \
   --window-pos 1 1 \
   --icon "GIMP.app" 192 352 \
   --window-size 640 535 \
