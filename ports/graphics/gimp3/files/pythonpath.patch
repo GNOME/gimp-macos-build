@@ -2,12 +2,12 @@ diff --git a/meson.build b/meson.build
 index 6f5a504344..7875983295 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -960,7 +960,7 @@ perl = find_program('perl5', 'perl', 'perl5.005', 'perl5.004', 'perl')
+@@ -1074,7 +1074,7 @@ # the interpreter is not useful at build time.
 
  python3_minver = '>=3.6'
 
--python = pythonmod.find_installation('python3')
+-python = pythonmod.find_installation('python3', required: true)
 +python = pythonmod.find_installation('@@PYTHON3_BIN@@')
  message('Found Python @0@'.format(python.language_version()))
 
- have_python = get_option('python')
+ if not python.language_version().version_compare(python3_minver)

@@ -85,12 +85,13 @@ fi
 mkdir -p /tmp/artifacts/
 rm -f /tmp/tmp.dmg
 rm -f "/tmp/artifacts/gimp-${GIMP_VERSION}-${arch}.dmg"
+mv "${PACKAGE_DIR}/GIMP.app/Contents/Resources/gimp-dmg.png" /tmp/artifacts/gimp-dmg.png
 
 cd create-dmg
 
 ./create-dmg \
   --volname "GIMP 2.99 Install" \
-  --background "${PACKAGE_DIR}/GIMP.app/Contents/Resources/gimp-dmg.png" \
+  --background "/tmp/artifacts/gimp-dmg.png" \
   --window-pos 1 1 \
   --icon "GIMP.app" 192 352 \
   --window-size 640 535 \
@@ -104,6 +105,7 @@ cd create-dmg
   "/tmp/artifacts/${DMGNAME}" \
   "$PACKAGE_DIR/"
 rm -f /tmp/artifacts/rw.*.dmg
+rm -f /tmp/artifacts/gimp-dmg.png
 cd ..
 
 if [ -n "${codesign_subject}" ]; then
