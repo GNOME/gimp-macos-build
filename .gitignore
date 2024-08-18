@@ -4,3 +4,5 @@ tmp-jhbuild-revision
 .DS_Store
 info*.plist
 .env
+package/gimp-dmg.png
+package/gimp.icns

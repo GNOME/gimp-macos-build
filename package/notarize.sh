@@ -8,7 +8,7 @@ NOTARY_OUT="$(xcrun notarytool submit ${DMG_FILE} --apple-id ${notarization_logi
 echo "$NOTARY_OUT"
 
 # Extract Request UUID
-REQUEST_UUID=$(echo "$NOTARY_OUT" | grep -oE "id: [0-9a-f-]+" | awk '{print $2}')
+REQUEST_UUID=$(echo "$NOTARY_OUT" | grep -oE "id: [0-9a-f-]+" | head -n 1 | awk '{print $2}')
 
 if [ -z "$REQUEST_UUID" ]; then
   echo "Failed finding Request UUID in notarytool output"
@@ -25,7 +25,7 @@ else
   echo "Notarization failed with status: $NOT_STATUS. Showing log"
 fi
 
-xcrun notarytool log --apple-id ${notarization_login} --team-id ${notarization_teamid} --password ${notarization_password} $REQUEST_UUID
+xcrun notarytool log --apple-id "${notarization_login}" --team-id "${notarization_teamid}" --password "${notarization_password}" "$REQUEST_UUID"
 
 if [[ "$NOT_STATUS" != Accepted* ]]; then
   exit 1

@@ -26,6 +26,10 @@ rm ${PACKAGE_DIR}/GIMP.app/Contents/Resources/.version
 
 echo "Gimp version: ${GIMP_VERSION}"
 
+echo "Move background out of app before signing"
+mkdir -p /tmp/artifacts/
+mv "${PACKAGE_DIR}/GIMP.app/Contents/Resources/gimp-dmg.png" /tmp/artifacts/gimp-dmg.png
+
 echo "Signing libs"
 
 if [ -n "${codesign_subject}" ]; then
@@ -82,10 +86,8 @@ else
   DMGNAME="gimp-${GIMP_VERSION}-${arch}-b${CIRCLE_BUILD_NUM}-${CIRCLE_BRANCH////-}.dmg"
 fi
 
-mkdir -p /tmp/artifacts/
 rm -f /tmp/tmp.dmg
 rm -f "/tmp/artifacts/gimp-${GIMP_VERSION}-${arch}.dmg"
-mv "${PACKAGE_DIR}/GIMP.app/Contents/Resources/gimp-dmg.png" /tmp/artifacts/gimp-dmg.png
 
 cd create-dmg
 
