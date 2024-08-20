@@ -51,7 +51,7 @@ set is_stable       [expr {$minor % 2 == 0} && ${is_release}]
 if {${is_release}} {
     git.branch      GEGL_${major}_${minor}_${patch}
 } else {
-    set branch      origin/master
+    set branch      origin/wip/Jehan/gimp-9172-relocatable-localization
     revision        0
 }
 
