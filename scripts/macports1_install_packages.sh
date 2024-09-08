@@ -333,6 +333,7 @@ if [ -n "${PART2}" ]; then
     poppler-data \
     py-cairo \
     py-gobject3 \
+    qoi \
     shared-mime-info \
     util-linux \
     webp \
