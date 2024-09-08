@@ -306,6 +306,7 @@ if [ -n "${PART2}" ]; then
   # Hail mary since rav1e has been broken for a month as of 20 sep 2023
   port_clean_and_install \
     aalib \
+    cfitsio \
     ffmpeg \
     fontconfig \
     gexiv2 \
