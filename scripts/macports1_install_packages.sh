@@ -321,6 +321,7 @@ if [ -n "${PART2}" ]; then
     libarchive \
     libde265 \
     libheif \
+    libjxl \
     libmng \
     libmypaint \
     librsvg \

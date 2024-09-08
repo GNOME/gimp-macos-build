@@ -114,6 +114,7 @@ depends_lib-append \
                     port:libwmf \
                     port:libmng \
                     port:cfitsio \
+                    port:libjxl \
                     port:ghostscript \
                     port:qoi \
                     port:gegl \
