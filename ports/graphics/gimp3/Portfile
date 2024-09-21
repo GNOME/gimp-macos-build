@@ -125,6 +125,7 @@ depends_lib-append \
                     port:cfitsio \
                     port:libjxl \
                     port:ghostscript \
+                    port:graphviz \
                     port:qoi \
                     port:gegl \
                     port:adwaita-icon-theme \

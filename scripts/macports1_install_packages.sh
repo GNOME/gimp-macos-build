@@ -314,6 +314,7 @@ if [ -n "${PART2}" ]; then
     ghostscript \
     git \
     glib-networking \
+    graphviz \
     gtk3 \
     icu \
     iso-codes \
