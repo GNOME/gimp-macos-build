@@ -91,6 +91,11 @@
   <!-- Copy in gegl modules -->
   <binary>${prefix}/lib/gegl-0.4/*.dylib</binary>
   <data>${prefix}/lib/gegl-0.4/*.json</data>
+  <!-- "Show Image Graph" -->
+  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/dot</binary>
+  <binary data="${bundle}/Contents/Resources/lib">${prefix}/lib/graphviz/config*</binary>
+  <binary dest="${bundle}/Contents/Resources/lib">${prefix}/lib/graphviz/libgvplugin_dot*.dylib</binary>
+  <binary dest="${bundle}/Contents/Resources/lib">${prefix}/lib/graphviz/libgvplugin_pango*.dylib</binary>
   <!-- Copy in fortran and others -->
   <binary>${prefix}/lib/libgcc/*.dylib</binary>
   <!-- Copy in GTK+ printer backends -->
