@@ -87,6 +87,7 @@ depends_lib-append \
                     path:lib/pkgconfig/gdk-pixbuf-2.0.pc:gdk-pixbuf2 \
                     port:gettext-runtime \
                     port:gexiv2 \
+                    port:graphviz \
                     path:lib/pkgconfig/gobject-introspection-1.0.pc:gobject-introspection \
                     port:jasper \
                     port:json-glib \
