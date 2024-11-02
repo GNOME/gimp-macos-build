@@ -210,7 +210,7 @@ if [ -n "$FIRST_INSTALL" ]; then
   port -v selfupdate || true
 fi
 
-pushd ~/project/ports
+pushd ${PROJECT_DIR}/ports
 portindex
 popd
 

@@ -48,7 +48,7 @@ function sup_port() {
   fi
 }
 
-pushd ~/project/ports
+pushd ${PROJECT_DIR}/ports
 portindex
 popd
 
@@ -58,6 +58,6 @@ port -N uninstall installed and gimp210 || true
 port clean gimp210 || true
 port -N uninstall installed and gimp3 || true
 port clean gimp3 || true
-rm ~/project/package/gimp.icns || true
-rm ~/project/package/gimp-dmg.png || true
+rm ${PROJECT_DIR}/package/gimp.icns || true
+rm ${PROJECT_DIR}/package/gimp-dmg.png || true
 sup_port port -v -k -N install gimp${VGIMP} +vala ${local}
