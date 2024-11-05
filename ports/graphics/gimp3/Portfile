@@ -18,8 +18,8 @@ set my_name         gimp3
 #    correct if statement (and order)
 # 3. Do same for babl and gegl
 # *****
-version             2.99.19
-set last_release    2.99.18
+version             3.0.0_RC1
+set last_release    3.0.0_RC1
 set last_dev        2.99.19
 revision            0
 
@@ -49,7 +49,7 @@ git.url             https://gitlab.gnome.org/GNOME/gimp.git
 set major           [lindex [split ${version} .] 0]
 set minor           [lindex [split ${version} .] 1]
 set patch           [lindex [split ${version} .] 2]
-set is_release      [expr {$patch % 2 == 0}]
+set is_release      [expr {[string is integer -strict $patch] && ($patch % 2 == 0)}]
 set is_stable       [expr {$minor % 2 == 0} && ${is_release}]
 
 if {${is_release}} {
