@@ -49,9 +49,9 @@
     ${prefix}/bin/gegl
   </binary>
   <!-- gimp additional binaries -->
-  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-console-2.99</binary>
-  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-debug-tool-2.99</binary>
-  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimptool-2.99</binary>
+  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-console-3.0</binary>
+  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-debug-tool-3.0</binary>
+  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimptool-3.0</binary>
   <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-script-fu-interpreter-3.0</binary>
 
   <!-- Copy in Info.plist -->
@@ -72,7 +72,7 @@
     ${prefix}/Library/Frameworks/Python.framework/Versions/3.10/*
   </binary>
   <!-- Name of main gimp binary -->
-  <main-binary>${prefix}/bin/gimp-2.99</main-binary>
+  <main-binary>${prefix}/bin/gimp-3.0</main-binary>
   <!-- Copy in gimp plugins -->
   <binary recurse="True">${prefix}/lib/gimp/3.0/plug-ins/*</binary>
   <!-- Copy in gimp modules -->

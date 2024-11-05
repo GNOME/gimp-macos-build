@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DMG_FILE=$(find /tmp/artifacts/ -name "gimp-2.99*.dmg")
+DMG_FILE=$(find /tmp/artifacts/ -name "gimp-3.0*.dmg")
 
 # Submit for notarization
 NOTARY_OUT="$(xcrun notarytool submit ${DMG_FILE} --apple-id ${notarization_login} --team-id ${notarization_teamid} --password ${notarization_password} --wait 2>&1)"

@@ -23,7 +23,7 @@ rm -rf ${PACKAGE_DIR}
 
 printf "Determining GIMP version: "
 
-GIMP_VERSION="$(${PREFIX}/bin/gimp-2.99 --version 2>/dev/null | grep 'GNU Image Manipulation Program version' | sed 's|GNU Image Manipulation Program version ||')"
+GIMP_VERSION="$(${PREFIX}/bin/gimp-3.0 --version 2>/dev/null | grep 'GNU Image Manipulation Program version' | sed 's|GNU Image Manipulation Program version ||')"
 # for gtk-mac-bundler
 
 echo "$GIMP_VERSION"
@@ -270,8 +270,8 @@ fi
 echo "create missing links. should we use wrappers instead?"
 
 pushd ${PACKAGE_DIR}/GIMP.app/Contents/MacOS || exit 1
-  ln -s gimp-console-2.99 gimp-console
-  ln -s gimp-debug-tool-2.99 gimp-debug-tool
+  ln -s gimp-console-3.0 gimp-console
+  ln -s gimp-debug-tool-3.0 gimp-debug-tool
   ln -s python3.10 python
   ln -s python3.10 python3
 popd
