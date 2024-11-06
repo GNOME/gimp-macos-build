@@ -18,7 +18,8 @@ set my_name         gimp3
 #    correct if statement (and order)
 # 3. Do same for babl and gegl
 # *****
-version             3.0.0_RC1
+version             3.0.0
+version_rc          1
 set last_release    3.0.0_RC1
 set last_dev        2.99.19
 revision            0
@@ -53,8 +54,13 @@ set is_release      [expr {[string is integer -strict $patch] && ($patch % 2 == 
 set is_stable       [expr {$minor % 2 == 0} && ${is_release}]
 
 if {${is_release}} {
-    set branch      GIMP_${major}_${minor}_${patch}
-    git.branch      ${branch}
+    if (${version_rc} > 0) {
+        set branch      GIMP_${major}_${minor}_${patch}_RC${rc_version}
+        git.branch      ${branch}
+    } else {
+        set branch      GIMP_${major}_${minor}_${patch}
+        git.branch      ${branch}
+    }
 } else {
     set branch      origin/master
     git.branch      ${branch}
