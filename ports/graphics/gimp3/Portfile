@@ -19,7 +19,7 @@ set my_name         gimp3
 # 3. Do same for babl and gegl
 # *****
 version             3.0.0
-version_rc          1
+set version_rc      1
 set last_release    3.0.0_RC1
 set last_dev        2.99.19
 revision            0
