@@ -14,12 +14,13 @@ set my_name         gimp3
 # 1. Update version and/or revision to the desired state
 #    If the revision is not a release (e.g. 2.99.17) then do not touch the
 #    revision.
+#    This can include RC versions such as 3.0.0.RC1
 # 2. Ensure any release-specific patches are added to the patchfiles list in the
 #    correct if statement (and order)
 # 3. Do same for babl and gegl
 # *****
-version             2.99.19
-set last_release    2.99.18
+version             3.0.0.RC1
+set last_release    3.0.0.RC1
 set last_dev        2.99.19
 revision            0
 
@@ -49,12 +50,18 @@ git.url             https://gitlab.gnome.org/GNOME/gimp.git
 set major           [lindex [split ${version} .] 0]
 set minor           [lindex [split ${version} .] 1]
 set patch           [lindex [split ${version} .] 2]
+set rc_version      [lindex [split ${version} .] 3]
 set is_release      [expr {$patch % 2 == 0}]
 set is_stable       [expr {$minor % 2 == 0} && ${is_release}]
 
 if {${is_release}} {
-    set branch      GIMP_${major}_${minor}_${patch}
-    git.branch      ${branch}
+    if {[string length ${rc_version}] > 0} {
+        set branch      GIMP_${major}_${minor}_${patch}_${rc_version}
+        git.branch      ${branch}
+    } else {
+        set branch      GIMP_${major}_${minor}_${patch}
+        git.branch      ${branch}
+    }
 } else {
     set branch      origin/master
     git.branch      ${branch}

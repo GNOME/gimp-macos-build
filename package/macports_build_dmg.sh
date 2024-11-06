@@ -92,7 +92,7 @@ rm -f "/tmp/artifacts/gimp-${GIMP_VERSION}-${arch}.dmg"
 cd create-dmg
 
 ./create-dmg \
-  --volname "GIMP 2.99 Install" \
+  --volname "GIMP 3.0 Install" \
   --background "/tmp/artifacts/gimp-dmg.png" \
   --window-pos 1 1 \
   --icon "GIMP.app" 192 352 \
