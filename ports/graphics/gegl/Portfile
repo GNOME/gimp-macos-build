@@ -19,9 +19,9 @@ set my_name         gegl
 #    correct if statement (and order)
 # 3. Do same for babl and gegl
 # *****
-version             0.4.50
+version             0.4.51
 set last_release    0.4.50
-set last_dev        0.4.49
+set last_dev        0.4.51
 revision            0
 
 # epoch must never be reduced.

@@ -19,9 +19,9 @@ set my_name         gimp3
 #    correct if statement (and order)
 # 3. Do same for babl and gegl
 # *****
-version             3.0.0.RC1
+version             3.0.0.pre
 set last_release    3.0.0.RC1
-set last_dev        2.99.19
+set last_dev        3.0.0.pre
 revision            0
 
 # epoch must never be reduced. This was reduced for the 2.99.14 release
@@ -51,7 +51,7 @@ set major           [lindex [split ${version} .] 0]
 set minor           [lindex [split ${version} .] 1]
 set patch           [lindex [split ${version} .] 2]
 set rc_version      [lindex [split ${version} .] 3]
-set is_release      [expr {$patch % 2 == 0}]
+set is_release      [expr {$patch % 2 == 0 && $rc_version ne "pre"}]
 set is_stable       [expr {$minor % 2 == 0} && ${is_release}]
 
 if {${is_release}} {
@@ -149,9 +149,9 @@ post-patch {
 
 post-build {
     system -W ${workpath}/build "ninja gimp-data/images/logo/gimp.icns"
-    file copy ${workpath}/build/gimp-data/images/logo/gimp.icns ${portpath}/../../../package/
+    file copy ${workpath}/build/gimp.icns ${portpath}/../../../package/
     system -W ${workpath}/build "ninja gimp-data/images/logo/gimp-dmg.png"
-    file copy ${workpath}/build/gimp-data/images/logo/gimp-dmg.png ${portpath}/../../../package/
+    file copy ${workpath}/build/gimp-dmg.png ${portpath}/../../../package/
 }
 
 # needs C++14 C11
