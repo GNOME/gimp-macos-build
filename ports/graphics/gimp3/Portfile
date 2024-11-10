@@ -14,20 +14,21 @@ set my_name         gimp3
 # 1. Update version and/or revision to the desired state
 #    If the revision is not a release (e.g. 2.99.17) then do not touch the
 #    revision.
-#    This can include RC versions such as 3.0.0.RC1
-# 2. Ensure any release-specific patches are added to the patchfiles list in the
+#    This can include RC versions such as 3.0.0-RC1
+# 2. During the RC cycle, the master branch version will be '+git', e.g.
+#    3.0.0-RC1+git
+# 3. Ensure any release-specific patches are added to the patchfiles list in the
 #    correct if statement (and order)
-# 3. Do same for babl and gegl
+# 4. Also update version info for babl and gegl
 # *****
-version             3.0.0.pre
-set last_release    3.0.0.RC1
-set last_dev        3.0.0.pre
+version             3.0.0-RC1+git
+set last_release    3.0.0-RC1
+set last_dev        3.0.0-RC1+git
 revision            0
 
 # epoch must never be reduced. This was reduced for the 2.99.14 release
 # which was incorrect.
 epoch               1
-set branch          [join [lrange [split ${version} .] 0 1] .]
 license             {GPL-3+ LGPL-3+}
 categories          graphics
 maintainers         {lukaso @lukaso} openmaintainer
@@ -46,27 +47,28 @@ homepage            https://gimp.org/
 fetch.type          git
 git.url             https://gitlab.gnome.org/GNOME/gimp.git
 
+# Simplify version string for manipulation
+set simple_version [string map {"-" "."} $version]
+
 # Releasing and branch management
-set major           [lindex [split ${version} .] 0]
-set minor           [lindex [split ${version} .] 1]
-set patch           [lindex [split ${version} .] 2]
-set rc_version      [lindex [split ${version} .] 3]
-set is_release      [expr {$patch % 2 == 0 && $rc_version ne "pre"}]
+set major           [lindex [split ${simple_version} .] 0]
+set minor           [lindex [split ${simple_version} .] 1]
+set patch           [lindex [split ${simple_version} .] 2]
+set rc_version      [lindex [split ${simple_version} .] 3]
+set is_release      [expr {$patch % 2 == 0 && $rc_version eq "RC1"}]
 set is_stable       [expr {$minor % 2 == 0} && ${is_release}]
 
 if {${is_release}} {
     if {[string length ${rc_version}] > 0} {
         set branch      GIMP_${major}_${minor}_${patch}_${rc_version}
-        git.branch      ${branch}
     } else {
         set branch      GIMP_${major}_${minor}_${patch}
-        git.branch      ${branch}
     }
 } else {
     set branch      origin/master
-    git.branch      ${branch}
     revision        0
 }
+git.branch      ${branch}
 
 patchfiles-append   pythonpath.patch
 patch.pre_args      -p1
@@ -129,7 +131,7 @@ depends_lib-append \
                     port:hicolor-icon-theme
 
 # Set preferred python version
-set py_ver          3.10
+set py_ver          3.12
 set py_ver_nodot    [string map {. {}} ${py_ver}]
 
 depends_build-append \
@@ -158,7 +160,7 @@ post-build {
 compiler.cxx_standard 2014
 compiler.c_standard   2011
 
-set python_framework        ${frameworks_dir}/Python.framework/Versions/3.10
+set python_framework        ${frameworks_dir}/Python.framework/Versions/${py_ver}
 configure.pkg_config_path   ${python_framework}/lib/pkgconfig
 
 # disable vala extensions by default (currently broken)

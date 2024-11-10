@@ -58,7 +58,7 @@ if {${is_release}} {
 depends_build-append \
                     port:pkgconfig \
                     port:gettext \
-                    port:python310
+                    port:python312
 
 depends_lib-append \
                     path:lib/pkgconfig/babl.pc:babl \
