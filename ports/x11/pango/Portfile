@@ -12,7 +12,7 @@ conflicts               pango-devel
 set my_name             pango
 epoch                   2
 version                 1.52.2
-revision                0
+revision                1
 checksums               rmd160  3d24f18df1639172bde594761bf9afca2e86ca98 \
                         sha256  d0076afe01082814b853deec99f9349ece5f2ce83908b8e58ff736b41f78a96b \
                         size    1963588
