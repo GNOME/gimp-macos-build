@@ -175,6 +175,10 @@ jobs:
       - run:
           name: Build GIMP dependencies part << parameters.part >>
           command: |
+            if [ "<< parameters.part >>" -eq "1" ]; then
+              echo "Special case uninstall pango"
+              << parameters.arch_command >> scripts/macports1_install_packages.sh --uninstall-package pango
+            fi
             << parameters.arch_command >> scripts/macports1_install_packages.sh --part<< parameters.part >>
           no_output_timeout: 2h
       - store_artifacts:
