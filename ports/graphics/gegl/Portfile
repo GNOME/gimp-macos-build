@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           muniversal 1.0
 PortGroup           compiler_blacklist_versions 1.0
 PortGroup           meson 1.0
-PortGroup           legacysupport 1.0
+PortGroup           legacysupport 1.1
 PortGroup           debug 1.0
 
 name                gegl
@@ -38,6 +38,7 @@ long_description    GEGL is a graph based image processing framework offering im
                     one-off projects to interactive applications.
 
 homepage            http://gegl.org/
+
 fetch.type          git
 git.url             https://gitlab.gnome.org/GNOME/gegl.git
 
@@ -55,61 +56,55 @@ if {${is_release}} {
     revision        0
 }
 
+# Disable unexpected download of subprojects
+meson.wrap_mode     nodownload
+
+set py_ver          3.12
+set py_ver_nodot    [string map {. {}} ${py_ver}]
+set py_framework    ${frameworks_dir}/Python.framework/Versions/${py_ver}
+
 depends_build-append \
-                    port:pkgconfig \
                     port:gettext \
-                    port:python312
+                    path:bin/pkg-config:pkgconfig \
+                    port:python${py_ver_nodot}
 
 depends_lib-append \
-                    path:lib/pkgconfig/babl.pc:babl \
+                    path:lib/pkgconfig/babl-0.1.pc:babl \
                     path:lib/pkgconfig/cairo.pc:cairo \
-                    path:lib/pkgconfig/pango.pc:pango \
-                    path:lib/pkgconfig/gdk-pixbuf-2.0.pc:gdk-pixbuf2 \
-                    path:include/turbojpeg.h:libjpeg-turbo \
-                    path:lib/libluajit-5.1.2.dylib:luajit \
                     port:exiv2 \
-                    port:gexiv2 \
+                    path:lib/libavcodec.dylib:ffmpeg \
+                    path:lib/pkgconfig/gdk-pixbuf-2.0.pc:gdk-pixbuf2 \
                     port:gettext-runtime \
+                    port:gexiv2 \
                     path:lib/pkgconfig/gobject-introspection-1.0.pc:gobject-introspection \
                     port:jasper \
                     port:json-glib \
                     port:lcms2 \
                     port:libraw \
+                    path:include/turbojpeg.h:libjpeg-turbo \
                     path:lib/pkgconfig/librsvg-2.0.pc:librsvg \
-                    path:lib/libavcodec.dylib:ffmpeg \
+                    port:libsdl2 \
                     port:libspiro \
+                    path:lib/libluajit-5.1.2.dylib:luajit \
                     port:openexr \
+                    path:lib/pkgconfig/pango.pc:pango \
                     port:poly2tri-c \
-                    port:py310-gobject3 \
                     path:lib/pkgconfig/poppler.pc:poppler \
+                    port:py${py_ver_nodot}-gobject3 \
                     port:SuiteSparse_UMFPACK \
                     port:tiff \
                     port:webp
 
-# libsdl2 requires minimum Xcode 10.7 SDK to build successfully, but builds on 10.6 x86.
-# On earlier systems and all PPC use libsdl1 instead.
-if {${os.platform} eq "darwin" && (${os.major} < 10 || ${build_arch} in [list ppc ppc64])} {
-    depends_lib-append  port:libsdl
-    configure.args-append \
-                        -Dsdl2=disabled \
-                        -Dsdl1=enabled
-} else {
-    depends_lib-append  port:libsdl2
-}
+# Fix define for HAVE_UNISTD_H, which otherwise fails for some older Clang versions
+# See: https://trac.macports.org/ticket/71253
+patchfiles-append   patch-meson-unistd.diff
 
 # proposed fix for 32 bit builds
 # https://trac.macports.org/ticket/58524
 patchfiles-append   patch-gegl-32bit-host-statistics.diff
 
-# Release-specific patches (step 2 from instructions above)
-if {${major} == 0 && ${minor} == 4 && ${patch} == 46 && ${revision} >= 0} {
-    # Nothing right now
-    # patchfiles-append \
-    #                 macos-Remove-DYLD_LIBRARY_PATH.patch
-}
-
 platform darwin {
-    if {${os.major} < 10 || (${os.major} == 10 && ${build_arch} eq "ppc")} {
+    if {${os.major} < 10 || (${os.major} == 10 && ${configure.build_arch} eq "ppc")} {
         patchfiles-append patch-gegl-opencl-fix-Leopard-and-less-only.diff
     }
 }
@@ -117,7 +112,8 @@ platform darwin {
 post-patch {
     # https://trac.macports.org/ticket/35148
     if {${os.major} < 10} {
-        reinplace "s|OpenGL/CGLDevice.h|OpenGL/CGLTypes.h|" ${worksrcpath}/gegl/opencl/cl_gl.h
+        reinplace {s|OpenGL/CGLDevice\.h|OpenGL/CGLTypes.h|} \
+                    ${worksrcpath}/gegl/opencl/cl_gl.h
     }
 }
 
@@ -129,68 +125,91 @@ compiler.c_standard   2011
 # ../gegl/gegl-parallel.h:134:29: error: expected expression '[] (gint     i,'
 compiler.blacklist-append  {clang < 900}
 
-set python_framework        ${frameworks_dir}/Python.framework/Versions/3.10
-configure.pkg_config_path   ${python_framework}/lib/pkgconfig
+if { [string match *clang* ${configure.compiler}] } {
+    # Quiet warnings
+    configure.cxxflags-append \
+                    -Wno-deprecated-declarations \
+                    -Wno-error=unknown-warning-option \
+                    -Wno-unknown-warning-option
+}
 
-# disable vala extensions by default (currently broken)
-# enable with +vala variant for testing
-configure.args-append       -Dvapigen=disabled \
-                            -Ddocs=false
+configure.pkg_config_path \
+                    ${py_framework}/lib/pkgconfig
+
+configure.args-append \
+                    -Ddocs=false \
+                    -Dgraphviz=disabled \
+                    -Dgtk-doc=false \
+                    -Dlensfun=disabled \
+                    -Dlibv4l=disabled \
+                    -Dlibv4l2=disabled \
+                    -Dmaxflow=disabled \
+                    -Dmrg=disabled \
+                    -Dopenmp=disabled \
+                    -Dvapigen=disabled
 
 # at present, luajit does not build on PowerPC
 platform darwin powerpc {
-    depends_lib-delete path:lib/libluajit-5.1.2.dylib:luajit
-    configure.args-append -Dlua=disabled
+    depends_lib-delete \
+                    path:lib/libluajit-5.1.2.dylib:luajit
+    configure.args-append \
+                    -Dlua=disabled
 }
-
-# TODO
-# Adding --build=whatever doesn't work with meson. How do we do this?
-#platform darwin {
-#    if {[variant_isset universal]} {
-#        # In order to build universal on Leopard, you need MacPorts 2.1
-#        set merger_configure_args(x86_64) --build=${build_arch}-apple-${os.platform}${os.version}
-#        set merger_configure_cflags(ppc) -fno-altivec
-#        set merger_configure_cxxflags(ppc) -fno-altivec
-#    } elseif {${build_arch} eq "ppc"} {
-#        configure.cflags-append -fno-altivec
-#        configure.cxxflags-append -fno-altivec
-#    } elseif {${build_arch} eq "x86_64"} {
-#        configure.args-append --build=${build_arch}-apple-${os.platform}${os.version}
-#    }
-#}
 
 # gobject-introspection uses g-ir-scanner, which uses $CC from env
 if {${universal_possible} && [variant_isset universal]} {
     foreach arch ${configure.universal_archs} {
-        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
-        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        lappend merger_build_env(${arch}) \
+                    "CC=${configure.cc} -arch ${arch}"
+        lappend merger_destroot_env(${arch}) \
+                    "CC=${configure.cc} -arch ${arch}"
     }
 } else {
-    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
-    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
+    build.env-append \
+                    "CC=${configure.cc} ${configure.cc_archflags}"
+    destroot.env-append \
+                    "CC=${configure.cc} ${configure.cc_archflags}"
 }
 
 variant gtk_docs description {Build API docs using gtk-doc} {
-    depends_build-append    port:gtk-doc
-    configure.args-append -Ddocs=true
+    depends_build-append \
+                    port:asciidoc \
+                    port:gtk-doc
+    configure.args-replace \
+                    -Ddocs=false \
+                    -Ddocs=true
+    configure.args-replace \
+                    -Dgtk-doc=false \
+                    -Dgtk-doc=true
+}
+
+variant sdl1 description {Build with SDL v. 1} {
+    depends_lib-replace \
+                    port:libsdl2 port:libsdl
+    configure.args-append \
+                    -Dsdl2=disabled \
+                    -Dsdl1=enabled
 }
 
 variant vala description {Enable build of vala extensions} {
-    depends_lib-append path:bin/vala:vala
-    configure.args-delete -Dvapigen=disabled
+    depends_lib-append \
+                    path:bin/vala:vala
+    configure.args-replace \
+                    -Dvapigen=disabled \
+                    -Dvapigen=enabled
 }
 
 variant workshop description {Enable build of workshop operations} {
-    depends_lib-append port:lensfun
-    configure.args-append -Dworkshop=true
+    depends_lib-append \
+                    port:lensfun
+    configure.args-replace \
+                    -Dlensfun=disabled \
+                    -Dlensfun=enabled
+    configure.args-append \
+                    -Dworkshop=true
 }
 
-#
-# the following dummy variants are used
-# to identify this port's binary dependencies
-# inherited from libsdl and librsvg
-#
-
+# Dummy variants used to identify this port's dependencies
 variant x11 conflicts quartz {}
 variant quartz conflicts x11 {}
 
@@ -198,10 +217,7 @@ if {![variant_isset quartz]} {
     default_variants +x11
 }
 
-# Vapigen is broken on PPC: https://gitlab.gnome.org/GNOME/vala/-/issues/1297
-if {${os.arch} ne "powerpc"} {
-    default_variants-append +vala
-}
+default_variants-append +vala
 
 livecheck.type      regex
 livecheck.url       https://download.gimp.org/pub/${my_name}/${branch}/
