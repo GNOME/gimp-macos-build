@@ -311,6 +311,7 @@ if [ -n "${PART2}" ]; then
     nasm \
     openexr \
     openjpeg \
+    pango +thai \
     poppler -boost \
     poppler-data \
     qoi \

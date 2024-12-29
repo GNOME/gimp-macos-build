@@ -123,6 +123,8 @@
   <data>${prefix}/share/gimp/${env:GIMP_PKGCONFIG_VERSION}</data>
   <!-- CJK and Cyrillic support for file-pdf -->
   <data>${prefix}/share/poppler</data>
+  <!-- 'th' word breaking support -->
+  <data>${prefix}/share/libthai</data>
   <!-- brushes -->
   <data>${prefix}/share/mypaint-data</data>
   <!-- locale (TODO: trim) -->
