@@ -108,6 +108,8 @@
   <data dest="${bundle}/Contents/Resources/share/gimp">${prefix}/share/gimp</data>
   <!-- CJK and Cyrillic support for file-pdf -->
   <data>${prefix}/share/poppler</data>
+  <!-- 'th' word breaking support -->
+  <data>${prefix}/share/libthai</data>
   <!-- brushes -->
   <data>${prefix}/share/mypaint-data</data>
   <!-- XML data -->
