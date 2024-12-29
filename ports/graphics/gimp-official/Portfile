@@ -105,6 +105,7 @@ depends_lib-append \
                     port:lcms2 \
                     path:lib/pkgconfig/librsvg-2.0.pc:librsvg \
                     port:openexr \
+                    port:pango \
                     port:poly2tri-c \
                     path:lib/pkgconfig/poppler.pc:poppler \
                     port:webp \
