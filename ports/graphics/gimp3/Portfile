@@ -12,17 +12,20 @@ set my_name         gimp3
 
 # ***** For releasing *****
 # 1. Update version and/or revision to the desired state
-#    If the revision is not a release (e.g. 2.99.17) then do not touch the
-#    revision.
-#    This can include RC versions such as 3.0.0-RC1
+#    If the version is not a release (e.g. 2.99.17) then do not touch the
+#    revision as it will always pull the lastest code anyway.
+#    Releases can include RC versions such as 3.0.0-RC1
 # 2. During the RC cycle, the master branch version will be '+git', e.g.
 #    3.0.0-RC1+git
 # 3. Ensure any release-specific patches are added to the patchfiles list in the
 #    correct if statement (and order)
 # 4. Also update version info for babl and gegl
+# 5. last_dev and last_release should be set individually when setting version.
+#    For example, when setting to a release, update only last_release. When
+#    setting to a dev version, update only last_dev.
 # *****
-version             3.0.0-RC1+git
-set last_release    3.0.0-RC1
+version             3.0.0-RC2
+set last_release    3.0.0-RC2
 set last_dev        3.0.0-RC1+git
 revision            0
 
