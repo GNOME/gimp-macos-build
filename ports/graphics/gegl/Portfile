@@ -13,14 +13,17 @@ set my_name         gegl
 
 # ***** For releasing *****
 # 1. Update version and/or revision to the desired state
-#    If the revision is not a release (e.g. 0.4.47) then do not touch the
-#    revision.
+#    If the version is not a release (e.g. 0.4.47) then do not touch the
+#    revision as it will always pull the latest code anyway.
 # 2. Ensure any release-specific patches are added to the patchfiles list in the
 #    correct if statement (and order)
-# 3. Do same for babl and gegl
+# 3. Do same for babl and gimp3
+# 4. last_dev and last_release should be set individually when setting version.
+#    For example, when setting to a release, update only last_release. When
+#    setting to a dev version, update only last_dev.
 # *****
-version             0.4.51
-set last_release    0.4.50
+version             0.4.52
+set last_release    0.4.52
 set last_dev        0.4.51
 revision            0
 
