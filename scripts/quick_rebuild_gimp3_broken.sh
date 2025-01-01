@@ -25,19 +25,6 @@
 export VGIMP=3
 
 pushd ~/macports-gimp${VGIMP}-arm64/var/macports/build/_Users_$(whoami)_project_ports_graphics_gimp${VGIMP}/gimp${VGIMP}/work/build || exit
-  # Should be removed once https://gitlab.gnome.org/GNOME/gimp/-/issues/12644 is fixed
-  pushd ../gimp${VGIMP}-*/tools || exit
-    cp in-build-gimp.sh in-build-gimp.sh.bak
-    echo '#!/bin/sh' > in-build-gimp.sh
-  popd || exit
-
   ~/macports-gimp${VGIMP}-arm64/bin/ninja -j10 -v
-
-  # Should be removed once https://gitlab.gnome.org/GNOME/gimp/-/issues/12644 is fixed
-  pushd ../gimp${VGIMP}-*/tools || exit
-    rm in-build-gimp.sh
-    mv in-build-gimp.sh.bak in-build-gimp.sh
-  popd || exit
-
   ~/macports-gimp${VGIMP}-arm64/bin/ninja install
 popd || exit
