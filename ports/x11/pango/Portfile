@@ -10,7 +10,7 @@ PortGroup               meson 1.0
 name                    pango
 conflicts               pango-devel
 set my_name             pango
-epoch                   1
+epoch                   2
 version                 1.55.0
 revision                0
 checksums               rmd160  e1a860f279fb352f41b95c7987e4cab678906945 \
