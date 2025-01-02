@@ -94,6 +94,7 @@ depends_lib-append \
                     port:libraw \
                     path:lib/pkgconfig/librsvg-2.0.pc:librsvg \
                     port:openexr \
+                    path:lib/pkgconfig/pango.pc:pango
                     port:poly2tri-c \
                     port:py310-gobject3 \
                     path:lib/pkgconfig/poppler.pc:poppler \
