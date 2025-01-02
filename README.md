@@ -18,7 +18,7 @@ Also, currently arm64 builds are built on a dedicated machine provided by MacSta
 
 ## Building
 
-See the dedicated page on the developer site `https://developer.gimp.org/core/setup/build/macos/`
+See the dedicated page on the developer site https://developer.gimp.org/core/setup/build/macos/
 for details on how to build locally and on CircleCI.
 
 * Developing GIMP (or dependencies) locally still needs to be refined as the Macports
