@@ -2,7 +2,7 @@
 #####################################################################
  # quick_rebuild.sh: Builds gimp locally once full build complete   #
  #                                                                  #
- # Copyright 2023 Lukas Oberhuber <lukaso@gmail.com>                #
+ # Copyright 2023-2025 Lukas Oberhuber <lukaso@gmail.com>           #
  #                                                                  #
  # This program is free software; you can redistribute it and/or    #
  # modify it under the terms of the GNU General Public License as   #
@@ -23,6 +23,16 @@
  ####################################################################
 
 export VGIMP=3
+
+if [[ $(uname -m) == 'arm64' ]]; then
+  arch='arm64'
+  echo "*** Build: arm64"
+else
+  arch='x86_64'
+  echo "*** Build: x86_64"
+fi
+source ~/.profile-gimp${VGIMP}-${arch}
+export PATH=$PREFIX/bin:$PATH
 
 pushd ~/macports-gimp${VGIMP}-arm64/var/macports/build/_Users_$(whoami)_project_ports_graphics_gegl/gegl/work/build
   # needed to find vapigen

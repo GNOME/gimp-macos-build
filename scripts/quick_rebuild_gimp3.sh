@@ -2,7 +2,7 @@
 #####################################################################
  # quick_rebuild.sh: Builds gimp locally once full build complete   #
  #                                                                  #
- # Copyright 2023 Lukas Oberhuber <lukaso@gmail.com>                #
+ # Copyright 2023-2025 Lukas Oberhuber <lukaso@gmail.com>           #
  #                                                                  #
  # This program is free software; you can redistribute it and/or    #
  # modify it under the terms of the GNU General Public License as   #
@@ -24,20 +24,48 @@
 
 export VGIMP=3
 
+if [[ $(uname -m) == 'arm64' ]]; then
+  arch='arm64'
+  echo "*** Build: arm64"
+else
+  arch='x86_64'
+  echo "*** Build: x86_64"
+fi
+source ~/.profile-gimp${VGIMP}-${arch}
+export PATH=$PREFIX/bin:$PATH
+
+# Check for --fast, -f, --help, or -h argument
+fast_build=false
+for arg in "$@"; do
+  case "$arg" in
+    --fast|-f)
+      fast_build=true
+      ;;
+    --help|-h)
+      echo "Usage: $0 [--fast|-f] [--help|-h]"
+      echo "  --fast, -f   Perform a fast build. Does not build images."
+      echo "  --help, -h   Show this help message"
+      exit 0
+      ;;
+  esac
+done
+
 pushd ~/macports-gimp${VGIMP}-arm64/var/macports/build/_Users_$(whoami)_project_ports_graphics_gimp${VGIMP}/gimp${VGIMP}/work/build || exit
-  # Should be removed once https://gitlab.gnome.org/GNOME/gimp/-/issues/12644 is fixed
-  pushd ../gimp${VGIMP}-*/tools || exit
-    cp in-build-gimp.sh in-build-gimp.sh.bak
-    echo '#!/bin/sh' > in-build-gimp.sh
-  popd || exit
+  if $fast_build; then
+    pushd ../gimp${VGIMP}-*/tools || exit
+      cp in-build-gimp.sh in-build-gimp.sh.bak
+      echo '#!/bin/sh' > in-build-gimp.sh
+    popd || exit
+  fi
 
   ~/macports-gimp${VGIMP}-arm64/bin/ninja -j10 -v
 
-  # Should be removed once https://gitlab.gnome.org/GNOME/gimp/-/issues/12644 is fixed
-  pushd ../gimp${VGIMP}-*/tools || exit
-    rm in-build-gimp.sh
-    mv in-build-gimp.sh.bak in-build-gimp.sh
-  popd || exit
+  if $fast_build; then
+    pushd ../gimp${VGIMP}-*/tools || exit
+      rm in-build-gimp.sh
+      mv in-build-gimp.sh.bak in-build-gimp.sh
+    popd || exit
+  fi
 
   ~/macports-gimp${VGIMP}-arm64/bin/ninja install
 popd || exit
