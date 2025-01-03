@@ -350,6 +350,10 @@ fi
 if [ -n "${PART4}" ]; then
   echo "gcc13 being installed before gegl"
 
+  # Remove once https://github.com/macports/macports-ports/pull/27286 is merged
+  # missing dependency in appstream-glib
+  port_clean_and_install ossp-uuid
+
   # libgcc12 is installed with GIMP so must be set for 10.13
   port clean gcc13
   # libgcc dependencies
