@@ -253,8 +253,6 @@ if [ -n "${PART1}" ]; then
     ncurses \
     libuv
 
-  port_long_clean_and_install llvm-18
-
   echo "cmake-bootstrap being installed since won't build from source with 10.13 SDK"
   sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${PREFIX}/etc/macports/macports.conf
   sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
@@ -292,7 +290,6 @@ if [ -n "${PART1}" ]; then
   sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${PREFIX}/etc/macports/macports.conf
   sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
   sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
-  port_long_clean_and_install llvm-15
   port_clean_and_install x265 +highdepth
 fi
 
@@ -301,10 +298,12 @@ if [ -n "${PART2}" ]; then
   # build/install. It would require detecting failure (obscure long error like
   # this): Error: See ${PREFIX}/var/macports/logs/_opt_local_var_macports_sources_rsync.macports.org_macports_release_tarballs_ports_devel_dbus/dbus/main.log for details.
 
-  # *** Can we get away with not specifying python version? ***
-  # port_clean_and_install python310
-  # port select --set python python310
-  # port select --set python3 python310
+  # Need to know correct python version so py-cairo and py-gobject3 are installed in correct version (there are
+  # multiple versions of python installed due to myriad macports dependencies we don't control)
+  port_clean_and_install python${PYTHON_SHORT_VERSION}
+  port select --set python python${PYTHON_SHORT_VERSION}
+  port select --set python3 python${PYTHON_SHORT_VERSION}
+
   port_clean_and_install \
     aalib \
     cfitsio \
@@ -319,7 +318,6 @@ if [ -n "${PART2}" ]; then
     iso-codes \
     json-c \
     lcms2 \
-    libarchive \
     libde265 \
     libheif \
     libjxl \
@@ -341,6 +339,9 @@ if [ -n "${PART2}" ]; then
     util-linux \
     webp \
     xmlto
+
+  # required for `realpath` command which is used in GIMP build
+  port_clean_and_install coreutils
 fi
 
 if [ -n "${PART3}" ]; then
@@ -385,7 +386,6 @@ if [ -n "${PART4}" ]; then
     port_clean_and_install \
       libomp -debug
     port clean libgcc
-    port_long_clean_and_install gcc13
     # broken build on x86_64 and is a build only dependency
     # https://trac.macports.org/ticket/68041 <-- this is fixed
     port_clean_and_install \

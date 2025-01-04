@@ -18,6 +18,7 @@ subport zstdConfig.cmake {
 }
 
 # Remove overlay when https://trac.macports.org/ticket/69944#comment:1 is fixed
+# and https://github.com/facebook/zstd releases 1.5.8
 github.setup                facebook zstd 1.5.5 v
 revision                    0
 epoch                       1

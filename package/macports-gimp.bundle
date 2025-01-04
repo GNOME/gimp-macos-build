@@ -43,7 +43,7 @@
   </meta>
   <!-- We need to pack our own Python to avoid compatibility problems. -->
   <binary dest="${bundle}/Contents/MacOS">
-    ${prefix}/bin/python3.10
+    ${prefix}/bin/python3.12
   </binary>
   <binary dest="${bundle}/Contents/MacOS">
     ${prefix}/bin/gegl
@@ -69,7 +69,7 @@
 
   <!-- These are used to copy in dependencies, in reality the whole dir struct needs to be copied in -->
   <binary recurse="True">
-    ${prefix}/Library/Frameworks/Python.framework/Versions/3.10/*
+    ${prefix}/Library/Frameworks/Python.framework/Versions/3.12/*
   </binary>
   <!-- Name of main gimp binary -->
   <main-binary>${prefix}/bin/gimp-3.0</main-binary>

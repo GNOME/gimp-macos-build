@@ -50,7 +50,7 @@ for arg in "$@"; do
   esac
 done
 
-pushd ~/macports-gimp${VGIMP}-arm64/var/macports/build/_Users_$(whoami)_project_ports_graphics_gimp${VGIMP}/gimp${VGIMP}/work/build || exit
+pushd ~/macports-gimp${VGIMP}-${arch}/var/macports/build/_Users_$(whoami)_project_ports_graphics_gimp${VGIMP}/gimp${VGIMP}/work/build || exit
   if $fast_build; then
     pushd ../gimp${VGIMP}-*/tools || exit
       cp in-build-gimp.sh in-build-gimp.sh.bak
@@ -58,7 +58,7 @@ pushd ~/macports-gimp${VGIMP}-arm64/var/macports/build/_Users_$(whoami)_project_
     popd || exit
   fi
 
-  ~/macports-gimp${VGIMP}-arm64/bin/ninja -j10 -v
+  ~/macports-gimp${VGIMP}-${arch}/bin/ninja -j10 -v
 
   if $fast_build; then
     pushd ../gimp${VGIMP}-*/tools || exit
@@ -67,5 +67,5 @@ pushd ~/macports-gimp${VGIMP}-arm64/var/macports/build/_Users_$(whoami)_project_
     popd || exit
   fi
 
-  ~/macports-gimp${VGIMP}-arm64/bin/ninja install
+  ~/macports-gimp${VGIMP}-${arch}/bin/ninja install
 popd || exit

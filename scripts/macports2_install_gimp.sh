@@ -60,4 +60,5 @@ port -N uninstall installed and gimp3 || true
 port clean gimp3 || true
 rm ${PROJECT_DIR}/package/gimp.icns || true
 rm ${PROJECT_DIR}/package/gimp-dmg.png || true
+
 sup_port port -v -k -N install gimp${VGIMP} +vala ${local}

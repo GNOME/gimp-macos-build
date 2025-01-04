@@ -95,7 +95,6 @@ depends_lib-append \
                     path:lib/pkgconfig/librsvg-2.0.pc:librsvg \
                     port:openexr \
                     port:poly2tri-c \
-                    port:py310-gobject3 \
                     path:lib/pkgconfig/poppler.pc:poppler \
                     port:webp \
                     port:icu \
@@ -135,7 +134,8 @@ set py_ver          3.12
 set py_ver_nodot    [string map {. {}} ${py_ver}]
 
 depends_build-append \
-                    port:python${py_ver_nodot}
+                    port:python${py_ver_nodot} \
+                    port:py${py_ver_nodot}-gobject3
 
 configure.python    ${prefix}/bin/python${py_ver}
 
