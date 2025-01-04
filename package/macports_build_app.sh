@@ -52,7 +52,7 @@ echo "$GIMP_VERSION" > ${PACKAGE_DIR}/GIMP.app/Contents/Resources/.version
 
 BASEDIR=$(dirname "$0")
 
-echo "Link 'Resources' into python framework 'Resources'"
+echo "Link 'Resources' into python ${PYTHON_VERSION} framework 'Resources'"
 if [ ! -d "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Resources/Python.app/Contents/Resources" ]; then
   # Avoids creating very awkward link in the wrong place
   echo "***Error: Python framework not found"

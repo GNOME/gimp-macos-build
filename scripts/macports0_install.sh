@@ -28,6 +28,8 @@ PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MACPORTS_VERSION=2.10.5
 
 # Change both python settings at once
+# also change in gimp3/Portfile pyXXX-gobject3
+# also change in macports-gimp.bundle (two locations in file)
 PYTHON_VERSION=3.12
 PYTHON_SHORT_VERSION=312
 # Change both python settings at once

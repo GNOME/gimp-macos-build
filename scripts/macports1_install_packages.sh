@@ -386,7 +386,6 @@ if [ -n "${PART4}" ]; then
     port_clean_and_install \
       libomp -debug
     port clean libgcc
-    port_long_clean_and_install gcc13
     # broken build on x86_64 and is a build only dependency
     # https://trac.macports.org/ticket/68041 <-- this is fixed
     port_clean_and_install \
