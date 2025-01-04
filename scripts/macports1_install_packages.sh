@@ -300,6 +300,7 @@ if [ -n "${PART2}" ]; then
 
   # Need to know correct python version so py-cairo and py-gobject3 are installed in correct version (there are
   # multiple versions of python installed due to myriad macports dependencies we don't control)
+  port_clean_and_install python${PYTHON_SHORT_VERSION}
   port select --set python python${PYTHON_SHORT_VERSION}
   port select --set python3 python${PYTHON_SHORT_VERSION}
 

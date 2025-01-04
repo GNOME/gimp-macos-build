@@ -136,6 +136,7 @@ fi
 export PATH=$PREFIX/bin:$PATH
 echo "export PREFIX=$PREFIX" >~/.profile-gimp${VGIMP}-${arch}
 echo "export PYTHON_VERSION=${PYTHON_VERSION}" >>~/.profile-gimp${VGIMP}-${arch}
+echo "export PYTHON_SHORT_VERSION=${PYTHON_SHORT_VERSION}" >>~/.profile-gimp${VGIMP}-${arch}
 
 if [ -n "$circleci" ]; then
   echo "**Installing MacPorts for CircleCI"
