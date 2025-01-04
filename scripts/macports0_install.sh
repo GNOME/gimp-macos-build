@@ -26,6 +26,8 @@ set -e
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MACPORTS_VERSION=2.10.5
+PYTHON_VERSION=3.10
+PYTHON_SHORT_VERSION=310
 
 DEPLOYMENT_TARGET_ARM64='11.0'
 SDK_VERSION_ARM64='11.3'
@@ -130,6 +132,7 @@ fi
 
 export PATH=$PREFIX/bin:$PATH
 echo "export PREFIX=$PREFIX" >~/.profile-gimp${VGIMP}-${arch}
+echo "export PYTHON_VERSION=${PYTHON_VERSION}" >>~/.profile-gimp${VGIMP}-${arch}
 
 if [ -n "$circleci" ]; then
   echo "**Installing MacPorts for CircleCI"
@@ -183,6 +186,7 @@ if [ "$build_arm64" = true ]; then
 else
   echo "macosx_deployment_target ${DEPLOYMENT_TARGET_X86_64}" | tee -a ${PREFIX}/etc/macports/macports.conf
   echo "macosx_sdk_version ${SDK_VERSION_X86_64}" | tee -a ${PREFIX}/etc/macports/macports.conf
+  echo "build_arch x86_64" | tee -a ${PREFIX}/etc/macports/macports.conf
 fi
 echo "-x11 +no_x11 +quartz -python27 +no_gnome -gnome -gfortran -openldap -pinentry_mac ${debug}" | tee -a ${PREFIX}/etc/macports/variants.conf
 printf "file://${PROJECT_DIR}/ports\n$(cat ${PREFIX}/etc/macports/sources.conf.default)\n" | tee ${PREFIX}/etc/macports/sources.conf

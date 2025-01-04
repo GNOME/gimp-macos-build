@@ -53,12 +53,12 @@ echo "$GIMP_VERSION" > ${PACKAGE_DIR}/GIMP.app/Contents/Resources/.version
 BASEDIR=$(dirname "$0")
 
 echo "Link 'Resources' into python framework 'Resources'"
-if [ ! -d "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/3.10/Resources/Python.app/Contents/Resources" ]; then
+if [ ! -d "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Resources/Python.app/Contents/Resources" ]; then
   # Avoids creating very awkward link in the wrong place
   echo "***Error: Python framework not found"
   exit 1
 fi
-pushd "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/3.10/Resources/Python.app/Contents/Resources/" || exit 1
+pushd "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Resources/Python.app/Contents/Resources/" || exit 1
   for resources in etc gimp.icns lib share xcf.icns ;
   do
     ln -s "../../../../../../../../../${resources}" \
@@ -224,9 +224,9 @@ find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/ -perm +111 -type f \
 
 echo "adding @rpath to python app"
 install_name_tool -add_rpath @loader_path/../../../../../../../../../ \
-  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/3.10/Resources/Python.app/Contents/MacOS/Python
+  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Resources/Python.app/Contents/MacOS/Python
 install_name_tool -add_rpath @loader_path/../../../../../ \
-  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/3.10/Python
+  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Python
 
 echo "removing build path from the .gir files"
 find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/share/gir-1.0/*.gir \
@@ -272,8 +272,8 @@ echo "create missing links. should we use wrappers instead?"
 pushd ${PACKAGE_DIR}/GIMP.app/Contents/MacOS || exit 1
   ln -s gimp-console-3.0 gimp-console
   ln -s gimp-debug-tool-3.0 gimp-debug-tool
-  ln -s python3.10 python
-  ln -s python3.10 python3
+  ln -s python${PYTHON_VERSION} python
+  ln -s python${PYTHON_VERSION} python3
 popd
 
 echo "copy xdg-email wrapper to the package"
@@ -281,7 +281,7 @@ mkdir -p ${PACKAGE_DIR}/GIMP.app/Contents/MacOS
 cp xdg-email ${PACKAGE_DIR}/GIMP.app/Contents/MacOS
 
 echo "Creating pyc files"
-python3.10 -m compileall -q ${PACKAGE_DIR}/GIMP.app
+python${PYTHON_VERSION} -m compileall -q ${PACKAGE_DIR}/GIMP.app
 
 echo "trimming optimized pyc from macports"
 find ${PACKAGE_DIR}/GIMP.app -name '*opt-[12].pyc' -delete
