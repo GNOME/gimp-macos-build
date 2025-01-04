@@ -61,7 +61,4 @@ port clean gimp3 || true
 rm ${PROJECT_DIR}/package/gimp.icns || true
 rm ${PROJECT_DIR}/package/gimp-dmg.png || true
 
-port select --set python python${PYTHON_SHORT_VERSION}
-port select --set python3 python${PYTHON_SHORT_VERSION}
-
 sup_port port -v -k -N install gimp${VGIMP} +vala ${local}

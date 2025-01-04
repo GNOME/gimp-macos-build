@@ -26,8 +26,11 @@ set -e
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MACPORTS_VERSION=2.10.5
-PYTHON_VERSION=3.10
-PYTHON_SHORT_VERSION=310
+
+# Change both python settings at once
+PYTHON_VERSION=3.12
+PYTHON_SHORT_VERSION=312
+# Change both python settings at once
 
 DEPLOYMENT_TARGET_ARM64='11.0'
 SDK_VERSION_ARM64='11.3'
