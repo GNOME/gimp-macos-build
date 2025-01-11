@@ -58,7 +58,7 @@ set major           [lindex [split ${simple_version} .] 0]
 set minor           [lindex [split ${simple_version} .] 1]
 set patch           [lindex [split ${simple_version} .] 2]
 set rc_version      [lindex [split ${simple_version} .] 3]
-set is_release      [expr {$patch % 2 == 0 && $rc_version eq "RC1"}]
+set is_release      [expr {$patch % 2 == 0 && [regexp {^RC\d+$} $rc_version]}]
 set is_stable       [expr {$minor % 2 == 0} && ${is_release}]
 
 if {${is_release}} {
