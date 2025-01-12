@@ -27,12 +27,12 @@ set -e
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MACPORTS_VERSION=2.10.5
 
-# Change both python settings at once
-# also change in gimp3/Portfile pyXXX-gobject3
-# also change in macports-gimp.bundle (two locations in file)
-PYTHON_VERSION=3.12
-PYTHON_SHORT_VERSION=312
-# Change both python settings at once
+# Change to update python version across build
+# check `ports/graphics/gimp3/Portfile` to make sure this python version is
+# added to the `supported_py_versions` list or the build will fail
+PYTHON_VERSION=3.10
+# Set automatically
+PYTHON_SHORT_VERSION=${PYTHON_VERSION//./}
 
 DEPLOYMENT_TARGET_ARM64='11.0'
 SDK_VERSION_ARM64='11.3'

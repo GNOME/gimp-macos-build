@@ -132,9 +132,38 @@ depends_lib-append \
                     port:adwaita-icon-theme \
                     port:hicolor-icon-theme
 
-# Set preferred python version
-set py_ver          3.12
-set py_ver_nodot    [string map {. {}} ${py_ver}]
+# Define the default Python version
+set default_py_ver  3.10
+set default_py_ver_nodot \
+                    [string map {. {}} ${default_py_ver}]
+
+# Define the supported Python versions
+set supported_py_versions \
+                    {3.10 3.11 3.12 3.13}
+
+# Loop through the supported Python versions and define variants
+foreach py_ver ${supported_py_versions} {
+    set py_ver_nodot [string map {. {}} ${py_ver}]
+    variant python${py_ver_nodot} description "Use Python ${py_ver}" {
+        set py_ver ${py_ver}
+        set py_ver_nodot ${py_ver_nodot}
+    }
+}
+
+# Generate the condition to check if any variant is set
+set variant_condition ""
+foreach py_ver ${supported_py_versions} {
+    set py_ver_nodot [string map {. {}} ${py_ver}]
+    append variant_condition "![variant_isset python${py_ver_nodot}] && "
+}
+# Remove the trailing " && "
+set variant_condition [string trimright ${variant_condition} " && "]
+
+# Set the default Python version if no variant is specified
+if {[eval expr {$variant_condition}]} {
+    set py_ver ${default_py_ver}
+    set py_ver_nodot ${default_py_ver_nodot}
+}
 
 depends_build-append \
                     port:python${py_ver_nodot} \
