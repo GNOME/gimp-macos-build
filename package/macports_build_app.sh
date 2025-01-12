@@ -228,6 +228,11 @@ install_name_tool -add_rpath @loader_path/../../../../../../../../../ \
 install_name_tool -add_rpath @loader_path/../../../../../ \
   ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Python
 
+echo "removing build path from the .gir files: special case Poppler"
+# Needed because for some reason this package puts in the build directory
+find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/share/gir-1.0/Poppler*.gir \
+   -exec sed -i '' "s|[A-Za-z0-9/\._-]*build/\(libpoppler[A-Za-z0-9/\._-]*\.dylib\)|lib/\1|g" {} +
+
 echo "removing build path from the .gir files"
 find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/share/gir-1.0/*.gir \
    -exec sed -i '' "s|${OLDPATH}||g" {} +
