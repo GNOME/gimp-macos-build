@@ -34,6 +34,8 @@ fi
 source ~/.profile-gimp${VGIMP}-${arch}
 export PATH=$PREFIX/bin:$PATH
 
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
+
 # Check for --fast, -f, --help, or -h argument
 fast_build=false
 for arg in "$@"; do
@@ -66,6 +68,11 @@ pushd ~/macports-gimp${VGIMP}-${arch}/var/macports/build/_Users_$(whoami)_projec
       mv in-build-gimp.sh.bak in-build-gimp.sh
     popd || exit
   fi
+
+  ~/macports-gimp${VGIMP}-${arch}/bin/ninja gimp-data/images/logo/gimp.icns
+  cp gimp-data/images/logo/gimp.icns ${SCRIPT_DIR}/../package/
+  ~/macports-gimp${VGIMP}-${arch}/bin/ninja gimp-data/images/logo/gimp-dmg.png
+  cp gimp-data/images/logo/gimp-dmg.png ${SCRIPT_DIR}/../package/
 
   ~/macports-gimp${VGIMP}-${arch}/bin/ninja install
 popd || exit
