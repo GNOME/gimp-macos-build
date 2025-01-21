@@ -12,17 +12,15 @@ PortGroup           debug 1.0
 name                gtk3
 conflicts           gtk3-devel
 set my_name         gtk3
-version             3.24.38
+version             3.24.43
 revision            2
 epoch               1
 
 set proj_name       gtk+
-# set branch          [join [lrange [split ${version} .] 0 1] .]
 set branch          [join [lrange [split ${version} .] 0 1] .]
 categories          gnome x11
 license             LGPL-2.1+
 maintainers         {mascguy @mascguy} openmaintainer
-platforms           darwin
 
 description         GTK+ widget toolkit
 long_description    GTK+ is a highly usable, feature-rich toolkit for creating graphical user \
@@ -36,9 +34,12 @@ dist_subdir         ${my_name}
 use_xz              yes
 master_sites        gnome:sources/${proj_name}/${branch}/
 
-checksums           rmd160  4b48beab01bc1337c5e5120a68c390ab95e9af16 \
-                    sha256  ce11decf018b25bdd8505544a4f87242854ec88be054d9ade5f3a20444dd8ee7 \
-                    size    12398104
+checksums           rmd160  df28a61ab70fecdac358e696e20846f619621223 \
+                    sha256  7e04f0648515034b806b74ae5d774d87cffb1a2a96c468cb5be476d51bf2f3c7 \
+                    size    13227856
+
+# Disable unexpected download of subprojects
+meson.wrap_mode     nodownload
 
 minimum_xcodeversions {9 3.1}
 
@@ -58,9 +59,6 @@ depends_lib-append \
                     port:libepoxy \
                     path:lib/pkgconfig/pango.pc:pango
 
-# mesa required to configure both +x11, +quartz (not just +x11) due to their dependency on libepoxy
-depends_lib-append  port:mesa
-
 depends_run-append \
                     port:shared-mime-info \
                     port:hicolor-icon-theme
@@ -69,9 +67,6 @@ compiler.cxx_standard 2011
 
 # darwin 10 and earlier requires legacy support for O_CLOEXEC
 legacysupport.newest_darwin_requires_legacy 10
-
-# Upstream disables X11 for macOS; disable that behavior
-patchfiles-append   patch-meson.build-x11-enabled.diff
 
 # Quartz patch to fix QuartzCore linking and compiling with 10.11
 # Upstream merge request: https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/4298
@@ -85,21 +80,20 @@ patchfiles-append   patch-quartz-nseventtype.diff
 # Upstream merge request: https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/5959
 patchfiles-append   patch-quartz-meson-appleframeworks.diff
 
-# Titelbar detection patch for macOS (doesn't accurately detect titlebars)
-# Merged in https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/6691
-patchfiles-append   patch-6691.patch
+# implicit declaration of function 'sincos'
+patchfiles-append   patch-tests-gdkgears.diff
 
-# When removing menu items, this prevents dereferencing a null pointer
+# https://github.com/mesonbuild/meson/issues/7652
+patchfiles-append   patch-sincos.diff
+
+# When removing menu items, this prevents dereferencing a null pointer (from lukaso)
 # https://gitlab.gnome.org/GNOME/gtk/-/issues/6304
+# Merge request: https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/8136
 patchfiles-append   gtk-menu-crash.patch
 
-# Fix for drag and drop of text/uri-list
-# https://gitlab.gnome.org/GNOME/gtk/-/issues/6480
-patchfiles-append   dnd-text-uri-list.patch
-
-# Fix for filechooser showing a broken symbol
+# Fix for filechooser showing a broken symbol (from lukaso)
 # https://gitlab.gnome.org/GNOME/gtk/-/issues/7279
-# Merge request here
+# Merged: https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/8135
 patchfiles-append   filechooser.patch
 
 # gtk3 +quartz uses instancetype which is not available
@@ -130,6 +124,26 @@ pre-configure {
     }
 }
 
+pre-activate {
+    # Old versions of the gtk2{-devel} port provide the `gtk-update-icon-cache` binary,
+    # now this is provided by the gtk3{-devel} port, and the gtk2{-devel} port provides
+    # `gtk-update-icon-cache-2.0` instead.
+    if {![catch {lindex [registry_active gtk2] 0} installed]} {
+        set _version [lindex $installed 1]
+        set _revision [lindex $installed 2]
+        if {[vercmp $_version.$_revision < 2.24.33.5]} {
+            registry_deactivate_composite gtk2 "" [list ports_nodepcheck 1]
+        }
+    }
+    if {![catch {lindex [registry_active gtk2-devel] 0} installed]} {
+        set _version [lindex $installed 1]
+        set _revision [lindex $installed 2]
+        if {[vercmp $_version.$_revision < 2.24.33.5]} {
+            registry_deactivate_composite gtk2-devel "" [list ports_nodepcheck 1]
+        }
+    }
+}
+
 configure.cppflags-append \
                     -DX_LOCALE
 
@@ -152,10 +166,6 @@ post-destroot {
     xinstall -m 644 -W ${worksrcpath} CONTRIBUTING.md COPYING NEWS README.md \
         ${destroot}${docdir}
 
-    # avoid conflict with the gtk-update-icon-cache installed by gtk2
-    move ${destroot}${prefix}/bin/gtk-update-icon-cache \
-         ${destroot}${prefix}/bin/gtk-update-icon-cache-3.0
-    
     ui_debug "Creating gtk.immodules..."
     system "DYLD_LIBRARY_PATH=${destroot}${prefix}/lib \
         ${destroot}${prefix}/bin/gtk-query-immodules-3.0 \
@@ -259,7 +269,7 @@ if {${universal_possible} && [variant_isset universal]} {
         reinplace s/@host@/${host}-apple-darwin${os.version}/ \
             {*}[glob -directory ${worksrcpath} *.pc.in]
     }
-    
+
     merger_arch_compiler yes
 } else {
     configure.cc "${configure.cc} ${configure.cc_archflags}"
@@ -291,6 +301,8 @@ variant demos description {Build demos and examples} {
 variant quartz conflicts x11 {
     require_active_variants path:lib/pkgconfig/cairo.pc:cairo quartz
     require_active_variants path:lib/pkgconfig/pango.pc:pango quartz
+    require_active_variants path:lib/pkgconfig/glib-2.0.pc:glib2 quartz
+    require_active_variants libepoxy quartz
 
     configure.args-append \
                             -Dx11_backend=false \
@@ -301,6 +313,8 @@ variant quartz conflicts x11 {
 variant x11 conflicts quartz {
     require_active_variants path:lib/pkgconfig/cairo.pc:cairo x11
     require_active_variants path:lib/pkgconfig/pango.pc:pango x11
+    require_active_variants path:lib/pkgconfig/glib-2.0.pc:glib2 x11
+    require_active_variants libepoxy x11
 
     depends_lib-append \
                             port:at-spi2-atk \
@@ -313,6 +327,9 @@ variant x11 conflicts quartz {
                             port:xorg-libXdamage \
                             port:xorg-libXcomposite \
                             port:xorg-libXfixes
+
+    # Upstream disables X11 for macOS; disable that behavior
+    patchfiles-append       patch-meson.build-x11-enabled.diff
 
     configure.args-append \
                             -Dx11_backend=true \
