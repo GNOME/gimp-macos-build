@@ -24,8 +24,8 @@ set my_name         gimp3
 #    For example, when setting to a release, update only last_release. When
 #    setting to a dev version, update only last_dev.
 # *****
-version             3.0.0-RC2+git
-set last_release    3.0.0-RC2
+version             3.0.0-RC3
+set last_release    3.0.0-RC3
 set last_dev        3.0.0-RC2+git
 revision            0
 
