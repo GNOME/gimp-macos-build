@@ -150,9 +150,6 @@ jobs:
     machine: true
     resource_class: gnome/gimp
     parameters:
-      part:
-        type: string
-        default: "1"
       arch:
         type: string
         default: "arm64"
@@ -173,9 +170,9 @@ jobs:
       - clear-artifacts:
           arch: "<< parameters.arch >>"
       - run:
-          name: Build GIMP dependencies part << parameters.part >>
+          name: Build GIMP dependencies
           command: |
-            << parameters.arch_command >> scripts/macports1_install_packages.sh --part<< parameters.part >>
+            << parameters.arch_command >> scripts/macports1_install_packages.sh
           no_output_timeout: 2h
       - store_artifacts:
           path: ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/var/macports/logs
@@ -268,48 +265,15 @@ workflows:
   build-arm64:
     jobs:
       - dependencies:
-          name: dependencies-part1
-          part: "1"
+          name: dependencies
           arch: "arm64"
           arch_command: ""
           arch_suffix: ""
-      - dependencies:
-          name: dependencies-part2
-          part: "2"
-          arch: "arm64"
-          arch_command: ""
-          arch_suffix: ""
-          requires:
-            - dependencies-part1
-      - dependencies:
-          name: dependencies-part3
-          part: "3"
-          arch: "arm64"
-          arch_command: ""
-          arch_suffix: ""
-          requires:
-            - dependencies-part2
-      - dependencies:
-          name: dependencies-part4
-          part: "4"
-          arch: "arm64"
-          arch_command: ""
-          arch_suffix: ""
-          requires:
-            - dependencies-part3
-      # - dependencies:
-      #     name: dependencies-part5
-      #     part: "5"
-      #     arch: "arm64"
-      #     arch_command: ""
-      #     arch_suffix: ""
-      #     requires:
-      #       - dependencies-part4
       - build-gimp:
           arch: "arm64"
           arch_command: ""
           requires:
-            - dependencies-part4
+            - dependencies
       - package-gimp:
           arch: "arm64"
           requires:
@@ -318,48 +282,15 @@ workflows:
   build-x86_64:
     jobs:
       - dependencies:
-          name: dependencies-part1
-          part: "1"
+          name: dependencies
           arch: "x86_64"
           arch_command: "arch -x86_64"
           arch_suffix: "_x86_64"
-      - dependencies:
-          name: dependencies-part2
-          part: "2"
-          arch: "x86_64"
-          arch_command: "arch -x86_64"
-          arch_suffix: "_x86_64"
-          requires:
-            - dependencies-part1
-      - dependencies:
-          name: dependencies-part3
-          part: "3"
-          arch: "x86_64"
-          arch_command: "arch -x86_64"
-          arch_suffix: "_x86_64"
-          requires:
-            - dependencies-part2
-      - dependencies:
-          name: dependencies-part4
-          part: "4"
-          arch: "x86_64"
-          arch_command: "arch -x86_64"
-          arch_suffix: "_x86_64"
-          requires:
-            - dependencies-part3
-      # - dependencies:
-      #     name: dependencies-part5
-      #     part: "5"
-      #     arch: "x86_64"
-      #     arch_command: "arch -x86_64"
-      #     arch_suffix: "_x86_64"
-      #     requires:
-      #       - dependencies-part4
       - build-gimp:
           arch: "x86_64"
           arch_command: "arch -x86_64"
           requires:
-            - dependencies-part4
+            - dependencies
       - package-gimp:
           arch: "x86_64"
           requires:

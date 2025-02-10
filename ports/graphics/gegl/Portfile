@@ -15,6 +15,13 @@ set my_name         gegl
 # 1. Update version and/or revision to the desired state
 #    If the version is not a release (e.g. 0.4.47) then do not touch the
 #    revision as it will always pull the latest code anyway.
+
+# This code will get the latest tag from the gegl repo
+# dep=gegl
+# repo="https://gitlab.gnome.org/GNOME/${dep}.git"
+# tag=$(git ls-remote --tags --exit-code --refs "$repo" | grep -oi "${dep}_[0-9]*_[0-9]*_[0-9]*" | sort --version-sort | tail -1)
+# echo Please use GEGL tag: $tag
+
 # 2. Ensure any release-specific patches are added to the patchfiles list in the
 #    correct if statement (and order)
 # 3. Do same for babl and gimp3
@@ -22,8 +29,8 @@ set my_name         gegl
 #    For example, when setting to a release, update only last_release. When
 #    setting to a dev version, update only last_dev.
 # *****
-version             0.4.53
-set last_release    0.4.52
+version             0.4.54
+set last_release    0.4.54
 set last_dev        0.4.53
 revision            0
 
