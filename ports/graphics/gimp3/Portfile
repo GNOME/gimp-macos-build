@@ -68,7 +68,7 @@ if {${is_release}} {
         set branch      GIMP_${major}_${minor}_${patch}
     }
 } else {
-    set branch      origin/master
+    set branch      origin/wip/lukaso/fix-12711-take-2
     revision        0
 }
 git.branch      ${branch}
