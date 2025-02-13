@@ -1,13 +1,17 @@
 version: 2.1
 
+setup: true
+
 # -------------------------
 #        PARAMETERS
 # -------------------------
-
 parameters:
   vgimp:
     type: string
     default: "3"
+  trigger-x86_64-build:
+    type: boolean
+    default: false
 
 # -------------------------
 #        ORBS
@@ -137,6 +141,16 @@ commands:
             tcc_service_appleevents="replace into access (service,client,client_type,auth_value,auth_reason,auth_version,indirect_object_identifier_type,indirect_object_identifier,flags,last_modified) values (\"kTCCServiceAppleEvents\",\"/usr/sbin/sshd\",1,2,4,1,0,\"com.apple.finder\",0,$epochdate);"
             sudo sqlite3 "${HOME}/Library/Application Support/com.apple.TCC/TCC.db" "$tcc_service_appleevents"
 
+  set-trigger-x86_64-build:
+    steps:
+      - run:
+          name: "Set trigger parameter"
+          command: |
+            curl -X POST -u "$CIRCLECI_TOKEN:" \
+              -H "Content-Type: application/json" \
+              -d '{"parameters": {"trigger-x86_64-build": true}}' \
+              "https://circleci.com/api/v2/project/gh/GNOME/gimp-macos-build/pipeline"
+
 # -------------------------
 #        JOBS
 # -------------------------
@@ -260,8 +274,17 @@ jobs:
           path: /tmp/artifacts
           destination: builds
 
+  set-trigger-x86_64-build:
+    machine: true
+    steps:
+      - set-trigger-x86_64-build
+
+# -------------------------
+#        WORKFLOWS
+# -------------------------
 workflows:
   version: 2
+
   build-arm64:
     jobs:
       - dependencies:
@@ -278,8 +301,12 @@ workflows:
           arch: "arm64"
           requires:
             - build-gimp
+      - set-trigger-x86_64-build:
+          requires:
+            - package-gimp
 
   build-x86_64:
+    when: << pipeline.parameters.trigger-x86_64-build >>
     jobs:
       - dependencies:
           name: dependencies
