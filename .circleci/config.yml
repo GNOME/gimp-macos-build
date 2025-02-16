@@ -146,7 +146,7 @@ jobs:
   #        JOBS SELF HOSTED
   # -------------------------
 
-  dependencies:
+  build:
     machine: true
     resource_class: gnome/gimp
     parameters:
@@ -174,26 +174,6 @@ jobs:
           command: |
             << parameters.arch_command >> scripts/macports1_install_packages.sh
           no_output_timeout: 2h
-      - store_artifacts:
-          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/var/macports/logs
-
-  build-gimp:
-    machine: true
-    resource_class: gnome/gimp
-    parameters:
-      arch:
-        type: string
-        default: "arm64"
-      arch_command:
-        type: string
-        default: ""
-
-    steps:
-      - setup
-      - setup-macports:
-          arch_command: "<< parameters.arch_command >>"
-      - clear-artifacts:
-          arch: "<< parameters.arch >>"
       - run:
           name: Build GIMP
           # XXX `make check` is not working reliably under circle ci, so we are
@@ -264,34 +244,24 @@ workflows:
   version: 2
   build-arm64:
     jobs:
-      - dependencies:
-          name: dependencies
+      - build:
+          name: build
           arch: "arm64"
           arch_command: ""
           arch_suffix: ""
-      - build-gimp:
-          arch: "arm64"
-          arch_command: ""
-          requires:
-            - dependencies
       - package-gimp:
           arch: "arm64"
           requires:
-            - build-gimp
+            - build
 
   build-x86_64:
     jobs:
-      - dependencies:
-          name: dependencies
+      - build:
+          name: build
           arch: "x86_64"
           arch_command: "arch -x86_64"
           arch_suffix: "_x86_64"
-      - build-gimp:
-          arch: "x86_64"
-          arch_command: "arch -x86_64"
-          requires:
-            - dependencies
       - package-gimp:
           arch: "x86_64"
           requires:
-            - build-gimp
+            - build
