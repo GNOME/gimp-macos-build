@@ -19,7 +19,7 @@ maintainers         {mps @Schamschula} openmaintainer
 
 distname            ${name}-${apple_version}
 
-worksrcdir          ${distname}/xar
+worksrcdir          apple-oss-distributions-xar-6ca6f97/xar
 
 checksums           rmd160  0471deb9e01c91658feb4ea120772f7478f5c350 \
                     sha256  34f2e97c6786d2994af30fd72447ff1ac53f4052391a1030424da291f26c44f4 \
