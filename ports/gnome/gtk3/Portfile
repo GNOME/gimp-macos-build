@@ -88,13 +88,20 @@ patchfiles-append   patch-sincos.diff
 
 # When removing menu items, this prevents dereferencing a null pointer (from lukaso)
 # https://gitlab.gnome.org/GNOME/gtk/-/issues/6304
-# Merge request: https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/8136
+# *NOT* merged merge request: https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/8136
 patchfiles-append   gtk-menu-crash.patch
 
+# Remove when update to 3.24.44 (or higher)
 # Fix for filechooser showing a broken symbol (from lukaso)
 # https://gitlab.gnome.org/GNOME/gtk/-/issues/7279
 # Merged: https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/8135
 patchfiles-append   filechooser.patch
+
+# Remove when update to 3.24.44 (or higher)
+# https://gitlab.gnome.org/GNOME/gtk/-/issues/7306
+# https://gitlab.gnome.org/GNOME/gtk/-/issues/7331
+# https://gitlab.gnome.org/GNOME/gtk/-/commit/32381771b1cfa55770036e525a6c53c70be6c920
+patchfiles-append   patch-7306-7331.patch
 
 # gtk3 +quartz uses instancetype which is not available
 # before approximately Xcode 4.6 (#49391)
