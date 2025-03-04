@@ -11,11 +11,11 @@ Fixes: #7331
  gtk/gtkimmulticontext.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/gtk/gtkimmulticontext.c b/gtk/gtkimmulticontext.c
+diff --git gtk/gtkimmulticontext.c gtk/gtkimmulticontext.c
 index 50363559d7b..2d70cdeda06 100644
---- a/gtk/gtkimmulticontext.c
-+++ b/gtk/gtkimmulticontext.c
-@@ -282,7 +282,8 @@ gtk_im_multicontext_get_slave (GtkIMMulticontext *multicontext)
+--- gtk/gtkimmulticontext.c
++++ gtk/gtkimmulticontext.c
+@@ -290,5 +290,6 @@ gtk_im_multicontext_get_slave (GtkIMMulticontext *multicontext)
  }
  
  static void

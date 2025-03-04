@@ -304,6 +304,10 @@ if [ -n "${PART2}" ]; then
   port select --set python python${PYTHON_SHORT_VERSION}
   port select --set python3 python${PYTHON_SHORT_VERSION}
 
+ # Install py-cairo and py-gobject3 explicitly first to ensure 'gi' module is available
+  port_clean_and_install py${PYTHON_SHORT_VERSION}-cairo
+  port_clean_and_install py${PYTHON_SHORT_VERSION}-gobject3
+  
   port_clean_and_install \
     aalib \
     cfitsio \

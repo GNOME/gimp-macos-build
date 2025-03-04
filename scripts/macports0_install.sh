@@ -30,6 +30,10 @@ MACPORTS_VERSION=2.10.5
 # Change to update python version across build
 # check `ports/graphics/gimp3/Portfile` to make sure this python version is
 # added to the `supported_py_versions` list or the build will fail
+# Keep consistent with version in 
+# - `ports/graphics/gegl/Portfile`
+# - `ports/devel/glib2/Portfile`
+# make sure to exclude other python version later in this script
 PYTHON_VERSION=3.10
 # Set automatically
 PYTHON_SHORT_VERSION=${PYTHON_VERSION//./}
@@ -194,7 +198,7 @@ else
   echo "macosx_sdk_version ${SDK_VERSION_X86_64}" | tee -a ${PREFIX}/etc/macports/macports.conf
   echo "build_arch x86_64" | tee -a ${PREFIX}/etc/macports/macports.conf
 fi
-echo "-x11 +no_x11 +quartz -python27 +no_gnome -gnome -gfortran -openldap -pinentry_mac ${debug}" | tee -a ${PREFIX}/etc/macports/variants.conf
+echo "-x11 +no_x11 +quartz -python27 +no_gnome -gnome -gfortran -openldap -pinentry_mac ${debug} +python${PYTHON_SHORT_VERSION} -python311 -python312 -python313" | tee -a ${PREFIX}/etc/macports/variants.conf
 printf "file://${PROJECT_DIR}/ports\n$(cat ${PREFIX}/etc/macports/sources.conf.default)\n" | tee ${PREFIX}/etc/macports/sources.conf
 
 echo "*** Setup ${SDK_VERSION} SDK"

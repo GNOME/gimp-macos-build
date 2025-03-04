@@ -69,7 +69,8 @@ if {${is_release}} {
 # Disable unexpected download of subprojects
 meson.wrap_mode     nodownload
 
-set py_ver          3.12
+# Keep this consistent with gimp3
+set py_ver          3.10
 set py_ver_nodot    [string map {. {}} ${py_ver}]
 set py_framework    ${frameworks_dir}/Python.framework/Versions/${py_ver}
 
