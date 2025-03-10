@@ -19,7 +19,7 @@ export JHBUILD_PREFIX=${PREFIX}
 GTK_MAC_BUNDLER=${HOME}/.local/bin/gtk-mac-bundler
 
 echo "Remove old app: ${PACKAGE_DIR}"
-rm -rf ${PACKAGE_DIR}
+rm -rf "${PACKAGE_DIR}"
 
 printf "Determining GIMP version: "
 
@@ -28,7 +28,7 @@ GIMP_VERSION="$(${PREFIX}/bin/gimp-3.0 --version 2>/dev/null | grep 'GNU Image M
 
 echo "$GIMP_VERSION"
 
-cat info.plist.tmpl | sed "s|%VERSION%|${GIMP_VERSION}|g" > info.plist
+sed "s|%VERSION%|${GIMP_VERSION}|g" info.plist.tmpl > info.plist
 
 echo "Copying charset.alias"
 # It's totally unclear if this file matters at all, or what should be in it.
@@ -49,8 +49,6 @@ echo "Done creating bundle"
 
 echo "Store GIMP version in bundle (for later use)"
 echo "$GIMP_VERSION" > ${PACKAGE_DIR}/GIMP.app/Contents/Resources/.version
-
-BASEDIR=$(dirname "$0")
 
 echo "Link 'Resources' into python ${PYTHON_VERSION} framework 'Resources'"
 if [ ! -d "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Resources/Python.app/Contents/Resources" ]; then
@@ -250,6 +248,18 @@ find ${PACKAGE_DIR}/GIMP.app/Contents/Resources/share/gir-1.0/*.gir | while IFS=
     base=$(basename "$pathname")
     g-ir-compiler --includedir=${PACKAGE_DIR}/GIMP.app/Contents/Resources/share/gir-1.0 ${pathname} -o ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/girepository-1.0/${base/.gir/.typelib}
 done
+
+echo "fixing pkg-config files"
+find ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/pkgconfig -name '*.pc' -type f -exec sed -i '' 's@^prefix=.*$@prefix=${pcfiledir}/../..@' "$0" {} \;
+
+echo "fixing symlinks (only 1 level down -- any more can't handle the copy) -- this is for plugin developers to match pkg-config files"
+find ${PREFIX}/lib/ \( -name "*.dylib" -o -name "*.so" \) -type l -maxdepth 1 -exec cp -a -n {} ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/ \;
+# These two have absolute paths so break the package
+rm -f ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/libcrypto.3.dylib
+rm -f ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/libssl.3.dylib
+
+echo "remove not connected symlinks"
+find ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/ -type l -exec test ! -e {} \; -delete
 
 echo "fixing pixmap cache"
 sed -i.old 's|@executable_path/../Resources/||' \

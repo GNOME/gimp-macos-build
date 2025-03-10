@@ -40,4 +40,5 @@ PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 pushd $PROJECT_DIR/package
 ./macports_build_app.sh debug
+./macports_build_plugin_developer_app.sh
 popd

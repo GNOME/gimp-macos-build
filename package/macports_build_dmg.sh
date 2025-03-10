@@ -18,17 +18,16 @@ else
   export arch="x86_64"
 fi
 
+# If EXTENSION is not set, default to an empty string
+EXTENSION=${EXTENSION:-""}
 #  target directory
-export PACKAGE_DIR="${HOME}/macports-gimp${VGIMP}-osx-app-${arch}"
+export PACKAGE_DIR="${HOME}/macports-gimp${VGIMP}-osx-app-${arch}${EXTENSION}"
 
 GIMP_VERSION="$(cat ${PACKAGE_DIR}/GIMP.app/Contents/Resources/.version)"
-rm ${PACKAGE_DIR}/GIMP.app/Contents/Resources/.version
-
 echo "Gimp version: ${GIMP_VERSION}"
 
-echo "Move background out of app before signing"
+echo "Setup /tmp/artifacts"
 mkdir -p /tmp/artifacts/
-mv "${PACKAGE_DIR}/GIMP.app/Contents/Resources/gimp-dmg.png" /tmp/artifacts/gimp-dmg.png
 
 echo "Signing libs"
 
@@ -81,19 +80,22 @@ fi
 
 echo "Building DMG"
 if [ -z "${CIRCLECI}" ]; then
-  DMGNAME="gimp-${GIMP_VERSION}-${arch}.dmg"
+  DMGNAME="gimp-${GIMP_VERSION}-${arch}${EXTENSION}.dmg"
 else
-  DMGNAME="gimp-${GIMP_VERSION}-${arch}-b${CIRCLE_BUILD_NUM}-${CIRCLE_BRANCH////-}.dmg"
+  DMGNAME="gimp-${GIMP_VERSION}-b${CIRCLE_BUILD_NUM}-${CIRCLE_BRANCH////-}-${arch}${EXTENSION}.dmg"
 fi
 
 rm -f /tmp/tmp.dmg
-rm -f "/tmp/artifacts/gimp-${GIMP_VERSION}-${arch}.dmg"
+echo "***Deleting /tmp/artifacts/${DMGNAME}"
+rm -f "/tmp/artifacts/${DMGNAME}"
+echo "***Deleting /tmp/artifacts/rw.${DMGNAME}.sparseimage"
+rm -f "/tmp/artifacts/rw.${DMGNAME}.sparseimage"
 
 cd create-dmg
 
 ./create-dmg \
   --volname "GIMP 3.0 Install" \
-  --background "/tmp/artifacts/gimp-dmg.png" \
+  --background "${PACKAGE_DIR}/GIMP.app/Contents/Resources/gimp-dmg.png" \
   --window-pos 1 1 \
   --icon "GIMP.app" 192 352 \
   --window-size 640 535 \
@@ -102,7 +104,7 @@ cd create-dmg
   --hide-extension "Applications" \
   --app-drop-link 448 352 \
   --format ULFO \
-  --disk-image-size 1200 \
+  --disk-image-size 1500 \
   --hdiutil-verbose \
   "/tmp/artifacts/${DMGNAME}" \
   "$PACKAGE_DIR/"

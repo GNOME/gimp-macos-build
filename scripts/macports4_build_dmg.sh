@@ -64,4 +64,5 @@ PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 pushd $PROJECT_DIR/package
 ./macports_build_dmg.sh ${build_type}
+EXTENSION="-plugin-developer" ./macports_build_dmg.sh ${build_type}
 popd

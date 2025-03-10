@@ -199,6 +199,7 @@ jobs:
           # Must be relative path from root
           paths:
             - macports-gimp<< pipeline.parameters.vgimp >>-osx-app-<< parameters.arch >>
+            - macports-gimp<< pipeline.parameters.vgimp >>-osx-app-<< parameters.arch >>-plugin-developer
             - .profile-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>
 
   package-gimp:
@@ -231,11 +232,13 @@ jobs:
           name: Notarizing DMG package
           command: |
             package/notarize.sh
+            EXTENSION="-plugin-developer" package/notarize.sh
           no_output_timeout: 20m
       - run:
           name: Checksum DMG package
           command: |
             package/checksum-artifacts.sh
+            EXTENSION="-plugin-developer" package/checksum-artifacts.sh
       - store_artifacts:
           path: /tmp/artifacts
           destination: builds
