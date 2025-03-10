@@ -1,6 +1,8 @@
 #!/bin/bash
 
-DMG_FILE=$(find /tmp/artifacts/ -name "gimp-3.0*.dmg")
+# If EXTENSION is not set, default to an empty string
+EXTENSION=${EXTENSION:-""}
+DMG_FILE=$(find /tmp/artifacts \( -name "gimp-3.0*arm64${EXTENSION}.dmg" -o -name "gimp-3.0*x86_64${EXTENSION}.dmg" \) 2>/dev/null)
 
 # Submit for notarization
 NOTARY_OUT="$(xcrun notarytool submit ${DMG_FILE} --apple-id ${notarization_login} --team-id ${notarization_teamid} --password ${notarization_password} --wait 2>&1)"

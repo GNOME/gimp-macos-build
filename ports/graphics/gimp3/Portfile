@@ -139,7 +139,8 @@ depends_lib-append \
                     port:qoi \
                     port:gegl \
                     port:adwaita-icon-theme \
-                    port:hicolor-icon-theme
+                    port:hicolor-icon-theme \
+                    port:realpath
 
 # Define the default Python version
 set py_ver  3.10
@@ -181,7 +182,8 @@ configure.args-append       -Dbuild-id=org.gimp.GIMP_official.${build_arch} \
                             -Drevision=${revision} \
                             -Dvala=disabled \
                             -Djavascript=disabled \
-                            -Dgi-docgen=disabled
+                            -Dgi-docgen=disabled \
+                            -Dpkgconfig.relocatable=true
 
 # at present, luajit does not build on PowerPC
 # platform darwin powerpc {
