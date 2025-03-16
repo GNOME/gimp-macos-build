@@ -14,13 +14,13 @@ PortGroup                   muniversal 1.0
 name                        glib2
 conflicts                   glib2-devel
 set my_name                 glib
-version                     2.78.4
-revision                    2
+version                     2.84.0
+revision                    0
 epoch                       2
 
-checksums                   rmd160  7941be85af18c428d86f4a00e52f41542b061aa9 \
-                            sha256  24b8e0672dca120cc32d394bccb85844e732e04fe75d18bb0573b2dbc7548f63 \
-                            size    5331892
+checksums                   rmd160  efb64fad8dd582bfb34d2e545727e6261fafaebc \
+                            sha256  f8823600cb85425e2815cfad82ea20fdaa538482ab74e7293d58b3f64a5aff6a \
+                            size    5613328
 
 set branch                  [join [lrange [split ${version} .] 0 1] .]
 categories                  devel
@@ -48,18 +48,17 @@ legacysupport.newest_darwin_requires_legacy 15
 patchfiles-append           libintl.patch
 patchfiles-append           patch-gio-tests-meson.build.diff
 patchfiles-append           patch-glib_gmem.c.diff
-patchfiles-append           patch-glib_gspawn.c.diff
 patchfiles-append           patch-glib_gunicollate.c.diff
 patchfiles-append           patch-gio_xdgmime_xdgmime.c.diff
 patchfiles-append           patch-get-launchd-dbus-session-address.diff
-patchfiles-append           patch-gmodule-gmodule-dl.c.diff
-patchfiles-append           patch-meson_build-meson_options-appinfo.diff
+# patchfiles-append           patch-gmodule-gmodule-dl.c.diff
+# patchfiles-append           patch-meson_build-meson_options-appinfo.diff
 patchfiles-append           patch-meson-build-python-path.diff
 patchfiles-append           patch-meson_build-atomic-test-older-clang-versions.diff
 patchfiles-append           universal.patch
 patchfiles-append           patch-glib2-findfolders-before-SL.diff
 patchfiles-append           patch-declarations.diff
-patchfiles-append           no-distutils.patch
+# patchfiles-append           no-distutils.patch
 
 platform darwin {
     if {${os.major} < 11} {
@@ -158,7 +157,7 @@ post-patch {
 
     reinplace -W ${worksrcpath} "s|path = \"/bin|path = \"${prefix}/bin:/bin|g" \
         glib/gutils.c \
-        glib/gspawn.c
+        glib/gspawn-posix.c
 
     # Upstream mixes three variations of Python shebangs, so account for all
     fs-traverse f ${worksrcpath} {
@@ -228,14 +227,6 @@ platform darwin 8 {
     foreach my_phase {build test destroot} {
         ${my_phase}.env-append  "DYLD_LIBRARY_PATH=${build_dir}/glib:${build_dir}/gobject:${build_dir}/gio:${build_dir}/gthread:${build_dir}/gmodule"
     }
-}
-
-variant quartz conflicts x11 {
-    configure.args-append   -Dappinfo_backend=native
-}
-
-variant x11 conflicts quartz {
-    configure.args-append   -Dappinfo_backend=generic
 }
 
 if {![variant_isset quartz]} {
