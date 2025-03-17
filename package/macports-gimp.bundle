@@ -76,7 +76,7 @@
   <!-- Copy in gimp plugins -->
   <binary recurse="True">${prefix}/lib/gimp/3.0/plug-ins/*</binary>
   <!-- Copy in gimp modules -->
-  <binary>${prefix}/lib/gimp/3.0/modules/*.so</binary>
+  <binary>${prefix}/lib/gimp/3.0/modules/*</binary>
   <!-- Copy in gimp extensions -->
   <binary recurse="True">${prefix}/lib/gimp/3.0/extensions/*</binary>
   <!-- Copy in babl modules -->
