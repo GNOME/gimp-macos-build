@@ -24,8 +24,8 @@ set my_name         gimp3
 #    For example, when setting to a release, update only last_release. When
 #    setting to a dev version, update only last_dev.
 # *****
-version             3.0.0-RC3+git
-set last_release    3.0.0-RC3
+version             3.0.0
+set last_release    3.0.0
 set last_dev        3.0.0-RC3+git
 revision            0
 
@@ -58,8 +58,15 @@ set major           [lindex [split ${simple_version} .] 0]
 set minor           [lindex [split ${simple_version} .] 1]
 set patch           [lindex [split ${simple_version} .] 2]
 set rc_version      [lindex [split ${simple_version} .] 3]
-set is_release      [expr {$patch % 2 == 0 && [regexp {^RC\d+$} $rc_version]}]
+set is_release      [expr {$patch % 2 == 0 && ($rc_version eq "" || [regexp {^RC\d+$} $rc_version])}]
 set is_stable       [expr {$minor % 2 == 0} && ${is_release}]
+
+puts "Major: ${major}"
+puts "Minor: ${minor}"
+puts "Patch: ${patch}"
+puts "RC Version: ${rc_version}"
+puts "Is Release: ${is_release}"
+puts "Is Stable: ${is_stable}"
 
 if {${is_release}} {
     if {[string length ${rc_version}] > 0} {
@@ -72,6 +79,7 @@ if {${is_release}} {
     revision        0
 }
 git.branch      ${branch}
+puts "Using branch: ${branch}"
 
 patchfiles-append   pythonpath.patch
 patch.pre_args      -p1
