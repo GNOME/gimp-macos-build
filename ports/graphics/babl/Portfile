@@ -27,9 +27,9 @@ set my_name         babl
 #    For example, when setting to a release, update only last_release. When
 #    setting to a dev version, update only last_dev.
 # *****
-version             0.1.112
+version             0.1.113
 set last_release    0.1.112
-set last_dev        0.1.111
+set last_dev        0.1.113
 revision            0
 
 license             LGPL-3+
