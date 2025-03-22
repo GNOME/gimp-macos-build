@@ -172,11 +172,6 @@ jobs:
       - run:
           name: Build GIMP dependencies
           command: |
-            # temporary change until this is merged
-            << parameters.arch_command >> scripts/macports1_install_packages.sh --uninstall-package glib2
-            << parameters.arch_command >> scripts/macports1_install_packages.sh --uninstall-package appstream-glib
-            << parameters.arch_command >> scripts/macports1_install_packages.sh --uninstall-package gobject-introspection
-            
             << parameters.arch_command >> scripts/macports1_install_packages.sh
           no_output_timeout: 2h
       - run:
