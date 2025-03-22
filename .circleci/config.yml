@@ -182,6 +182,8 @@ jobs:
             << parameters.arch_command >> scripts/macports2_install_gimp.sh
       - store_artifacts:
           path: ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/var/macports/logs
+      - store_artifacts:
+          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/SBOM.txt
       - setup-gtk-mac-bundler
       - run:
           name: Creating DMG package
@@ -200,6 +202,7 @@ jobs:
           paths:
             - macports-gimp<< pipeline.parameters.vgimp >>-osx-app-<< parameters.arch >>
             - .profile-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>
+            - macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/SBOM.txt
 
   package-gimp:
     macos:
@@ -236,6 +239,10 @@ jobs:
           name: Checksum DMG package
           command: |
             package/checksum-artifacts.sh
+      - run:
+          name: Save SBOM
+          command: |
+            cp ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/SBOM.txt /tmp/artifacts
       - store_artifacts:
           path: /tmp/artifacts
           destination: builds

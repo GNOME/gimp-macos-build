@@ -62,3 +62,5 @@ rm ${PROJECT_DIR}/package/gimp.icns || true
 rm ${PROJECT_DIR}/package/gimp-dmg.png || true
 
 sup_port port -v -k -N install gimp${VGIMP} +vala ${local}
+
+port installed > ${PREFIX}/SBOM.txt
