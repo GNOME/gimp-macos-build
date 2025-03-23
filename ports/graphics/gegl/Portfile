@@ -149,6 +149,7 @@ configure.pkg_config_path \
 
 configure.args-append \
                     -Ddocs=false \
+                    -Dgi-docgen=disabled \
                     -Dgraphviz=disabled \
                     -Dgtk-doc=false \
                     -Dlensfun=disabled \
