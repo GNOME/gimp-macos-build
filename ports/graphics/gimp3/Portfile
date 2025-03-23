@@ -24,8 +24,8 @@ set my_name         gimp3
 #    For example, when setting to a release, update only last_release. When
 #    setting to a dev version, update only last_dev.
 # *****
-version             3.0.1
-set last_release    3.0.0
+version             3.0.2
+set last_release    3.0.2
 set last_dev        3.0.1
 revision            0
 
@@ -81,8 +81,7 @@ if {${is_release}} {
 git.branch      ${branch}
 puts "Using branch: ${branch}"
 
-patchfiles-append   pythonpath.patch \
-                    modules-build.patch
+patchfiles-append   pythonpath.patch
 patch.pre_args      -p1
 
 # Release-specific patches (step 2 from instructions above)
