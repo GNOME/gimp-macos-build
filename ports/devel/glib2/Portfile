@@ -45,7 +45,10 @@ meson.wrap_mode             nodownload
 # Needed for clock_gettime
 legacysupport.newest_darwin_requires_legacy 15
 
-patchfiles-append           libintl.patch
+# Causes this header not to be portable and not a problem for us:
+# https://github.com/macports/macports-ports/commit/e302b20bdd71e9e16b142c525d8d809ee56ffd05
+# https://gitlab.gnome.org/Infrastructure/gimp-macos-build/-/issues/69#note_2388637
+# patchfiles-append           libintl.patch
 patchfiles-append           patch-gio-tests-meson.build.diff
 patchfiles-append           patch-glib_gmem.c.diff
 patchfiles-append           patch-glib_gspawn.c.diff
