@@ -48,7 +48,7 @@ long_description    GIMP is a cross-platform image editor available for GNU/Linu
 
 homepage            https://gimp.org/
 fetch.type          git
-git.url             https://gitlab.gnome.org/GNOME/gimp.git
+git.url             https://gitlab.gnome.org/martymichal/gimp.git
 
 # Simplify version string for manipulation
 set simple_version [string map {"-" "."} $version]
