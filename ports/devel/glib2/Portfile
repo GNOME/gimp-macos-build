@@ -15,7 +15,7 @@ name                        glib2
 conflicts                   glib2-devel
 set my_name                 glib
 version                     2.78.4
-revision                    2
+revision                    3
 epoch                       2
 
 checksums                   rmd160  7941be85af18c428d86f4a00e52f41542b061aa9 \
@@ -63,6 +63,10 @@ patchfiles-append           universal.patch
 patchfiles-append           patch-glib2-findfolders-before-SL.diff
 patchfiles-append           patch-declarations.diff
 patchfiles-append           no-distutils.patch
+
+# Need to disable dbus to avoid crashes when dbus is installed
+# https://gitlab.gnome.org/GNOME/gimp/-/issues/13672
+patchfiles-append           patch-gapplicationimpl-dbus.c.diff
 
 platform darwin {
     if {${os.major} < 11} {
