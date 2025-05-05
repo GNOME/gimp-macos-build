@@ -75,7 +75,7 @@ if {${is_release}} {
         set branch      GIMP_${major}_${minor}_${patch}
     }
 } else {
-    set branch      origin/master
+    set branch      wip/Jehan/testing-mr-2184
     revision        0
 }
 git.branch      ${branch}
