@@ -129,7 +129,6 @@
   </data>
   <!-- gi repository information -->
   <binary>${prefix}/lib/girepository-1.0/*</binary>
-  <data>${prefix}/share/gir-1.0/*</data>
   <!-- Interesting defaults -->
   <!-- <data dest="${bundle}/Contents/Resources/etc/gimp/3.0/gimprc">
     ${project}/gimprc
