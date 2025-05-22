@@ -94,7 +94,7 @@ rm -f "/tmp/artifacts/rw.${DMGNAME}.sparseimage"
 cd create-dmg
 
 ./create-dmg \
-  --volname "GIMP 3.0 Install" \
+  --volname "GIMP 3.1 Install" \
   --background "${PACKAGE_DIR}/GIMP.app/Contents/Resources/gimp-dmg.png" \
   --window-pos 1 1 \
   --icon "GIMP.app" 192 352 \
