@@ -34,15 +34,15 @@ See also [MACPORTS.md](MACPORTS.md) for details on how MacPorts is used to build
 
 ## Branches
 
-**Note**: CircleCI is currently set up to build the `master` and `gimp-2-10` branchs on a nightly basis (and pulls the latest GIMP code from the same branches on the [GIMP repo](https://gitlab.gnome.org/GNOME/gimp). It also builds any branch of this repo that is pushed to.
+**Note**: CircleCI is currently set up to build the `master` branch on a nightly basis (and pulls the latest GIMP code from the [GIMP repo](https://gitlab.gnome.org/GNOME/gimp). It also builds any branch of this repo that is pushed to.
 
 ## Releases
 
-For releases, create a release branch, and go into the `/ports/gimp` directory and edit the `Portfile` to update the version number and set the correct release tag (there are examples which are commented out). Then push the branch to this repo and CircleCI will build it.
+For releases, create a release branch, and go into the `/ports` directory and edit the `Portfile`s for `gimp3`, `babl` and `gegl` as appropriate. Then push the branch to this repo and CircleCI will build it.
 
-When ready, the branch can be merged to `master` or `gimp-2-10` as appropriate. The release should then be tagged on this repo (use the same tag as on the [GIMP repo](https://gitlab.gnome.org/GNOME/gimp)). That build will be the release build (in the Circle CI artifacts). There will be two builds, one for arm64 and one for x86_64. These should be downloaded and tested locally to make sure they work, and then provided to the GIMP team for distribution.
+When ready, the branch can be merged to `master`. The release should then be tagged on this repo (use the same tag as on the [GIMP repo](https://gitlab.gnome.org/GNOME/gimp)). That build will be the release build (in the Circle CI artifacts). There will be four DMGs built, two for arm64 and two for x86_64. The two each are the main build, and the plugin developer build. The main builds for both arm64 and x86_64 should be downloaded and tested locally to make sure they work, and then provided to the GIMP team for distribution.
 
-Once everything is fine with the release, create a new branch for going back to building the head release. Update the version appropriately in the `Portfile` and set to pulling the `master` branch of the GIMP repo. Once this is working properly, merge the new branch back to `master`.
+Once everything is fine with the release, create a new branch for going back to building the head release. Update the version as per the instructions (mirrors what you did to create the build). Once this is working properly, merge the new branch back to `master`.
 
 ## (Out of date) Steps in the CircleCI [config.yml](https://gitlab.gnome.org/Infrastructure/gimp-macos-build/blob/master/.circleci/config.yml) are:
 
