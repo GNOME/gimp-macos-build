@@ -11,6 +11,8 @@ name                gimp3
 set my_name         gimp3
 
 # ***** For releasing *****
+# NOTE: In order to build from master, the patch version must be odd
+# NOTE: Versions must have Major.Minor.Patch format.
 # 1. Update version and/or revision to the desired state
 #    If the version is not a release (e.g. 3.0.4) then do not touch the
 #    revision as it will always pull the lastest code anyway.
