@@ -65,7 +65,7 @@ else
 fi
 
 echo "Checking notarization credentials..."
-xcrun altool --list-certified-teams \
+xcrun altool --list-providers \
   -u "$notarization_login" \
   -p "$notarization_password"
 
