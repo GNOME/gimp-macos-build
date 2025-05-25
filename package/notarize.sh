@@ -70,7 +70,7 @@ xcrun altool --list-providers \
   -p "$notarization_password"
 
 echo "Submitting for notarization..."
-NOTARY_OUT="$(xcrun notarytool submit "${DMG_FILE}" --apple-id "${notarization_login}" --team-id "${notarization_teamid}" --password "${notarization_password}" --wait 2>&1)"
+NOTARY_OUT="$(xcrun notarytool submit "${DMG_FILE}" --apple-id "${notarization_login}" --team-id "${notarization_teamid}" --password "${notarization_password}" --wait --verbose 2>&1)"
 
 echo "$NOTARY_OUT"
 
