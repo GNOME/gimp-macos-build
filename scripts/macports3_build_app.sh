@@ -24,17 +24,14 @@
 
 set -e
 
-export VGIMP=3
+arch=$(uname -m)
+echo "*** Build: $arch"
+source ~/.profile-gimp-${arch}
 
-if [[ $(uname -m) == 'arm64' ]]; then
-  arch='arm64'
-  echo "*** Build: arm64"
-else
-  arch='x86_64'
-  echo "*** Build: x86_64"
+if [ -z "$GIMP_PREFIX" ]; then
+  export GIMP_PREFIX=${HOME}/macports-gimp3-${arch}
 fi
-source ~/.profile-gimp${VGIMP}-${arch}
-export PATH=$PREFIX/bin:$PATH
+export PATH=$GIMP_PREFIX/bin:$PATH
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 

@@ -24,8 +24,6 @@
 
 set -e
 
-export VGIMP=3
-
 function pure_version() {
   echo '0.2'
 }
@@ -138,15 +136,14 @@ done
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-if [[ $(uname -m) == 'arm64' ]]; then
-  arch='arm64'
-  echo "*** Build: arm64"
-else
-  arch='x86_64'
-  echo "*** Build: x86_64"
+arch=$(uname -m)
+echo "*** Build: $arch"
+source ~/.profile-gimp-${arch}
+
+if [ -z "$GIMP_PREFIX" ]; then
+  export GIMP_PREFIX=${HOME}/macports-gimp3-${arch}
 fi
-source ~/.profile-gimp${VGIMP}-${arch}
-export PATH=$PREFIX/bin:$PATH
+export PATH=$GIMP_PREFIX/bin:$PATH
 
 function massage_output() {
   if [ -n "$circleci" ]; then
@@ -200,15 +197,15 @@ echo ""
 echo ""
 echo "**** Configuration ****"
 echo ">> macports.conf"
-cat ${PREFIX}/etc/macports/macports.conf
+cat ${GIMP_PREFIX}/etc/macports/macports.conf
 echo ""
 echo ""
 echo ">> variants.conf"
-cat ${PREFIX}/etc/macports/variants.conf
+cat ${GIMP_PREFIX}/etc/macports/variants.conf
 echo ""
 echo ""
 echo ">> sources.conf"
-cat ${PREFIX}/etc/macports/sources.conf
+cat ${GIMP_PREFIX}/etc/macports/sources.conf
 echo ""
 echo ""
 echo "**** End Debugging info ****"
@@ -227,6 +224,10 @@ if [ -n "${PORT_EDIT_PACKAGE}" ]; then
   port edit "${PORT_EDIT_PACKAGE}"
   exit 0
 fi
+
+#TEMPORARY
+port_force_uninstall_and_clean gimp
+port_force_uninstall_and_clean gimp2
 
 if [ -n "${PART1}" ]; then
   # ** Reinstate these uninstalls if builds fail
@@ -256,9 +257,9 @@ if [ -n "${PART1}" ]; then
     libuv
 
   echo "cmake-bootstrap being installed since won't build from source with 10.13 SDK"
-  sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/macosx_sdk_version/#macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/macosx_sdk_version/#macosx_sdk_version/g' ${GIMP_PREFIX}/etc/macports/macports.conf
   (
     # temporarily unset deployment targets since cmake does not build with 10.13 SDK
     # and we don't really care since only used at build time
@@ -268,9 +269,9 @@ if [ -n "${PART1}" ]; then
     echo "clean cmake****"
     port_clean_and_install cmake
   )
-  sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${GIMP_PREFIX}/etc/macports/macports.conf
 
   # Former part 2, but Circle CI now allows much longer builds (5 hours)
   port_force_uninstall_and_clean p5.34-io-compress-brotli
@@ -281,24 +282,24 @@ if [ -n "${PART1}" ]; then
   port_clean_and_install $rust_deps
   # Build only dependency, so don't care if backward compatible
   echo "install rust"
-  sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/macosx_sdk_version/#macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/macosx_sdk_version/#macosx_sdk_version/g' ${GIMP_PREFIX}/etc/macports/macports.conf
   (
     unset MACOSX_DEPLOYMENT_TARGET
     unset SDKROOT
     port_long_clean_and_install rust
   )
-  sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${GIMP_PREFIX}/etc/macports/macports.conf
   port_clean_and_install x265 +highdepth
 fi
 
 if [ -n "${PART2}" ]; then
   # Have to clean every port because sub-ports get gummed up when they fail to
   # build/install. It would require detecting failure (obscure long error like
-  # this): Error: See ${PREFIX}/var/macports/logs/_opt_local_var_macports_sources_rsync.macports.org_macports_release_tarballs_ports_devel_dbus/dbus/main.log for details.
+  # this): Error: See ${GIMP_PREFIX}/var/macports/logs/_opt_local_var_macports_sources_rsync.macports.org_macports_release_tarballs_ports_devel_dbus/dbus/main.log for details.
 
   # Need to know correct python version so py-cairo and py-gobject3 are installed in correct version (there are
   # multiple versions of python installed due to myriad macports dependencies we don't control)
@@ -367,25 +368,25 @@ if [ -n "${PART4}" ]; then
   port_long_clean_and_install libgcc14
 
   # libgcc dependency libgcc14
-  sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/macosx_sdk_version/#macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/macosx_sdk_version/#macosx_sdk_version/g' ${GIMP_PREFIX}/etc/macports/macports.conf
   (
     unset MACOSX_DEPLOYMENT_TARGET
     unset SDKROOT
     port_long_clean_and_install gcc14
   )
-  sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${GIMP_PREFIX}/etc/macports/macports.conf
 
   # Now we can install libgcc
   port_long_clean_and_install libgcc
 
   # libomp can't handle +debug variant as prebuilt binary
-  sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/macosx_sdk_version/#macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/macosx_sdk_version/#macosx_sdk_version/g' ${GIMP_PREFIX}/etc/macports/macports.conf
   (
     unset MACOSX_DEPLOYMENT_TARGET
     unset SDKROOT
@@ -397,9 +398,9 @@ if [ -n "${PART4}" ]; then
     port_clean_and_install \
       jdupes
   )
-  sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${GIMP_PREFIX}/etc/macports/macports.conf
 
   port clean dbus
   port_install -f dbus

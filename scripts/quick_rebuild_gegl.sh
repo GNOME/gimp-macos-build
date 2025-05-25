@@ -22,21 +22,17 @@
  # Boston, MA  02110-1301,  USA       gnu@gnu.org                   #
  ####################################################################
 
-export VGIMP=3
+arch=$(uname -m)
+echo "*** Build: $arch"
+source ~/.profile-gimp-${arch}
 
-if [[ $(uname -m) == 'arm64' ]]; then
-  arch='arm64'
-  echo "*** Build: arm64"
-else
-  arch='x86_64'
-  echo "*** Build: x86_64"
+if [ -z "$GIMP_PREFIX" ]; then
+  export GIMP_PREFIX=${HOME}/macports-gimp3-${arch}
 fi
-source ~/.profile-gimp${VGIMP}-${arch}
-export PATH=$PREFIX/bin:$PATH
+export PATH=$GIMP_PREFIX/bin:$PATH
 
-pushd ~/macports-gimp${VGIMP}-arm64/var/macports/build/_Users_$(whoami)_project_ports_graphics_gegl/gegl/work/build
+pushd ~${GIMP_PREFIX}/var/macports/build/_Users_$(whoami)_project_ports_graphics_gegl/gegl/work/build
   # needed to find vapigen
-  export PATH=/Users/lukasoberhuber/macports-gimp${VGIMP}-arm64/bin:$PATH
-  ~/macports-gimp${VGIMP}-arm64/bin/ninja -j10 -v
-  ~/macports-gimp${VGIMP}-arm64/bin/ninja install
+  ${GIMP_PREFIX}/bin/ninja -j10 -v
+  ${GIMP_PREFIX}/ninja install
 popd

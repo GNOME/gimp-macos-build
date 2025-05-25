@@ -22,27 +22,23 @@
  # Boston, MA  02110-1301,  USA       gnu@gnu.org                   #
  ####################################################################
 
-export VGIMP=3
 
-if [[ $(uname -m) == 'arm64' ]]; then
-  arch='arm64'
-  echo "*** Build: arm64"
-else
-  arch='x86_64'
-  echo "*** Build: x86_64"
+arch=$(uname -m)
+echo "*** Build: $arch"
+source ~/.profile-gimp-${arch}
+
+if [ -z "$GIMP_PREFIX" ]; then
+  export GIMP_PREFIX=${HOME}/macports-gimp3-${arch}
 fi
-source ~/.profile-gimp${VGIMP}-${arch}
-export PATH=$PREFIX/bin:$PATH
+export PATH=$GIMP_PREFIX/bin:$PATH
 
-SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
-
-pushd ~/macports-gimp${VGIMP}-${arch}
+pushd $GIMP_PREFIX
   rm bin/gimp*
   rm -r etc/gimp
   rm -r lib/gimp
   rm -r share/gimp
   rm -r var/gimp
-  rm -r include/gimp-3.0
+  rm -r include/gimp-*
   rm -r lib/girepository-1.0/Gimp*
   rm -r lib/libgimp*
   rm -r lib/pkgconfig/gimp*

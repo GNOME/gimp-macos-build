@@ -49,10 +49,10 @@
     ${prefix}/bin/gegl
   </binary>
   <!-- gimp additional binaries -->
-  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-console-3.0</binary>
-  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-debug-tool-3.0</binary>
-  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimptool-3.0</binary>
-  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-script-fu-interpreter-3.0</binary>
+  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-console*</binary>
+  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-debug-tool*</binary>
+  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimptool*</binary>
+  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-script-fu-interpreter*</binary>
 
   <!-- Copy in Info.plist -->
   <plist>${project}/info.plist</plist>
@@ -72,13 +72,13 @@
     ${prefix}/Library/Frameworks/Python.framework/Versions/${env:PYTHON_VERSION}/*
   </binary>
   <!-- Name of main gimp binary -->
-  <main-binary>${prefix}/bin/gimp-3.0</main-binary>
+  <main-binary>${prefix}/bin/gimp-${env:GIMP_APP_VERSION}</main-binary>
   <!-- Copy in gimp plugins -->
-  <binary recurse="True">${prefix}/lib/gimp/3.0/plug-ins/*</binary>
+  <binary recurse="True">${prefix}/lib/gimp/${env:GIMP_PKGCONFIG_VERSION}/plug-ins/*</binary>
   <!-- Copy in gimp modules -->
-  <binary>${prefix}/lib/gimp/3.0/modules/*</binary>
+  <binary>${prefix}/lib/gimp/${env:GIMP_PKGCONFIG_VERSION}/modules/*</binary>
   <!-- Copy in gimp extensions -->
-  <binary recurse="True">${prefix}/lib/gimp/3.0/extensions/*</binary>
+  <binary recurse="True">${prefix}/lib/gimp/${env:GIMP_PKGCONFIG_VERSION}/extensions/*</binary>
   <!-- Copy in babl modules -->
   <binary>${prefix}/lib/babl-0.1/*.dylib</binary>
   <!-- Copy in gegl modules -->
@@ -104,7 +104,7 @@
     ${prefix}/etc/fonts
   </data>
   <!-- Gimp data -->
-  <data>${prefix}/etc/gimp/3.0/*</data>
+  <data>${prefix}/etc/gimp/${env:GIMP_PKGCONFIG_VERSION}/*</data>
   <data dest="${bundle}/Contents/Resources/share/gimp">${prefix}/share/gimp</data>
   <!-- CJK and Cyrillic support for file-pdf -->
   <data>${prefix}/share/poppler</data>

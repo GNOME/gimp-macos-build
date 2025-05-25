@@ -10,18 +10,17 @@ fi
 
 if [[ "$ARCH" == 'arm64' ]]; then
   build_arm64=true
-  echo "*** Build: arm64"
   export arch="arm64"
 else
   build_arm64=false
-  echo "*** Build: x86_64"
   export arch="x86_64"
 fi
+echo "*** Build: $arch"
 
 # If EXTENSION is not set, default to an empty string
 EXTENSION=${EXTENSION:-""}
 #  target directory
-export PACKAGE_DIR="${HOME}/macports-gimp${VGIMP}-osx-app-${arch}${EXTENSION}"
+export PACKAGE_DIR="${HOME}/macports-gimp-osx-app-${arch}${EXTENSION}"
 
 GIMP_VERSION="$(cat ${PACKAGE_DIR}/GIMP.app/Contents/Resources/.version)"
 echo "Gimp version: ${GIMP_VERSION}"
@@ -94,7 +93,7 @@ rm -f "/tmp/artifacts/rw.${DMGNAME}.sparseimage"
 cd create-dmg
 
 ./create-dmg \
-  --volname "GIMP 3.0 Install" \
+  --volname "GIMP ${GIMP_VERSION} Install" \
   --background "${PACKAGE_DIR}/GIMP.app/Contents/Resources/gimp-dmg.png" \
   --window-pos 1 1 \
   --icon "GIMP.app" 192 352 \

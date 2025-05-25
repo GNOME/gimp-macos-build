@@ -22,12 +22,10 @@
 # Boston, MA  02110-1301,  USA       gnu@gnu.org                   #
 ####################################################################
 
-export VGIMP=3
+arch=$(uname -m)
 
-if [[ $(uname -m) == 'arm64' ]]; then
-  arch='arm64'
-else
-  arch='x86_64'
+if [ -z "$GIMP_PREFIX" ]; then
+  export GIMP_PREFIX=${HOME}/macports-gimp3-${arch}
 fi
 
-echo "${HOME}/macports-gimp${VGIMP}-${arch}/var/macports/build/_Users_$(whoami)_project_ports_graphics_gimp${VGIMP}/gimp${VGIMP}/work"
+echo "${GIMP_PREFIX}/var/macports/build/_Users_$(whoami)_project_ports_graphics_gimp-official/gimp-official/work"

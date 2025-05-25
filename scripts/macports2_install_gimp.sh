@@ -24,19 +24,14 @@
 
 set -e
 
-export VGIMP=3
+arch=$(uname -m)
+echo "*** Build: $arch"
+source ~/.profile-gimp-${arch}
 
-PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-
-if [[ $(uname -m) == 'arm64' ]]; then
-  arch='arm64'
-  echo "*** Build: arm64"
-else
-  arch='x86_64'
-  echo "*** Build: x86_64"
+if [ -z "$GIMP_PREFIX" ]; then
+  export GIMP_PREFIX=${HOME}/macports-gimp3-${arch}
 fi
-source ~/.profile-gimp${VGIMP}-${arch}
-export PATH=$PREFIX/bin:$PATH
+export PATH=$GIMP_PREFIX/bin:$PATH
 
 function sup_port() {
   if [ -n "$circleci" ]; then
@@ -48,19 +43,19 @@ function sup_port() {
   fi
 }
 
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
 pushd ${PROJECT_DIR}/ports
 portindex
 popd
 
 # Force new install of gimp so latest changes are pulled from gitlab
-# deal with 'Error: Port gimp210 not found'
-port -N uninstall installed and gimp210 || true
-port clean gimp210 || true
-port -N uninstall installed and gimp3 || true
-port clean gimp3 || true
+# deal with 'Error: Port gimp not found'
+port -N uninstall installed and gimp-official || true
+port clean gimp-official || true
 rm ${PROJECT_DIR}/package/gimp.icns || true
 rm ${PROJECT_DIR}/package/gimp-dmg.png || true
 
-sup_port port -v -k -N install gimp${VGIMP} +vala ${local}
+sup_port port -v -k -N install gimp-official +vala ${local}
 
-port installed > ${PREFIX}/SBOM.txt
+port installed > ${GIMP_PREFIX}/SBOM.txt

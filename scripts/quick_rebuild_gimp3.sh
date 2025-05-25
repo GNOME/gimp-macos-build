@@ -22,17 +22,14 @@
  # Boston, MA  02110-1301,  USA       gnu@gnu.org                   #
  ####################################################################
 
-export VGIMP=3
+arch=$(uname -m)
+echo "*** Build: $arch"
+source ~/.profile-gimp-${arch}
 
-if [[ $(uname -m) == 'arm64' ]]; then
-  arch='arm64'
-  echo "*** Build: arm64"
-else
-  arch='x86_64'
-  echo "*** Build: x86_64"
+if [ -z "$GIMP_PREFIX" ]; then
+  export GIMP_PREFIX=${HOME}/macports-gimp3-${arch}
 fi
-source ~/.profile-gimp${VGIMP}-${arch}
-export PATH=$PREFIX/bin:$PATH
+export PATH=$GIMP_PREFIX/bin:$PATH
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 
@@ -52,27 +49,26 @@ for arg in "$@"; do
   esac
 done
 
-pushd ~/macports-gimp${VGIMP}-${arch}/var/macports/build/_Users_$(whoami)_project_ports_graphics_gimp${VGIMP}/gimp${VGIMP}/work/build || exit
+pushd ${GIMP_PREFIX}/var/macports/build/_Users_$(whoami)_project_ports_graphics_gimp-official/gimp-official/work/build || exit
   if $fast_build; then
-    pushd ../gimp${VGIMP}-*/tools || exit
-      cp in-build-gimp.sh in-build-gimp.sh.bak
-      echo '#!/bin/sh' > in-build-gimp.sh
+    pushd ../gimp*/tools || exit
+      cp in-build-gimp.py in-build-gimp.py.bak
     popd || exit
   fi
 
-  ~/macports-gimp${VGIMP}-${arch}/bin/ninja -j10 -v
+  ${GIMP_PREFIX}/bin/ninja -j10 -v
 
   if $fast_build; then
-    pushd ../gimp${VGIMP}-*/tools || exit
-      rm in-build-gimp.sh
-      mv in-build-gimp.sh.bak in-build-gimp.sh
+    pushd ../gimp*/tools || exit
+      rm in-build-gimp.py
+      mv in-build-gimp.py.bak in-build-gimp.py
     popd || exit
   fi
 
-  ~/macports-gimp${VGIMP}-${arch}/bin/ninja gimp-data/images/logo/gimp.icns
+  ${GIMP_PREFIX}/bin/ninja gimp-data/images/logo/gimp.icns
   cp gimp-data/images/logo/gimp.icns ${SCRIPT_DIR}/../package/
-  ~/macports-gimp${VGIMP}-${arch}/bin/ninja gimp-data/images/logo/gimp-dmg.png
+  ${GIMP_PREFIX}/bin/ninja gimp-data/images/logo/gimp-dmg.png
   cp gimp-data/images/logo/gimp-dmg.png ${SCRIPT_DIR}/../package/
 
-  ~/macports-gimp${VGIMP}-${arch}/bin/ninja install
+  ${GIMP_PREFIX}/bin/ninja install
 popd || exit

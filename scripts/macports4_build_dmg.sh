@@ -24,26 +24,16 @@
 
 set -e
 
-export VGIMP=3
-
-arm64_file="$HOME/.profile-gimp${VGIMP}-arm64"
-x86_64_file="$HOME/.profile-gimp${VGIMP}-x86_64"
+arm64_file="$HOME/.profile-gimp-arm64"
+x86_64_file="$HOME/.profile-gimp-x86_64"
 if [ -f "$arm64_file" ] && [ -f "$x86_64_file" ]; then
   # Both files are present, decide based on current arch because this is a
   # local build
-  if [[ $(uname -m) == 'arm64' ]]; then
-    arch='arm64'
-    echo "*** Build: arm64"
-  else
-    arch='x86_64'
-    echo "*** Build: x86_64"
-  fi
-  source "$HOME/.profile-gimp${VGIMP}-${arch}"
+  arch=$(uname -m)
+  source "$HOME/.profile-gimp-${arch}"
 elif [ -f "$arm64_file" ]; then
-  echo "*** Build: arm64"
   source "$arm64_file"
 elif [ -f "$x86_64_file" ]; then
-  echo "*** Build: x86_64"
   source "$x86_64_file"
 else
   echo "*** No suitable profile found for GIMP"
@@ -51,18 +41,20 @@ else
 fi
 
 if [ -n "$GIMP_ARM64" ]; then
-  build_type=arm64
-  echo "*** Build: arm64"
+  export arch=arm64
 else
-  build_type=x86_64
-  echo "*** Build: x86_64"
+  export arch=x86_64
 fi
+echo "*** Build: $arch"
 
-export PATH=$PREFIX/bin:$PATH
+if [ -z "$GIMP_PREFIX" ]; then
+  export GIMP_PREFIX=${HOME}/macports-gimp3-${arch}
+fi
+export PATH=$GIMP_PREFIX/bin:$PATH
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 pushd $PROJECT_DIR/package
-./macports_build_dmg.sh ${build_type}
-EXTENSION="-plugin-developer" ./macports_build_dmg.sh ${build_type}
+./macports_build_dmg.sh ${arch}
+EXTENSION="-plugin-developer" ./macports_build_dmg.sh ${arch}
 popd

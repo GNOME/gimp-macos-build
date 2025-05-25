@@ -2,47 +2,41 @@
 
 # set -e
 
-if [[ $(uname -m) == 'arm64' ]]; then
+arch=$(uname -m)
+if [ "$arch" = 'arm64' ]; then
   build_arm64=true
-  echo "*** Build: arm64"
-  #  target directory
-  export PACKAGE_DIR="${HOME}/macports-gimp${VGIMP}-osx-app-arm64"
-  export arch="arm64"
 else
   build_arm64=false
-  echo "*** Build: x86_64"
-  #  target directory
-  export PACKAGE_DIR="${HOME}/macports-gimp${VGIMP}-osx-app-x86_64"
-  export arch="x86_64"
 fi
-export JHBUILD_PREFIX=${PREFIX}
+echo "*** Build: $arch"
+
+#  target directory
+export PACKAGE_DIR="${HOME}/macports-gimp-osx-app-${arch}"
+export JHBUILD_PREFIX=${GIMP_PREFIX}
 GTK_MAC_BUNDLER=${HOME}/.local/bin/gtk-mac-bundler
 
 echo "Remove old app: ${PACKAGE_DIR}"
 rm -rf "${PACKAGE_DIR}"
 
 printf "Determining GIMP version: "
-
-GIMP_VERSION="$(${PREFIX}/bin/gimp-3.0 --version 2>/dev/null | grep 'GNU Image Manipulation Program version' | sed 's|GNU Image Manipulation Program version ||')"
-# for gtk-mac-bundler
-
+eval $(sed -n 's/^#define  *\([^ ]*\)  *\(.*\) *$/export \1=\2/p' $(echo ${GIMP_PREFIX}/var/macports/build/_Users_$(whoami)_project_ports_graphics_gimp-official/gimp-official/work/build/config.h))
 echo "$GIMP_VERSION"
+sed -e "s|%GIMP_VERSION%|${GIMP_VERSION}|g" -e "s|%GIMP_MUTEX_VERSION%|${GIMP_MUTEX_VERSION}|g" info.plist.tmpl > info.plist
 
-sed "s|%VERSION%|${GIMP_VERSION}|g" info.plist.tmpl > info.plist
 
 echo "Copying charset.alias"
 # It's totally unclear if this file matters at all, or what should be in it.
 # This version was pulled from pkg-config-0.29.2/glib/glib/libcharset/charset.alias
-if [ -w "${PREFIX}/lib/" ]; then
-  cp -f charset.alias "${PREFIX}/lib/"
+if [ -w "${GIMP_PREFIX}/lib/" ]; then
+  cp -f charset.alias "${GIMP_PREFIX}/lib/"
 else
-  sudo cp -f charset.alias "${PREFIX}/lib/"
+  sudo cp -f charset.alias "${GIMP_PREFIX}/lib/"
 fi
 
 echo "Creating bundle"
 $GTK_MAC_BUNDLER macports-gimp.bundle
-if [ ! -f ${PACKAGE_DIR}/GIMP.app/Contents/MacOS/gimp ]; then
-  echo "ERROR: Bundling failed, ${PACKAGE_DIR}/GIMP.app/Contents/MacOS/gimp not found"
+if [ ! -f ${PACKAGE_DIR}/GIMP.app/Contents/MacOS/gimp-${GIMP_APP_VERSION} ]; then
+  echo "ERROR: Bundling failed, ${PACKAGE_DIR}/GIMP.app/Contents/MacOS/gimp-${GIMP_APP_VERSION} not found"
   exit 1
 fi
 echo "Done creating bundle"
@@ -89,7 +83,7 @@ FILES=$(
    | grep ' Mach-O '|awk -F ':' '{print $1}'
 )
 
-OLDPATH="${PREFIX}/"
+OLDPATH="${GIMP_PREFIX}/"
 
 for file in $FILES
 do
@@ -134,7 +128,7 @@ find  ${PACKAGE_DIR}/GIMP.app/Contents/MacOS -type f -perm +111 \
        -change @rpath/libubsan.dylib      @rpath/lib/libgcc/libubsan.dylib
 
 echo "adding @rpath to the plugins (incl special ghostscript 9.56 fix)"
-find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/3.0/plug-ins/ -perm +111 -type f \
+find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/${GIMP_PKGCONFIG_VERSION}/plug-ins/ -perm +111 -type f \
    | xargs file \
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
    | xargs -n1 install_name_tool -add_rpath @executable_path/../../../../../ \
@@ -163,7 +157,7 @@ find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/3.0/plug-ins/ -perm +1
        -change @rpath/libubsan.dylib      @rpath/lib/libgcc/libubsan.dylib
 
 echo "adding @rpath to the extensions (incl special ghostscript 9.56 fix)"
-find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/3.0/extensions/ -perm +111 -type f \
+find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/${GIMP_PKGCONFIG_VERSION}/extensions/ -perm +111 -type f \
    | xargs file \
    | grep ' Mach-O '|awk -F ':' '{print $1}' \
    | xargs -n1 install_name_tool -add_rpath @executable_path/../../../../../ \
@@ -250,7 +244,7 @@ find ${PACKAGE_DIR}/GIMP.app/Contents/Resources/share/gir-1.0/*.gir | while IFS=
 done
 
 echo "fixing symlinks (only 1 level down -- any more can't handle the copy) -- this is for plugin developers to match pkg-config files"
-find ${PREFIX}/lib/ \( -name "*.dylib" -o -name "*.so" \) -type l -maxdepth 1 -exec cp -a -n {} ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/ \;
+find ${GIMP_PREFIX}/lib/ \( -name "*.dylib" -o -name "*.so" \) -type l -maxdepth 1 -exec cp -a -n {} ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/ \;
 # These two have absolute paths so break the package
 rm -f ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/libcrypto.3.dylib
 rm -f ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/libssl.3.dylib
@@ -262,8 +256,8 @@ echo "fixing pixmap cache"
 sed -i.old 's|@executable_path/../Resources/||' \
     ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache
 # Works around gdk-pixbuf loader bug for release builds only https://gitlab.gnome.org/GNOME/gdk-pixbuf/-/issues/217
-mkdir -p "${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/3.0/plug-ins/Resources/lib"
-pushd ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/3.0/plug-ins/Resources/lib || exit 1
+mkdir -p "${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/${GIMP_PKGCONFIG_VERSION}/plug-ins/Resources/lib"
+pushd ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/gimp/${GIMP_PKGCONFIG_VERSION}/plug-ins/Resources/lib || exit 1
   ln -s ../../../../../gdk-pixbuf-2.0 gdk-pixbuf-2.0
 popd
 
@@ -282,8 +276,6 @@ fi
 echo "create missing links. should we use wrappers instead?"
 
 pushd ${PACKAGE_DIR}/GIMP.app/Contents/MacOS || exit 1
-  ln -s gimp-console-3.0 gimp-console
-  ln -s gimp-debug-tool-3.0 gimp-debug-tool
   ln -s python${PYTHON_VERSION} python
   ln -s python${PYTHON_VERSION} python3
 popd

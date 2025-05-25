@@ -22,15 +22,13 @@
 # Boston, MA  02110-1301,  USA       gnu@gnu.org                   #
 ####################################################################
 
-if [[ $(uname -m) == 'arm64' ]]; then
+arch=$(uname -m)
+if [ "$arch" = 'arm64' ]; then
   build_arm64=true
-  arch='arm64'
-  echo "*** Build: arm64"
 else
   build_arm64=false
-  arch='x86_64'
-  echo "*** Build: x86_64"
 fi
+echo "*** Build: $arch"
 
 function pure_version() {
   echo '0.2'
@@ -50,10 +48,8 @@ function usage() {
   echo "  --formulas-only"
   echo "      only uninstall formulas, not macports itself. Needed for CI where deleting users requires"
   echo "      accepting a dialog box."
-  echo "  --homedirgimp2"
-  echo "      installs macports to a custom homedir macports-gimp2"
-  echo "  --homedirgimp3"
-  echo "      installs macports to a custom homedir macports-gimp3"
+  echo "  --dirgimp"
+  echo "      installs macports to a custom prefix"
   echo "  --version         show tool version number"
   echo "  -h, --help        display this help"
   exit 0
@@ -67,13 +63,9 @@ while test "${1:0:1}" = "-"; do
     formulasonly="true"
     shift
     ;;
-  --homedirgimp2)
-    homedirgimp2="true"
-    shift
-    ;;
-  --homedirgimp3)
-    homedirgimp3="true"
-    shift
+  --dirgimp)
+    GIMP_PREFIX="$2"
+    shift 2
     ;;
   -h | --help)
     usage
@@ -89,17 +81,11 @@ while test "${1:0:1}" = "-"; do
   esac
 done
 
-if [ -n "$homedirgimp2" ]; then
-  echo "**Uninstalling MacPorts in home dir macports-gimp2"
-  home_dir=true
-  PREFIX="${HOME}/macports-gimp2-${arch}"
-elif [ -n "$homedirgimp3" ]; then
-  echo "**Uninstalling MacPorts in home dir macports-gimp3"
-  home_dir=true
-  PREFIX="${HOME}/macports-gimp3-${arch}"
+if [ -z "$GIMP_PREFIX" ]; then
+  export GIMP_PREFIX=${HOME}/macports-gimp3-${arch}
 fi
-
-export PATH=$PREFIX/bin:$PATH
+echo "**Uninstalling MacPorts in $GIMP_PREFIX"
+export PATH=$GIMP_PREFIX/bin:$PATH
 
 echo "Macports installed at $(which port &>/dev/null)"
 if which port &>/dev/null; then
@@ -112,6 +98,6 @@ if [ -n "$formulasonly" ]; then
 fi
 
 echo "Uninstalling MacPorts"
-if [ -n "${PREFIX}" ]; then
-  rm -rf "$PREFIX"
+if [ -n "${GIMP_PREFIX}" ]; then
+  rm -rf "$GIMP_PREFIX"
 fi
