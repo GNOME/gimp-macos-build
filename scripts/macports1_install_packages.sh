@@ -233,6 +233,8 @@ if [ -n "${PART1}" ]; then
   # temporarily uninstall gegl, gimp3, libgcc12 (until all builds are fixed)
   # All of these ports at some point failed to upgrade, build or otherwise cooperate
   # unless uninstalled, even when being built from scratch.
+  port_force_uninstall_and_clean gimp
+  port_force_uninstall_and_clean gimp-official
   port_force_uninstall_and_clean gimp3
   port_force_uninstall_and_clean babl gegl
   # port_force_uninstall_and_clean gcc12
