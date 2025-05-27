@@ -49,7 +49,7 @@ function usage() {
   echo "      only uninstall formulas, not macports itself. Needed for CI where deleting users requires"
   echo "      accepting a dialog box."
   echo "  --dirgimp"
-  echo "      installs macports to a custom prefix"
+  echo "      uninstalls macports builds from a custom prefix"
   echo "  --version         show tool version number"
   echo "  -h, --help        display this help"
   exit 0
@@ -97,7 +97,7 @@ if [ -n "$formulasonly" ]; then
   exit 0
 fi
 
-echo "Uninstalling MacPorts"
+echo "Uninstalling MacPorts build"
 if [ -n "${GIMP_PREFIX}" ]; then
   rm -rf "$GIMP_PREFIX"
 fi

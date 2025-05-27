@@ -47,7 +47,7 @@ commands:
             if [ ! -e "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >><< parameters.arch_suffix >>" ] || [ "${cache_break}" != "$(cat "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >><< parameters.arch_suffix >>")" ]; then
               echo "Cache break"
               echo "${cache_break}" > "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >><< parameters.arch_suffix >>"
-              << parameters.arch_command >> scripts/macports_uninstall.sh --homedirgimp<< pipeline.parameters.vgimp >>
+              << parameters.arch_command >> scripts/macports_uninstall.sh
             fi
 
   setup-macports:
@@ -59,7 +59,7 @@ commands:
       - run:
           name: Install macports
           command: |
-            << parameters.arch_command >> scripts/macports0_install.sh --circleci --homedirgimp<< pipeline.parameters.vgimp >>
+            << parameters.arch_command >> scripts/macports0_install.sh --circleci
           no_output_timeout: 30m
 
   clear-artifacts:
@@ -193,16 +193,16 @@ jobs:
       - run:
           name: Check minos and sdk properly set
           command: |
-            scripts/validate_min_os.py ~/macports-gimp<< pipeline.parameters.vgimp >>-osx-app-<< parameters.arch >>
+            scripts/validate_min_os.py ~/macports-gimp-osx-app-<< parameters.arch >>
       - persist_to_workspace:
           # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
           # taken to be the root directory of the workspace.
           root: "~"
           # Must be relative path from root
           paths:
-            - macports-gimp<< pipeline.parameters.vgimp >>-osx-app-<< parameters.arch >>
-            - macports-gimp<< pipeline.parameters.vgimp >>-osx-app-<< parameters.arch >>-plugin-developer
-            - .profile-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>
+            - macports-gimp-osx-app-<< parameters.arch >>
+            - macports-gimp-osx-app-<< parameters.arch >>-plugin-developer
+            - .profile-gimp-<< parameters.arch >>
             - macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/SBOM.txt
 
   package-gimp:
@@ -225,7 +225,7 @@ jobs:
       - run:
           name: Creating DMG package
           command: |
-            source ~/.profile-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>
+            source ~/.profile-gimp-<< parameters.arch >>
             cd ${HOME}/project
 
             # run script

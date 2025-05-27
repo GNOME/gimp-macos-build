@@ -52,7 +52,7 @@ fi
 echo "*** Build: $arch"
 
 function pure_version() {
-  echo '0.2'
+  echo '0.3'
 }
 
 function version() {
@@ -72,7 +72,7 @@ function usage() {
   echo "  --force"
   echo "      force install (useful after upgrading macos)"
   echo "  --dirgimp"
-  echo "      installs macports to a custom prefix"
+  echo "      installs macports builds to a custom prefix"
   echo "  --version         show tool version number"
   echo "  -h, --help        display this help"
   exit 0
@@ -91,10 +91,6 @@ while test "${1:0:1}" = "-"; do
   --dirgimp)
     GIMP_PREFIX="$2"
     shift 2
-    ;;
-  --homedirgimp3)
-    homedirgimp3="THIS IS A LEGACY PARAM, PLEASE REMOVE IT FROM CIRCLECI"
-    shift
     ;;
   -h | --help)
     usage
@@ -126,7 +122,10 @@ fi
 echo "**Installing MacPorts in $GIMP_PREFIX"
 export PATH=$GIMP_PREFIX/bin:$PATH
 if [ -n "$dirgimp" ]; then
-  echo "export GIMP_PREFIX=${GIMP_PREFIX}" >>~/.profile-gimp-${arch}
+  echo "export GIMP_PREFIX=${GIMP_PREFIX}" >~/.profile-gimp-${arch}
+else
+  # empty file
+  echo "" >~/.profile-gimp-${arch}
 fi
 
 echo "export PYTHON_VERSION=${PYTHON_VERSION}" >>~/.profile-gimp-${arch}
@@ -205,14 +204,15 @@ if [ "$build_arm64" = true ]; then
   echo 'export GIMP_ARM64=true' >>~/.profile-gimp-${arch}
 fi
 
-source ~/.profile-gimp-${arch}
+# shellcheck disable=SC1090
+source "${HOME}/.profile-gimp-${arch}"
 
 if [ -n "$FIRST_INSTALL" ]; then
   # must do before and after otherwise local portindex fails if this is the first time
   port -v selfupdate || true
 fi
 
-pushd ${PROJECT_DIR}/ports
+pushd "${PROJECT_DIR}/ports"
 portindex
 popd
 

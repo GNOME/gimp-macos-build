@@ -35,8 +35,8 @@ fi
 
 echo "Creating bundle"
 $GTK_MAC_BUNDLER macports-gimp.bundle
-if [ ! -f ${PACKAGE_DIR}/GIMP.app/Contents/MacOS/gimp-${GIMP_APP_VERSION} ]; then
-  echo "ERROR: Bundling failed, ${PACKAGE_DIR}/GIMP.app/Contents/MacOS/gimp-${GIMP_APP_VERSION} not found"
+if [ ! -f ${PACKAGE_DIR}/GIMP.app/Contents/MacOS/gimp ]; then
+  echo "ERROR: Bundling failed, ${PACKAGE_DIR}/GIMP.app/Contents/MacOS/gimp not found"
   exit 1
 fi
 echo "Done creating bundle"
@@ -276,6 +276,8 @@ fi
 echo "create missing links. should we use wrappers instead?"
 
 pushd ${PACKAGE_DIR}/GIMP.app/Contents/MacOS || exit 1
+  ln -s gimp-console-${GIMP_APP_VERSION} gimp-console
+  ln -s gimp-debug-tool-${GIMP_APP_VERSION} gimp-debug-tool
   ln -s python${PYTHON_VERSION} python
   ln -s python${PYTHON_VERSION} python3
 popd

@@ -27,7 +27,7 @@
       "name": "(lldb) Full App",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/../macports-gimp3-osx-app-arm64/GIMP.app/Contents/MacOS/gimp",
+      "program": "${workspaceFolder}/../macports-gimp-osx-app-arm64/GIMP.app/Contents/MacOS/gimp",
       // "args": ["--g-fatal-warnings"],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",
