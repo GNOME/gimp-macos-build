@@ -28,51 +28,104 @@ echo "Gimp version: ${GIMP_VERSION}"
 echo "Setup /tmp/artifacts"
 mkdir -p /tmp/artifacts/
 
+# Create a temporary python.coderequirement with proper signing values
+create_coderequirement_file() {
+  local req_file="${HOME}/project/package/python.coderequirement"
+
+  if [ -n "${notarization_teamid}" ]; then
+    cat > "$req_file" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>signing-identifier</key>
+    <string>org.gimp.gimp</string>
+    <key>team-identifier</key>
+    <string>${notarization_teamid}</string>
+</dict>
+</plist>
+EOF
+    echo "Created python.coderequirement file with proper signing values"
+  else
+    echo "Warning: Could not determine team identifier for coderequirement"
+  fi
+}
+
 echo "Signing libs"
 
 if [ -n "${codesign_subject}" ]; then
   echo "Signing libraries and plugins"
-  find ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/ -type f -perm +111 |
-    xargs file |
-    grep ' Mach-O ' | awk -F ':' '{print $1}' |
+  find "${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/" \
+    -type f -perm +111 \
+    ! -path "*/DWARF/*" ! -path "*/.dSYM/*" |
+    xargs file | grep ' Mach-O ' | awk -F ':' '{print $1}' |
     xargs /usr/bin/codesign -s "${codesign_subject}" \
       --options runtime \
-      --entitlements ${HOME}/project/package/gimp-hardening.entitlements
-  find ${PACKAGE_DIR}/GIMP.app/Contents/Resources/libexec/ -type f -perm +111 |
-    xargs file |
-    grep ' Mach-O ' | awk -F ':' '{print $1}' |
+      --entitlements "${HOME}/project/package/gimp-hardening.entitlements"
+
+  find "${PACKAGE_DIR}/GIMP.app/Contents/Resources/libexec/" \
+    -type f -perm +111 \
+    ! -path "*/DWARF/*" ! -path "*/.dSYM/*" |
+    xargs file | grep ' Mach-O ' | awk -F ':' '{print $1}' |
     xargs /usr/bin/codesign -s "${codesign_subject}" \
       --options runtime \
-      --entitlements ${HOME}/project/package/gimp-hardening.entitlements
+      --entitlements "${HOME}/project/package/gimp-hardening.entitlements"
+
+  echo "Securing Python"
+
   find ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib -type f -perm +111 |
     xargs file |
     grep ' Mach-O ' | awk -F ':' '{print $1}' |
     xargs /usr/bin/codesign -s "${codesign_subject}" \
       --options runtime \
       --entitlements ${HOME}/project/package/gimp-hardening.entitlements
+
+  # Create a secure python.coderequirement file with real values
+  create_coderequirement_file
+
   find ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Resources -type f -perm +111 |
-    xargs file |
-    grep ' Mach-O ' | awk -F ':' '{print $1}' |
-    xargs /usr/bin/codesign -s "${codesign_subject}" \
-      --options runtime \
-      --entitlements ${HOME}/project/package/gimp-hardening.entitlements
-  find ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/bin -type f -perm +111 |
-    xargs file |
-    grep ' Mach-O ' | awk -F ':' '{print $1}' |
-    xargs /usr/bin/codesign -s "${codesign_subject}" \
-      --options runtime \
-      --entitlements ${HOME}/project/package/gimp-hardening.entitlements
-  find ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Python -type f -perm +111 |
-    xargs file |
-    grep ' Mach-O ' | awk -F ':' '{print $1}' |
-    xargs /usr/bin/codesign -s "${codesign_subject}" \
-      --options runtime \
-      --entitlements ${HOME}/project/package/gimp-hardening.entitlements
+    xargs file | grep 'Mach-O' | awk -F ':' '{print $1}' |
+    while read -r bin; do
+      /usr/bin/codesign -s "${codesign_subject}" \
+        --options runtime \
+        --timestamp \
+        --launch-constraint-parent "${HOME}/project/package/python.coderequirement" \
+        "$bin"
+    done
+
+
+  find "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/bin" -type f -perm +111 |
+    xargs file | grep 'Mach-O' | awk -F ':' '{print $1}' |
+    while read -r bin; do
+      /usr/bin/codesign -s "${codesign_subject}" \
+        --options runtime \
+        --timestamp \
+        --launch-constraint-parent "${HOME}/project/package/python.coderequirement" \
+        "$bin"
+    done
+
+  for bin in \
+    "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Python" \
+    "${PACKAGE_DIR}/GIMP.app/Contents/MacOS/python${PYTHON_VERSION}" \
+    "${PACKAGE_DIR}/GIMP.app/Contents/MacOS/xdg-email"; do
+    if [ -f "$bin" ]; then
+      echo "Signing $bin with launch constraint"
+      /usr/bin/codesign -s "${codesign_subject}" \
+        --options runtime \
+        --timestamp \
+        --launch-constraint-parent "${HOME}/project/package/python.coderequirement" \
+        "$bin"
+    fi
+  done
+
+  rm -f "${HOME}/project/package/python.coderequirement"
+
   echo "Signing app"
   /usr/bin/codesign -s "${codesign_subject}" \
     --timestamp \
     --deep \
     --options runtime \
+    --preserve-metadata=requirements \
     --entitlements ${HOME}/project/package/gimp-hardening.entitlements \
     ${PACKAGE_DIR}/GIMP.app
 fi

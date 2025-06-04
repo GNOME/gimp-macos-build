@@ -80,6 +80,8 @@
   <binary>${prefix}/lib/gimp/${env:GIMP_PKGCONFIG_VERSION}/modules/*</binary>
   <!-- Copy in gimp extensions -->
   <binary recurse="True">${prefix}/lib/gimp/${env:GIMP_PKGCONFIG_VERSION}/extensions/*</binary>
+  <!-- Test .interp -->
+  <data>${prefix}/lib/gimp/${env:GIMP_PKGCONFIG_VERSION}/interpreters</data>
   <!-- Copy in babl modules -->
   <binary>${prefix}/lib/babl-0.1/*.dylib</binary>
   <!-- Copy in gegl modules -->
