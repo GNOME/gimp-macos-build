@@ -91,8 +91,11 @@
   <binary>${prefix}/lib/${gtkdir}/${pkg:${gtk}:gtk_binary_version}/printbackends/*.so</binary>
   <!-- Copy in GTK+ immodules -->
   <binary>${prefix}/lib/${gtkdir}/${pkg:${gtk}:gtk_binary_version}/immodules/*.so</binary>
-  <!-- Copy in GTK pixbuf loaders -->
-  <binary>${prefix}/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.so</binary>
+  <!-- Copy in GTK pixbuf loaders needed for GUI and non-.pat patterns support -->
+  <binary>${prefix}/lib/gdk-pixbuf-2.0/2.10.0/loaders/*pixbufloader*svg.so</binary>
+  <binary>${prefix}/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-bmp.so</binary>
+  <binary>${prefix}/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-gif.so</binary>
+  <binary>${prefix}/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-tiff.so</binary>
   <binary>${prefix}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache</binary>
   <!-- Translation filenames-->
   <translations name="gtk30">
