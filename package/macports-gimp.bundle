@@ -91,8 +91,8 @@
   <binary>${prefix}/lib/${gtkdir}/${pkg:${gtk}:gtk_binary_version}/printbackends/*.so</binary>
   <!-- Copy in GTK+ immodules -->
   <binary>${prefix}/lib/${gtkdir}/${pkg:${gtk}:gtk_binary_version}/immodules/*.so</binary>
+  <!-- Copy in GTK pixbuf loaders -->
   <binary>${prefix}/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.so</binary>
-  <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gdk-pixbuf-query-loaders</binary>
   <binary>${prefix}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache</binary>
   <!-- Translation filenames-->
   <translations name="gtk30">
