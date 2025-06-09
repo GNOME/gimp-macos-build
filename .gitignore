@@ -5,6 +5,8 @@ tmp-jhbuild-revision
 info*.plist
 .env
 package/gimp-dmg.png
+package/fileicon.icns
+package/fileicon-xcf.icns
 package/gimp.icns
 
 # include launch.json in the .vscode folder
