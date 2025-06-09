@@ -131,7 +131,7 @@
 -->
   <!-- Icons -->
   <data dest="${bundle}/Contents/Resources">${project}/gimp.icns</data>
-  <data dest="${bundle}/Contents/Resources">${project}/xcf.icns</data>
+  <data dest="${bundle}/Contents/Resources">${project}/fileicon-xcf.icns</data>
   <data dest="${bundle}/Contents/Resources">${project}/gimp-dmg.png</data>
 
   <!-- Icon theme, both tango and hicolor are required? -->

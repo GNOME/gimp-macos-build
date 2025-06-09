@@ -51,7 +51,7 @@ if [ ! -d "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.
   exit 1
 fi
 pushd "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Resources/Python.app/Contents/Resources/" || exit 1
-  for resources in etc gimp.icns lib share xcf.icns ;
+  for resources in etc gimp.icns lib share fileicon-xcf.icns ;
   do
     ln -s "../../../../../../../../../${resources}" \
       "${resources}"
