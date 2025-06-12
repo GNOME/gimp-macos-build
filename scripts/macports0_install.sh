@@ -177,6 +177,8 @@ echo 'buildfromsource always' | tee -a ${GIMP_PREFIX}/etc/macports/macports.conf
 echo 'startupitem_type none' | tee -a ${GIMP_PREFIX}/etc/macports/macports.conf
 echo 'startupitem_install no' | tee -a ${GIMP_PREFIX}/etc/macports/macports.conf
 echo 'startupitem_autostart no' | tee -a ${GIMP_PREFIX}/etc/macports/macports.conf
+# stops macports from having two ports and not knowing which to activate, which breaks the build
+echo 'uninstall_inactive yes' | tee -a ${GIMP_PREFIX}/etc/macports/macports.conf
 if [ "$build_arm64" = true ]; then
   echo 'macosx_deployment_target 11.0' | tee -a ${GIMP_PREFIX}/etc/macports/macports.conf
   echo 'macosx_sdk_version 11.3' | tee -a ${GIMP_PREFIX}/etc/macports/macports.conf
