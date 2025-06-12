@@ -111,10 +111,6 @@
   <data>${prefix}/share/poppler</data>
   <!-- brushes -->
   <data>${prefix}/share/mypaint-data</data>
-  <!-- XML data -->
-  <!-- Needs to be updated to not have absolute build paths -->
-  <data>${prefix}/etc/xml/catalog</data>
-  <data>${prefix}/share/xml/docbook</data>
   <!-- locale (TODO: trim) -->
   <data>${prefix}/share/locale</data>
   <data>${prefix}/lib/charset.alias</data>
