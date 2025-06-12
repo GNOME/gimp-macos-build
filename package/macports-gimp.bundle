@@ -116,8 +116,6 @@
   <data>${prefix}/lib/charset.alias</data>
   <!-- Theme data-->
   <data>${prefix}/share/themes</data>
-  <!-- iso codes -->
-  <data>${prefix}/share/xml/iso-codes</data>
   <!-- libwmf fonts -->
   <data>${prefix}/share/fonts/libwmf</data>
   <!-- glib 2 schemas -->
