@@ -181,8 +181,8 @@ function port_long_clean_and_install() {
 #    Too long with no output (exceeded 30m0s): context deadline exceeded"
 function port_force_uninstall_and_clean() {
   echo "force uninstalling and cleaning $*"
-  port uninstall -f "$@" || true
-  port clean "$@" || true
+  port -N uninstall -f "$@" || true
+  port -N clean "$@" || true
 }
 
 # for xargs support
@@ -420,7 +420,7 @@ if [ -n "${PART4}" ]; then
   echo "**** Upgrading outdated ports"
   # Must be verbose because otherwise times out on circle ci
   port -v -N upgrade outdated || true
-  port uninstall inactive || true
+  port -N uninstall inactive || true
 fi
 
 if [ -n "${PART5}" ]; then

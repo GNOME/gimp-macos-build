@@ -211,11 +211,11 @@ source "${HOME}/.profile-gimp-${arch}"
 
 if [ -n "$FIRST_INSTALL" ]; then
   # must do before and after otherwise local portindex fails if this is the first time
-  port -v selfupdate || true
+  port -v -N selfupdate || true
 fi
 
 pushd "${PROJECT_DIR}/ports"
 portindex
 popd
 
-port -v selfupdate || true
+port -v -N selfupdate || true
