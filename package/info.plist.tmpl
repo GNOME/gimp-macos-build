@@ -3,7 +3,7 @@
 <plist version="1.0">
   <dict>
     <key>CFBundleDevelopmentRegion</key>
-    <string>English</string>
+    <string>en</string>
     <key>CFBundleDocumentTypes</key>
     <array>
       <dict>
@@ -12,8 +12,10 @@
           <string>xcf</string>
           <string>XCF</string>
         </array>
-        <key>CFBundleTypeIconFile</key>
-        <string>gimp.icns</string>
+        <key>CFBundleTypeIconFiles</key>
+        <array>
+          <string>fileicon-xcf.icns</string>
+        </array>
         <key>CFBundleTypeMIMETypes</key>
         <array>
           <string>image/x-xcf</string>
@@ -150,7 +152,7 @@
           <string>application/pdf</string>
         </array>
         <key>CFBundleTypeName</key>
-        <string>NSPDFPboardType</string>
+        <string>PDF document</string>
         <key>CFBundleTypeOSTypes</key>
         <array>
           <string>PDF </string>
@@ -177,7 +179,7 @@
           <string>application/pdf</string>
         </array>
         <key>CFBundleTypeName</key>
-        <string>NSPDFPboardType</string>
+        <string>Adobe Illustrator Artwork</string>
         <key>CFBundleTypeRole</key>
         <string>Viewer</string>
         <key>LSIsAppleDefaultForType</key>
@@ -246,7 +248,6 @@
         <key>CFBundleTypeOSTypes</key>
         <array>
           <string>TIFF</string>
-          <string>****</string>
         </array>
         <key>CFBundleTypeRole</key>
         <string>Editor</string>
@@ -363,18 +364,12 @@
           <string>JPE</string>
           <string>thm</string>
           <string>THM</string>
-          <string>*</string>
-        </array>
-        <key>CFBundleTypeMIMETypes</key>
-        <array>
-          <string>image/jpeg</string>
         </array>
         <key>CFBundleTypeName</key>
         <string>JPEG Image</string>
         <key>CFBundleTypeOSTypes</key>
         <array>
           <string>JPEG</string>
-          <string>????</string>
         </array>
         <key>CFBundleTypeRole</key>
         <string>Editor</string>
@@ -924,6 +919,8 @@
     </array>
     <key>CFBundleExecutable</key>
     <string>gimp</string>
+    <key>CFBundleGetInfoString</key>
+    <string>%GIMP_MUTEX_VERSION%, © 2001-2025 The GIMP Team</string>
     <key>CFBundleIconFile</key>
     <string>gimp.icns</string>
     <key>CFBundleIdentifier</key>
@@ -945,7 +942,7 @@
     <key>LSApplicationCategoryType</key>
     <string>public.app-category.photography</string>
     <key>LSMinimumSystemVersion</key>
-	  <string>11.0</string>
+    <string>11.0</string>
     <key>NSHighResolutionCapable</key>
     <true/>
     <key>NSRequiresAquaSystemAppearance</key>
