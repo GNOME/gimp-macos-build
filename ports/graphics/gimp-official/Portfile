@@ -102,7 +102,6 @@ depends_lib-append \
                     path:lib/pkgconfig/gobject-introspection-1.0.pc:gobject-introspection \
                     port:json-glib \
                     port:lcms2 \
-                    port:libraw \
                     path:lib/pkgconfig/librsvg-2.0.pc:librsvg \
                     port:openexr \
                     port:poly2tri-c \
