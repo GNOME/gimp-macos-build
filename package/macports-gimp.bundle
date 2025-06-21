@@ -109,7 +109,7 @@
   </data>
   <!-- Gimp data -->
   <data>${prefix}/etc/gimp/${env:GIMP_PKGCONFIG_VERSION}/*</data>
-  <data dest="${bundle}/Contents/Resources/share/gimp">${prefix}/share/gimp</data>
+  <data>${prefix}/share/gimp/${env:GIMP_PKGCONFIG_VERSION}</data>
   <!-- CJK and Cyrillic support for file-pdf -->
   <data>${prefix}/share/poppler</data>
   <!-- brushes -->
