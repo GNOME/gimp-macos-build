@@ -24,9 +24,9 @@ set my_name         gimp-official
 #    For example, when setting to a release, update only last_release. When
 #    setting to a dev version, update only last_dev.
 # *****
-version             3.1.1
-set last_release    3.0.4
-set last_dev        3.0.5
+version             3.1.2
+set last_release    3.1.2
+set last_dev        3.1.1
 revision            0
 
 # epoch must never be reduced. This was reduced for the 2.99.14 release
