@@ -48,6 +48,9 @@
   <binary dest="${bundle}/Contents/MacOS">
     ${prefix}/bin/gegl
   </binary>
+  <binary dest="${bundle}/Contents/MacOS">
+    ${prefix}/bin/gdbus
+  </binary>
   <!-- gimp additional binaries -->
   <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-console*</binary>
   <binary dest="${bundle}/Contents/MacOS">${prefix}/bin/gimp-debug-tool*</binary>
