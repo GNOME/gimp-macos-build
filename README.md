@@ -111,10 +111,7 @@ The following are aspects of the caching:
 
 ## Other related links
 
- - [gimp-plugins-collection](https://github.com/aferrero2707/gimp-plugins-collection) - GMIC, LiquidRescale, NUFraw, PhFGimp and ResynthesizerPlugin GIMP plugin builds, including macOS version. If these are not signed
-   they will need to be modified by removing the apple quarantine (and requires admin rights)
  - CircleCI [gimp-macos-build project](https://circleci.com/gh/GNOME/gimp-macos-build)
- - How this repo uses [JHBuild and Gtk-OSX](README_JHBUILD_GTK_OSX.md)
 
 ## Known bugs and limitations (merge requests are welcome!)
 
