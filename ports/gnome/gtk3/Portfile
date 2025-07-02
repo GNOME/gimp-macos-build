@@ -13,7 +13,7 @@ name                gtk3
 conflicts           gtk3-devel
 set my_name         gtk3
 version             3.24.49
-revision            2
+revision            3
 epoch               1
 
 set proj_name       gtk
@@ -96,6 +96,10 @@ patchfiles-append   gtk-menu-crash.patch
 # https://gitlab.gnome.org/GNOME/gtk/-/issues/7598
 # merged: https://gitlab.gnome.org/jralls/gtk/-/commit/ae49ae3f657dc0086eca8873213cf9dcee953ab8
 patchfiles-append   menu-scale.patch
+
+# Upstream patch - remove on next release
+# https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/8741
+patchfiles-append   8741.patch
 
 # gtk3 +quartz uses instancetype which is not available
 # before approximately Xcode 4.6 (#49391)
