@@ -236,7 +236,7 @@ jobs:
           command: |
             package/notarize.sh
             EXTENSION="-plugin-developer" package/notarize.sh
-          no_output_timeout: 20m
+          no_output_timeout: 40m
       - run:
           name: Checksum DMG package
           command: |
