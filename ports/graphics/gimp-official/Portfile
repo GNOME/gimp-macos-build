@@ -124,7 +124,7 @@ depends_lib-append \
                     port:poppler-data \
                     port:fontconfig \
                     port:libmypaint \
-                    port:mypaint-brushes1 \
+                    port:mypaint-brushes \
                     port:libheif \
                     port:aalib \
                     port:appstream-glib \
