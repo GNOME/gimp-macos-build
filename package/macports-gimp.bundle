@@ -113,7 +113,7 @@
   <!-- CJK and Cyrillic support for file-pdf -->
   <data>${prefix}/share/poppler</data>
   <!-- brushes -->
-  <data>${prefix}/share/mypaint-data</data>
+  <data>${prefix}/share/mypaint-data/2.0</data>
   <!-- locale (TODO: trim) -->
   <data>${prefix}/share/locale</data>
   <data>${prefix}/lib/charset.alias</data>
