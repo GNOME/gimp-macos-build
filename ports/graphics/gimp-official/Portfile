@@ -127,7 +127,7 @@ depends_lib-append \
                     port:mypaint-brushes1 \
                     port:libheif \
                     port:aalib \
-                    port:appstream-glib \
+                    port:appstream \
                     port:shared-mime-info \
                     port:iso-codes \
                     port:libwmf \
