@@ -22,6 +22,25 @@
 # Boston, MA  02110-1301,  USA       gnu@gnu.org                   #
 ####################################################################
 
+# How to get a pre-built binary (but beware of dependencies):
+
+  # echo "about to build DESIRED_DEPENDENCY dependencies"
+  # deps=$(port deps DESIRED_DEPENDENCY | awk '/Library Dependencies:/ {for (i=3; i<=NF; i++) print $i}' ORS=" " | tr ',' ' ')
+  # port_clean_and_install $deps
+
+  # sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  # sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  # sed -i -e 's/macosx_sdk_version/#macosx_sdk_version/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  # (
+  #   unset MACOSX_DEPLOYMENT_TARGET
+  #   unset SDKROOT
+  #   port_clean_and_install \
+  #     DESIRED_DEPENDENCY
+  # )
+  # sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  # sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  # sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+
 set -e
 
 function pure_version() {
@@ -225,74 +244,28 @@ if [ -n "${PORT_EDIT_PACKAGE}" ]; then
   exit 0
 fi
 
-#TEMPORARY
-port_force_uninstall_and_clean gimp
-port_force_uninstall_and_clean gimp2
-
 if [ -n "${PART1}" ]; then
   # ** Reinstate these uninstalls if builds fail
   # temporarily uninstall gegl, gimp3, libgcc12 (until all builds are fixed)
   # All of these ports at some point failed to upgrade, build or otherwise cooperate
   # unless uninstalled, even when being built from scratch.
-  port_force_uninstall_and_clean gimp
   port_force_uninstall_and_clean gimp-official
-  port_force_uninstall_and_clean gimp3
   port_force_uninstall_and_clean babl gegl
   # port_force_uninstall_and_clean gcc12
-  # port_force_uninstall_and_clean appstream-glib
   # * libgcc12 because it is a dependency of gcc12 and if not also uninstalled, gcc12 build sometimes fails
   # port_force_uninstall_and_clean libgcc12
 
   # ** Can be removed once run once on master
   # xxx
 
-  echo "build cmake dependencies in case they are needed for gimp"
-  port_clean_and_install libcxx \
-    curl \
-    expat \
-    zlib \
-    bzip2 \
-    libarchive \
-    ncurses \
-    libuv
-
-  echo "cmake-bootstrap being installed since won't build from source with 10.13 SDK"
-  sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${GIMP_PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${GIMP_PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/macosx_sdk_version/#macosx_sdk_version/g' ${GIMP_PREFIX}/etc/macports/macports.conf
-  (
-    # temporarily unset deployment targets since cmake does not build with 10.13 SDK
-    # and we don't really care since only used at build time
-    # Can be removed once https://trac.macports.org/ticket/66953 is fixed
-    unset MACOSX_DEPLOYMENT_TARGET
-    unset SDKROOT
-    echo "clean cmake****"
-    port_clean_and_install cmake
-  )
-  sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${GIMP_PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${GIMP_PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  port_clean_and_install cmake
 
   # Former part 2, but Circle CI now allows much longer builds (5 hours)
   port_force_uninstall_and_clean p5.34-io-compress-brotli
   port_force_uninstall_and_clean p5.34-http-message
   # port_clean_and_install p5.34-io-compress-brotli build.jobs=1
-  echo "about to build rust dependencies"
-  rust_deps=$(port deps rust | awk '/Library Dependencies:/ {for (i=3; i<=NF; i++) print $i}' ORS=" " | tr ',' ' ')
-  port_clean_and_install $rust_deps
-  # Build only dependency, so don't care if backward compatible
-  echo "install rust"
-  sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${GIMP_PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${GIMP_PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/macosx_sdk_version/#macosx_sdk_version/g' ${GIMP_PREFIX}/etc/macports/macports.conf
-  (
-    unset MACOSX_DEPLOYMENT_TARGET
-    unset SDKROOT
-    port_long_clean_and_install rust
-  )
-  sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${GIMP_PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${GIMP_PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+
+  port_long_clean_and_install rust
   port_clean_and_install x265 +highdepth
 fi
 
@@ -310,7 +283,7 @@ if [ -n "${PART2}" ]; then
  # Install py-cairo and py-gobject3 explicitly first to ensure 'gi' module is available
   port_clean_and_install py${PYTHON_SHORT_VERSION}-cairo
   port_clean_and_install py${PYTHON_SHORT_VERSION}-gobject3
-  
+
   port_clean_and_install \
     aalib \
     cfitsio \
@@ -356,51 +329,19 @@ if [ -n "${PART3}" ]; then
 fi
 
 if [ -n "${PART4}" ]; then
-  echo "gcc13 being installed before gegl"
+  echo "gcc being installed before gegl"
 
-  # libgcc12 is installed with GIMP so must be set for 10.13
-  port clean gcc13
-  # libgcc dependencies
-  port_clean_and_install isl libmpc mpfr
-
-  # libgcc14 dependencies
-  port_clean_and_install libiconv zlib
-  port_long_clean_and_install libgcc14
-
-  # libgcc dependency libgcc14
-  sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${GIMP_PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${GIMP_PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/macosx_sdk_version/#macosx_sdk_version/g' ${GIMP_PREFIX}/etc/macports/macports.conf
-  (
-    unset MACOSX_DEPLOYMENT_TARGET
-    unset SDKROOT
-    port_long_clean_and_install gcc14
-  )
-  sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${GIMP_PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${GIMP_PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  port_long_clean_and_install gcc14
 
   # Now we can install libgcc
   port_long_clean_and_install libgcc
 
-  # libomp can't handle +debug variant as prebuilt binary
-  sed -i -e 's/buildfromsource always/buildfromsource ifneeded/g' ${GIMP_PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/macosx_deployment_target/#macosx_deployment_target/g' ${GIMP_PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/macosx_sdk_version/#macosx_sdk_version/g' ${GIMP_PREFIX}/etc/macports/macports.conf
-  (
-    unset MACOSX_DEPLOYMENT_TARGET
-    unset SDKROOT
-    port_clean_and_install \
-      libomp -debug
-    port clean libgcc
-    # broken build on x86_64 and is a build only dependency
-    # https://trac.macports.org/ticket/68041 <-- this is fixed
-    port_clean_and_install \
-      jdupes
-  )
-  sed -i -e 's/buildfromsource ifneeded/buildfromsource always/g' ${GIMP_PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/#macosx_deployment_target/macosx_deployment_target/g' ${GIMP_PREFIX}/etc/macports/macports.conf
-  sed -i -e 's/#macosx_sdk_version/macosx_sdk_version/g' ${GIMP_PREFIX}/etc/macports/macports.conf
+  port_clean_and_install \
+    libomp -debug
+  port clean libgcc
+
+  port_clean_and_install \
+    jdupes
 
   port clean dbus
   port_install -f dbus
