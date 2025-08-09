@@ -166,6 +166,7 @@ post-build {
     system -W ${workpath}/build "ninja gimp-data/images/logo/gimp.icns"
     file copy ${workpath}/build/gimp-data/images/logo/gimp.icns ${portpath}/../../../package/
     system -W ${workpath}/build "ninja gimp-data/images/logo/stamp-fileicon.icns"
+    file delete -force ${portpath}/../../../package/fileicon-xcf.icns
     file copy ${workpath}/build/build/macos/fileicon-xcf.icns ${portpath}/../../../package/
     system -W ${workpath}/build "ninja gimp-data/images/logo/gimp-dmg.png"
     file copy ${workpath}/build/gimp-data/images/logo/gimp-dmg.png ${portpath}/../../../package/
