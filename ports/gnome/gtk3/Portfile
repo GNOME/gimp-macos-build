@@ -13,7 +13,7 @@ name                gtk3
 conflicts           gtk3-devel
 set my_name         gtk3
 version             3.24.49
-revision            3
+revision            5
 epoch               1
 
 set proj_name       gtk
@@ -100,6 +100,8 @@ patchfiles-append   menu-scale.patch
 # Upstream patch - remove on next release
 # https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/8741
 patchfiles-append   8741.patch
+
+patchfiles-append   dnd-fix.patch
 
 # gtk3 +quartz uses instancetype which is not available
 # before approximately Xcode 4.6 (#49391)
