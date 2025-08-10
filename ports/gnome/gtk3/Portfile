@@ -12,7 +12,7 @@ PortGroup           debug 1.0
 name                gtk3
 conflicts           gtk3-devel
 set my_name         gtk3
-version             3.24.49
+version             3.24.50
 revision            5
 epoch               1
 
@@ -34,9 +34,9 @@ dist_subdir         ${my_name}
 use_xz              yes
 master_sites        gnome:sources/${proj_name}/${branch}/
 
-checksums           rmd160  ee5e5999848582cd7c9be3cf258fb0ea4490bb1c \
-                    sha256  5ea52c6a28f0e5ecf2e9a3c2facbb30d040b73871fcd5f33cd1317e9018a146e \
-                    size    13450556
+checksums           rmd160  0beb736d3ce20be9f6029cca88e25019089dd429 \
+                    sha256  399118a5699314622165a11b769ea9b6ed68e037b6d46d57cfcf4851dec07529 \
+                    size    13463460
 
 # Disable unexpected download of subprojects
 meson.wrap_mode     nodownload
@@ -68,10 +68,6 @@ compiler.cxx_standard 2011
 # darwin 10 and earlier requires legacy support for O_CLOEXEC
 legacysupport.newest_darwin_requires_legacy 10
 
-# Quartz patch to fix QuartzCore linking and compiling with 10.11
-# Upstream merge request: https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/4298
-patchfiles-append   patch-quartz-calayer-contentsformat.diff
-
 # Quartz patch to eliminate hard-coded use of NSEventTypeApplicationDefined
 # Upstream merge request: https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/5958
 patchfiles-append   patch-quartz-nseventtype.diff
@@ -91,16 +87,9 @@ patchfiles-append   patch-sincos.diff
 # *NOT* merged merge request: https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/8136
 patchfiles-append   gtk-menu-crash.patch
 
-# Upstream patch - remove on next release
-# https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/8342
-# https://gitlab.gnome.org/GNOME/gtk/-/issues/7598
-# merged: https://gitlab.gnome.org/jralls/gtk/-/commit/ae49ae3f657dc0086eca8873213cf9dcee953ab8
-patchfiles-append   menu-scale.patch
-
-# Upstream patch - remove on next release
-# https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/8741
-patchfiles-append   8741.patch
-
+# Upstream patch - remove on next release 3.24.51 if it is merged
+# https://gitlab.gnome.org/GNOME/gtk/-/issues/7699
+# https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/8839
 patchfiles-append   dnd-fix.patch
 
 # gtk3 +quartz uses instancetype which is not available
