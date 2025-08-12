@@ -22,7 +22,30 @@
 # Boston, MA  02110-1301,  USA       gnu@gnu.org                   #
 ####################################################################
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+if [ -n "${BASH_SOURCE[0]}" ]; then
+    SCRIPT_PATH="${BASH_SOURCE[0]}"
+elif [ -n "${(%):-%x}" ]; then
+    SCRIPT_PATH="${(%):-%x}"
+else
+    echo "Error: Unable to determine script path."
+    return 1 2>/dev/null || exit 1
+fi
 
-echo "Usage: \`. scripts/cd_gtk3.sh\` otherwise does not change directory"
-cd "$(${SCRIPT_DIR}/scripts/gtk3_dir.sh)"
+SCRIPT_DIR="$(cd -P "$(dirname "$SCRIPT_PATH")" >/dev/null 2>&1 && pwd)"
+
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  echo "Usage: \`. $0\` otherwise does not change directory"
+fi
+
+TARGET_DIR="$("${SCRIPT_DIR}/gtk3_dir.sh")"
+
+if [ ! -d "$TARGET_DIR" ]; then
+    echo "Error: target directory '$TARGET_DIR' doesn't exists."
+    return 1 2>/dev/null || exit 1
+fi
+
+cd "$TARGET_DIR"
+
+if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
+  echo "Changed directory to: $TARGET_DIR"
+fi
