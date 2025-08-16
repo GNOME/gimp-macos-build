@@ -147,7 +147,8 @@ set py_ver_nodot   [string map {. {}} ${py_ver}]
 
 depends_build-append \
                     port:python${py_ver_nodot} \
-                    port:py${py_ver_nodot}-gobject3
+                    port:py${py_ver_nodot}-gobject3 \
+                    port:py${py_ver_nodot}-certifi
 
 configure.python    ${prefix}/bin/python${py_ver}
 

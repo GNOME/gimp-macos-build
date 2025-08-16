@@ -71,9 +71,13 @@
   <binary>
     ${prefix}/bin/python${env:PYTHON_VERSION}
   </binary>
+  <!-- Copy certifi package for SSL certificates -->
   <data recurse="True">
-    ${prefix}/include/python${env:PYTHON_VERSION}
+      ${prefix}/include/python${env:PYTHON_VERSION}
   </data>
+  <binary recurse="True">
+    ${prefix}/lib/python${env:PYTHON_VERSION}/site-packages/certifi*
+  </binary>
   <!-- Name of main gimp binary -->
   <main-binary>${prefix}/bin/gimp-${env:GIMP_APP_VERSION}</main-binary>
   <!-- Copy in gimp plugins -->
