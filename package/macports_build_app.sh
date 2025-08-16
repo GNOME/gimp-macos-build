@@ -286,8 +286,11 @@ echo "copy xdg-email wrapper to the package"
 mkdir -p ${PACKAGE_DIR}/GIMP.app/Contents/MacOS
 cp xdg-email ${PACKAGE_DIR}/GIMP.app/Contents/MacOS
 
+echo "Copy SSL configuration for Python"
+cp sitecustomize.py "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/site-packages/"
+
 echo "Creating pyc files"
-python${PYTHON_VERSION} -m compileall -q ${PACKAGE_DIR}/GIMP.app
+"python${PYTHON_VERSION}" -m compileall -q "${PACKAGE_DIR}/GIMP.app"
 
 echo "trimming optimized pyc from macports"
 find ${PACKAGE_DIR}/GIMP.app -name '*opt-[12].pyc' -delete
