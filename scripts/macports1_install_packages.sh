@@ -267,6 +267,11 @@ if [ -n "${PART1}" ]; then
 
   port_long_clean_and_install rust
   port_clean_and_install x265 +highdepth
+
+  # Workaround for https://trac.macports.org/ticket/72889
+  # Remvve after on master
+  port -f deactivate gtest || true
+  port clean aom
 fi
 
 if [ -n "${PART2}" ]; then
