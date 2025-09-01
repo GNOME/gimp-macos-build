@@ -257,11 +257,24 @@ if [[ "$1" == "debug" ]]; then
      | xargs -n1 dsymutil
 fi
 
-echo "create missing links. should we use wrappers instead?"
+echo "create missing links and CLI Python wrapper"
 
 pushd ${PACKAGE_DIR}/GIMP.app/Contents/MacOS || exit 1
   ln -s gimp-console-${GIMP_APP_VERSION} gimp-console
   ln -s gimp-debug-tool-${GIMP_APP_VERSION} gimp-debug-tool
+
+  # Create CLI Python wrapper that bypasses GUI Python.app
+  cat > python${PYTHON_VERSION} << 'EOF'
+#!/bin/bash
+# CLI Python wrapper - bypasses GUI Python.app
+FRAMEWORK_PATH="$(cd "$(dirname "$0")" && pwd)/../Resources/Library/Frameworks/Python.framework"
+export DYLD_FRAMEWORK_PATH="$FRAMEWORK_PATH"
+exec "$FRAMEWORK_PATH/Versions/PYTHON_VERSION/Python" "$@"
+EOF
+  # Replace PYTHON_VERSION placeholder
+  sed -i '' "s/PYTHON_VERSION/${PYTHON_VERSION}/g" python${PYTHON_VERSION}
+  chmod +x python${PYTHON_VERSION}
+
   ln -s python${PYTHON_VERSION} python
   ln -s python${PYTHON_VERSION} python3
 popd
