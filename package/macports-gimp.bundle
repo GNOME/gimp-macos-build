@@ -41,9 +41,9 @@
          for gtk+-3.0 projects. -->
     <gtk>gtk+-3.0</gtk>
   </meta>
-  <!-- We need to pack our own Python to avoid compatibility problems. -->
+  <!-- We need to pack our own Python to avoid compatibility problems. Use the actual CLI binary, not wrapper -->
   <binary dest="${bundle}/Contents/MacOS">
-    ${prefix}/bin/python${env:PYTHON_VERSION}
+    ${prefix}/Library/Frameworks/Python.framework/Versions/${env:PYTHON_VERSION}/bin/python${env:PYTHON_VERSION}
   </binary>
   <binary dest="${bundle}/Contents/MacOS">
     ${prefix}/bin/gegl
@@ -68,10 +68,19 @@
     ${prefix}/lib/gio/modules
   </binary>
 
-  <!-- These are used to copy in dependencies, in reality the whole dir struct needs to be copied in -->
+  <!-- CLI Python only, no GUI Python.app -->
   <binary recurse="True">
-    ${prefix}/Library/Frameworks/Python.framework/Versions/${env:PYTHON_VERSION}/*
+    ${prefix}/Library/Frameworks/Python.framework/Versions/${env:PYTHON_VERSION}/bin
   </binary>
+  <binary recurse="True">
+    ${prefix}/Library/Frameworks/Python.framework/Versions/${env:PYTHON_VERSION}/lib
+  </binary>
+  <binary>
+    ${prefix}/Library/Frameworks/Python.framework/Versions/${env:PYTHON_VERSION}/Python
+  </binary>
+  <data recurse="True">
+    ${prefix}/Library/Frameworks/Python.framework/Versions/${env:PYTHON_VERSION}/include
+  </data>
   <!-- Name of main gimp binary -->
   <main-binary>${prefix}/bin/gimp-${env:GIMP_APP_VERSION}</main-binary>
   <!-- Copy in gimp plugins -->

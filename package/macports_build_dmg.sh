@@ -83,16 +83,6 @@ if [ -n "${codesign_subject}" ]; then
   # Create a secure python.coderequirement file with real values
   create_coderequirement_file
 
-  find ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Resources -type f -perm +111 |
-    xargs file | grep 'Mach-O' | awk -F ':' '{print $1}' |
-    while read -r bin; do
-      /usr/bin/codesign -s "${codesign_subject}" \
-        --options runtime \
-        --timestamp \
-        --launch-constraint-parent "${HOME}/project/package/python.coderequirement" \
-        "$bin"
-    done
-
 
   find "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/bin" -type f -perm +111 |
     xargs file | grep 'Mach-O' | awk -F ':' '{print $1}' |

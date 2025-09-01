@@ -44,20 +44,6 @@ echo "Done creating bundle"
 echo "Store GIMP version in bundle (for later use)"
 echo "$GIMP_VERSION" > ${PACKAGE_DIR}/GIMP.app/Contents/Resources/.version
 
-echo "Link 'Resources' into python ${PYTHON_VERSION} framework 'Resources'"
-if [ ! -d "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Resources/Python.app/Contents/Resources" ]; then
-  # Avoids creating very awkward link in the wrong place
-  echo "***Error: Python framework not found"
-  exit 1
-fi
-pushd "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Resources/Python.app/Contents/Resources/" || exit 1
-  for resources in etc gimp.icns lib share fileicon-xcf.icns ;
-  do
-    ln -s "../../../../../../../../../${resources}" \
-      "${resources}"
-  done
-popd
-
 echo "Removing pathnames from the libraries and binaries"
 # fix permission for some libs
 find ${PACKAGE_DIR}/GIMP.app/Contents/Resources \( -name '*.dylib' -o -name '*.so' \) -type f | xargs chmod 755
@@ -214,9 +200,7 @@ find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/ -perm +111 -type f \
        -change @rpath/libubsan.1.dylib    @rpath/lib/libgcc/libubsan.1.dylib \
        -change @rpath/libubsan.dylib      @rpath/lib/libgcc/libubsan.dylib
 
-echo "adding @rpath to python app"
-install_name_tool -add_rpath @loader_path/../../../../../../../../../ \
-  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Resources/Python.app/Contents/MacOS/Python
+echo "adding @rpath to python framework"
 install_name_tool -add_rpath @loader_path/../../../../../ \
   ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Python
 
