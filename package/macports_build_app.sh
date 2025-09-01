@@ -258,6 +258,7 @@ if [[ "$1" == "debug" ]]; then
 fi
 
 echo "create missing links and CLI Python wrapper"
+echo "create missing links and CLI Python wrapper"
 
 pushd ${PACKAGE_DIR}/GIMP.app/Contents/MacOS || exit 1
   ln -s gimp-console-${GIMP_APP_VERSION} gimp-console
