@@ -71,10 +71,10 @@
   <binary>
     ${prefix}/bin/python${env:PYTHON_VERSION}
   </binary>
-  <!-- Copy certifi package for SSL certificates -->
   <data recurse="True">
-      ${prefix}/include/python${env:PYTHON_VERSION}
+    ${prefix}/include/python${env:PYTHON_VERSION}
   </data>
+  <!-- Copy certifi package for SSL certificates from CLI Python -->
   <binary recurse="True">
     ${prefix}/lib/python${env:PYTHON_VERSION}/site-packages/certifi*
   </binary>
