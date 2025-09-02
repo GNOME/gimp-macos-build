@@ -263,17 +263,14 @@ pushd ${PACKAGE_DIR}/GIMP.app/Contents/MacOS || exit 1
   ln -s gimp-console-${GIMP_APP_VERSION} gimp-console
   ln -s gimp-debug-tool-${GIMP_APP_VERSION} gimp-debug-tool
 
-  # Create CLI Python wrapper that bypasses GUI Python.app
-  cat > python${PYTHON_VERSION} << 'EOF'
-#!/bin/bash
-# CLI Python wrapper - bypasses GUI Python.app
-FRAMEWORK_PATH="$(cd "$(dirname "$0")" && pwd)/../Resources/Library/Frameworks/Python.framework"
-export DYLD_FRAMEWORK_PATH="$FRAMEWORK_PATH"
-exec "$FRAMEWORK_PATH/Versions/PYTHON_VERSION/Python" "$@"
-EOF
-  # Replace PYTHON_VERSION placeholder
-  sed -i '' "s/PYTHON_VERSION/${PYTHON_VERSION}/g" python${PYTHON_VERSION}
-  chmod +x python${PYTHON_VERSION}
+  # The CLI Python should already be copied by the bundle configuration
+  # Just create symlinks as before
+  if [ -f python${PYTHON_VERSION} ]; then
+    echo "CLI Python ${PYTHON_VERSION} found"
+  else
+    echo "ERROR: CLI Python ${PYTHON_VERSION} not found - check bundle configuration"
+    exit 1
+  fi
 
   ln -s python${PYTHON_VERSION} python
   ln -s python${PYTHON_VERSION} python3

@@ -1,0 +1,211 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem 1.0
+PortGroup clang_dependency 1.0
+
+name                python310
+
+# Remember to keep py310-tkinter and py310-gdbm's versions sync'd with this
+version             3.10.18
+epoch               1
+
+set branch          [join [lrange [split ${version} .] 0 1] .]
+categories          lang
+license             PSF
+maintainers         {jmr @jmroot}
+
+description         An interpreted, object-oriented programming language (CLI-only build)
+long_description    Python is an interpreted, interactive, object-oriented \
+                    programming language. This variant builds Python without \
+                    Framework support to avoid GUI Python.app creation.
+
+homepage            https://www.python.org/
+master_sites        ${homepage}ftp/python/${version}/
+
+distname            Python-${version}
+use_xz              yes
+checksums           md5 14ea0982a7dd4dbfc3f50537c723df41 \
+                    rmd160 86163aa427f3d8572f247e77fafdf3599ff07f38 \
+                    sha256 ae665bc678abd9ab6a6e1573d2481625a53719bc517e9a634ed2b9fefae3817f
+
+patchfiles          patch-setup.py.diff \
+                    patch-Lib-cgi.py.diff \
+                    patch-configure.diff \
+                    patch-Lib-ctypes-macholib-dyld.py.diff \
+                    patch-configure-xcode4bug.diff \
+                    sysconfig.py.patch \
+                    libedit-types.patch \
+                    dangling-symlinks.patch
+
+if {${os.platform} eq "darwin" && ${os.major} <= 10} {
+    # work around no pthread_threadid_np on older systems
+    patchfiles-append  patch-threadid-older-systems.diff
+}
+
+depends_build       path:bin/pkg-config:pkgconfig
+depends_lib         port:bzip2 \
+                    port:expat \
+                    port:gettext-runtime \
+                    port:libedit \
+                    port:libffi \
+                    port:ncurses \
+                    path:lib/libssl.dylib:openssl \
+                    port:sqlite3 \
+                    port:xz \
+                    port:zlib
+
+set pythonVerNoDot  [string map {. {}} $branch]
+depends_run         port:python_select-${pythonVerNoDot} \
+                    port:python3_select-${pythonVerNoDot}
+
+# blacklist llvm-gcc-4.2 compiler known to produce bad code
+compiler.blacklist-append *llvm-gcc-4.2
+
+# ensurepip arg may be removed later, now conflicts with pip and setuptools
+# packages
+configure.args      --prefix=${prefix} \
+                    --enable-ipv6 \
+                    --enable-loadable-sqlite-extensions \
+                    --with-computed-gotos \
+                    --with-ensurepip=no \
+                    --with-readline=editline \
+                    --with-system-expat \
+                    --with-system-ffi
+
+configure.ccache    no
+# pkg-config removes -I flags for paths in CPATH, which confuses python.
+configure.env       PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=1 \
+                    SETUPTOOLS_USE_DISTUTILS=stdlib
+build.env           SETUPTOOLS_USE_DISTUTILS=stdlib
+destroot.env        SETUPTOOLS_USE_DISTUTILS=stdlib
+
+post-patch {
+    reinplace "s|@@PREFIX@@|${prefix}|g" \
+      ${worksrcpath}/Lib/cgi.py \
+      ${worksrcpath}/Lib/ctypes/macholib/dyld.py
+
+    reinplace "s|/setup.py|/setup.py --no-user-cfg|" ${worksrcpath}/Makefile.pre.in
+
+    # replace /Applications with ${applications_dir}
+    reinplace "s|@@APPLICATIONS_DIR@@|${applications_dir}|" \
+      ${worksrcpath}/configure
+}
+
+build.target        all
+
+test.run            yes
+test.target         test
+
+destroot.target     install maninstall
+
+platform darwin {
+    set abiflags    {}
+
+    post-configure {
+        # poll() misbehaves on 10.8 and older
+        # See https://trac.macports.org/ticket/18376
+        if {${os.major} <= 12} {
+            system -W ${worksrcpath} "ed - pyconfig.h < ${filespath}/pyconfig.ed"
+        }
+    }
+
+    # CLI Python build - no Framework-specific configuration needed
+}
+
+post-destroot {
+    foreach unversioned {2to3 idle3 pydoc3 python3 python3-config} {
+        delete ${destroot}${prefix}/bin/${unversioned}
+    }
+}
+
+notes "
+To make this the default Python or Python 3 (i.e., the version run by\
+the 'python' or 'python3' commands), run one or both of:
+
+    sudo port select --set python python$pythonVerNoDot
+    sudo port select --set python3 python$pythonVerNoDot
+"
+
+variant universal {
+    post-patch {
+        set universal_arch_flags {}
+        set arch_run_32bit {}
+        set lipo_32bit_flags {}
+        set lipo_intel64_flags {}
+        set any64 no
+        foreach arch ${configure.universal_archs} {
+            lappend universal_arch_flags -arch ${arch}
+            if {${arch} in {i386 ppc}} {
+                lappend arch_run_32bit -${arch}
+                lappend lipo_32bit_flags -extract ${arch}
+            } else {
+                set any64 yes
+            }
+        }
+        if {$any64} {
+            if {$arch_run_32bit eq ""} {
+                set arch_run_32bit true
+                set lipo_32bit_flags ""
+            } else {
+                set arch_run_32bit "/usr/bin/arch $arch_run_32bit"
+                #lipo_32bit_flags already correct
+            }
+            if {"arm64" in ${configure.universal_archs} && "x86_64" in ${configure.universal_archs}} {
+                set lipo_intel64_flags "-extract x86_64"
+            }
+        } else {
+            set arch_run_32bit ""
+            set lipo_32bit_flags ""
+        }
+        reinplace \
+            "s|@@UNIVERSAL_ARCH_FLAGS@@|${universal_arch_flags}|" \
+            ${worksrcpath}/configure
+        reinplace \
+            "s|@@LIPO_32BIT_FLAGS@@|${lipo_32bit_flags}|" \
+            ${worksrcpath}/configure
+        reinplace \
+            "s|@@LIPO_INTEL64_FLAGS@@|${lipo_intel64_flags}|" \
+            ${worksrcpath}/configure
+        reinplace \
+            "s|@@ARCH_RUN_32BIT@@|${arch_run_32bit}|" \
+            ${worksrcpath}/configure
+    }
+    configure.args-append   --enable-universalsdk=${configure.sysroot}
+    post-configure {
+        system -W ${worksrcpath} "ed - pyconfig.h < ${filespath}/pyconfig.h-universal.ed"
+    }
+
+    post-destroot {
+        foreach unversioned {python3-32 python3-intel64} {
+            delete ${destroot}${prefix}/bin/${unversioned}
+        }
+    }
+}
+
+variant optimizations description {enable expensive, stable optimizations (including PGO)} {
+    configure.args-append   --enable-optimizations
+}
+
+variant lto description {enable Link-Time Optimization} {
+    configure.args-append   --with-lto
+}
+
+platform darwin {
+    # Build failures on 10.9 and older
+    if {${os.major} > 11} {
+        if {${os.major} > 14 || !($universal_possible && [variant_isset universal])} {
+            default_variants +lto
+        }
+        if {${os.major} > 13} {
+            default_variants-append +optimizations
+        }
+    }
+}
+
+variant dtrace description {enable DTrace support} {
+    configure.args-append   --with-dtrace
+}
+
+livecheck.type      regex
+livecheck.url       ${homepage}downloads/source/
+livecheck.regex     Python (${branch}\[.0-9\]+) -
