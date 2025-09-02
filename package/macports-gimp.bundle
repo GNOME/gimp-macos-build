@@ -64,9 +64,9 @@
     ${prefix}/lib/gio/modules
   </binary>
 
-  <!-- CLI Python only, no GUI Python.app - exclude bin/ wrappers that call GUI -->
+  <!-- CLI Python from python310-cli port -->
   <binary recurse="True">
-    ${prefix}/Library/Frameworks/Python.framework/Versions/${env:PYTHON_VERSION}/lib
+    ${prefix}/lib/python${env:PYTHON_VERSION}
   </binary>
   <binary>
     ${prefix}/bin/python${env:PYTHON_VERSION}
