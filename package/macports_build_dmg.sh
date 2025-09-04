@@ -89,7 +89,7 @@ if [ -n "${codesign_subject}" ]; then
       /usr/bin/codesign -s "${codesign_subject}" \
         --options runtime \
         --timestamp \
-        --launch-constraint-parent "${HOME}/project/package/python.coderequirement" \
+        --launch-constraint-responsible "${HOME}/project/package/python.coderequirement" \
         "$bin"
     done
 
@@ -100,7 +100,7 @@ if [ -n "${codesign_subject}" ]; then
       /usr/bin/codesign -s "${codesign_subject}" \
         --options runtime \
         --timestamp \
-        --launch-constraint-parent "${HOME}/project/package/python.coderequirement" \
+        --launch-constraint-responsible "${HOME}/project/package/python.coderequirement" \
         "$bin"
     done
 
@@ -113,7 +113,7 @@ if [ -n "${codesign_subject}" ]; then
       /usr/bin/codesign -s "${codesign_subject}" \
         --options runtime \
         --timestamp \
-        --launch-constraint-parent "${HOME}/project/package/python.coderequirement" \
+        --launch-constraint-responsible "${HOME}/project/package/python.coderequirement" \
         "$bin"
     fi
   done
