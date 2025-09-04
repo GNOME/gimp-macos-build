@@ -116,6 +116,47 @@ post-destroot {
     foreach unversioned {2to3 idle3 pydoc3 python3 python3-config} {
         delete ${destroot}${prefix}/bin/${unversioned}
     }
+    
+    # Create Framework-compatible directory structure for PyGObject compatibility
+    # This allows py310-* packages to install to Framework paths while using CLI Python
+    set framework_base ${destroot}${prefix}/Library/Frameworks/Python.framework/Versions/3.10
+    set framework_root ${destroot}${prefix}/Library/Frameworks/Python.framework
+    
+    xinstall -d ${framework_base}/lib/python3.10/site-packages
+    xinstall -d ${framework_base}/include/python3.10
+    xinstall -d ${framework_base}/bin
+    xinstall -d ${framework_base}/share/man/man1
+    xinstall -d ${framework_base}/Resources
+    
+    # Copy Python headers to Framework location for package compilation
+    system "cp -R ${destroot}${prefix}/include/python3.10/* ${framework_base}/include/python3.10/"
+    
+    # Create symlink to CLI Python binary at Framework location
+    ln -s ${prefix}/bin/python3.10 ${framework_base}/bin/python3.10
+    
+    # Create Python "library" file that port select expects (symlink to executable for CLI Python)
+    ln -s ${prefix}/bin/python3.10 ${framework_base}/Python
+    
+    # Create minimal Info.plist in Resources to prevent directory removal
+    system "echo '<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"><plist version=\"1.0\"><dict><key>CFBundleIdentifier</key><string>org.python.python</string><key>CFBundleVersion</key><string>3.10.18</string></dict></plist>' > ${framework_base}/Resources/Info.plist"
+    
+    # Create Framework version-specific symlinks (like existing Framework Python)
+    ln -s include/python3.10 ${framework_base}/Headers
+    
+    # Create Framework root symlinks that port select expects
+    ln -s Versions/3.10/Headers ${framework_root}/Headers
+    ln -s Versions/3.10/Resources ${framework_root}/Resources  
+    ln -s Versions/3.10/Python ${framework_root}/Python
+    ln -s Versions/3.10 ${framework_root}/Versions/Current
+    
+    # Handle man page: mimic Framework Python behavior exactly
+    # Move man page to Framework location and create symlink (before MacPorts compresses it)
+    if {[file exists ${destroot}${prefix}/share/man/man1/python3.10.1]} {
+        # Move to Framework location to avoid auto-compression
+        system "mv ${destroot}${prefix}/share/man/man1/python3.10.1 ${framework_base}/share/man/man1/python3.10.1"
+        # Create symlink from main location to Framework (like original Framework Python)
+        ln -s ${framework_base}/share/man/man1/python3.10.1 ${destroot}${prefix}/share/man/man1/python3.10.1
+    }
 }
 
 notes "

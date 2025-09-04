@@ -41,6 +41,10 @@
          for gtk+-3.0 projects. -->
     <gtk>gtk+-3.0</gtk>
   </meta>
+  <!-- We need to pack our own Python to avoid compatibility problems. -->
+  <binary dest="${bundle}/Contents/MacOS">
+      ${prefix}/bin/python${env:PYTHON_VERSION}
+  </binary>
   <binary dest="${bundle}/Contents/MacOS">
     ${prefix}/bin/gegl
   </binary>
@@ -64,20 +68,20 @@
     ${prefix}/lib/gio/modules
   </binary>
 
-  <!-- CLI Python from python310-cli port -->
-  <binary recurse="True">
-    ${prefix}/lib/python${env:PYTHON_VERSION}
-  </binary>
-  <binary>
+  <!-- CLI Python from python310 port which creates cli version -->
+  <binary dest="${bundle}/Contents/MacOS">
     ${prefix}/bin/python${env:PYTHON_VERSION}
   </binary>
   <data recurse="True">
-    ${prefix}/include/python${env:PYTHON_VERSION}
+    ${prefix}/lib/python${env:PYTHON_VERSION}/*
   </data>
-  <!-- Copy certifi package for SSL certificates from CLI Python -->
-  <binary recurse="True">
-    ${prefix}/lib/python${env:PYTHON_VERSION}/site-packages/certifi*
-  </binary>
+  <!-- Copy Framework Python site-packages (PyGObject, etc.) to CLI Python site-packages -->
+  <data recurse="True" dest="${bundle}/Contents/Resources/lib/python${env:PYTHON_VERSION}/site-packages">
+    ${prefix}/Library/Frameworks/Python.framework/Versions/${env:PYTHON_VERSION}/lib/python${env:PYTHON_VERSION}/site-packages/*
+  </data>
+  <data recurse="True">
+    ${prefix}/include/python${env:PYTHON_VERSION}/*
+  </data>
   <!-- Name of main gimp binary -->
   <main-binary>${prefix}/bin/gimp-${env:GIMP_APP_VERSION}</main-binary>
   <!-- Copy in gimp plugins -->

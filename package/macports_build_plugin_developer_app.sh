@@ -31,5 +31,4 @@ cp -r ${GIMP_PREFIX}/lib/pkgconfig ${PACKAGE_DIR}/GIMP.app/Contents/Resources/li
 
 echo "fixing pkg-config files"
 find ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/pkgconfig -name '*.pc' -type f -exec sed -i '' -e 's@^prefix=.*$@prefix=${pcfiledir}/../..@' -e "s@${GIMP_PREFIX}@\${GIMP_PREFIX}@g" {} \;
-find ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/pkgconfig -name '*.pc' -type f -exec sed -i '' -e 's@^prefix=.*$@prefix=${pcfiledir}/../..@' -e "s@${GIMP_PREFIX}@\${GIMP_PREFIX}@g" {} \;
 echo "Done developer bundling"

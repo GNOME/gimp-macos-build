@@ -200,9 +200,8 @@ find  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/ -perm +111 -type f \
        -change @rpath/libubsan.1.dylib    @rpath/lib/libgcc/libubsan.1.dylib \
        -change @rpath/libubsan.dylib      @rpath/lib/libgcc/libubsan.dylib
 
-echo "adding @rpath to python framework"
-install_name_tool -add_rpath @loader_path/../../../../../ \
-  ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Python
+echo "adding @rpath to python (CLI version in MacOS - no rpath needed)"
+# CLI Python is in MacOS directory and doesn't need rpath fixes
 
 echo "removing build path from the .gir files: special case Poppler"
 # Needed because for some reason this package puts in the build directory
@@ -258,23 +257,54 @@ if [[ "$1" == "debug" ]]; then
 fi
 
 echo "create missing links and CLI Python wrapper"
-echo "create missing links and CLI Python wrapper"
 
 pushd ${PACKAGE_DIR}/GIMP.app/Contents/MacOS || exit 1
   ln -s gimp-console-${GIMP_APP_VERSION} gimp-console
   ln -s gimp-debug-tool-${GIMP_APP_VERSION} gimp-debug-tool
 
-  # The CLI Python should already be copied by the bundle configuration
-  # Just create symlinks as before
-  if [ -f python${PYTHON_VERSION} ]; then
-    echo "CLI Python ${PYTHON_VERSION} found"
+  # Create CLI Python wrapper with correct paths for bundle
+  if [ -f "python${PYTHON_VERSION}" ]; then
+    echo "CLI Python ${PYTHON_VERSION} found - creating wrapper"
+
+    # Backup the original binary
+    mv "python${PYTHON_VERSION}" "python${PYTHON_VERSION}.bin"
+
+    # Create wrapper script with correct paths
+    cat > "python${PYTHON_VERSION}" << EOF
+#!/bin/bash
+# CLI Python wrapper for GIMP app bundle
+SCRIPT_DIR="\$(cd "\$(dirname "\$0")" && pwd)"
+APP_RESOURCES="\$SCRIPT_DIR/../Resources"
+
+# Clear any existing Python environment variables
+unset PYTHONPATH PYTHONHOME
+
+# Set Python paths for the bundle - include both CLI and Framework site-packages  
+export PYTHONHOME="\$APP_RESOURCES"
+export PYTHONPATH="\$APP_RESOURCES/lib/python${PYTHON_VERSION}:\$APP_RESOURCES/lib/python${PYTHON_VERSION}/site-packages:\$APP_RESOURCES/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/site-packages"
+
+# Execute the bundled Python binary
+exec "\$SCRIPT_DIR/python${PYTHON_VERSION}.bin" "\$@"
+EOF
+
+    chmod +x "python${PYTHON_VERSION}"
+    echo "Created Python wrapper with correct bundle paths"
   else
     echo "ERROR: CLI Python ${PYTHON_VERSION} not found - check bundle configuration"
     exit 1
   fi
+  
+  # Verify Python standard library was copied properly by gtk-mac-bundler
+  if [ ! -f "${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/python${PYTHON_VERSION}/encodings/__init__.py" ]; then
+    echo "ERROR: Python standard library not copied properly by gtk-mac-bundler"
+    echo "Check the bundle configuration for python${PYTHON_VERSION} data copy"
+    exit 1
+  else
+    echo "Python standard library copied successfully by gtk-mac-bundler"
+  fi
 
-  ln -s python${PYTHON_VERSION} python
-  ln -s python${PYTHON_VERSION} python3
+  ln -s "python${PYTHON_VERSION}" python
+  ln -s "python${PYTHON_VERSION}" python3
 popd
 
 echo "copy xdg-email wrapper to the package"
@@ -282,7 +312,7 @@ mkdir -p ${PACKAGE_DIR}/GIMP.app/Contents/MacOS
 cp xdg-email ${PACKAGE_DIR}/GIMP.app/Contents/MacOS
 
 echo "Copy SSL configuration for Python"
-cp sitecustomize.py "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/site-packages/"
+cp sitecustomize.py "${PACKAGE_DIR}/GIMP.app/Contents/Resources/lib/python${PYTHON_VERSION}/site-packages/"
 
 echo "Creating pyc files"
 "python${PYTHON_VERSION}" -m compileall -q "${PACKAGE_DIR}/GIMP.app"
