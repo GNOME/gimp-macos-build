@@ -80,45 +80,60 @@ if [ -n "${codesign_subject}" ]; then
       --options runtime \
       --entitlements ${HOME}/project/package/gimp-hardening.entitlements
 
-  # Create a secure python.coderequirement file with real values
-  create_coderequirement_file
+  # Set up codesigning flags based on architecture
+  if [ "$build_arm64" = true ]; then
+    echo "Using launch constraints for python binaries (ARM64 build)"
+    # Create a secure python.coderequirement file with real values
+    create_coderequirement_file
+    PYTHON_SIGN_FLAGS="--launch-constraint-responsible ${HOME}/project/package/python.coderequirement"
+    SIGN_MESSAGE="launch constraint"
+  else
+    echo "Using entitlements for python binaries (non-ARM64 build)"
+    PYTHON_SIGN_FLAGS="--entitlements ${HOME}/project/package/gimp-hardening.entitlements"
+    SIGN_MESSAGE="entitlements"
+  fi
 
-  find ${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Resources -type f -perm +111 |
-    xargs file | grep 'Mach-O' | awk -F ':' '{print $1}' |
+  # Sign Python Resources binaries
+  find "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Resources" -type f -perm +111 2>/dev/null |
+    xargs file 2>/dev/null | grep 'Mach-O' | awk -F ':' '{print $1}' |
     while read -r bin; do
       /usr/bin/codesign -s "${codesign_subject}" \
         --options runtime \
         --timestamp \
-        --launch-constraint-parent "${HOME}/project/package/python.coderequirement" \
+        ${PYTHON_SIGN_FLAGS} \
         "$bin"
     done
 
-
-  find "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/bin" -type f -perm +111 |
-    xargs file | grep 'Mach-O' | awk -F ':' '{print $1}' |
+  # Sign Python bin binaries
+  find "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/bin" -type f -perm +111 2>/dev/null |
+    xargs file 2>/dev/null | grep 'Mach-O' | awk -F ':' '{print $1}' |
     while read -r bin; do
       /usr/bin/codesign -s "${codesign_subject}" \
         --options runtime \
         --timestamp \
-        --launch-constraint-parent "${HOME}/project/package/python.coderequirement" \
+        ${PYTHON_SIGN_FLAGS} \
         "$bin"
     done
 
+  # Sign specific Python binaries and xdg-email
   for bin in \
     "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Python" \
     "${PACKAGE_DIR}/GIMP.app/Contents/MacOS/python${PYTHON_VERSION}" \
     "${PACKAGE_DIR}/GIMP.app/Contents/MacOS/xdg-email"; do
     if [ -f "$bin" ]; then
-      echo "Signing $bin with launch constraint"
+      echo "Signing $bin with ${SIGN_MESSAGE}"
       /usr/bin/codesign -s "${codesign_subject}" \
         --options runtime \
         --timestamp \
-        --launch-constraint-parent "${HOME}/project/package/python.coderequirement" \
+        ${PYTHON_SIGN_FLAGS} \
         "$bin"
     fi
   done
 
-  rm -f "${HOME}/project/package/python.coderequirement"
+  # Clean up coderequirement file if created
+  if [ "$build_arm64" = true ]; then
+    rm -f "${HOME}/project/package/python.coderequirement"
+  fi
 
   echo "Signing app"
   /usr/bin/codesign -s "${codesign_subject}" \
