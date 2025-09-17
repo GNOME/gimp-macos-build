@@ -1,3 +1,63 @@
+# MacPorts
+
+## How to overlay a port in this repo.
+
+### Get the port
+
+1. You can find the port you want to overlay in the [MacPorts Port Index](https://ports.macports.org/). Navigate to the port you want to overlay and copy the URL from the address bar. The URL should look something like this: `https://ports.macports.org/port/<category>/<port>/`.
+2. Plug the URL into this page https://download-directory.github.io/?url=https://github.com/macports/macports-ports/tree/master/graphics/fontconfig
+3. Download the zip file and extract it to the `ports/<category>/<port>` directory in this repo.
+
+### Get the patch
+
+In order to get the patch, you need to find the relevant merge request or commit in the upstream repository. Both github and gitlab allow you to download a patch file directly from the web interface.
+
+#### GitHub
+
+https://dilankam.medium.com/creating-a-patch-from-github-pull-request-a0381fb3606d
+
+1. Navigate to the pull request or commit you want to use as a patch.
+2. Add `.patch` to the end of the URL and hit enter.
+3. Copy the contents of the page and save it to a file in the `ports/<category>/<port>/files` directory.
+
+#### GitLab
+
+1. Navigate to the merge request or commit you want to use as a patch.
+2. Click on the "Changes" tab.
+3. To the right, click the "Code" button and under "Download" select "patches".
+
+### Fix the patch
+
+1. Copy the patch file to the `ports/<category>/<port>/files` directory.
+2. Open the patch file in a text editor
+3. Remove all references to `a/` and `b/` in the patch file. For example, change:
+   ```diff
+   --- a/src/file.c
+   +++ b/src/file.c
+   ```
+   to:
+   ```diff
+   --- src/file.c
+   +++ src/file.c
+   ```
+4. Save the file.
+
+This is because most Portfiles do applys without the `a/` and `b/` prefixes.
+
+### Modify the port
+
+1. Open the `Portfile` in a text editor.
+2. Change revision to one number highter than the current revision. For example, if the current revision is `0`, change it to `1`. This ensures your overlay is picked up. If you want to be super sure, change add `epoch 1` instead. Or up that if there's an epoch already.
+3. Add the patch file to a `patchfiles-append` line after existing ones (if any). Otherwise relatively early in the Portfile. For example:
+   ```tcl
+   # Remove this overlay when <link to MR or commit> is merged
+   patchfiles-append my-fix.patch
+   ```
+
+### Finish
+
+That's it. Now create an MR and test that it worked. You will know your version was used if the revision number is higher than the one in the official MacPorts repository. All port versions are printed in SBOM.txt files after a build (as well as in the dependency builds).
+
 ## How to Patch a Port on Your System
 
 Modified from: https://trac.macports.org/wiki/howto/PatchLocal
