@@ -1,0 +1,44 @@
+From 3abab600da72fbddc3c973be1b8bbd82cf6552e6 Mon Sep 17 00:00:00 2001
+From: Gabriele Barbero <barbero.gabriele03@gmail.com>
+Date: Wed, 17 Sep 2025 12:21:00 +0200
+Subject: [PATCH] Add default macOS font paths
+
+In newer versions of macOS, an additional system font directory has been
+introduced: `/System/Library/AssetsV2/com_apple_MobileAsset_Font7`.
+This commit updates the default font paths in both `configure.ac` and
+`meson.build` to include this new directory.
+---
+ configure.ac | 2 +-
+ meson.build  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git configure.ac configure.ac
+index 06dbc570..5ec17648 100644
+--- configure.ac.orig   2023-12-22 13:51:46
++++ configure.ac        2025-09-17 16:49:57
+--- configure.ac.orig   2023-12-22 13:51:46
++++ configure.ac        2025-09-17 18:55:02
+@@ -494,7 +494,7 @@
+ 	if test "$os_win32" = "yes"; then
+ 		default_fonts="WINDOWSFONTDIR,WINDOWSUSERFONTDIR"
+ 	elif test "$os_darwin" = "yes"; then
+-		default_fonts="/System/Library/Fonts,/Library/Fonts,~/Library/Fonts,/System/Library/Assets/com_apple_MobileAsset_Font3,/System/Library/Assets/com_apple_MobileAsset_Font4"
++		default_fonts="/System/Library/Fonts,/Library/Fonts,~/Library/Fonts,/System/Library/Assets/com_apple_MobileAsset_Font3,/System/Library/Assets/com_apple_MobileAsset_Font4,/System/Library/AssetsV2/com_apple_MobileAsset_Font6,/System/Library/AssetsV2/com_apple_MobileAsset_Font7,/System/Library/AssetsV2/com_apple_MobileAsset_Font8"
+ 	else
+ 		default_fonts="/usr/share/fonts"
+ 	fi
+index 4483f6fc..cade9877 100644
+--- meson.build.orig    2023-12-22 13:51:46
++++ meson.build 2025-09-17 16:50:50
+@@ -232,7 +232,7 @@
+   if host_machine.system() == 'windows'
+     fc_fonts_paths = ['WINDOWSFONTDIR', 'WINDOWSUSERFONTDIR']
+   elif host_machine.system() == 'darwin'
+-    fc_fonts_paths = ['/System/Library/Fonts', '/Library/Fonts', '~/Library/Fonts', '/System/Library/Assets/com_apple_MobileAsset_Font3', '/System/Library/Assets/com_apple_MobileAsset_Font4']
++    fc_fonts_paths = ['/System/Library/Fonts', '/Library/Fonts', '~/Library/Fonts', '/System/Library/Assets/com_apple_MobileAsset_Font3', '/System/Library/Assets/com_apple_MobileAsset_Font4', '/System/Library/AssetsV2/com_apple_MobileAsset_Font6', '/System/Library/AssetsV2/com_apple_MobileAsset_Font7', '/System/Library/AssetsV2/com_apple_MobileAsset_Font8']
+   else
+     fc_fonts_paths = ['/usr/share/fonts', '/usr/local/share/fonts']
+   endif
+-- 
+GitLab
+
