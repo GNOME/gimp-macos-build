@@ -87,11 +87,6 @@ patchfiles-append   patch-sincos.diff
 # *NOT* merged merge request: https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/8136
 patchfiles-append   gtk-menu-crash.patch
 
-# Upstream patch - remove on next release 3.24.51 if it is merged
-# https://gitlab.gnome.org/GNOME/gtk/-/issues/7699
-# https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/8839
-patchfiles-append   dnd-fix.patch
-
 # gtk3 +quartz uses instancetype which is not available
 # before approximately Xcode 4.6 (#49391)
 # if building +x11 blacklist comilers that do not support C11
