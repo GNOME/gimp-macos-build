@@ -234,8 +234,25 @@ jobs:
       - run:
           name: Notarizing DMG package
           command: |
-            package/notarize.sh
-            EXTENSION="-plugin-developer" package/notarize.sh
+            # Run both notarizations in parallel
+            package/notarize.sh &
+            PID1=$!
+            EXTENSION="-plugin-developer" package/notarize.sh &
+            PID2=$!
+
+            # Wait for both processes to complete and get exit codes
+            wait $PID1
+            STATUS1=$?
+            wait $PID2
+            STATUS2=$?
+
+            # Exit with failure if either notarization failed
+            if [ $STATUS1 -ne 0 ] || [ $STATUS2 -ne 0 ]; then
+              echo "Notarization failed - Main: $STATUS1, Plugin: $STATUS2"
+              exit 1
+            fi
+
+            echo "Both notarizations completed successfully"
           no_output_timeout: 20m
       - run:
           name: Checksum DMG package
