@@ -26,7 +26,7 @@ set my_name         babl
 #    For example, when setting to a release, update only last_release. When
 #    setting to a dev version, update only last_dev.
 # *****
-version             0.1.115
+version             0.1.114
 set last_release    0.1.114
 set last_dev        0.1.115
 revision            0
