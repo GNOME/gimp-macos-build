@@ -1,0 +1,54 @@
+diff --git gtk/gtkwindow.c gtk/gtkwindow.c
+index 552972f28b..3b65ee0957 100644
+--- gtk/gtkwindow.c
++++ gtk/gtkwindow.c
+@@ -10589,25 +10589,35 @@ gtk_window_present_with_time (GtkWindow *window,
+
+       g_assert (gdk_window != NULL);
+
+-      gdk_window_show (gdk_window);
+-
+-      /* Translate a timestamp of GDK_CURRENT_TIME appropriately */
+-      if (timestamp == GDK_CURRENT_TIME)
++#ifdef GDK_WINDOWING_QUARTZ
++      /* On macOS, calling gdk_window_show() or gdk_window_focus() on an
++       * already-mapped window triggers spurious resignMain/becomeMain
++       * notifications, causing focus fighting in multi-window applications.
++       * Only proceed if window is not yet mapped.
++       */
++      if (!GDK_WINDOW_IS_MAPPED (gdk_window))
++#endif
+         {
++          gdk_window_show (gdk_window);
++
++          /* Translate a timestamp of GDK_CURRENT_TIME appropriately */
++          if (timestamp == GDK_CURRENT_TIME)
++            {
+ #ifdef GDK_WINDOWING_X11
+-	  if (GDK_IS_X11_WINDOW(gdk_window))
+-	    {
+-	      GdkDisplay *display;
++              if (GDK_IS_X11_WINDOW(gdk_window))
++                {
++                  GdkDisplay *display;
+
+-	      display = gtk_widget_get_display (widget);
+-	      timestamp = gdk_x11_display_get_user_time (display);
+-	    }
+-	  else
++                  display = gtk_widget_get_display (widget);
++                  timestamp = gdk_x11_display_get_user_time (display);
++                }
++              else
+ #endif
+-	    timestamp = gtk_get_current_event_time ();
+-        }
++                timestamp = gtk_get_current_event_time ();
++            }
+
+-      gdk_window_focus (gdk_window, timestamp);
++          gdk_window_focus (gdk_window, timestamp);
++        }
+     }
+   else
+     {
