@@ -13,7 +13,7 @@ name                gtk3
 conflicts           gtk3-devel
 set my_name         gtk3
 version             3.24.50
-revision            5
+revision            7
 epoch               1
 
 set proj_name       gtk
@@ -86,6 +86,12 @@ patchfiles-append   patch-sincos.diff
 # https://gitlab.gnome.org/GNOME/gtk/-/issues/6304
 # *NOT* merged merge request: https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/8136
 patchfiles-append   gtk-menu-crash.patch
+
+# Fix macOS window focus fighting in multi-window applications
+# Prevents gtk_window_present() from calling makeKeyAndOrderFront: on already-visible windows
+# https://gitlab.gnome.org/GNOME/gimp/-/issues/14901
+# *NOT* yet merged request: https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/9012
+patchfiles-append   patch-fix-macos-window-focus-fighting.diff
 
 # gtk3 +quartz uses instancetype which is not available
 # before approximately Xcode 4.6 (#49391)
