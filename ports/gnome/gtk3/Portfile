@@ -12,8 +12,8 @@ PortGroup           debug 1.0
 name                gtk3
 conflicts           gtk3-devel
 set my_name         gtk3
-version             3.24.50
-revision            7
+version             3.24.51
+revision            0
 epoch               1
 
 set proj_name       gtk
@@ -34,9 +34,9 @@ dist_subdir         ${my_name}
 use_xz              yes
 master_sites        gnome:sources/${proj_name}/${branch}/
 
-checksums           rmd160  0beb736d3ce20be9f6029cca88e25019089dd429 \
-                    sha256  399118a5699314622165a11b769ea9b6ed68e037b6d46d57cfcf4851dec07529 \
-                    size    13463460
+checksums           rmd160  711e6202631dc088c56ffc684cd6eca3ba8e3b70 \
+                    sha256  0013877c6bd23c2dbe42ad7c70a053d0e449be66736574e37867c49c5f905a4f \
+                    size    13483636
 
 # Disable unexpected download of subprojects
 meson.wrap_mode     nodownload
@@ -68,10 +68,6 @@ compiler.cxx_standard 2011
 # darwin 10 and earlier requires legacy support for O_CLOEXEC
 legacysupport.newest_darwin_requires_legacy 10
 
-# Quartz patch to eliminate hard-coded use of NSEventTypeApplicationDefined
-# Upstream merge request: https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/5958
-patchfiles-append   patch-quartz-nseventtype.diff
-
 # Quartz patch to make CoreGraphics optional; not available for 10.7 and earlier
 # Upstream merge request: https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/5959
 patchfiles-append   patch-quartz-meson-appleframeworks.diff
@@ -81,11 +77,6 @@ patchfiles-append   patch-tests-gdkgears.diff
 
 # https://github.com/mesonbuild/meson/issues/7652
 patchfiles-append   patch-sincos.diff
-
-# When removing menu items, this prevents dereferencing a null pointer (from lukaso)
-# https://gitlab.gnome.org/GNOME/gtk/-/issues/6304
-# *NOT* merged merge request: https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/8136
-patchfiles-append   gtk-menu-crash.patch
 
 # Fix macOS window focus fighting in multi-window applications
 # Prevents gtk_window_present() from calling makeKeyAndOrderFront: on already-visible windows
