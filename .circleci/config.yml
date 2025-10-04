@@ -1,0 +1,294 @@
+version: 2.1
+
+# -------------------------
+#        PARAMETERS
+# -------------------------
+
+parameters:
+  vgimp:
+    type: string
+    default: "3"
+
+# -------------------------
+#        ORBS
+# -------------------------
+orbs:
+  macos: circleci/macos@2.4.1
+
+# -------------------------
+#        COMMANDS
+# -------------------------
+commands:
+  setup:
+    steps:
+      # for local builds, this needs to be checked out to `~/project`
+      - checkout
+      - run:
+          name: Avoid hosts unknown for gitlab.gnome.org
+          command: mkdir -p ~/.ssh/ && echo -e "Host gitlab.gnome.org\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+      - run:
+          name: Avoid hosts unknown for github
+          command: mkdir -p ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+
+  cache-break:
+    parameters:
+      arch_command:
+        type: string
+        default: ""
+      arch_suffix:
+        type: string
+        default: ""
+    steps:
+      - run:
+          name: should cache break
+          # Triggering cache changes should be done in the directories below
+          command: |
+            cache_break=$(md5 ports/cache_break)
+            if [ ! -e "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >><< parameters.arch_suffix >>" ] || [ "${cache_break}" != "$(cat "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >><< parameters.arch_suffix >>")" ]; then
+              echo "Cache break"
+              echo "${cache_break}" > "${HOME}/CACHE_BREAK_GIMP<< pipeline.parameters.vgimp >><< parameters.arch_suffix >>"
+              << parameters.arch_command >> scripts/macports_uninstall.sh
+            fi
+
+  setup-macports:
+    parameters:
+      arch_command:
+        type: string
+        default: ""
+    steps:
+      - run:
+          name: Install macports
+          command: |
+            << parameters.arch_command >> scripts/macports0_install.sh --circleci
+          no_output_timeout: 30m
+
+  clear-artifacts:
+    parameters:
+      arch:
+        type: string
+        default: "arm64"
+    steps:
+      - run:
+          name: Clearing artifacts
+          command: |
+            rm -rf ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/var/macports/logs
+
+  setup-gtk-mac-bundler:
+    steps:
+      - run:
+          name: Setup gtk-mac-bundler
+          command: |
+            if [ ! -d ~/Source/gtk-mac-bundler ]; then
+              mkdir -p ~/Source
+              cd ~/Source
+              git clone https://gitlab.gnome.org/lukaso/gtk-mac-bundler
+              cd gtk-mac-bundler
+              make install
+            fi
+
+  import-signing-cert:
+    steps:
+      - run:
+          name: Importing signing certificate
+          command: |
+            # wait for keychain to settle
+            sleep 25
+            mkdir ${HOME}/codesign && cd ${HOME}/codesign
+            echo "$osx_crt" | base64 -D > gnome.p12
+            curl 'https://www.apple.com/certificateauthority/DeveloperIDG2CA.cer' > apple.cer
+            curl 'https://www.apple.com/certificateauthority/DeveloperIDCA.cer' > apple2.cer
+            curl 'https://www.apple.com/certificateauthority/AppleWWDRCAG2.cer' > apple3.cer
+            curl 'https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer' > apple4.cer
+            security create-keychain -p "" signchain
+            security set-keychain-settings signchain
+            security unlock-keychain -u signchain
+            security list-keychains  -s "${HOME}/Library/Keychains/signchain-db" "${HOME}/Library/Keychains/login.keychain-db"
+            security import apple.cer -k signchain  -T /usr/bin/codesign
+            security import apple2.cer -k signchain  -T /usr/bin/codesign
+            security import apple3.cer -k signchain  -T /usr/bin/codesign
+            security import apple4.cer -k signchain  -T /usr/bin/codesign
+            security import gnome.p12  -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
+            security set-key-partition-list -S apple-tool:,apple: -k "" signchain
+            security find-identity -v signchain
+            rm -rf ${HOME}/codesign
+
+  open-signing-cert:
+    steps:
+      - run:
+          name: Opening signing certificate keychain
+          command: |
+            echo "It's all set up"
+            # echo "** Don't lock keychain"
+            # security set-keychain-settings signchain
+            # echo "** Unlock keychain"
+            # security unlock-keychain -u signchain
+            # echo "** List keychains"
+            # security list-keychains  -s "${HOME}/Library/Keychains/signchain-db" "${HOME}/Library/Keychains/login.keychain-db"
+            # echo "** Set key partition list"
+            # security set-key-partition-list -S apple-tool:,apple: -k "" signchain
+
+  authorize-applescript:
+    steps:
+      - run:
+          name: Authorize AppleScript
+          command: |
+            # Authorize applescript on circle ci build
+            epochdate=$(($(date +'%s * 1000 + %-N / 1000000')))
+            tcc_service_appleevents="replace into access (service,client,client_type,auth_value,auth_reason,auth_version,indirect_object_identifier_type,indirect_object_identifier,flags,last_modified) values (\"kTCCServiceAppleEvents\",\"/usr/sbin/sshd\",1,2,4,1,0,\"com.apple.finder\",0,$epochdate);"
+            sudo sqlite3 "${HOME}/Library/Application Support/com.apple.TCC/TCC.db" "$tcc_service_appleevents"
+
+# -------------------------
+#        JOBS
+# -------------------------
+
+jobs:
+  # -------------------------
+  #        JOBS SELF HOSTED
+  # -------------------------
+
+  build:
+    machine: true
+    resource_class: gnome/gimp
+    parameters:
+      arch:
+        type: string
+        default: "arm64"
+      arch_command:
+        type: string
+        default: ""
+      arch_suffix:
+        type: string
+        default: ""
+
+    steps:
+      - setup
+      - cache-break:
+          arch_command: "<< parameters.arch_command >>"
+          arch_suffix: "<< parameters.arch_suffix >>"
+      - setup-macports:
+          arch_command: "<< parameters.arch_command >>"
+      - clear-artifacts:
+          arch: "<< parameters.arch >>"
+      - run:
+          name: Build GIMP dependencies
+          command: |
+            << parameters.arch_command >> scripts/macports1_install_packages.sh
+          no_output_timeout: 2h
+      - run:
+          name: Build GIMP
+          # XXX `make check` is not working reliably under circle ci, so we are
+          # not using --check flag
+          command: |
+            << parameters.arch_command >> scripts/macports2_install_gimp.sh
+      - store_artifacts:
+          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/var/macports/logs
+      - store_artifacts:
+          path: ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/SBOM.txt
+      - setup-gtk-mac-bundler
+      - run:
+          name: Creating DMG package
+          command: |
+            << parameters.arch_command >> scripts/macports3_build_app.sh
+          no_output_timeout: 20m
+      - run:
+          name: Check minos and sdk properly set
+          command: |
+            scripts/validate_min_os.py ~/macports-gimp-osx-app-<< parameters.arch >>
+      - persist_to_workspace:
+          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
+          # taken to be the root directory of the workspace.
+          root: "~"
+          # Must be relative path from root
+          paths:
+            - macports-gimp-osx-app-<< parameters.arch >>
+            - macports-gimp-osx-app-<< parameters.arch >>-plugin-developer
+            - .profile-gimp-<< parameters.arch >>
+            - macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/SBOM.txt
+
+  package-gimp:
+    macos:
+      xcode: "14.3.1"
+    resource_class: macos.m1.medium.gen1
+    parameters:
+      arch:
+        type: string
+        default: "arm64"
+
+    steps:
+      - setup
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: "~"
+      - authorize-applescript
+      - import-signing-cert
+      # - open-signing-cert
+      - run:
+          name: Creating DMG package
+          command: |
+            source ~/.profile-gimp-<< parameters.arch >>
+            cd ${HOME}/project
+
+            # run script
+            scripts/macports4_build_dmg.sh
+          no_output_timeout: 20m
+      - run:
+          name: Notarizing DMG package
+          command: |
+            # Run both notarizations in parallel
+            package/notarize.sh &
+            PID1=$!
+            EXTENSION="-plugin-developer" package/notarize.sh &
+            PID2=$!
+
+            # Wait for both processes to complete and get exit codes
+            wait $PID1
+            STATUS1=$?
+            wait $PID2
+            STATUS2=$?
+
+            # Exit with failure if either notarization failed
+            if [ $STATUS1 -ne 0 ] || [ $STATUS2 -ne 0 ]; then
+              echo "Notarization failed - Main: $STATUS1, Plugin: $STATUS2"
+              exit 1
+            fi
+
+            echo "Both notarizations completed successfully"
+          no_output_timeout: 20m
+      - run:
+          name: Checksum DMG package
+          command: |
+            package/checksum-artifacts.sh
+            EXTENSION="-plugin-developer" package/checksum-artifacts.sh
+      - run:
+          name: Save SBOM
+          command: |
+            cp ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/SBOM.txt /tmp/artifacts
+      - store_artifacts:
+          path: /tmp/artifacts
+          destination: builds
+
+workflows:
+  version: 2
+  build-arm64:
+    jobs:
+      - build:
+          name: build
+          arch: "arm64"
+          arch_command: ""
+          arch_suffix: ""
+      - package-gimp:
+          arch: "arm64"
+          requires:
+            - build
+
+  build-x86_64:
+    jobs:
+      - build:
+          name: build
+          arch: "x86_64"
+          arch_command: "arch -x86_64"
+          arch_suffix: "_x86_64"
+      - package-gimp:
+          arch: "x86_64"
+          requires:
+            - build

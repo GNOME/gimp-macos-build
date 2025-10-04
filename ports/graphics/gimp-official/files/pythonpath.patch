@@ -1,0 +1,13 @@
+diff --git a/meson.build b/meson.build
+index 6f5a504344..7875983295 100644
+--- a/meson.build
++++ b/meson.build
+@@ -1074,7 +1074,7 @@ # the interpreter is not useful at build time.
+
+ python3_minver = '>=3.6'
+
+-python = pythonmod.find_installation('python3', required: true)
++python = pythonmod.find_installation('@@PYTHON3_BIN@@')
+ message('Found Python @0@'.format(python.language_version()))
+
+ if not python.language_version().version_compare(python3_minver)

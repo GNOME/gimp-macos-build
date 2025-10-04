@@ -1,0 +1,70 @@
+// Copy into your .vscode/launch.json file
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "attach",
+      "name": "Attach",
+      "pid": "${command:pickMyProcess}" // use ${command:pickProcess} to pick other users' processes
+    },
+    {
+      "name": "(lldb) Launch",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/../macports-gimp3-arm64/bin/gimp",
+      // "args": ["--g-fatal-warnings"],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb"
+    },
+    {
+      "name": "(lldb) Full App",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/../macports-gimp-osx-app-arm64/GIMP.app/Contents/MacOS/gimp",
+      // "args": ["--g-fatal-warnings"],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb"
+    },
+    {
+      "name": "(lldb) Applications Launch",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/Applications/GIMP.app/Contents/MacOS/gimp",
+      "args": [
+        // "--g-fatal-warnings"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [
+        // {
+        //   "name": "G_DEBUG",
+        //   "value": "fatal-criticals"
+        // }
+      ],
+      "externalConsole": false,
+      "MIMode": "lldb"
+    },
+    {
+      "name": "gtk3-demo-application",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/../macports-gimp3-arm64/bin/gtk3-demo-application",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb"
+    },
+  ]
+}

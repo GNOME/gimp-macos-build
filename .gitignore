@@ -1,0 +1,15 @@
+*~
+tmp-jhbuild-revision
+!*.patch
+.DS_Store
+info*.plist
+.env
+package/gimp-dmg.png
+package/fileicon.icns
+package/fileicon-xcf.icns
+package/gimp.icns
+
+# include launch.json in the .vscode folder
+!.vscode/
+.vscode/*
+!.vscode/launch.json.example
