@@ -1,0 +1,50 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.1
+PortGroup           github 1.0
+PortGroup           legacysupport 1.0
+
+github.setup        Exiv2 exiv2 0.28.7 v
+revision            0
+checksums           rmd160  a37f47d66a944362c35e8f341c295821e421888a \
+                    sha256  5e292b02614dbc0cee40fe1116db2f42f63ef6b2ba430c77b614e17b8d61a638 \
+                    size    46935478
+
+categories          graphics
+license             GPL-2+
+maintainers         {ryandesign @ryandesign} openmaintainer
+
+description         EXIF and IPTC metadata manipulation library and tools
+long_description    Exiv2 comprises of a C++ library and a command line utility \
+                    which allows you to manipulate EXIF and IPTC image metadata.
+
+homepage            https://www.exiv2.org
+github.tarball_from archive
+
+set python_version  3.11
+
+depends_build-append \
+                    port:gmake \
+                    port:python[string map {. {}} ${python_version}]
+
+depends_lib-append  port:expat \
+                    port:gettext \
+                    port:libiconv \
+                    port:zlib \
+                    port:inih
+
+compiler.cxx_standard 2011
+# error: use of undeclared identifier '__builtin_sadd_overflow'
+compiler.blacklist-append \
+                    { clang < 426 } \
+                    macports-clang-3.3
+
+configure.args-append \
+                    -DEXIV2_ENABLE_BMFF=ON \
+                    -DIconv_INCLUDE_DIR=${prefix}/include \
+                    -DIconv_LIBRARY=${prefix}/lib/libiconv.dylib \
+                    -DPython3_EXECUTABLE=${prefix}/bin/python${python_version} \
+                    -DZLIB_ROOT=${prefix}
+
+github.livecheck.regex  {(\d+(?:\.\d+)+)}
