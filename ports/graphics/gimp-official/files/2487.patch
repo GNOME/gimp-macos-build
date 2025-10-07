@@ -1,0 +1,48 @@
+From 288ba6951083b3c734e75f1fa61716164554c4b7 Mon Sep 17 00:00:00 2001
+From: Idriss Fekir <mcsm224@gmail.com>
+Date: Thu, 2 Oct 2025 17:18:47 +0200
+Subject: [PATCH] GimpFontFactory: don't match postscript name on Skia font
+ family
+
+Pango shows all fonts in the family as "Skia Bold", unless the psname is not matched
+so we make an exception for skia and don't match on psname in the custom fontconfig xml.
+see issue 14659.
+---
+ app/text/gimpfontfactory.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/app/text/gimpfontfactory.c b/app/text/gimpfontfactory.c
+index 2af65c7231..a5bef041eb 100644
+--- a/app/text/gimpfontfactory.c
++++ b/app/text/gimpfontfactory.c
+@@ -1002,7 +1002,6 @@ gimp_font_factory_load_names (GimpFontFactory *factory)
+                               "<edit name=\"family\" mode=\"prepend\" binding=\"strong\"><string>%s</string></edit>",
+                               escaped_fullname);
+       g_free (escaped_fullname);
+-      g_free (family);
+ 
+       escaped_file = g_markup_escape_text (file, -1);
+       g_string_append_printf (xml,
+@@ -1010,7 +1009,10 @@ gimp_font_factory_load_names (GimpFontFactory *factory)
+                               escaped_file);
+       g_free (escaped_file);
+ 
+-      if (psname != NULL && g_utf8_validate (psname, -1, NULL))
++      /*Skia behaves in a way such that pango recognizes every font in the famy as Bold, unless we don't match with the psname.
++       * Until we figure out why this is the best we can do.
++      */
++      if (psname != NULL && g_utf8_validate (psname, -1, NULL) && g_strcmp0 (family, "Skia"))
+         {
+           psname = g_markup_escape_text (psname, -1);
+           g_string_append_printf (xml,
+@@ -1018,6 +1020,7 @@ gimp_font_factory_load_names (GimpFontFactory *factory)
+                                   psname);
+           g_free (psname);
+         }
++      g_free (family);
+ 
+       if (style != NULL && g_utf8_validate (style, -1, NULL))
+         {
+-- 
+GitLab
+
