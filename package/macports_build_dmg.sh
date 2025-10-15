@@ -45,7 +45,7 @@ create_coderequirement_file() {
 </dict>
 </plist>
 EOF
-    echo "Created python.coderequirement file with proper signing values"
+    echo "Created python.coderequirement file with org.gimp.gimp identifier"
   else
     echo "Warning: Could not determine team identifier for coderequirement"
   fi
@@ -85,8 +85,11 @@ if [ -n "${codesign_subject}" ]; then
     echo "Using launch constraints for python binaries (ARM64 build)"
     # Create a secure python.coderequirement file with real values
     create_coderequirement_file
-    PYTHON_SIGN_FLAGS="--launch-constraint-responsible ${HOME}/project/package/python.coderequirement"
-    SIGN_MESSAGE="launch constraint"
+    # Use --launch-constraint-parent instead of --launch-constraint-responsible
+    # Parent = direct parent process (gimp-console itself)
+    # Responsible = responsible process (might be app bundle, doesn't work for aux executables)
+    PYTHON_SIGN_FLAGS="--launch-constraint-parent ${HOME}/project/package/python.coderequirement"
+    SIGN_MESSAGE="launch constraint (parent)"
   else
     echo "Using entitlements for python binaries (non-ARM64 build)"
     PYTHON_SIGN_FLAGS="--entitlements ${HOME}/project/package/gimp-hardening.entitlements"
@@ -135,12 +138,52 @@ if [ -n "${codesign_subject}" ]; then
     rm -f "${HOME}/project/package/python.coderequirement"
   fi
 
-  echo "Signing app"
+  echo "Signing all MacOS binaries"
+  # First sign all other MacOS binaries with default identifiers
+  find "${PACKAGE_DIR}/GIMP.app/Contents/MacOS" -type f -perm +111 \
+    ! -name "gimp" \
+    ! -name "gimp-console*" \
+    ! -name "gimp-debug-tool*" \
+    ! -name "gimp-test-clipboard*" \
+    ! -name "gimptool*" \
+    ! -name "gimp-script-fu-interpreter*" \
+    ! -name "python*" \
+    ! -name "xdg-email" |
+    while read -r bin; do
+      if [ ! -L "$bin" ]; then
+        echo "Signing $bin"
+        /usr/bin/codesign -s "${codesign_subject}" \
+          --options runtime \
+          --timestamp \
+          --entitlements "${HOME}/project/package/gimp-hardening.entitlements" \
+          "$bin"
+      fi
+    done
+
+  echo "Signing GIMP auxiliary binaries with org.gimp.gimp identifier"
+  # Sign gimp-console and other GIMP binaries with the same identifier as the main app
+  # This is required for launch-constraint-parent to work (checks parent process identifier)
+  for bin in \
+    "${PACKAGE_DIR}/GIMP.app/Contents/MacOS/gimp-console"* \
+    "${PACKAGE_DIR}/GIMP.app/Contents/MacOS/gimp-debug-tool"* \
+    "${PACKAGE_DIR}/GIMP.app/Contents/MacOS/gimp-test-clipboard"* \
+    "${PACKAGE_DIR}/GIMP.app/Contents/MacOS/gimptool"* \
+    "${PACKAGE_DIR}/GIMP.app/Contents/MacOS/gimp-script-fu-interpreter"*; do
+    if [ -f "$bin" ] && [ ! -L "$bin" ]; then
+      echo "Signing $bin with identifier org.gimp.gimp"
+      /usr/bin/codesign -s "${codesign_subject}" \
+        --identifier org.gimp.gimp \
+        --options runtime \
+        --timestamp \
+        --entitlements "${HOME}/project/package/gimp-hardening.entitlements" \
+        "$bin"
+    fi
+  done
+
+  echo "Signing app bundle"
   /usr/bin/codesign -s "${codesign_subject}" \
     --timestamp \
-    --deep \
     --options runtime \
-    --preserve-metadata=requirements \
     --entitlements ${HOME}/project/package/gimp-hardening.entitlements \
     ${PACKAGE_DIR}/GIMP.app
 fi
