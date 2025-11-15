@@ -81,7 +81,8 @@ if {${is_release}} {
 git.branch      ${branch}
 puts "Using branch: ${branch}"
 
-patchfiles-append   pythonpath.patch
+patchfiles-append   pythonpath.patch \
+                    clipboard-clear-fix.patch
 patch.pre_args      -p1
 
 # Release-specific patches (step 2 from instructions above)

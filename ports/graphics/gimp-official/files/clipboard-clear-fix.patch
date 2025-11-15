@@ -1,0 +1,62 @@
+diff --git a/app/widgets/gimpclipboard.c b/app/widgets/gimpclipboard.c
+index f586b8e1f4..09d3fe0a35 100644
+--- a/app/widgets/gimpclipboard.c
++++ b/app/widgets/gimpclipboard.c
+@@ -121,7 +121,8 @@ gimp_clipboard_init (Gimp *gimp)
+ void
+ gimp_clipboard_exit (Gimp *gimp)
+ {
+-  GtkClipboard *clipboard;
++  GtkClipboard  *clipboard;
++  GimpClipboard *gimp_clip;
+ 
+   g_return_if_fail (GIMP_IS_GIMP (gimp));
+ 
+@@ -131,16 +132,39 @@ gimp_clipboard_exit (Gimp *gimp)
+   if (clipboard &&
+       gtk_clipboard_get_owner (clipboard) == G_OBJECT (gimp))
+     {
+-      gtk_clipboard_store (clipboard);
+-    }
++      gimp_clip = gimp_clipboard_get (gimp);
+ 
+-  if (clipboard)
+-    /* If we don't clear the clipboard, it keeps a reference on the object
+-     * owner (i.e. Gimp object probably) which fails to finalize.
+-     */
+-    gtk_clipboard_clear (clipboard);
++      /* On macOS, gtk_clipboard_store() with lazy callbacks doesn't reliably
++       * persist data. Instead, materialize the image into a pixbuf and set
++       * it directly on the clipboard so it's written to NSPasteboard.
++       */
++      if (gimp_clip && gimp_clip->image)
++        {
++          GdkPixbuf *pixbuf;
++
++          gimp_pickable_flush (GIMP_PICKABLE (gimp_clip->image));
+ 
+-  g_object_set_data (G_OBJECT (gimp), GIMP_CLIPBOARD_KEY, NULL);
++          pixbuf = gimp_viewable_get_pixbuf (GIMP_VIEWABLE (gimp_clip->image),
++                                             gimp_get_user_context (gimp),
++                                             gimp_image_get_width (gimp_clip->image),
++                                             gimp_image_get_height (gimp_clip->image),
++                                             NULL);
++
++          if (pixbuf)
++            {
++              /* Set the pixbuf directly - this writes the data immediately
++               * instead of using a callback */
++              gtk_clipboard_set_image (clipboard, pixbuf);
++              gtk_clipboard_store (clipboard);
++              g_object_unref (pixbuf);
++            }
++        }
++    }
++
++  /* Don't call gtk_clipboard_clear() as that would delete the data.
++   * Don't free the GimpClipboard object either - let it be cleaned up
++   * when the Gimp object is finalized.
++   */
+ }
+ 
+ /**
