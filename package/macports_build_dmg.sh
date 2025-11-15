@@ -1,6 +1,47 @@
 #!/bin/bash
 
-# set -e
+set -euo pipefail
+
+# Function to verify code signature
+verify_signature() {
+  local file="$1"
+  local description="${2:-$file}"
+
+  echo "Verifying signature for: $description"
+
+  # Check if signature is valid
+  if ! codesign --verify --strict --verbose=2 "$file" 2>&1; then
+    echo "ERROR: Signature verification failed for $description"
+    return 1
+  fi
+
+  # Check signature details
+  local sig_info
+  sig_info=$(codesign -dv --verbose=4 "$file" 2>&1) || {
+    echo "ERROR: Failed to retrieve signature details for $description"
+    return 1
+  }
+
+  # Verify it has a Developer ID signature (not ad-hoc)
+  if ! echo "$sig_info" | grep -q "Authority=Developer ID Application"; then
+    echo "ERROR: $description is not signed with Developer ID certificate"
+    echo "$sig_info"
+    return 1
+  fi
+
+  # Verify runtime hardening is enabled
+  if ! echo "$sig_info" | grep -q "flags=.*runtime"; then
+    echo "WARNING: $description does not have hardened runtime enabled"
+  fi
+
+  # Verify timestamp is present
+  if ! echo "$sig_info" | grep -q "Timestamp="; then
+    echo "WARNING: $description does not have a secure timestamp"
+  fi
+
+  echo "✓ Signature verified successfully for: $description"
+  return 0
+}
 
 if [ -z "$1" ]; then
   ARCH="x86_64"
@@ -186,6 +227,9 @@ if [ -n "${codesign_subject}" ]; then
     --options runtime \
     --entitlements ${HOME}/project/package/gimp-hardening.entitlements \
     ${PACKAGE_DIR}/GIMP.app
+
+  # Verify the app bundle signature
+  verify_signature "${PACKAGE_DIR}/GIMP.app" "GIMP.app bundle"
 fi
 
 echo "Building DMG"
@@ -225,6 +269,9 @@ cd ..
 if [ -n "${codesign_subject}" ]; then
   echo "Signing DMG"
   /usr/bin/codesign -s "${codesign_subject}" "/tmp/artifacts/${DMGNAME}"
+
+  # Verify DMG signature before notarization
+  verify_signature "/tmp/artifacts/${DMGNAME}" "DMG file"
 fi
 
 echo "Done Creating DMG"

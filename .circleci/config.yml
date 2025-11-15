@@ -92,23 +92,50 @@ commands:
           name: Importing signing certificate
           command: |
             # wait for keychain to settle
-            sleep 25
+            sleep 10
             mkdir ${HOME}/codesign && cd ${HOME}/codesign
             echo "$osx_crt" | base64 -D > gnome.p12
-            curl 'https://www.apple.com/certificateauthority/DeveloperIDG2CA.cer' > apple.cer
-            curl 'https://www.apple.com/certificateauthority/DeveloperIDCA.cer' > apple2.cer
-            curl 'https://www.apple.com/certificateauthority/AppleWWDRCAG2.cer' > apple3.cer
-            curl 'https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer' > apple4.cer
+
+            # Download Apple intermediate certificates with error checking
+            curl -fsSL 'https://www.apple.com/certificateauthority/DeveloperIDG2CA.cer' -o apple.cer
+            curl -fsSL 'https://www.apple.com/certificateauthority/DeveloperIDCA.cer' -o apple2.cer
+            curl -fsSL 'https://www.apple.com/certificateauthority/AppleWWDRCAG2.cer' -o apple3.cer
+            curl -fsSL 'https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer' -o apple4.cer
+
+            # Create and configure keychain
             security create-keychain -p "" signchain
             security set-keychain-settings signchain
             security unlock-keychain -u signchain
-            security list-keychains  -s "${HOME}/Library/Keychains/signchain-db" "${HOME}/Library/Keychains/login.keychain-db"
+
+            # Append signchain to existing keychain search list (don't replace!)
+            existing_keychains=$(security list-keychains -d user | tr -d '"' | xargs)
+            security list-keychains -d user -s \
+              "${HOME}/Library/Keychains/login.keychain-db" \
+              "${HOME}/Library/Keychains/signchain-db" \
+              $existing_keychains
+
+            # Import Apple intermediate certificates
             security import apple.cer -k signchain  -T /usr/bin/codesign
             security import apple2.cer -k signchain  -T /usr/bin/codesign
             security import apple3.cer -k signchain  -T /usr/bin/codesign
             security import apple4.cer -k signchain  -T /usr/bin/codesign
+
+            # Import signing certificate
             security import gnome.p12  -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
             security set-key-partition-list -S apple-tool:,apple: -k "" signchain
+
+            # Verify the Developer ID certificate chains properly
+            echo "Verifying certificate chain..."
+            IDENTITY=$(security find-identity -v -p codesigning signchain | awk '/Developer ID Application/ {print $2; exit}')
+            echo "Using signing identity: $IDENTITY"
+
+            if ! security verify-cert -c "$IDENTITY" -p basic; then
+              echo "ERROR: Developer ID certificate does not chain to a trusted root!"
+              echo "This will cause codesign to fail with errSecInternalComponent"
+              exit 1
+            fi
+
+            echo "Certificate chain verified successfully"
             security find-identity -v signchain
             rm -rf ${HOME}/codesign
 
