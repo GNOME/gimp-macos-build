@@ -124,18 +124,32 @@ commands:
             security import gnome.p12  -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
             security set-key-partition-list -S apple-tool:,apple: -k "" signchain
 
-            # Verify the Developer ID certificate chains properly
+            # Verify the Developer ID certificate chains properly by testing codesign
             echo "Verifying certificate chain..."
-            IDENTITY=$(security find-identity -v -p codesigning signchain | awk '/Developer ID Application/ {print $2; exit}')
-            echo "Using signing identity: $IDENTITY"
+            security find-identity -v signchain
 
-            if ! security verify-cert -c "$IDENTITY" -p basic; then
-              echo "ERROR: Developer ID certificate does not chain to a trusted root!"
-              echo "This will cause codesign to fail with errSecInternalComponent"
+            # Test that codesign can actually use the certificate
+            echo "Testing codesign can access the certificate..."
+            echo "test" > /tmp/test_codesign_file
+            if ! /usr/bin/codesign -s "${codesign_subject}" --timestamp /tmp/test_codesign_file 2>&1 | tee /tmp/codesign_test.log; then
+              echo "ERROR: Cannot sign with Developer ID certificate!"
+              echo "Certificate chain may be broken - this will cause errSecInternalComponent"
+              cat /tmp/codesign_test.log
+              rm -f /tmp/test_codesign_file /tmp/codesign_test.log
               exit 1
             fi
 
-            echo "Certificate chain verified successfully"
+            # Check for the specific error we're trying to prevent
+            if grep -q "errSecInternalComponent" /tmp/codesign_test.log || \
+               grep -q "unable to build chain to self-signed root" /tmp/codesign_test.log; then
+              echo "ERROR: Certificate chain is broken - codesign cannot verify Developer ID"
+              cat /tmp/codesign_test.log
+              rm -f /tmp/test_codesign_file /tmp/codesign_test.log
+              exit 1
+            fi
+
+            rm -f /tmp/test_codesign_file /tmp/codesign_test.log
+            echo "✓ Certificate chain verified - codesign working correctly"
             security find-identity -v signchain
             rm -rf ${HOME}/codesign
 
@@ -207,6 +221,7 @@ jobs:
           # not using --check flag
           command: |
             << parameters.arch_command >> scripts/macports2_install_gimp.sh
+          no_output_timeout: 15m
       - store_artifacts:
           path: ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/var/macports/logs
       - store_artifacts:
