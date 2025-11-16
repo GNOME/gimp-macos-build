@@ -114,11 +114,12 @@ commands:
               "${HOME}/Library/Keychains/signchain-db" \
               $existing_keychains
 
-            # Import Apple intermediate certificates
-            security import apple.cer -k signchain  -T /usr/bin/codesign
-            security import apple2.cer -k signchain  -T /usr/bin/codesign
-            security import apple3.cer -k signchain  -T /usr/bin/codesign
-            security import apple4.cer -k signchain  -T /usr/bin/codesign
+            # Import Apple intermediate certificates with trust settings
+            # Using add-trusted-cert instead of import to set trust policy (-r trustRoot)
+            security add-trusted-cert -d -r trustRoot -k signchain apple.cer
+            security add-trusted-cert -d -r trustRoot -k signchain apple2.cer
+            security add-trusted-cert -d -r trustRoot -k signchain apple3.cer
+            security add-trusted-cert -d -r trustRoot -k signchain apple4.cer
 
             # Import signing certificate
             security import gnome.p12  -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
