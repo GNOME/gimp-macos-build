@@ -115,11 +115,21 @@ commands:
               $existing_keychains
 
             # Import Apple intermediate certificates with trust settings
-            # Using add-trusted-cert instead of import to set trust policy (-r trustRoot)
-            security add-trusted-cert -d -r trustRoot -k signchain apple.cer
-            security add-trusted-cert -d -r trustRoot -k signchain apple2.cer
-            security add-trusted-cert -d -r trustRoot -k signchain apple3.cer
-            security add-trusted-cert -d -r trustRoot -k signchain apple4.cer
+            # Temporarily disable authorization requirement to prevent hanging in CI
+            # (macOS Big Sur+ requires interactive auth for add-trusted-cert)
+            sudo security authorizationdb write com.apple.trust-settings.admin allow
+
+            # Add trusted intermediate certificates
+            # Using trustAsRoot (not trustRoot) because these are intermediates, not root CAs
+            # trustAsRoot = "Always Trust" - correct for intermediate certificates
+            # trustRoot = "Use System Defaults" - only for self-signed root CAs
+            security add-trusted-cert -d -r trustAsRoot -k signchain apple.cer
+            security add-trusted-cert -d -r trustAsRoot -k signchain apple2.cer
+            security add-trusted-cert -d -r trustAsRoot -k signchain apple3.cer
+            security add-trusted-cert -d -r trustAsRoot -k signchain apple4.cer
+
+            # Restore authorization requirement immediately for security
+            sudo security authorizationdb remove com.apple.trust-settings.admin
 
             # Import signing certificate
             security import gnome.p12  -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
