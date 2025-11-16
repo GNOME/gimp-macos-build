@@ -108,10 +108,12 @@ commands:
             security unlock-keychain -u signchain
 
             # Append signchain to existing keychain search list (don't replace!)
+            # Also explicitly include System keychain so codesign can find intermediate certs
             existing_keychains=$(security list-keychains -d user | tr -d '"' | xargs)
             security list-keychains -d user -s \
               "${HOME}/Library/Keychains/login.keychain-db" \
               "${HOME}/Library/Keychains/signchain-db" \
+              "/Library/Keychains/System.keychain" \
               $existing_keychains
 
             # Import Apple intermediate certificates to System keychain
@@ -133,6 +135,15 @@ commands:
 
             # Verify the Developer ID certificate chains properly by testing codesign
             echo "Verifying certificate chain..."
+
+            # Diagnostic: Show what's in each keychain
+            echo "=== Certificates in System keychain ==="
+            security find-certificate -a -p /Library/Keychains/System.keychain | grep -c "BEGIN CERTIFICATE" || echo "0 certificates"
+
+            echo "=== Current keychain search list ==="
+            security list-keychains -d user
+
+            echo "=== Identity in signchain ==="
             security find-identity -v signchain
 
             # Test that codesign can actually use the certificate
