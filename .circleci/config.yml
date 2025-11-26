@@ -91,26 +91,57 @@ commands:
       - run:
           name: Importing signing certificate
           command: |
-            # wait for keychain to settle
-            sleep 25
-            mkdir ${HOME}/codesign && cd ${HOME}/codesign
-            echo "$osx_crt" | base64 -D > gnome.p12
-            curl 'https://www.apple.com/certificateauthority/DeveloperIDG2CA.cer' > apple.cer
-            curl 'https://www.apple.com/certificateauthority/DeveloperIDCA.cer' > apple2.cer
-            curl 'https://www.apple.com/certificateauthority/AppleWWDRCAG2.cer' > apple3.cer
-            curl 'https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer' > apple4.cer
-            security create-keychain -p "" signchain
-            security set-keychain-settings signchain
-            security unlock-keychain -u signchain
-            security list-keychains  -s "${HOME}/Library/Keychains/signchain-db" "${HOME}/Library/Keychains/login.keychain-db"
-            security import apple.cer -k signchain  -T /usr/bin/codesign
-            security import apple2.cer -k signchain  -T /usr/bin/codesign
-            security import apple3.cer -k signchain  -T /usr/bin/codesign
-            security import apple4.cer -k signchain  -T /usr/bin/codesign
-            security import gnome.p12  -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
-            security set-key-partition-list -S apple-tool:,apple: -k "" signchain
-            security find-identity -v signchain
-            rm -rf ${HOME}/codesign
+            MAX_ATTEMPTS=3
+            ATTEMPT=1
+
+            while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+              echo "=== Certificate import attempt $ATTEMPT of $MAX_ATTEMPTS ==="
+
+              # wait for keychain to settle
+              sleep 25
+
+              # Clean up from any previous attempt
+              security delete-keychain signchain 2>/dev/null || true
+              rm -rf ${HOME}/codesign 2>/dev/null || true
+
+              mkdir ${HOME}/codesign && cd ${HOME}/codesign
+              echo "$osx_crt" | base64 -D > gnome.p12
+              curl -fsSL 'https://www.apple.com/certificateauthority/DeveloperIDG2CA.cer' > apple.cer
+              curl -fsSL 'https://www.apple.com/certificateauthority/DeveloperIDCA.cer' > apple2.cer
+              curl -fsSL 'https://www.apple.com/certificateauthority/AppleWWDRCAG2.cer' > apple3.cer
+              curl -fsSL 'https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer' > apple4.cer
+              security create-keychain -p "" signchain
+              security set-keychain-settings signchain
+              security unlock-keychain -u signchain
+              security list-keychains -s "${HOME}/Library/Keychains/signchain-db" "${HOME}/Library/Keychains/login.keychain-db"
+              security import apple.cer -k signchain -T /usr/bin/codesign
+              security import apple2.cer -k signchain -T /usr/bin/codesign
+              security import apple3.cer -k signchain -T /usr/bin/codesign
+              security import apple4.cer -k signchain -T /usr/bin/codesign
+              security import gnome.p12 -k signchain -P "$osx_crt_pw" -T /usr/bin/codesign
+              security set-key-partition-list -S apple-tool:,apple: -k "" signchain
+
+              # Check for trust errors
+              IDENTITY_OUTPUT=$(security find-identity -v signchain 2>&1)
+              echo "$IDENTITY_OUTPUT"
+
+              if echo "$IDENTITY_OUTPUT" | grep -q "CSSMERR_TP_NOT_TRUSTED"; then
+                echo "=== Trust verification failed (CSSMERR_TP_NOT_TRUSTED) ==="
+                if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
+                  echo "Retrying..."
+                  ATTEMPT=$((ATTEMPT + 1))
+                  continue
+                else
+                  echo "All $MAX_ATTEMPTS attempts failed"
+                  exit 1
+                fi
+              fi
+
+              # Success
+              echo "=== Certificate import successful ==="
+              rm -rf ${HOME}/codesign
+              exit 0
+            done
 
   open-signing-cert:
     steps:
