@@ -1,13 +1,27 @@
+From 1063c18fe9414120abe69b5f793dc316551cadb8 Mon Sep 17 00:00:00 2001
+From: Bruno Lopes <brunvonlope@outlook.com>
+Date: Sat, 3 Jan 2026 08:22:43 -0300
+Subject: [PATCH] meson: Use specific Python for CircleCI
+
+It works locally without needing this. So,
+let's patch on CI only.
+---
+ meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
 diff --git a/meson.build b/meson.build
-index 6f5a504344..7875983295 100644
+index c0a384b5b1..62851bb0bd 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -1074,7 +1074,7 @@ # the interpreter is not useful at build time.
+@@ -130,7 +130,7 @@ versionconfig.set('GIMP_API_VERSION',   gimp_api_version)
+ pkgconfig = import('pkgconfig')
+ i18n      = import('i18n')
+ gnome     = import('gnome')
+-python    = import('python').find_installation()
++python    = import('python').find_installation('@@PYTHON3_BIN@@')
+ simd      = import('unstable-simd')
+ fs        = import('fs')
+ 
+-- 
+2.50.1 (Apple Git-155)
 
- python3_minver = '>=3.6'
-
--python = pythonmod.find_installation('python3', required: true)
-+python = pythonmod.find_installation('@@PYTHON3_BIN@@')
- message('Found Python @0@'.format(python.language_version()))
-
- if not python.language_version().version_compare(python3_minver)
