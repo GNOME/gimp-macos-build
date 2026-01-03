@@ -173,6 +173,8 @@ fi
 cp ${GIMP_PREFIX}/etc/macports/macports.conf.default ${GIMP_PREFIX}/etc/macports/macports.conf
 cp ${GIMP_PREFIX}/etc/macports/variants.conf.default ${GIMP_PREFIX}/etc/macports/variants.conf
 
+# Use architecture-specific applications directory to avoid conflicts
+echo "applications_dir ${GIMP_PREFIX}/Applications" | tee -a ${GIMP_PREFIX}/etc/macports/macports.conf
 echo 'buildfromsource always' | tee -a ${GIMP_PREFIX}/etc/macports/macports.conf
 echo 'startupitem_type none' | tee -a ${GIMP_PREFIX}/etc/macports/macports.conf
 echo 'startupitem_install no' | tee -a ${GIMP_PREFIX}/etc/macports/macports.conf
