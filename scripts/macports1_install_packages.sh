@@ -274,6 +274,9 @@ if [ -n "${PART2}" ]; then
   # build/install. It would require detecting failure (obscure long error like
   # this): Error: See ${GIMP_PREFIX}/var/macports/logs/_opt_local_var_macports_sources_rsync.macports.org_macports_release_tarballs_ports_devel_dbus/dbus/main.log for details.
 
+  # temporarily uninstall python314 to fix build issues
+  port_force_uninstall_and_clean python314
+
   # Need to know correct python version so py-cairo and py-gobject3 are installed in correct version (there are
   # multiple versions of python installed due to myriad macports dependencies we don't control)
   port_clean_and_install python${PYTHON_SHORT_VERSION}
