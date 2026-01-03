@@ -188,7 +188,8 @@ configure.args-append       -Dbuild-id=org.gimp.GIMP_official.${build_arch} \
                             -Djavascript=disabled \
                             -Dgi-docgen=disabled \
                             -Dopenmp=disabled \
-                            -Dpkgconfig.relocatable=true
+                            -Dpkgconfig.relocatable=true \
+                            -Ddmg=true
 
 # at present, luajit does not build on PowerPC
 # platform darwin powerpc {
