@@ -187,7 +187,9 @@ else
   echo "macosx_sdk_version ${SDK_VERSION_X86_64}" | tee -a ${GIMP_PREFIX}/etc/macports/macports.conf
   echo "build_arch x86_64" | tee -a ${GIMP_PREFIX}/etc/macports/macports.conf
 fi
-echo "-x11 +no_x11 +quartz -python27 +no_gnome -gnome -gfortran -openldap -pinentry_mac ${debug} +python${PYTHON_SHORT_VERSION} -python311 -python312 -python313" | tee -a ${GIMP_PREFIX}/etc/macports/variants.conf
+# This must be updated to exclude new python versions as they come out as they
+# will break the build
+echo "-x11 +no_x11 +quartz -python27 +no_gnome -gnome -gfortran -openldap -pinentry_mac ${debug} +python${PYTHON_SHORT_VERSION} -python311 -python312 -python313 -python314" | tee -a ${GIMP_PREFIX}/etc/macports/variants.conf
 printf "file://${PROJECT_DIR}/ports\n$(cat ${GIMP_PREFIX}/etc/macports/sources.conf.default)\n" | tee ${GIMP_PREFIX}/etc/macports/sources.conf
 
 echo "*** Setup ${SDK_VERSION} SDK"
