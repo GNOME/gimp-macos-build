@@ -1,0 +1,30 @@
+From e55cc06ef64727d62d8f75d585f9ac1423547609 Mon Sep 17 00:00:00 2001
+From: Bruno Lopes <brunvonlope@outlook.com>
+Date: Sat, 10 Jan 2026 18:46:59 -0300
+Subject: [PATCH] meson: Do not use official bundling script
+
+We do use gtk-mac-bundler on gimp-macos-build.
+---
+ meson.build | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index 643ac3ae5a..cd51137d6f 100644
+--- a/meson.build
++++ b/meson.build
+@@ -2143,12 +2143,6 @@ if get_option('windows-installer') or get_option('ms-store')
+   meson.add_install_script(install_win_bundling_script)
+ endif
+ 
+-# On macOS, install deps in an .app bundle before distributing
+-if get_option('dmg')
+-  install_macos_debug_script = find_program('build/macos/2_bundle-gimp-uni_base.py')
+-  meson.add_install_script(install_macos_debug_script)
+-endif
+-
+ ################################################################################
+ # Subdir installations
+ 
+-- 
+2.50.1 (Apple Git-155)
+

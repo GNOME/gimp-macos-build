@@ -82,6 +82,7 @@ git.branch      ${branch}
 puts "Using branch: ${branch}"
 
 patchfiles-append   pythonpath.patch \
+                    bundling.patch \
                     clipboard-clear-fix.patch
 patch.pre_args      -p1
 
