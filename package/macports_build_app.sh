@@ -41,6 +41,13 @@ if [ ! -f ${PACKAGE_DIR}/GIMP.app/Contents/MacOS/gimp ]; then
 fi
 echo "Done creating bundle"
 
+echo "Copying ghostscript resources for EPS/PostScript support"
+GS_DEST="${PACKAGE_DIR}/GIMP.app/Contents/Resources/share/ghostscript"
+mkdir -p "${GS_DEST}/iccprofiles" "${GS_DEST}/Resource/Init" "${GS_DEST}/Resource/Font"
+cp -r "${GIMP_PREFIX}"/share/ghostscript/*/iccprofiles/* "${GS_DEST}/iccprofiles/" 2>/dev/null || true
+cp -r "${GIMP_PREFIX}"/share/ghostscript/*/Resource/Init/* "${GS_DEST}/Resource/Init/" 2>/dev/null || true
+cp -r "${GIMP_PREFIX}"/share/ghostscript/*/Resource/Font/* "${GS_DEST}/Resource/Font/" 2>/dev/null || true
+
 echo "Store GIMP version in bundle (for later use)"
 echo "$GIMP_VERSION" > ${PACKAGE_DIR}/GIMP.app/Contents/Resources/.version
 
