@@ -33,6 +33,9 @@ else
   sudo cp -f charset.alias "${GIMP_PREFIX}/lib/"
 fi
 
+echo "Setting Appicon"
+xcrun actool "AppIcon.icon" --output-format human-readable-text --compile "${PACKAGE_DIR}/GIMP.app/Contents/Resources" --include-all-app-icons --enable-on-demand-resources NO --enable-icon-stack-fallback-generation NO --development-region en --target-device mac --platform macosx --minimum-deployment-target $MACOSX_DEPLOYMENT_TARGET
+
 echo "Creating bundle"
 $GTK_MAC_BUNDLER macports-gimp.bundle
 if [ ! -f ${PACKAGE_DIR}/GIMP.app/Contents/MacOS/gimp ]; then
