@@ -284,7 +284,7 @@ jobs:
             fi
 
             echo "Both notarizations completed successfully"
-          no_output_timeout: 20m
+          no_output_timeout: 45m
       - run:
           name: Checksum DMG package
           command: |
