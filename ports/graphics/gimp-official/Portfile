@@ -75,7 +75,7 @@ if {${is_release}} {
         set branch      GIMP_${major}_${minor}_${patch}
     }
 } else {
-    set branch      origin/master
+    set branch      origin/bruno/python-gi
     revision        0
 }
 git.branch      ${branch}
