@@ -29,9 +29,9 @@ set my_name         gegl
 #    For example, when setting to a release, update only last_release. When
 #    setting to a dev version, update only last_dev.
 # *****
-version             0.4.64
-set last_release    0.4.64
-set last_dev        0.4.63
+version             0.4.66
+set last_release    0.4.66
+set last_dev        0.4.65
 revision            0
 
 # epoch must never be reduced.
