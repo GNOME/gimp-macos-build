@@ -24,9 +24,9 @@ set my_name         gimp-official
 #    For example, when setting to a release, update only last_release. When
 #    setting to a dev version, update only last_dev.
 # *****
-version             3.0.6
-set last_release    3.0.4
-set last_dev        3.0.6
+version             3.0.8
+set last_release    3.0.6
+set last_dev        3.0.8
 revision            0
 
 # epoch must never be reduced. This was reduced for the 2.99.14 release
@@ -48,7 +48,7 @@ long_description    GIMP is a cross-platform image editor available for GNU/Linu
 
 homepage            https://gimp.org/
 fetch.type          git
-git.url             --depth 1 https://gitlab.gnome.org/GNOME/gimp.git
+git.url             https://gitlab.gnome.org/GNOME/gimp.git
 
 # Simplify version string for manipulation
 set simple_version [string map {"-" "."} $version]
