@@ -48,7 +48,7 @@ long_description    GIMP is a cross-platform image editor available for GNU/Linu
 
 homepage            https://gimp.org/
 fetch.type          git
-git.url             https://gitlab.gnome.org/GNOME/gimp.git
+git.url             --depth 1 https://gitlab.gnome.org/GNOME/gimp.git
 
 # Simplify version string for manipulation
 set simple_version [string map {"-" "."} $version]
@@ -153,7 +153,7 @@ depends_build-append \
 configure.python    ${prefix}/bin/python${py_ver}
 
 post-fetch {
-    system -W ${worksrcpath} "git submodule update --init"
+    system -W ${worksrcpath} "git submodule update --init --depth 1"
 }
 
 post-patch {
