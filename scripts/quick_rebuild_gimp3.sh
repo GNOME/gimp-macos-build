@@ -67,6 +67,7 @@ pushd ${GIMP_PREFIX}/var/macports/build/_Users_$(whoami)_project_ports_graphics_
 
   ${GIMP_PREFIX}/bin/ninja gimp-data/images/logo/gimp.icns
   cp gimp-data/images/logo/gimp.icns ${SCRIPT_DIR}/../package/
+  cp gimp-data/images/logo/AppIcon.icon ${SCRIPT_DIR}/../package/
   ${GIMP_PREFIX}/bin/ninja gimp-data/images/logo/gimp-dmg.png
   cp gimp-data/images/logo/gimp-dmg.png ${SCRIPT_DIR}/../package/
 

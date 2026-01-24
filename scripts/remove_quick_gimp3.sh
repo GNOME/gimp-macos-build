@@ -49,5 +49,6 @@ pushd $GIMP_PREFIX
   rm share/applications/gimp*
   rm share/gir-1.0/Gimp*
   rm share/metainfo/org.gimp.GIMP.appdata.xml
+  rm share/bash-completion/completions/gimp*
   rm -r share/gimp
 popd || exit

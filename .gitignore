@@ -8,6 +8,7 @@ package/gimp-dmg.png
 package/fileicon.icns
 package/fileicon-xcf.icns
 package/gimp.icns
+package/AppIcon.icon
 
 # include launch.json in the .vscode folder
 !.vscode/

@@ -48,6 +48,18 @@ cp -r "${GIMP_PREFIX}"/share/ghostscript/*/iccprofiles/* "${GS_DEST}/iccprofiles
 cp -r "${GIMP_PREFIX}"/share/ghostscript/*/Resource/Init/* "${GS_DEST}/Resource/Init/" 2>/dev/null || true
 cp -r "${GIMP_PREFIX}"/share/ghostscript/*/Resource/Font/* "${GS_DEST}/Resource/Font/" 2>/dev/null || true
 
+echo "Compiling AppIcon asset catalog"
+xcrun actool "${PACKAGE_DIR}/GIMP.app/Contents/Resources/AppIcon.icon" \
+  --output-format human-readable-text \
+  --compile "${PACKAGE_DIR}/GIMP.app/Contents/Resources" \
+  --include-all-app-icons \
+  --enable-on-demand-resources NO \
+  --enable-icon-stack-fallback-generation NO \
+  --development-region en \
+  --target-device mac \
+  --platform macosx \
+  --minimum-deployment-target $MACOSX_DEPLOYMENT_TARGET
+
 echo "Store GIMP version in bundle (for later use)"
 echo "$GIMP_VERSION" > ${PACKAGE_DIR}/GIMP.app/Contents/Resources/.version
 
@@ -58,7 +70,7 @@ if [ ! -d "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.
   exit 1
 fi
 pushd "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Resources/Python.app/Contents/Resources/" || exit 1
-  for resources in etc gimp.icns lib share fileicon-xcf.icns ;
+  for resources in etc gimp.icns lib share fileicon-xcf.icns AppIcon.icon;
   do
     ln -s "../../../../../../../../../${resources}" \
       "${resources}"

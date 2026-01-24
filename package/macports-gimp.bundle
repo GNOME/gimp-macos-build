@@ -150,6 +150,7 @@
   <data dest="${bundle}/Contents/Resources">${project}/gimp.icns</data>
   <data dest="${bundle}/Contents/Resources">${project}/fileicon-xcf.icns</data>
   <data dest="${bundle}/Contents/Resources">${project}/gimp-dmg.png</data>
+  <data dest="${bundle}/Contents/Resources">${project}/AppIcon.icon</data>
 
   <!-- Icon theme, both tango and hicolor are required? -->
   <icon-theme icons="all">

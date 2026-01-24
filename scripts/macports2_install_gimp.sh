@@ -54,6 +54,7 @@ popd
 port -N uninstall installed and gimp-official || true
 port clean gimp-official || true
 rm ${PROJECT_DIR}/package/gimp.icns || true
+rm ${PROJECT_DIR}/package/AppIcon.icon || true
 rm ${PROJECT_DIR}/package/gimp-dmg.png || true
 
 sup_port port -v -k -N install gimp-official +vala ${local}
