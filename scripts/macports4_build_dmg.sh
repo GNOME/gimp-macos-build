@@ -39,6 +39,8 @@ else
   echo "*** No suitable profile found for GIMP"
   exit 1
 fi
+# Needed for custom .dmg icon
+unset SDKROOT
 
 if [ -n "$GIMP_ARM64" ]; then
   export arch=arm64
