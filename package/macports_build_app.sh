@@ -51,6 +51,9 @@ cp -r "${GIMP_PREFIX}"/share/ghostscript/*/Resource/Font/* "${GS_DEST}/Resource/
 echo "Store GIMP version in bundle (for later use)"
 echo "$GIMP_VERSION" > ${PACKAGE_DIR}/GIMP.app/Contents/Resources/.version
 
+echo "Saving .VolumeIcon.icns"
+cp -r ".VolumeIcon.icns" "${PACKAGE_DIR}/.VolumeIcon.icns"
+
 echo "Link 'Resources' into python ${PYTHON_VERSION} framework 'Resources'"
 if [ ! -d "${PACKAGE_DIR}/GIMP.app/Contents/Resources/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Resources/Python.app/Contents/Resources" ]; then
   # Avoids creating very awkward link in the wrong place

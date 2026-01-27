@@ -205,6 +205,7 @@ cd create-dmg
 
 ./create-dmg \
   --volname "GIMP ${GIMP_VERSION} Install" \
+  --volicon "${PACKAGE_DIR}/.VolumeIcon.icns" \
   --background "${PACKAGE_DIR}/GIMP.app/Contents/Resources/gimp-dmg.png" \
   --window-pos 1 1 \
   --icon "GIMP.app" 192 352 \

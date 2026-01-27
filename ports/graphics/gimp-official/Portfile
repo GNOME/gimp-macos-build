@@ -168,6 +168,7 @@ post-build {
     file copy ${workpath}/build/gimp-data/images/logo/gimp.icns ${portpath}/../../../package/
     file delete -force ${portpath}/../../../package/fileicon-xcf.icns
     file copy ${workpath}/build/build/macos/fileicon-xcf.icns ${portpath}/../../../package/
+    file copy ${workpath}/build/build/macos/.VolumeIcon.icns ${portpath}/../../../package/
     file copy ${workpath}/build/gimp-data/images/logo/gimp-dmg.png ${portpath}/../../../package/
 }
 
