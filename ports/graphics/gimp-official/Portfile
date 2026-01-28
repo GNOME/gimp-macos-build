@@ -27,7 +27,7 @@ set my_name         gimp-official
 version             3.0.8
 set last_release    3.0.6
 set last_dev        3.0.8
-revision            0
+revision            1
 
 # epoch must never be reduced. This was reduced for the 2.99.14 release
 # which was incorrect.
