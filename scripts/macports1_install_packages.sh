@@ -247,6 +247,7 @@ fi
 if [ -n "${PART1}" ]; then
   # Outdated version won't go without this
   port_force_uninstall_and_clean gpgme
+  port_force_uninstall_and_clean gpgmepp
 
   # ** Reinstate these uninstalls if builds fail
   # temporarily uninstall gegl, gimp3, libgcc12 (until all builds are fixed)
