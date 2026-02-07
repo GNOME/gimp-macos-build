@@ -17,8 +17,8 @@ index c0a384b5b1..62851bb0bd 100644
  pkgconfig = import('pkgconfig')
  i18n      = import('i18n')
  gnome     = import('gnome')
--python    = import('python').find_installation()
-+python    = import('python').find_installation('@@PYTHON3_BIN@@')
+-python    = import('python').find_installation(modules: 'gi')
++python    = import('python').find_installation('@@PYTHON3_BIN@@', modules: 'gi')
  simd      = import('unstable-simd')
  fs        = import('fs')
  
