@@ -24,9 +24,9 @@ set my_name         gimp-official
 #    For example, when setting to a release, update only last_release. When
 #    setting to a dev version, update only last_dev.
 # *****
-version             3.2.0-RC3
-set last_release    3.2.0-RC3
-set last_dev        3.2.0-RC2+git
+version             3.2.0
+set last_release    3.2.0
+set last_dev        3.2.0-RC3+git
 revision            0
 
 # epoch must never be reduced. This was reduced for the 2.99.14 release
@@ -82,8 +82,7 @@ git.branch      ${branch}
 puts "Using branch: ${branch}"
 
 patchfiles-append   pythonpath.patch \
-                    bundling.patch \
-                    clipboard-clear-fix.patch
+                    bundling.patch
 patch.pre_args      -p1
 
 # Release-specific patches (step 2 from instructions above)
