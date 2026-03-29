@@ -211,6 +211,7 @@ jobs:
           # not using --check flag
           command: |
             << parameters.arch_command >> scripts/macports2_install_gimp.sh
+          no_output_timeout: 45m
       - store_artifacts:
           path: ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/var/macports/logs
       - store_artifacts:
