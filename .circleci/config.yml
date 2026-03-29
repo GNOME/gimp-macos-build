@@ -211,6 +211,7 @@ jobs:
           # not using --check flag
           command: |
             << parameters.arch_command >> scripts/macports2_install_gimp.sh
+          no_output_timeout: 45m
       - store_artifacts:
           path: ~/macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/var/macports/logs
       - store_artifacts:
@@ -263,6 +264,12 @@ jobs:
             scripts/macports4_build_dmg.sh
           no_output_timeout: 20m
       - run:
+          name: Check notarization queue
+          # This is due to recent long running submissions
+          command: |
+            echo "Recent notarization history:"
+            xcrun notarytool history --apple-id ${notarization_login} --team-id ${notarization_teamid} --password ${notarization_password}
+      - run:
           name: Notarizing DMG package
           command: |
             # Run both notarizations in parallel
@@ -284,7 +291,7 @@ jobs:
             fi
 
             echo "Both notarizations completed successfully"
-          no_output_timeout: 45m
+          no_output_timeout: 10h
       - run:
           name: Checksum DMG package
           command: |
