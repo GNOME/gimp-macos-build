@@ -41,12 +41,6 @@ else
 fi
 # Needed for custom .dmg icon
 unset SDKROOT
-
-if [ -n "$GIMP_ARM64" ]; then
-  export arch=arm64
-else
-  export arch=x86_64
-fi
 echo "*** Build: $arch"
 
 if [ -z "$GIMP_PREFIX" ]; then

@@ -206,9 +206,6 @@ sudo ln -s "MacOSX${SDK_VERSION}.sdk" "MacOSX${SDK_MAJOR_VERSION}.sdk"
 
 echo "export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX${SDK_VERSION_X86_64}.sdk" >>~/.profile-gimp-${arch}
 echo "export MACOSX_DEPLOYMENT_TARGET=${DEPLOYMENT_TARGET}" >>~/.profile-gimp-${arch}
-if [ "$build_arm64" = true ]; then
-  echo 'export GIMP_ARM64=true' >>~/.profile-gimp-${arch}
-fi
 
 # shellcheck disable=SC1090
 source "${HOME}/.profile-gimp-${arch}"

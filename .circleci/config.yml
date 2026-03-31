@@ -158,16 +158,6 @@ commands:
             # echo "** Set key partition list"
             # security set-key-partition-list -S apple-tool:,apple: -k "" signchain
 
-  authorize-applescript:
-    steps:
-      - run:
-          name: Authorize AppleScript
-          command: |
-            # Authorize applescript on circle ci build
-            epochdate=$(($(date +'%s * 1000 + %-N / 1000000')))
-            tcc_service_appleevents="replace into access (service,client,client_type,auth_value,auth_reason,auth_version,indirect_object_identifier_type,indirect_object_identifier,flags,last_modified) values (\"kTCCServiceAppleEvents\",\"/usr/sbin/sshd\",1,2,4,1,0,\"com.apple.finder\",0,$epochdate);"
-            sudo sqlite3 "${HOME}/Library/Application Support/com.apple.TCC/TCC.db" "$tcc_service_appleevents"
-
 # -------------------------
 #        JOBS
 # -------------------------
@@ -226,42 +216,15 @@ jobs:
           name: Check minos and sdk properly set
           command: |
             scripts/validate_min_os.py ~/macports-gimp-osx-app-<< parameters.arch >>
-      - persist_to_workspace:
-          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
-          # taken to be the root directory of the workspace.
-          root: "~"
-          # Must be relative path from root
-          paths:
-            - macports-gimp-osx-app-<< parameters.arch >>
-            - macports-gimp-osx-app-<< parameters.arch >>-plugin-developer
-            - .profile-gimp-<< parameters.arch >>
-            - macports-gimp<< pipeline.parameters.vgimp >>-<< parameters.arch >>/SBOM.txt
-
-  package-gimp:
-    macos:
-      xcode: "14.3.1"
-    resource_class: macos.m1.medium.gen1
-    parameters:
-      arch:
-        type: string
-        default: "arm64"
-
-    steps:
-      - setup
-      - attach_workspace:
-          # Must be absolute path or relative path from working_directory
-          at: "~"
-      - authorize-applescript
       - import-signing-cert
-      # - open-signing-cert
       - run:
-          name: Creating DMG package
+          name: Clean artifacts from previous builds
           command: |
-            source ~/.profile-gimp-<< parameters.arch >>
-            cd ${HOME}/project
-
-            # run script
-            scripts/macports4_build_dmg.sh
+            rm -rf /tmp/artifacts
+      - run:
+          name: Creating signed DMG package
+          command: |
+            << parameters.arch_command >> scripts/macports4_build_dmg.sh
           no_output_timeout: 20m
       - run:
           name: Check notarization queue
@@ -291,7 +254,7 @@ jobs:
             fi
 
             echo "Both notarizations completed successfully"
-          no_output_timeout: 10h
+          no_output_timeout: 5h
       - run:
           name: Checksum DMG package
           command: |
@@ -304,29 +267,26 @@ jobs:
       - store_artifacts:
           path: /tmp/artifacts
           destination: builds
+      - run:
+          name: Cleanup signing keychain
+          command: |
+            security delete-keychain signchain 2>/dev/null || true
+          when: always
 
 workflows:
   version: 2
   build-arm64:
     jobs:
       - build:
-          name: build
+          name: build-arm64
           arch: "arm64"
           arch_command: ""
           arch_suffix: ""
-      - package-gimp:
-          arch: "arm64"
-          requires:
-            - build
 
   build-x86_64:
     jobs:
       - build:
-          name: build
+          name: build-x86_64
           arch: "x86_64"
           arch_command: "arch -x86_64"
           arch_suffix: "_x86_64"
-      - package-gimp:
-          arch: "x86_64"
-          requires:
-            - build
