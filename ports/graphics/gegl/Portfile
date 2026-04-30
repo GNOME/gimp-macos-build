@@ -106,10 +106,6 @@ depends_lib-append \
                     port:tiff \
                     port:webp
 
-# Fix define for HAVE_UNISTD_H, which otherwise fails for some older Clang versions
-# See: https://trac.macports.org/ticket/71253
-patchfiles-append   patch-meson-unistd.diff
-
 # proposed fix for 32 bit builds
 # https://trac.macports.org/ticket/58524
 patchfiles-append   patch-gegl-32bit-host-statistics.diff
