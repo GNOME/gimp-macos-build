@@ -106,10 +106,6 @@ depends_lib-append \
                     port:tiff \
                     port:webp
 
-# proposed fix for 32 bit builds
-# https://trac.macports.org/ticket/58524
-patchfiles-append   patch-gegl-32bit-host-statistics.diff
-
 platform darwin {
     if {${os.major} < 10 || (${os.major} == 10 && ${configure.build_arch} eq "ppc")} {
         patchfiles-append patch-gegl-opencl-fix-Leopard-and-less-only.diff
