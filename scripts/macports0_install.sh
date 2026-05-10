@@ -25,7 +25,7 @@
 set -e
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-MACPORTS_VERSION=2.10.5
+MACPORTS_VERSION=2.12.5
 
 # Change to update python version across build
 # check `ports/graphics/gimp3/Portfile` to make sure this python version is
