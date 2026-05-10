@@ -284,11 +284,6 @@ if [ -n "${PART2}" ]; then
   port_clean_and_install py${PYTHON_SHORT_VERSION}-cairo
   port_clean_and_install py${PYTHON_SHORT_VERSION}-gobject3
 
-  # libwmf 0.2.8.4 -> 0.2.15 fails.
-  # Must wiping old install first to remove the conflicting headers.
-  # can be removed after one build as old version will no longer be around.
-  port_force_uninstall_and_clean libwmf
-
   port_clean_and_install \
     aalib \
     cfitsio \
