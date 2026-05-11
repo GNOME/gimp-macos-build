@@ -1,44 +1,101 @@
-From 3abab600da72fbddc3c973be1b8bbd82cf6552e6 Mon Sep 17 00:00:00 2001
+From 776a4f1c1e4e08fced54f222a46f1299d0506511 Mon Sep 17 00:00:00 2001
 From: Gabriele Barbero <barbero.gabriele03@gmail.com>
 Date: Wed, 17 Sep 2025 12:21:00 +0200
-Subject: [PATCH] Add default macOS font paths
+Subject: [PATCH] macOS: use selectfont globs for font asset directories
 
-In newer versions of macOS, an additional system font directory has been
-introduced: `/System/Library/AssetsV2/com_apple_MobileAsset_Font7`.
-This commit updates the default font paths in both `configure.ac` and
-`meson.build` to include this new directory.
+Instead of hardcoding each com_apple_MobileAsset_Font directory,
+add the parent directories (/System/Library/Assets and
+/System/Library/AssetsV2) as font dirs and use a selectfont
+configuration file with glob patterns to accept only font asset
+subdirectories. This is future-proof against Apple adding new
+font directories.
+
+Upstream MR: https://gitlab.freedesktop.org/fontconfig/fontconfig/-/merge_requests/475
+Upstream commit: 776a4f1c1e4e08fced54f222a46f1299d0506511
+Rebased onto fontconfig 2.17.1. Adds conf.d/Makefile.am updates that
+the upstream commit omitted (MacPorts builds via autotools, so the
+file needs to be registered in template_DATA + CONF_LINKS or it won't
+install or get symlinked into conf.d/).
 ---
- configure.ac | 2 +-
- meson.build  | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ conf.d/05-macos.conf | 15 +++++++++++++++
+ conf.d/Makefile.am   |  3 +++
+ conf.d/meson.build   |  2 ++
+ configure.ac         |  2 +-
+ meson.build          |  2 +-
+ 5 files changed, 22 insertions(+), 2 deletions(-)
+ create mode 100644 conf.d/05-macos.conf
 
-diff --git configure.ac configure.ac
-index 06dbc570..5ec17648 100644
---- configure.ac.orig   2023-12-22 13:51:46
-+++ configure.ac        2025-09-17 16:49:57
---- configure.ac.orig   2023-12-22 13:51:46
-+++ configure.ac        2025-09-17 18:55:02
-@@ -494,7 +494,7 @@
+--- /dev/null	1970-01-01 00:00:00
++++ conf.d/05-macos.conf	2026-05-11 23:00:00
+@@ -0,0 +1,15 @@
++<?xml version="1.0"?>
++<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
++<fontconfig>
++  <description>macOS font asset directories</description>
++  <selectfont>
++    <acceptfont>
++      <glob>/System/Library/Assets/com_apple_MobileAsset_Font*</glob>
++      <glob>/System/Library/AssetsV2/com_apple_MobileAsset_Font*</glob>
++    </acceptfont>
++    <rejectfont>
++      <glob>/System/Library/Assets/*</glob>
++      <glob>/System/Library/AssetsV2/*</glob>
++    </rejectfont>
++  </selectfont>
++</fontconfig>
+--- conf.d/Makefile.am.orig	2025-07-02 05:46:34
++++ conf.d/Makefile.am	2026-05-11 23:00:00
+@@ -30,6 +30,7 @@
+ DOC_FILES = $(DOC_SOURCES:.in=)
+
+ CONF_LINKS = \
++	05-macos.conf	\
+ 	10-hinting-$(PREFERRED_HINTING).conf	\
+ 	10-scale-bitmap-fonts.conf \
+ 	10-yes-antialias.conf	\
+@@ -63,6 +64,7 @@
+
+ templatedir = $(TEMPLATEDIR)
+ template_DATA =				\
++	05-macos.conf			\
+ 	05-reset-dirs-sample.conf	\
+ 	09-autohint-if-no-hinting.conf	\
+ 	10-autohint.conf		\
+--- conf.d/meson.build.orig	2025-07-02 05:46:34
++++ conf.d/meson.build	2026-05-11 23:00:00
+@@ -1,4 +1,5 @@
+ conf_files = [
++  '05-macos.conf',
+   '05-reset-dirs-sample.conf',
+   '09-autohint-if-no-hinting.conf',
+   '10-autohint.conf',
+@@ -49,6 +50,7 @@
+ preferred_bitmap = get_option('bitmap-conf')
+
+ conf_links = [
++  '05-macos.conf',
+   '10-scale-bitmap-fonts.conf',
+   '10-yes-antialias.conf',
+   '11-lcdfilter-default.conf',
+--- configure.ac.orig	2025-07-02 05:46:34
++++ configure.ac	2026-05-11 23:00:13
+@@ -528,7 +528,7 @@
  	if test "$os_win32" = "yes"; then
  		default_fonts="WINDOWSFONTDIR,WINDOWSUSERFONTDIR"
  	elif test "$os_darwin" = "yes"; then
 -		default_fonts="/System/Library/Fonts,/Library/Fonts,~/Library/Fonts,/System/Library/Assets/com_apple_MobileAsset_Font3,/System/Library/Assets/com_apple_MobileAsset_Font4"
-+		default_fonts="/System/Library/Fonts,/Library/Fonts,~/Library/Fonts,/System/Library/Assets/com_apple_MobileAsset_Font3,/System/Library/Assets/com_apple_MobileAsset_Font4,/System/Library/AssetsV2/com_apple_MobileAsset_Font6,/System/Library/AssetsV2/com_apple_MobileAsset_Font7,/System/Library/AssetsV2/com_apple_MobileAsset_Font8"
++		default_fonts="/System/Library/Fonts,/Library/Fonts,~/Library/Fonts,/System/Library/Assets,/System/Library/AssetsV2"
+ 	elif test "$os_android" = "yes"; then
+ 		default_fonts="/system/fonts,/product/fonts"
  	else
- 		default_fonts="/usr/share/fonts"
- 	fi
-index 4483f6fc..cade9877 100644
---- meson.build.orig    2023-12-22 13:51:46
-+++ meson.build 2025-09-17 16:50:50
-@@ -232,7 +232,7 @@
+--- meson.build.orig	2025-07-02 05:46:34
++++ meson.build	2026-05-11 23:00:13
+@@ -329,7 +329,7 @@
    if host_machine.system() == 'windows'
      fc_fonts_paths = ['WINDOWSFONTDIR', 'WINDOWSUSERFONTDIR']
    elif host_machine.system() == 'darwin'
 -    fc_fonts_paths = ['/System/Library/Fonts', '/Library/Fonts', '~/Library/Fonts', '/System/Library/Assets/com_apple_MobileAsset_Font3', '/System/Library/Assets/com_apple_MobileAsset_Font4']
-+    fc_fonts_paths = ['/System/Library/Fonts', '/Library/Fonts', '~/Library/Fonts', '/System/Library/Assets/com_apple_MobileAsset_Font3', '/System/Library/Assets/com_apple_MobileAsset_Font4', '/System/Library/AssetsV2/com_apple_MobileAsset_Font6', '/System/Library/AssetsV2/com_apple_MobileAsset_Font7', '/System/Library/AssetsV2/com_apple_MobileAsset_Font8']
++    fc_fonts_paths = ['/System/Library/Fonts', '/Library/Fonts', '~/Library/Fonts', '/System/Library/Assets', '/System/Library/AssetsV2']
+   elif host_machine.system() == 'android'
+     fc_fonts_paths = ['/system/fonts/', '/product/fonts/']
    else
-     fc_fonts_paths = ['/usr/share/fonts', '/usr/local/share/fonts']
-   endif
--- 
-GitLab
-

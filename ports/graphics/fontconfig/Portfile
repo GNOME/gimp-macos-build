@@ -2,58 +2,56 @@
 
 PortSystem                  1.0
 PortGroup                   muniversal 1.0
-PortGroup                   legacysupport 1.1
+PortGroup                   gitlab 1.0
 
-use_autoreconf              yes
-autoreconf.args             -fvi
-
-name                        fontconfig
-version                     2.15.0
-revision                    3
-checksums                   rmd160  d999328f874e67b6f4d63f0f92947907f2774f71 \
-                            sha256  63a0658d0e06e0fa886106452b58ef04f21f58202ea02a94c39de0d3335d7c0e \
-                            size    1447820
+gitlab.instance             https://gitlab.freedesktop.org
+gitlab.setup                fontconfig fontconfig 2.17.1
+revision                    1
+checksums                   rmd160  b6bba90e6bf3ac46c13145cca482141c681cce99 \
+                            sha256  9f5cae93f4fffc1fbc05ae99cdfc708cd60dfd6612ffc0512827025c026fa541 \
+                            size    1326312
 
 categories                  graphics
 maintainers                 {ryandesign @ryandesign}
 license                     fontconfig
-use_parallel_build          yes
 
 description                 An XML-based font configuration API for X Windows
-
 long_description            Fontconfig is a library for configuring and \
                             customizing font access.
 
 homepage                    https://www.freedesktop.org/wiki/Software/fontconfig/
-master_sites                https://www.freedesktop.org/software/fontconfig/release/
+# the tarball from GitLab has no configure script, this appears to be the "release"
+# but the gitlab PG does not support this. See: https://trac.macports.org/ticket/71113
+master_sites                https://gitlab.freedesktop.org/api/v4/projects/890/packages/generic/fontconfig/${version}
 use_xz                      yes
 
-set python_version          3.12
+set python_version          3.14
 
-depends_build               port:gettext \
+depends_build-append        port:gettext \
                             path:bin/pkg-config:pkgconfig \
                             port:python[string map {. {}} ${python_version}] \
                             port:autoconf \
                             port:automake \
                             port:libtool
 
+# 475.patch modifies configure.ac and conf.d/Makefile.am. Require autoreconf
+# to regenerate everything before configuring.
+use_autoreconf              yes
+autoreconf.args             -fvi
+
 depends_lib                 port:expat \
                             port:freetype \
                             port:gettext-runtime \
                             port:libiconv
 
-if {${os.platform} eq "darwin" && ${os.major} < 9} {
-    set add_fonts           /usr/X11R6/lib/X11/fonts
-} else {
-    set add_fonts           /usr/X11/lib/X11/fonts
-}
-lappend add_fonts           ${prefix}/share/fonts
+set add_fonts               "/usr/X11/lib/X11/fonts ${prefix}/share/fonts"
 set docdir                  ${prefix}/share/doc/${name}
 
 patchfiles-append           patch-docbook-4.2.diff
 patchfiles-append           no-json-c.patch
 
-# Remove overlay when https://gitlab.freedesktop.org/fontconfig/fontconfig/-/merge_requests/475 is merged
+# Remove overlay now that https://gitlab.freedesktop.org/fontconfig/fontconfig/-/merge_requests/475 is merged
+# but need to wait for next release post 2.17.1.
 patchfiles-append           475.patch
 
 configure.checks.implicit_function_declaration.whitelist-append strchr
@@ -86,7 +84,6 @@ post-destroot {
     xinstall -m 0644 -W ${worksrcpath} \
         AUTHORS \
         COPYING \
-        ChangeLog \
         NEWS \
         README.md \
         ${destroot}${docdir}
@@ -125,7 +122,3 @@ if {${os.arch} eq "i386"} {
     set merger_configure_env(i386)     CC_FOR_BUILD=${configure.cc}
     set merger_configure_env(x86_64)   CC_FOR_BUILD=${configure.cc}
 }
-
-livecheck.type              regex
-livecheck.url               [lindex ${master_sites} 0]
-livecheck.regex             ${name}-(\\d+(?:\\.\\d+)*\\.(?:\\d|\[0-8\]\\d))\\.tar
